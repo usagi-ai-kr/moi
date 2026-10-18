@@ -25,6 +25,9 @@ let active: {
   result?: unknown;
 } | null = null;
 
+// 다음 PATCH /answers 1회만 실패시키는 플래그 (#52 오프라인 재연결 E2E).
+let failNextAnswer = false;
+
 function freshSet(): { id: string; status: string; items: FakeItem[]; submittedAt?: number; result?: unknown } {
   const items: FakeItem[] = Array.from({ length: 20 }, (_, i) => ({
     questionId: `q-${i}`,
@@ -100,6 +103,7 @@ function submittedDto(s: NonNullable<typeof active>) {
 
 Given('학습 API 모의가 준비되면', async ({ page }) => {
   active = null;
+  failNextAnswer = false;
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
   });
@@ -131,6 +135,12 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
         return;
       }
       if (method === 'PATCH' && sub === 'answers') {
+        // 일시 실패 모의 — 서버 상태(active.items[].response)는 건드리지 않는다 (#52).
+        if (failNextAnswer) {
+          failNextAnswer = false;
+          await route.abort('failed');
+          return;
+        }
         let body: { questionId?: string; response?: FakeItem['response'] } | null = null;
         try {
           body = req.postDataJSON() as { questionId?: string; response?: FakeItem['response'] };
@@ -191,6 +201,10 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
   });
 });
 
+Given('답안 저장이 일시 실패하도록 준비되면', async () => {
+  failNextAnswer = true;
+});
+
 When('20문제 학습 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: '20문제 학습' }).click();
 });
@@ -234,6 +248,14 @@ Then('문제 화면이 보인다', async ({ page }) => {
 Then('문제 본문과 보기가 보인다', async ({ page }) => {
   await expect(page.getByText('문제 0 본문: VPC와 서브넷 구성은?')).toBeVisible();
   await expect(page.getByText('1. 보기 q-0-a 내용')).toBeVisible();
+});
+
+Then('오프라인 임시 저장이 보인다', async ({ page }) => {
+  await expect(page.getByText('오프라인 임시 저장')).toBeVisible({ timeout: 10_000 });
+});
+
+When('네트워크가 복구되면', async ({ page }) => {
+  await page.evaluate(() => window.dispatchEvent(new Event('online')));
 });
 
 Then('저장됨 표시가 보인다', async ({ page }) => {
