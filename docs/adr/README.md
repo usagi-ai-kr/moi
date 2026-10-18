@@ -23,7 +23,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0005 | 앱 세션 PASETO v4.local | Accepted | 2026-10-18 | [0005-paseto-v4-local-session.md](./0005-paseto-v4-local-session.md) |
 | ADR-0006 | 비밀값·로그·개인정보 정책 | Accepted | 2026-10-18 | [0006-secrets-logging-policy.md](./0006-secrets-logging-policy.md) |
 | ADR-0007 | TDD/BDD와 CI 게이트 | Accepted | 2026-10-18 | [0007-tdd-bdd-ci-gates.md](./0007-tdd-bdd-ci-gates.md) |
-| ADR-0008 | 버전 규칙과 Milestone 체계 | Accepted | 2026-10-18 | [0008-version-and-milestones.md](./0008-version-and-milestones.md) |
+| ADR-0008 | 버전 규칙과 Milestone 체계 | Superseded by ADR-0017 | 2026-10-18 | [0008-version-and-milestones.md](./0008-version-and-milestones.md) |
 | ADR-0009 | 브랜치·PR 플로우 | Accepted | 2026-10-18 | [0009-branch-pr-flow.md](./0009-branch-pr-flow.md) |
 | ADR-0010 | 하네스·문서 관리 체계 | Accepted | 2026-10-18 | [0010-harness-doc-management.md](./0010-harness-doc-management.md) |
 | ADR-0011 | UI/Worker 실행 환경 경계와 배포 검증 계약 | Accepted | 2026-10-18 | [0011-runtime-boundary-release-contract.md](./0011-runtime-boundary-release-contract.md) |
@@ -32,6 +32,10 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0014 | 디자인 시스템 보강 — 폰트 제공·UI 제약 예외·여백·Lighthouse·카카오 버튼 | Accepted | 2026-10-18 | [0014-design-system-supplement-font-ui-kakao.md](./0014-design-system-supplement-font-ui-kakao.md) |
 | ADR-0015 | src 모듈 길이 예산 — 하네스·src 통합 | Accepted | 2026-10-18 | [0015-src-module-length-budget.md](./0015-src-module-length-budget.md) |
 | ADR-0016 | Kakao OIDC 구현 — 상태 소비·JWKS 검증·응답/로그 계약 | Accepted | 2026-10-18 | [0016-kakao-oidc-implementation.md](./0016-kakao-oidc-implementation.md) |
+| ADR-0017 | 0.2.x 버전·거버넌스·출시 게이트 | Accepted | 2026-10-18 | [0017-version-governance-0.2.x.md](./0017-version-governance-0.2.x.md) |
 | ADR-0018 | 세션·UI 상태 계약 — 서버 진실 원천과 캐시 규칙 | Accepted | 2026-10-18 | [0018-session-ui-state-contract.md](./0018-session-ui-state-contract.md) |
+| ADR-0019 | 0.2.0 문제은행·품질·관리 API | Accepted | 2026-10-18 | [0019-question-bank-quality.md](./0019-question-bank-quality.md) |
+| ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Accepted | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
+| ADR-0021 | 0.2.0 저장·복구·단일 세션·신고·정정·통계 | Accepted | 2026-10-18 | [0021-storage-reports-stats.md](./0021-storage-reports-stats.md) |
 | ADR-0022 | 디스플레이 폰트 LCP 안정화 — optional·지연 주입 | Accepted | 2026-10-18 | [0022-display-font-lcp-stability.md](./0022-display-font-lcp-stability.md) |
 <!-- ADR_INDEX:END -->
