@@ -58,6 +58,29 @@ export interface StudySetResult {
   readonly perItem: readonly StudySetPerItem[];
 }
 
+/** 정정 재계산 결과의 문항 단위 행 — 최초 채점 이력을 그대로 두고 제외 여부만 덧붙인다(이슈 #53). */
+export interface CorrectedSetPerItem extends StudySetPerItem {
+  readonly excluded: boolean;
+}
+
+/** 정정 재계산 결과 — 최초 result는 바꾸지 않고 제외분을 걸러 유효 분모로 다시 계산한다(ADR-0021·0025). */
+export interface CorrectedSetResult {
+  readonly answeredCount: number;
+  readonly correctCount: number;
+  /** 정답률(%) — 유효 분모 기준. 유효 0이면 null(채점 불가)이라 최초 accuracyPercent와 타입이 다르다. */
+  readonly accuracyPercent: number | null;
+  readonly passCount: number;
+  readonly unansweredCount: number;
+  /** 유효 분모가 0인 상태 — 채점 불가(throw하지 않고 값으로 표현). */
+  readonly ungraded: boolean;
+  /** 유효 분모(채점에 반영된 문항 수). */
+  readonly validTotal: number;
+  readonly excludedCount: number;
+  /** 세트에 실제로 존재하는 제외 개정 id(원본 순서). */
+  readonly excludedQuestionVersionIds: readonly string[];
+  readonly perItem: readonly CorrectedSetPerItem[];
+}
+
 export interface StudySet {
   readonly id: string;
   readonly userId: string;
