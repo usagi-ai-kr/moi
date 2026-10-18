@@ -75,5 +75,20 @@ export function createD1StudyAttemptRepository(db: D1Database): StudyAttemptRepo
         .orderBy(asc(studyAttempts.occurredAt), asc(studyAttempts.attemptId));
       return rows.map(toRecord);
     },
+
+    async excludeSetVersion({ userId, setId, questionVersionId, now }) {
+      const res = await d1
+        .update(studyAttempts)
+        .set({ excludedAt: now })
+        .where(
+          and(
+            eq(studyAttempts.source, 'set'),
+            eq(studyAttempts.sourceId, setId),
+            eq(studyAttempts.userId, userId),
+            eq(studyAttempts.questionVersionId, questionVersionId),
+          ),
+        );
+      return (res.meta as { changes?: number } | undefined)?.changes ?? 0;
+    },
   };
 }
