@@ -27,7 +27,7 @@
 - **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 500줄 이하 권장. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
 - 스킬 문서의 실행 명령 예시는 repo root 기준 경로(`.agents/skills/<스킬>/scripts/<스크립트>`)로 표기하고, 실행 CWD가 root임을 명시한다.
 - 이슈 완료 시 확정된 합의를 ADR/AGENTS.md/스킬에 반영(승격)한다. 이슈는 작업 추적용이고, 영속 규칙은 문서에 둔다.
-- 우선순위(충돌 시): **최신 ADR > AGENTS.md > 스킬 세부 절차.** 이슈 본문의 최신 합의와 충돌하면 이슈 합의를 우선하고, 같은 PR에서 문서에 반영한다.
+- 우선순위(충돌 시): **사용자가 승인한 이슈 합의 > Accepted ADR > AGENTS.md > 스킬 세부 절차.** 이슈 합의가 문서와 충돌하면 같은 PR에서 ADR supersede·문서 동기화로 반영한다.
 - 작업 산출물은 가능한 한 스크립트 실행 + 요약 출력 형태로 남겨 컨텍스트 사용량을 줄인다.
 
 ## 이슈 라벨·마일스톤 규칙

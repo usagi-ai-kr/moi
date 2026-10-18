@@ -14,4 +14,16 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 ## 인덱스
 
 <!-- ADR_INDEX:START -->
+| ADR | 제목 | 상태 | 날짜 | 파일 |
+| --- | --- | --- | --- | --- |
+| ADR-0001 | Clean Architecture 계층 경계와 책임 | Accepted | 2026-10-18 | [0001-clean-architecture-boundaries.md](./0001-clean-architecture-boundaries.md) |
+| ADR-0002 | 확정 기술 스택 | Accepted | 2026-10-18 | [0002-confirmed-tech-stack.md](./0002-confirmed-tech-stack.md) |
+| ADR-0003 | Kakao OAuth2 Authorization Code + OIDC 인증 | Accepted | 2026-10-18 | [0003-kakao-oidc-auth-flow.md](./0003-kakao-oidc-auth-flow.md) |
+| ADR-0004 | 내부 사용자 ID와 외부 계정 매핑 | Accepted | 2026-10-18 | [0004-internal-user-identity-mapping.md](./0004-internal-user-identity-mapping.md) |
+| ADR-0005 | 앱 세션 PASETO v4.local | Accepted | 2026-10-18 | [0005-paseto-v4-local-session.md](./0005-paseto-v4-local-session.md) |
+| ADR-0006 | 비밀값·로그·개인정보 정책 | Accepted | 2026-10-18 | [0006-secrets-logging-policy.md](./0006-secrets-logging-policy.md) |
+| ADR-0007 | TDD/BDD와 CI 게이트 | Accepted | 2026-10-18 | [0007-tdd-bdd-ci-gates.md](./0007-tdd-bdd-ci-gates.md) |
+| ADR-0008 | 버전 규칙과 Milestone 체계 | Accepted | 2026-10-18 | [0008-version-and-milestones.md](./0008-version-and-milestones.md) |
+| ADR-0009 | 브랜치·PR 플로우 | Accepted | 2026-10-18 | [0009-branch-pr-flow.md](./0009-branch-pr-flow.md) |
+| ADR-0010 | 하네스·문서 관리 체계 | Accepted | 2026-10-18 | [0010-harness-doc-management.md](./0010-harness-doc-management.md) |
 <!-- ADR_INDEX:END -->
