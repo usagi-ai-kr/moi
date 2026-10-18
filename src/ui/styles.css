@@ -210,3 +210,33 @@ body {
   outline: 2px solid var(--moi-color-ink);
   outline-offset: 2px;
 }
+
+/* 학습 현황 패널 — 초기 번들 최소 스타일, 320~1280 오버플로 방지 */
+.moi-stats {
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.moi-stats-title,
+.moi-stats-sub {
+  margin: var(--moi-space-2) 0;
+}
+.moi-stats-list {
+  margin: 0;
+  padding-left: var(--moi-space-5);
+  max-width: 100%;
+}
+.moi-stats-item {
+  overflow-wrap: anywhere;
+}
+.moi-stats-progress {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.moi-stats:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+.moi-stats-error {
+  max-width: 100%;
+}

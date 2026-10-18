@@ -159,3 +159,34 @@ export async function listStudyHistory(
   const search = new URLSearchParams({ page: String(input.page), pageSize: String(input.pageSize) });
   return client.get(`api/study/sets?${search}`).json<StudyHistoryPage>();
 }
+
+// 학습 현황 — GET /api/study/stats?examId=… (서버 StudyStats와 동일 shape, #54).
+export interface DomainStats {
+  domainId: string;
+  uniqueFirstSolved: number;
+  gradedAttempts: number;
+  cumulativeAccuracy: number | null;
+  recentAccuracy: number | null;
+  status: 'ok' | 'insufficient-data';
+}
+export interface WeakDomain {
+  domainId: string;
+  score: number;
+  cumulativeAccuracy: number;
+  effectiveRecentAccuracy: number;
+  uniqueFirstSolved: number;
+}
+export interface StudyStats {
+  examId: string;
+  totalQuestions: number;
+  uniqueFirstSolved: number;
+  coverage: number;
+  overallAccuracy: number | null;
+  domains: DomainStats[];
+  weakDomains: WeakDomain[];
+}
+
+export async function getStudyStats(client: ApiClient, examId: string): Promise<StudyStats> {
+  const search = new URLSearchParams({ examId });
+  return client.get(`api/study/stats?${search}`).json<StudyStats>();
+}

@@ -2,6 +2,8 @@ import { Suspense, lazy, useState } from 'react';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
+import { STUDY_EXAM_ID } from './study/types';
+import { StatsPanel } from './stats/StatsPanel';
 import { useStudyUiStore } from './study/store';
 import { AuthErrorAlert, LoadErrorAlert, LoggedInCard } from './widgets';
 
@@ -31,6 +33,7 @@ export function App({ client }: { client: ApiClient }) {
   const bannerDismissed = useUiStore((s) => s.authBannerDismissed);
   const showAuthError = authFailed && !bannerDismissed;
   const [studyOpen, setStudyOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   const openStudy = (view: 'start' | 'history') => {
     useStudyUiStore.getState().setView(view);
@@ -68,7 +71,16 @@ export function App({ client }: { client: ApiClient }) {
                     {copy.study.historyLink}
                   </button>
                 )}
+                <button
+                  type="button"
+                  className="moi-study-link"
+                  aria-expanded={statsOpen}
+                  onClick={() => setStatsOpen((v) => !v)}
+                >
+                  {copy.stats.toggle}
+                </button>
               </div>
+              {statsOpen && <StatsPanel client={client} examId={STUDY_EXAM_ID} />}
               {studyOpen && userId !== null && (
                 <Suspense
                   key={userId} // 계정 전환 시 remount — 이전 계정 초안·화면 상태를 노출하지 않는다 (이슈 #52)

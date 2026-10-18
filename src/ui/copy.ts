@@ -83,4 +83,18 @@ export const copy = {
     error: '신고하지 못했습니다',
     close: '닫기',
   },
+  stats: {
+    toggle: '학습 현황',
+    title: '학습 현황',
+    loading: '학습 현황을 불러오고 있습니다',
+    error: '학습 현황을 불러오지 못했습니다',
+    retry: '다시 시도',
+    empty: '아직 풀이 기록이 없습니다. 20문제 학습을 시작해 보세요.',
+    progress: '진도',
+    accuracy: '전체 정답률',
+    noAccuracy: '데이터 부족 — 채점 기록이 쌓이면 표시됩니다',
+    domainsTitle: '영역별 현황',
+    weakTitle: '취약 추천',
+    weakEmpty: '추천할 취약 영역이 없습니다',
+  },
 } as const;
