@@ -7,8 +7,9 @@ import {
   startReviewSession,
   toggleBookmark,
 } from '@/app/review';
+import type { AttemptRecord } from '@/app/stats/attempt-ports';
 import type { ReviewSession } from '@/domain/review/types';
-import { fakeRepository, fakeSource, fakeTimeRng, makeCandidate, makeCandidates } from './fixtures';
+import { fakeAttemptRepository, fakeRepository, fakeSource, fakeTimeRng, makeCandidate, makeCandidates } from './fixtures';
 
 // 이슈 #51 use case — Start/Answer/End/Resume/ToggleBookmark fake port 단위 테스트.
 
@@ -254,5 +255,91 @@ describe('대상 증감·소진 (다음 회차부터 반영)', () => {
     const answered = await answerReviewItem(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: 'rq-live', response: { kind: 'answered', optionIds: ['b'] } });
     expect(answered).toMatchObject({ outcome: 'answered', correct: true });
     if (answered.outcome === 'answered') expect(answered.attempt.questionVersionId).toBe('rqv-live-v1');
+  });
+});
+
+describe('AnswerReviewItem → study_attempts 기록 (이슈 #54)', () => {
+  async function startedWithAttempts() {
+    const src = fakeSource({ wrong: makeCandidates(3, { 0: 2 }) });
+    const repo = fakeRepository();
+    const attempts = fakeAttemptRepository();
+    const { clock, rng } = fakeTimeRng(123);
+    const deps = { source: src.source, repository: repo.repository, clock, rng, attempts: attempts.repository };
+    const result = await startReviewSession(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    return { deps, attempts, session: (result as { session: ReviewSession }).session };
+  }
+
+  it('Given 이력 없음 When 정답 채점 Then attempt 1건·outcome correct·firstAttempt true·source review', async () => {
+    const { deps, attempts, session } = await startedWithAttempts();
+    const item = session.items[session.cursor];
+    const qid = item?.questionId ?? '';
+    const ok = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: ['b'] } });
+    expect(ok.outcome).toBe('answered');
+    expect(attempts.records.size).toBe(1);
+    const record = [...attempts.records.values()][0];
+    expect(record).toMatchObject({
+      attemptId: `${session.id}:${qid}`,
+      userId: 'u1',
+      examId: 'saa-c03',
+      questionId: qid,
+      questionVersionId: item?.questionVersionId,
+      outcome: 'correct',
+      occurredAt: 1700000000000,
+      source: 'review',
+      sourceId: session.id,
+      excludedAt: null,
+      firstAttempt: true,
+    });
+    expect(attempts.calls.recordBatch).toBe(1);
+  });
+
+  it('Pass 채점은 outcome pass·firstAttempt false로 남기고, 오답 채점은 outcome wrong', async () => {
+    const { deps, attempts, session } = await startedWithAttempts();
+    const first = session.items[session.cursor]?.questionId ?? '';
+    await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: first, response: { kind: 'pass' } });
+    const second = session.items[session.cursor + 1]?.questionId ?? '';
+    await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: second, response: { kind: 'answered', optionIds: ['a'] } });
+    const records = [...attempts.records.values()];
+    expect(records).toHaveLength(2);
+    expect(records[0]).toMatchObject({ questionId: first, outcome: 'pass', firstAttempt: false });
+    expect(records[1]).toMatchObject({ questionId: second, outcome: 'wrong', firstAttempt: true });
+  });
+
+  it('Given 이전 correct 시도가 있으면 firstAttempt false (prior graded Set 반영)', async () => {
+    const { deps, session } = await startedWithAttempts();
+    const qid = session.items[session.cursor]?.questionId ?? '';
+    const versionId = session.items[session.cursor]?.questionVersionId ?? '';
+    const prior: AttemptRecord = {
+      attemptId: 'set-1:prior',
+      userId: 'u1',
+      examId: 'saa-c03',
+      questionId: 'rq-other',
+      questionVersionId: 'rqv-other-v1',
+      outcome: 'correct',
+      occurredAt: 1600000000000,
+      source: 'set',
+      sourceId: 'set-1',
+      excludedAt: null,
+      firstAttempt: true,
+    };
+    const seeded = fakeAttemptRepository([
+      prior,
+      { ...prior, attemptId: 'set-1:target', questionId: qid, questionVersionId: versionId, outcome: 'wrong' },
+    ]);
+    deps.attempts = seeded.repository;
+    const result = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: ['b'] } });
+    expect(result.outcome).toBe('answered');
+    expect(seeded.records.get(`review:${session.id}:${qid}`)).toMatchObject({ firstAttempt: false });
+  });
+
+  it('주입하지 않으면 채점만 하고 attempt 기록 없음 (기존 동작 유지)', async () => {
+    const src = fakeSource({ wrong: makeCandidates(3) });
+    const repo = fakeRepository();
+    const { clock, rng } = fakeTimeRng(123);
+    const deps = { source: src.source, repository: repo.repository, clock, rng };
+    const started = await startReviewSession(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const session = (started as { session: ReviewSession }).session;
+    const ok = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: session.items[0]?.questionId ?? '', response: { kind: 'answered', optionIds: ['b'] } });
+    expect(ok).toMatchObject({ outcome: 'answered', correct: true });
   });
 });
