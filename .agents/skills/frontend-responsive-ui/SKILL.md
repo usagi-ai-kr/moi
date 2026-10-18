@@ -20,7 +20,7 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 
 ## 디자인 시스템 (ADR-0012·0014)
 - 팔레트: **AWS Orange(`#FF9900`) 액센트 + 무채색**(AWS Squid Ink 계열). 장식적 색 금지. (예외: 카카오 브랜드 버튼 — 공식 가이드 색)
-- 서체: 표시(브랜드/제목)=**KoddiUD 온고딕**, UI 텍스트=**Inter 계열**. KoddiUD는 **공식 웹폰트 경로**(눈누 제공 jsdelivr·저장소 미포함·형태 그대로)를 첫 페인트 이후 지연 주입 — `preload`·임계 경로 편입 금지.
+- 서체: 표시(브랜드/제목)=**KoddiUD 온고딕**, UI 텍스트=**Inter 계열**. KoddiUD는 **공식 웹폰트 경로**(눈누 제공 jsdelivr·저장소 미포함·형태 그대로)를 첫 페인트 이후 지연 주입 — `preload`·임계 경로 편입 금지. 주입 `@font-face`는 `font-display:optional` + 지연 주입으로 LCP 안정화(첫 로드 폴백·캐시 후 적용, ADR-0022).
 - 레이아웃: **container 내부 padding + flex/grid gap**으로 간격·충돌 방지, **overflow 지양**, position은 기본 fixed — **모달/드롭다운/툴팁 등 필요한 배치는 예외 허용**(사유 기록).
 - 여백 가드레일: 요소·경계(테두리·화면단)에 붙이지 않는다 — 요소 간 최소 8px, 화면단 최소 `clamp(16px,5vw,32px)`, **페이지 기본 패딩 축소 금지**.
 - 모션: ≤320ms 트랜지션·진입 애니메이션 허용, `prefers-reduced-motion` 존중. **hover 전용 의존 UX 금지**(호버는 보조 강화만 — 키보드 `focus-visible`·터치 동등 동작 보장).
