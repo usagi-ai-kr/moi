@@ -14,7 +14,7 @@ related: ["#35", "ADR-0008", "ADR-0019", "ADR-0020", "ADR-0021"]
 
 ## 결정
 - 0.1.0~0.1.4는 유지한다. 다음 학습 제품 목표는 **0.2.0(최종 출시)**이며, 하위 구현 단계는 0.2.x로 나눈다. 확정된 제품 요구사항을 임의 축소·변경하지 않는다.
-- 모든 Issue는 적절한 Milestone에 연결한다. 생성은 사용자 수동 또는 명시 요청, 연결은 에이전트가 수행한다. 잘못된 Milestone 연결·무단 생성을 금지한다.
+- 모든 Issue는 적절한 Milestone에 연결한다. 생성은 사용자 수동 또는 명시 요청, 연결은 에이전트가 수행한다. 잘못된 Milestone 연결·무단 생성을 금지하고, 적절한 Milestone이 없으면 사용자에게 생성을 요청한다.
 - 0.2.0 이후 minor 후보는 추상 `1.0.0` Milestone을 placeholder로 사용하고, 범위가 확정되면 해당 minor Milestone(예: `0.3.0`)을 만들어 옮긴다.
 - 각 minor의 최종 patch는 wiki 페이지·annotated tag(`v<minor>.<patch>`)·GitHub Release·`release/<minor>` branch 4종을 모두 남긴다. 하나라도 없으면 릴리스 미완료다.
 - **0.2.0 출시 게이트**: 500문제 전량 검수 + 기능/보안/BDD(viewports 320~1280)/Workers·D1 배포 검증 통과. 미통과 시 출시를 금지한다.
