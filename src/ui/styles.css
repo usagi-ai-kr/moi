@@ -1,0 +1,180 @@
+/* 기본 스타일 — 값은 src/ui/tokens.ts(단일 소스)가 주입하는 CSS 변수만 사용한다 (ADR-0012).
+   디스플레이 폰트(@font-face)는 tokens.ts 값으로 첫 페인트 이후 지연 주입된다 (ADR-0014). */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  font-family: var(--moi-font-ui);
+  line-height: var(--moi-lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 레이아웃: container 내부 padding으로 충돌 방지 · flex/grid · overflow 지양 (ADR-0012) */
+.moi-container {
+  width: 100%;
+  max-width: var(--moi-container-max);
+  margin-inline: auto;
+  padding-inline: var(--moi-container-pad-x);
+}
+
+.moi-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 10;
+  height: var(--moi-header-h);
+  display: flex;
+  align-items: center;
+  background: var(--moi-color-white);
+  border-bottom: 1px solid var(--moi-color-border);
+}
+
+.moi-header-inner {
+  display: flex;
+  align-items: baseline;
+  gap: var(--moi-space-3);
+}
+
+.moi-brand {
+  font-family: var(--moi-font-display);
+  font-weight: 700;
+  font-size: var(--moi-size-brand);
+  color: var(--moi-color-ink);
+}
+
+.moi-brand-sub {
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+.moi-main {
+  min-height: 100vh;
+  padding-top: calc(var(--moi-header-h) + var(--moi-space-7));
+  padding-bottom: var(--moi-space-7);
+  display: flex;
+}
+
+.moi-main-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+}
+
+.moi-accent {
+  width: var(--moi-accent-w);
+  height: var(--moi-accent-h);
+  border-radius: var(--moi-radius-sm);
+  background: var(--moi-color-orange);
+  margin-bottom: var(--moi-space-4);
+}
+
+.moi-title {
+  font-family: var(--moi-font-display);
+  font-size: var(--moi-size-h1);
+  line-height: var(--moi-lh-tight);
+  margin: 0;
+}
+
+.moi-lead {
+  font-size: var(--moi-size-lead);
+  color: var(--moi-color-ink);
+  margin: 0;
+}
+
+.moi-note {
+  margin: var(--moi-space-2) 0 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+/* CTA·카카오 로그인 버튼 — 공식 가이드(컨테이너·심볼·레이블·radius 12px)와 여백 가드레일 (ADR-0014) */
+.moi-cta {
+  margin-top: var(--moi-space-5);
+}
+
+.moi-kakao-login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--moi-space-2);
+  width: 100%;
+  max-width: var(--moi-kakao-max-w);
+  height: var(--moi-kakao-h);
+  padding-inline: var(--moi-space-4);
+  background: var(--moi-kakao-container);
+  color: var(--moi-kakao-label);
+  border: 0;
+  border-radius: var(--moi-radius-lg);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-kakao-label-size);
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.moi-kakao-symbol {
+  flex: none;
+  width: var(--moi-kakao-symbol-size);
+  height: var(--moi-kakao-symbol-size);
+  fill: var(--moi-kakao-symbol);
+}
+
+.moi-kakao-login:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+/* 누름(pressed) 피드백 — hover 전용 의존 없이 터치·키보드 동등 동작 (ADR-0014) */
+@media (prefers-reduced-motion: no-preference) {
+  .moi-kakao-login {
+    transition: transform var(--moi-motion-fast) var(--moi-ease);
+  }
+
+  .moi-kakao-login:active {
+    transform: scale(0.98);
+  }
+}
+
+/* 모션: 진입 애니메이션만 — hover 의존 상호작용 없음 (ADR-0012) */
+@media (prefers-reduced-motion: no-preference) {
+  .moi-enter {
+    animation: moi-enter var(--moi-motion-enter) var(--moi-ease) both;
+  }
+}
+
+@keyframes moi-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--moi-enter-shift));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 세션 상태 화면 — 값은 tokens.ts CSS 변수만 사용 (ADR-0012) */
+.moi-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--moi-space-3);
+  min-height: 160px;
+  justify-content: center;
+}
+
+.moi-alert {
+  width: 100%;
+  max-width: var(--moi-kakao-max-w);
+}

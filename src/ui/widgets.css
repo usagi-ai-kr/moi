@@ -1,0 +1,158 @@
+/* 세션 위젯(카드·액션·알림·스피너) — 값은 tokens.ts CSS 변수만 사용 (ADR-0012).
+   기본 레이아웃·홈·카카오 버튼은 styles.css에 둔다 (모듈 예산 분할, ADR-0015). */
+
+.moi-card {
+  width: 100%;
+  max-width: var(--moi-kakao-max-w);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  padding: var(--moi-space-5);
+}
+
+.moi-card-title {
+  margin: 0 0 var(--moi-space-2);
+  font-size: var(--moi-size-lead);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+}
+
+.moi-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--moi-space-2);
+  min-height: var(--moi-space-8);
+  min-width: var(--moi-space-8);
+  margin-top: var(--moi-space-4);
+  padding-inline: var(--moi-space-4);
+  background: var(--moi-color-danger);
+  color: var(--moi-color-white);
+  border: 0;
+  border-radius: var(--moi-radius-md);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-lead);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.moi-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.moi-action:focus-visible,
+.moi-alert-close:focus-visible,
+.moi-alert-retry:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+/* 경고·오류 안내 — 토큰 색상만 사용 (perf: AntD Alert 대체) */
+.moi-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--moi-space-2);
+  width: 100%;
+  max-width: var(--moi-kakao-max-w);
+  padding: var(--moi-space-3) var(--moi-space-4);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-left-width: 4px;
+  border-radius: var(--moi-radius-md);
+}
+
+.moi-alert-warning {
+  border-left-color: var(--moi-color-warning);
+}
+
+.moi-alert-error {
+  border-left-color: var(--moi-color-danger);
+}
+
+.moi-alert-icon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--moi-color-white);
+}
+
+.moi-alert-warning .moi-alert-icon {
+  background: var(--moi-color-warning);
+}
+
+.moi-alert-error .moi-alert-icon {
+  background: var(--moi-color-danger);
+}
+
+.moi-alert-text {
+  flex: 1;
+  margin: 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-ink);
+}
+
+.moi-alert-close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--moi-space-8);
+  min-height: var(--moi-space-8);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--moi-radius-sm);
+  font-size: 18px;
+  color: var(--moi-color-muted);
+  cursor: pointer;
+}
+
+.moi-alert-retry {
+  flex: none;
+  min-height: var(--moi-space-8);
+  padding-inline: var(--moi-space-3);
+  background: transparent;
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+  cursor: pointer;
+}
+
+/* 경량 CSS 스피너 — AntD Spin 대신 초기 로딩·지연 청크 폴백에 사용 (perf) */
+.moi-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--moi-color-border);
+  border-top-color: var(--moi-color-orange);
+}
+
+.moi-spinner-sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .moi-spinner {
+    animation: moi-spin var(--moi-motion-base) linear infinite;
+  }
+}
+
+@keyframes moi-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,6 +1,6 @@
 ---
 name: frontend-responsive-ui
-description: React SPA + Ant Design 6 반응형 UI 구현 규칙. 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
+description: React SPA + Ant Design 6 반응형 UI 구현 규칙(AWS 팔레트·KoddiUD 온고딕/Inter·Lighthouse). 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
 compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDependency (scripts/check-viewport-overflow.mjs).
 ---
 
@@ -10,12 +10,24 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
 - `node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs <base-url> [route ...]` — 320/375/768/1024/1280px에서 **가로 오버플로만** 검사(playwright 필요, 0.1.0 scaffold 이후). 겹침·클릭 가능·포커스·가시성은 Playwright 시나리오가 검증(#12). 위반 시 exit 1, 항목별 한 줄 요약.
+- `node .agents/skills/frontend-responsive-ui/scripts/run-lighthouse.mjs [url] [--desktop] [--runs N] [--min 90]` — Lighthouse 4개 카테고리 측정·판정(ADR-0014). URL 생략 시 빌드+preview 자동 기동, 미달 시 exit 1.
 
 ## 반응형 기준 (Mobile-first)
 - 브레이크포인트: 모바일 320–767px / 태블릿 768–1199px / 데스크탑 1200px 이상.
 - AntD 6 `Grid`/`Flex`/`ConfigProvider` token 사용. 한 화면에서 viewport별 레이아웃을 조절한다.
 - 검증 viewport: **320 / 375 / 768 / 1024 / 1280px** — 로그인·로그아웃·오류 화면에서 가로 스크롤/겹침 없음.
 - 접근성: 키보드 포커스, 접근 가능한 버튼 명칭, 터치 타깃 크기, 로딩/에러 상태 표시 포함.
+
+## 디자인 시스템 (ADR-0012·0014)
+- 팔레트: **AWS Orange(`#FF9900`) 액센트 + 무채색**(AWS Squid Ink 계열). 장식적 색 금지. (예외: 카카오 브랜드 버튼 — 공식 가이드 색)
+- 서체: 표시(브랜드/제목)=**KoddiUD 온고딕**, UI 텍스트=**Inter 계열**. KoddiUD는 **공식 웹폰트 경로**(눈누 제공 jsdelivr·저장소 미포함·형태 그대로)를 첫 페인트 이후 지연 주입 — `preload`·임계 경로 편입 금지.
+- 레이아웃: **container 내부 padding + flex/grid gap**으로 간격·충돌 방지, **overflow 지양**, position은 기본 fixed — **모달/드롭다운/툴팁 등 필요한 배치는 예외 허용**(사유 기록).
+- 여백 가드레일: 요소·경계(테두리·화면단)에 붙이지 않는다 — 요소 간 최소 8px, 화면단 최소 `clamp(16px,5vw,32px)`, **페이지 기본 패딩 축소 금지**.
+- 모션: ≤320ms 트랜지션·진입 애니메이션 허용, `prefers-reduced-motion` 존중. **hover 전용 의존 UX 금지**(호버는 보조 강화만 — 키보드 `focus-visible`·터치 동등 동작 보장).
+- **중앙 관리(하드코딩 금지)**: 색·박스모델·타이포·모션 = `src/ui/tokens.ts` → CSS 변수(`var(--moi-*)`)와 AntD 테마 동시 적용, 문구 = `src/ui/copy.ts`. 컴포넌트/CSS에 값·문구를 직접 쓰지 않는다. (예외: 폰트 URL — `tokens.ts`의 `typography.displayFontUrl`만)
+- **초기 번들 규칙**: 정적 텍스트·레이아웃은 시맨틱 HTML+토큰 CSS로 렌더하고 UI 라이브러리를 초기 번들에 넣지 않는다. AntD는 상호작용 화면부터, 무거운 화면은 라우트 단위 코드 분할로 지연 로드. 디스플레이 폰트는 `load`+1.2s 지연·`<style>` 주입. 로그인·로딩·취소·오류·로그아웃처럼 LCP가 중요한 소형 화면은 경량 시맨틱 HTML/CSS로 구현하고, AntD 6은 모달·폼·테이블 등 복잡한 상호작용에 사용한다(ADR-0018).
+- **카카오 로그인 버튼**(`KakaoLoginButton`, `/auth/kakao`): 공식 가이드 필수 — 컨테이너 `#FEE500`·말풍선 **심볼 `#000000`**(형태·비율·색 변경·심볼 생략 금지)·레이블 `#000 85%`·시스템 서체·radius 12px. 값은 `tokens.ts`의 `kakao`.
+- Lighthouse(모바일 기본) 4개 카테고리 ≥90 — `run-lighthouse.mjs`로 재현 실행하고 결과를 PR에 기록.
 
 ## 상태 소유권 (위반 금지)
 - 사용자 인증 상태의 진실 원천은 **서버**(`/api/me`). TanStack Query가 캐시·재검증·무효화 담당.
@@ -33,6 +45,10 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 - [ ] 로그아웃 화면/동작
 - [ ] 5개 viewport에서 잘림/가로 스크롤/겹침 없음
 - [ ] 키보드 포커스·버튼 명칭·터치 타깃·로딩/오류 상태 확인
+- [ ] 카카오 로그인 버튼: 공식 심볼·#FEE500·radius 12px 규정 준수
+- [ ] 요소·경계(테두리·화면단)에 붙지 않음 — 페이지 기본 패딩 유지
+- [ ] hover 비의존 · 문구(`copy.ts`)·수치(`tokens.ts`) 하드코딩 없음
+- [ ] Lighthouse(모바일) 4개 카테고리 ≥90 — `run-lighthouse.mjs` 결과를 PR에 기록
 
 ## 테스트
 - React Testing Library로 UI 상태·오류 처리 단위 테스트.

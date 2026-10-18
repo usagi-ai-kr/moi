@@ -1,0 +1,34 @@
+{
+  "_comment": "하네스·src 모듈 길이 예산 (ADR-0015). maxLines/maxBytes 초과=FAIL(CI 차단), targetLines 초과=WARN. 변경 시 ADR-0015와 같은 PR에서 갱신한다.",
+  "budgets": [
+    {
+      "match": "AGENTS.md",
+      "targetLines": 110,
+      "maxLines": 120,
+      "maxBytes": 12288,
+      "note": "항상 로드되는 최상위 규칙"
+    },
+    {
+      "match": ".agents/skills/*/SKILL.md",
+      "targetLines": 90,
+      "maxLines": 120,
+      "maxBytes": 12288,
+      "note": "트리거 시 로드 — 상세 절차는 스크립트로"
+    },
+    {
+      "match": "docs/adr/*.md",
+      "exclude": ["README.md"],
+      "targetLines": 40,
+      "maxLines": 60,
+      "maxBytes": 4096,
+      "note": "결정 1건 — 자동 생성 인덱스(README.md) 제외"
+    },
+    {
+      "match": "src/**/*.{ts,tsx,css}",
+      "targetLines": 150,
+      "maxLines": 250,
+      "maxBytes": 16384,
+      "note": "제품 코드 — 초과 시 분할 신호"
+    }
+  ]
+}
