@@ -37,4 +37,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0019 | 0.2.0 문제은행·품질·관리 API | Accepted | 2026-10-18 | [0019-question-bank-quality.md](./0019-question-bank-quality.md) |
 | ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Accepted | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
 | ADR-0021 | 0.2.0 저장·복구·단일 세션·신고·정정·통계 | Accepted | 2026-10-18 | [0021-storage-reports-stats.md](./0021-storage-reports-stats.md) |
+| ADR-0022 | 디스플레이 폰트 LCP 안정화 — optional·지연 주입 | Accepted | 2026-10-18 | [0022-display-font-lcp-stability.md](./0022-display-font-lcp-stability.md) |
 <!-- ADR_INDEX:END -->
