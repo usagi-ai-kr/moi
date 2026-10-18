@@ -30,7 +30,15 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 5. Kakao Redirect URI 등록값 = 요청값 일치 확인
 6. smoke: `smoke-check.sh https://moi.qus0in.workers.dev` (fail-closed)
 7. 실계정 수동 smoke(아래 체크리스트)
+8. 최종 patch 산출물 4종 확인(아래 `마이너 버전 최종 patch 산출물` 섹션) — 모두 확인 전 릴리스 완료 표시 금지
 - 실패 시 복구: 코드는 `wrangler versions rollback`, D1은 forward-only(백업 복원) — 서로 다름을 구분해 기록. 초기에는 수동/`workflow_dispatch` 중심.
+
+## 마이너 버전 최종 patch 산출물 (필수)
+- 각 minor의 최종 patch 시점에 4종을 모두 남긴다. 넷 중 하나라도 없으면 릴리스 완료로 보지 않는다.
+- **wiki**: `https://github.com/usagi-ai-kr/moi/wiki/<minor>` — 범위·릴리스 노트·마이그레이션/호환성·검증 증거·알려진 문제.
+- **tag**: main의 릴리스 commit에 annotated tag `v<minor>.<patch>` (예: `v0.1.4`).
+- **release**: tag 기반 GitHub Release, 한국어 노트, Milestone/이슈 링크, 배포 URL·commit SHA, migration/rollback·smoke 증거.
+- **branch**: `release/<minor>`를 tag와 같은 commit에서 생성. 이후 hotfix는 이 branch에서 PR, 필요 시 main/dev로 backport. `main`/`dev` 보호 규칙 유지.
 
 ## 자동 검증 (CI/BDD)
 - [ ] playwright-bdd feature files & steps로 0.x 시나리오 실행
@@ -48,5 +56,5 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 
 ## 보고 형식 (PR/이슈에 기록)
 - 배포 URL, commit SHA, DB migration 내역, 테스트 명령/결과, 미해결 blocker
-- 완료 후 다음 신규 기능 단위는 `1.0.0`으로 기획한다(프로젝트 내부 버전 규칙).
-- Milestone은 사용자가 수동 생성한다(에이전트는 명시 요청 시에만). 우선순위 근거: Milestone `0.1.0`~`0.1.4`와 이슈 본문 버전·선행 링크. → `issue-triage`
+- 완료 후 다음 기능 단위는 Milestone 체계(`0.2.0`, 추상 `1.0.0`)에 따라 기획한다(프로젝트 내부 버전 규칙).
+- Milestone은 사용자가 수동 생성한다(에이전트는 명시 요청 시에만). 우선순위 근거: Milestone(`0.1.0`~`0.1.4`, `0.2.0`, 추상 `1.0.0`)과 이슈 본문 버전·선행 링크. → `issue-triage`
