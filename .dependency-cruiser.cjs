@@ -42,11 +42,12 @@ module.exports = {
     },
     {
       name: 'domain-no-external',
-      comment: 'domain은 외부 패키지(npm)에 의존하지 않는다 (순수 TS — ADR-0001)',
+      comment: 'domain은 외부 패키지(npm)에 의존하지 않는다 (순수 TS — ADR-0001). 참고: 도구가 import type을 type-only로 분류하며 npm과 로컬을 구분하지 못해 domain 내부 로컬 import type은 pathNot으로 제외한다(이슈 #48).',
       severity: 'error',
       from: { path: '^src/domain' },
       to: {
         dependencyTypes: ['npm', 'npm-dev', 'npm-optional', 'npm-peer', 'npm-bundled', 'type-only'],
+        pathNot: ['^src/domain'],
       },
     },
     {
