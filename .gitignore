@@ -19,3 +19,4 @@ coverage/
 # playwright
 playwright-report/
 test-results/
+.features-gen/

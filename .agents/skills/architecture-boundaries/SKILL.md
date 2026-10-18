@@ -25,7 +25,7 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 - 논리 흐름: `ui → app → domain`.
 - Worker 요청 경로: React 컴포넌트 → query/usecase facade → Ky client → Hono middleware → app usecase → Domain/Port/Drizzle.
 - `app`/`domain`에서 `infra`/`ui`로의 역방향 import 금지.
-- 계층 위반은 CI에서 `check:architecture`(dependency-cruiser) **실패**로 차단한다. 위반 테스트에 직접 import·별칭 경유·재export·type-only import를 포함한다(#10 → #1).
+- 계층 위반은 CI에서 `check:architecture`(dependency-cruiser) **실패**로 차단한다. 위반 테스트에 직접 import·별칭 경유·재export·type-only import를 포함한다(#10 → #1). 금지 패키지·계층 import는 ESLint `no-restricted-imports`(lint 게이트)로 **이중 강제**한다 — dependency-cruiser가 exports-map 패키지(예: hono)의 해석 경로를 놓치는 한계 보완(#1).
 
 ## 실행 환경 경계 (브라우저 vs Worker)
 - 브라우저 번들: `src/ui`(+`src/ui/api`)·`bootstrap/web` + 사이드이펙트 없는 공유 타입/DTO만. 서버 전용 구현(Hono·Drizzle·PASETO·Pino)과 Cloudflare 바인딩·Secret 유입 금지.
