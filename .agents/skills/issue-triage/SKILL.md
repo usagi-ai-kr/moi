@@ -1,6 +1,6 @@
 ---
 name: issue-triage
-description: moi 저장소의 이슈 분류와 Milestone 정책. 새 이슈 생성, 라벨(focus/instant/tuck) 결정, 우선순위 판단, milestone 관련 요청 시 사용. f/i/t 약칭 라벨을 만들지 않고, milestone 생성은 사용자 수동이되 모든 이슈를 적절한 milestone에 연결(부착)한다.
+description: moi 저장소의 이슈 분류와 Milestone 정책. 새 이슈 생성, 라벨(focus/instant/tuck) 결정, 검토 결과 라벨(reviewed/approved/rejected) 판정·전이, 우선순위 판단, milestone 관련 요청 시 사용. f/i/t 약칭 라벨을 만들지 않고, milestone 생성은 사용자 수동이되 모든 이슈를 적절한 milestone에 연결(부착)한다.
 compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 ---
 
@@ -10,7 +10,8 @@ compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
 반복·결정적 작업은 스크립트로 수행하고 요약 출력만 읽는다.
-- `sh .agents/skills/issue-triage/scripts/new-issue.sh <focus|instant|tuck> "<title>" [body-file]` — 라벨을 검증(약칭 금지)하고 이슈를 생성한다. body-file 생략 시 stdin. gh CLI 인증 필요.
+- `sh .agents/skills/issue-triage/scripts/new-issue.sh <focus|instant|tuck> "<title>" --milestone <title|number> [body-file]` — 라벨을 검증(약칭 금지)하고 **Milestone 존재를 사전 검증**(미지정·미존재 시 exit 2, 이슈 미생성)한 뒤 이슈를 생성한다. body-file 생략 시 stdin. gh CLI 인증 필요.
+- `sh .agents/skills/issue-triage/scripts/new-issue.test.sh` — 검증 회귀 테스트(실패 경로 — 실제 이슈 미생성).
 
 ## 라벨 정의
 
@@ -36,8 +37,16 @@ compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 
 `focus > instant > tuck` 같은 숫자식 우선순위 대용으로 사용하지 않는다. 작업의 성격, 집중도, 처리 시점을 함께 표현한다.
 
+## 검토 결과 라벨 (별도 축, 최대 1개)
+작업 성격 라벨과 별개로 **검토 결과**를 표현한다. 하나의 이슈/PR은 (작업 성격 1개) + (검토 결과 최대 1개)를 가진다.
+- `reviewed` — 리뷰 수행 완료. **승인·검증 통과를 뜻하지 않는다.** 수정 요청·완료 기준 미충족 상태에 사용.
+- `approved` — 기준 충족으로 승인. 이슈에 붙일 때 '설계/작업 수용 승인'인지 '완료 증거 확인'인지 댓글로 명시한다. PR은 리뷰·검증 결과에 근거한다.
+- `rejected` — 명시적 반려. 반려 근거를 댓글로 남기며 단순 미완료·수정 필요에는 사용하지 않는다.
+- 전이: `reviewed → approved/rejected` 판정 시 이전 검토 라벨을 제거한다. 라벨 변경 사유와 근거(이슈/PR·테스트 증거)를 댓글로 기록한다.
+- `closed`/`merged`와 검토 라벨은 별개이며 상태 전환을 자동으로 일으키지 않는다.
+
 ## 운영 규칙
-- 각 이슈는 일반적으로 세 라벨 중 **한 개**만 지정한다(중복 분류 자제).
+- 각 이슈는 작업 성격 라벨(focus/instant/tuck 중 **한 개**)과 검토 결과 라벨(최대 1개)로 구성한다.
 - 라벨은 작업 성격 분류이며 진행 상태(open/blocked/in-progress/closed)를 나타내지 않는다. 진행 상태는 이슈 상태·본문/PR로 관리한다.
 - 분류가 바뀌면 라벨을 변경하고 사유를 댓글/PR에 남긴다.
 - `0.1.0`–`0.1.4` 실제 구현은 `focus`, GitHub Milestone 작성·수정 제안은 `instant`, 추후 개선 아이디어는 `tuck`.
