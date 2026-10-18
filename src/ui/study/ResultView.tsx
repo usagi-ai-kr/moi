@@ -1,15 +1,17 @@
 import { copy } from '../copy';
-import type { StudySubmittedSet } from '../api/client';
+import type { ApiClient, StudySubmittedSet } from '../api/client';
+import { ReportButton } from './ReportButton';
 import { scopeLabel } from './types';
 
 interface Props {
+  client: ApiClient;
   set: StudySubmittedSet;
   onRestart: () => void;
   onHistory: () => void;
 }
 
 // 결과 — 요약·문항별 선택/정답 + 스냅샷 해설·근거 링크(제출 후 노출).
-export function ResultView({ set, onRestart, onHistory }: Props) {
+export function ResultView({ client, set, onRestart, onHistory }: Props) {
   const r = set.result;
   const total = set.items.length;
   const contentOf = (questionId: string) => set.items.find((i) => i.questionId === questionId);
@@ -46,6 +48,13 @@ export function ResultView({ set, onRestart, onHistory }: Props) {
               <span>{it.responseKind} · </span>
               <span>선택: {it.selectedOptionIds.length ? it.selectedOptionIds.join(', ') : '없음'} · </span>
               <span>정답: {it.correctOptionIds ? it.correctOptionIds.join(', ') : '비공개'}</span>
+              {content && (
+                <ReportButton
+                  client={client}
+                  questionId={content.questionId}
+                  questionVersionId={content.questionVersionId}
+                />
+              )}
               {content && (
                 <>
                   <p className="moi-note">{copy.study.explanation}: {content.explanation || '—'}</p>

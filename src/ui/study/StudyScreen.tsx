@@ -69,7 +69,7 @@ export function StudyScreen({ client, userId }: { client: ApiClient; userId: str
   }
 
   if (set && isSubmittedSet(set)) {
-    return <ResultView set={set} onRestart={f.restart} onHistory={() => s.setView('history')} />;
+    return <ResultView client={client} set={set} onRestart={f.restart} onHistory={() => s.setView('history')} />;
   }
 
   if (set && s.view === 'active') {
@@ -107,6 +107,7 @@ export function StudyScreen({ client, userId }: { client: ApiClient; userId: str
           />
         )}
         <QuestionView
+          client={client}
           items={set.items}
           index={Math.min(s.index, set.items.length - 1)}
           save={s.save}
