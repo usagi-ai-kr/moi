@@ -1,7 +1,7 @@
 ---
 id: ADR-0008
 title: 버전 규칙과 Milestone 체계
-status: Accepted
+status: Superseded by ADR-0012
 date: 2026-10-18
 related: ["#5", "#6", "#7"]
 ---
