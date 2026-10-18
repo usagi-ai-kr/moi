@@ -4,6 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { normalizePasetoLocalKey } from '@/infra/auth/session/keyring';
 import { sha256Hex } from '@/infra/auth/session/crypto';
 import { createApp } from '@/infra/http/app';
+import type { StudySet, StudySetItem } from '@/domain/study/types';
+import { createD1StudySetRepository } from '@/infra/persistence/study-repository';
 import migration0000 from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
 import migration0001 from '../../drizzle/migrations/0001_add-users-external-identities.sql?raw';
 import migration0002 from '../../drizzle/migrations/0002_add-sessions.sql?raw';
@@ -17,7 +19,7 @@ import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?
 import migration0010 from '../../drizzle/migrations/0010_add-study-corrections.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
-// 이슈 #53 완료 세트 정정 이력 조회 API — 세션 인증·소유 확인·정정 목록 정렬을 실제 Hono+D1로 증명한다.
+// 이슈 #53 완료 세트 정정 이력 조회 API — 세션 인증·소유 확인·정정 목록·corrected 재계산을 실제 Hono+D1로 증명한다.
 const db = env.DB;
 
 function randomBase64Key(): string {
@@ -57,6 +59,49 @@ function listRequest(setId: string, init: { token?: string } = {}) {
   return app.fetch(new Request(`https://moi.test/api/study/sets/${setId}/corrections`, { headers }), testEnv);
 }
 
+function setItem(questionId: string, selected: string): StudySetItem {
+  return {
+    questionId,
+    questionVersionId: `${questionId}-v1`,
+    versionNo: 1,
+    optionOrder: ['o-1', 'o-2'],
+    answerOptionIds: ['o-1'],
+    stem: 'stem',
+    options: [
+      { optionId: 'o-1', text: 'A' },
+      { optionId: 'o-2', text: 'B' },
+    ],
+    explanation: 'exp',
+    sourceUrls: [],
+    response: { kind: 'answered', optionIds: [selected] },
+  };
+}
+
+/** q-1 정답·q-2 오답 — 원본 정답률 50%(1/2). */
+function submittedSet(id: string, userId: string): StudySet {
+  return {
+    id,
+    userId,
+    examId: 'e-1',
+    mode: 'all',
+    status: 'submitted',
+    createdAt: NOW,
+    submittedAt: NOW,
+    items: [setItem('q-1', 'o-1'), setItem('q-2', 'o-2')],
+    result: {
+      answeredCount: 2,
+      correctCount: 1,
+      accuracyPercent: 50,
+      passCount: 0,
+      unansweredCount: 0,
+      perItem: [
+        { questionId: 'q-1', responseKind: 'answered', selectedOptionIds: ['o-1'], correctOptionIds: ['o-1'], correct: true },
+        { questionId: 'q-2', responseKind: 'answered', selectedOptionIds: ['o-2'], correctOptionIds: ['o-1'], correct: false },
+      ],
+    },
+  };
+}
+
 async function seed(): Promise<void> {
   for (const u of [U_A, U_B]) {
     await db.prepare('INSERT INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)').bind(u, NOW, NOW).run();
@@ -75,21 +120,12 @@ async function seed(): Promise<void> {
       .bind(`${q}-v1`, q, NOW)
       .run();
   }
-  for (const [id, userId] of [['set-1', U_A], ['set-empty', U_A]] as const) {
-    await db
-      .prepare("INSERT INTO study_sets (id, user_id, exam_id, mode, status, created_at, submitted_at) VALUES (?1, ?2, 'e-1', 'all', 'submitted', ?3, ?3)")
-      .bind(id, userId, NOW)
-      .run();
-  }
+  const repo = createD1StudySetRepository(db);
+  await repo.save({ set: submittedSet('set-1', U_A) });
+  await repo.save({ set: submittedSet('set-empty', U_A) });
   await db
     .prepare(
-      "INSERT INTO study_corrections (id, set_id, question_id, question_version_id, reason, source, actor, created_at) VALUES ('c-b', 'set-1', 'q-2', 'q-2-v1', 'typo', 'admin', 'admin-1', ?1)",
-    )
-    .bind(NOW + 5)
-    .run();
-  await db
-    .prepare(
-      "INSERT INTO study_corrections (id, set_id, question_id, question_version_id, reason, source, actor, created_at) VALUES ('c-a', 'set-1', 'q-1', 'q-1-v1', 'answer-changed', 'recheck', 'system', ?1)",
+      "INSERT INTO study_corrections (id, set_id, question_id, question_version_id, reason, source, actor, created_at) VALUES ('c-a', 'set-1', 'q-2', 'q-2-v1', 'answer-changed', 'recheck', 'system', ?1)",
     )
     .bind(NOW + 5)
     .run();
@@ -116,14 +152,38 @@ describe('완료 세트 정정 이력 조회 API (#53)', () => {
     expect(res.headers.get('cache-control')).toBe('no-store');
   });
 
-  it('소유자는 200·정정 2건(createdAt/id 정렬)', async () => {
+  it('소유자는 200·정정 1건(오답 제외)+corrected 재계산', async () => {
     const token = await mintSession(U_A);
     const res = await listRequest('set-1', { token });
     expect(res.status).toBe(200);
     expect(res.headers.get('cache-control')).toBe('no-store');
-    const body = (await res.json()) as { items: Array<{ id: string; setId: string; createdAt: number }> };
-    expect(body.items.map((i) => i.id)).toEqual(['c-a', 'c-b']);
+    const body = (await res.json()) as {
+      items: Array<{ id: string; setId: string; createdAt: number }>;
+      corrected: { validTotal: number; correctCount: number; accuracyPercent: number | null; excludedCount: number; ungraded: boolean };
+    };
+    expect(body.items.map((i) => i.id)).toEqual(['c-a']);
     expect(body.items[0]).toMatchObject({ id: 'c-a', setId: 'set-1', createdAt: NOW + 5 });
+    expect(body.corrected.validTotal).toBe(1);
+    expect(body.corrected.correctCount).toBe(1);
+    expect(body.corrected.accuracyPercent).toBe(100);
+    expect(body.corrected.excludedCount).toBe(1);
+    expect(body.corrected.ungraded).toBe(false);
+  });
+
+  it('정정 0건이면 corrected는 원본과 동일하다', async () => {
+    const token = await mintSession(U_A);
+    const res = await listRequest('set-empty', { token });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      items: unknown[];
+      corrected: { validTotal: number; correctCount: number; accuracyPercent: number | null; excludedCount: number; ungraded: boolean };
+    };
+    expect(body.items).toEqual([]);
+    expect(body.corrected.validTotal).toBe(2);
+    expect(body.corrected.correctCount).toBe(1);
+    expect(body.corrected.accuracyPercent).toBe(50);
+    expect(body.corrected.excludedCount).toBe(0);
+    expect(body.corrected.ungraded).toBe(false);
   });
 
   it('다른 사용자의 세트는 404다', async () => {
@@ -135,12 +195,5 @@ describe('완료 세트 정정 이력 조회 API (#53)', () => {
   it('없는 세트는 404다', async () => {
     const token = await mintSession(U_A);
     expect((await listRequest('missing-set', { token })).status).toBe(404);
-  });
-
-  it('정정이 없으면 빈 배열이다', async () => {
-    const token = await mintSession(U_A);
-    const res = await listRequest('set-empty', { token });
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ items: [] });
   });
 });

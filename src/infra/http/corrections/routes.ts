@@ -4,12 +4,14 @@ import { createSessionRuntime, type SessionRuntime } from '@/infra/auth/session/
 import { parseSessionCookieValue } from '@/infra/http/session/cookie';
 import { createD1CorrectionRepository } from '@/infra/persistence/study-correction-repository';
 import { createD1StudySetRepository } from '@/infra/persistence/study-repository';
+import { recomputeCorrectedResult } from '@/domain/study/correction';
 
 /**
  * 완료 세트 정정 이력 조회 API (이슈 #53).
  * - 인증: `__Host-moi_session` 쿠키를 세션 런타임으로 검증한다. 미인증 401.
  * - 세트 없음·타인 소유는 404로 동일 응답한다(존재 여부 비노출).
- * - 200 `{items: CorrectionRecord[]}` (createdAt asc, id asc).
+ * - 200 `{items: CorrectionRecord[], corrected: CorrectedSetResult}` (items는 createdAt asc, id asc).
+ *   corrected는 원본 result 불변·유효 분모 재계산(정정 0건이면 원본과 동일).
  * - `Cache-Control: no-store`. 로그에 본문·토큰 원문 금지.
  */
 
@@ -35,7 +37,11 @@ export function registerCorrectionListRoutes(app: Hono<{ Bindings: Env }>, optio
       const set = await createD1StudySetRepository(c.env.DB).findById({ id: setId });
       if (!set || set.userId !== auth.userId) return c.json({ error: 'not_found' }, 404);
       const items = await createD1CorrectionRepository(c.env.DB).listBySet(setId);
-      return c.json({ items }, 200);
+      const corrected = recomputeCorrectedResult(
+        set,
+        items.map((item) => item.questionVersionId),
+      );
+      return c.json({ items, corrected }, 200);
     } catch (err) {
       void err;
       session.logger.error('correction_list_internal', 'unexpected');
