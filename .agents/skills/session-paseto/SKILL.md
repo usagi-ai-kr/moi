@@ -8,9 +8,9 @@ compatibility: openssl(키), wrangler(시크릿), curl(쿠키 검증) 필요.
 
 출처: 이슈 #1(추가 결정), #4. **자체 JWT 발급, DB 랜덤 opaque session ID, JWT fallback 도입은 모두 금지.**
 
-## 스크립트 (우선 실행)
-- `sh scripts/put-paseto-key.sh <SECRET_NAME> [--env <env> | --local]` — 32바이트 키를 생성해 Cloudflare Secrets(.dev.vars)에 직접 등록한다. 키 원문은 출력하지 않는다.
-- `sh scripts/check-cookie.sh <url>` — Set-Cookie의 `__Host-`/Secure/HttpOnly/SameSite=Lax/Path=/ 충족과 Domain 부재를 검증한다.
+## 스크립트 (우선 실행 — repo root에서 실행)
+- `sh .agents/skills/session-paseto/scripts/put-paseto-key.sh <SECRET_NAME> [--env <env> | --local]` — 32바이트 키를 생성해 Cloudflare Secrets(.dev.vars)에 직접 등록한다. 키 원문은 출력하지 않는다.
+- `sh .agents/skills/session-paseto/scripts/check-cookie.sh <url>` — Set-Cookie의 `__Host-`/Secure/HttpOnly/SameSite=Lax/Path=/ 충족과 Domain 부재를 검증한다.
 
 ## 토큰 규격
 - `v4.local` 암호화 토큰. 필수 payload: `sub`(앱 내부 UUID — Kakao sub 아님), `jti`(고유 식별자), `iat`, `exp`. 필요 시 `kid`/footer.

@@ -25,6 +25,7 @@
 - **AGENTS.md 변경은 PR로만 반영한다.** 규칙이 바뀌면 같은 PR에서 관련 스킬·문서를 함께 갱신한다.
 - **모든 스킬은 `SKILL.md` + `scripts/` 구조를 가진다.** 반복적·결정적·출력이 큰 작업은 스크립트(sh/python/node)로 구현하고, 에이전트는 스크립트를 호출한 뒤 요약 출력만 읽는다(효율적 입출력·토큰 사용량 최적화). 새 스킬 추가 시 스크립트 1개 이상을 포함하고 아래 스킬 인덱스에 등록한다.
 - **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 500줄 이하 권장. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
+- 스킬 문서의 실행 명령 예시는 repo root 기준 경로(`.agents/skills/<스킬>/scripts/<스크립트>`)로 표기하고, 실행 CWD가 root임을 명시한다.
 - 이슈 완료 시 확정된 합의를 ADR/AGENTS.md/스킬에 반영(승격)한다. 이슈는 작업 추적용이고, 영속 규칙은 문서에 둔다.
 - 우선순위(충돌 시): **최신 ADR > AGENTS.md > 스킬 세부 절차.** 이슈 본문의 최신 합의와 충돌하면 이슈 합의를 우선하고, 같은 PR에서 문서에 반영한다.
 - 작업 산출물은 가능한 한 스크립트 실행 + 요약 출력 형태로 남겨 컨텍스트 사용량을 줄인다.
@@ -32,6 +33,8 @@
 ## 이슈 라벨·마일스톤 규칙
 - 모든 이슈는 `focus` / `instant` / `tuck` 중 **하나**로 분류한다. `f`/`i`/`t` 약칭 라벨은 만들지 않는다.
 - 결정 순서: ① 핵심 목표 + 집중 필요 → `focus` ② 지금 바로 처리하는 작은 부수 작업 → `instant` ③ 나중에 해도 되는 기록 → `tuck`. 단순 긴급함은 분류 기준이 아니다.
+- 라벨은 작업 성격(핵심 집중/즉시 부수/나중 보류) 분류이며 진행 상태(open/blocked/in-progress/closed)를 나타내지 않는다. 진행 상태는 이슈 상태·본문·PR로 관리한다.
+- 분류가 바뀌면 라벨을 변경하고 사유를 댓글·PR에 남긴다.
 - Milestone은 사용자가 GitHub UI에서 직접 생성한다. 에이전트는 사용자가 명시적으로 요청하지 않는 한 milestone을 생성·연결하지 않는다.
 - 상세: `issue-triage` 스킬.
 
@@ -39,7 +42,7 @@
 - `main`: 안정/배포 브랜치. **직접 push 금지.** `dev` → `main` PR(merge commit)로만 반영한다.
 - `dev`: 통합 브랜치. 기능 브랜치는 `dev`에서 분기해 `dev`로 PR한다(squash merge, 병합 후 브랜치 삭제).
 - 기능 브랜치 이름: `<type>/<버전 또는 이슈 번호>-<요약>` (소문자 kebab-case). type은 `feat` / `fix` / `chore` / `docs` / `test`.
-  - 예: `feat/0.2.0-kakao-oidc`, `fix/12-cookie-path`, `chore/agent-rules-and-ci`
+  - 예: `feat/0.1.1-kakao-oidc`, `fix/12-cookie-path`, `docs/9-harness-doc-sync`
 - 모든 병합은 PR을 통한다. PR에는 테스트 위치/명령/결과, 배포 URL, commit SHA, 남은 blocker를 기록한다.
 - `main`/`dev` 모두 force push·브랜치 삭제 금지(GitHub 브랜치 보호 규칙으로 강제). 보호 규칙이 적용되지 않는 환경이면 이 규칙을 수동 준수한다.
 - CI: 모든 PR(main/dev 대상)과 dev push에서 `.github/workflows/ci.yml`이 실행된다.
@@ -68,15 +71,15 @@
 
 ## TDD/BDD 규칙 (요약)
 - AC → Given/When/Then 시나리오 먼저 정의 → Red → Green → Refactor. PR에 테스트 위치/실행 명령/결과를 기록한다.
-- 브라우저 검증 viewport: 320 / 375 / 768 / 1024 / 1280 (모바일 320–767 / 태블릿 768–1199 / 데스크탑 1200+).
+- 브라우저 검증 viewport: 핵심 화면은 320 / 375 / 768 / 1024 / 1280 전부, 보조 시나리오는 375 / 768 / 1280. (모바일 320–767 / 태블릿 768–1199 / 데스크탑 1200+)
 - CI는 실제 Kakao 계정을 사용하지 않는다(deterministic mock). 실계정 smoke는 배포된 스테이징/실서비스에서 별도 수행한다.
-- CI 게이트: `.github/workflows/ci.yml` — 0.1.0 scaffold 이전에는 게이트를 건너뛰고, 이후 순차 활성화한다.
+- CI 게이트: `.github/workflows/ci.yml` — 스킬 검증은 항상 실행하고, `package.json` 이전에는 품질 게이트를 건너뛴다. scaffold 이후에는 미정의·스킵을 실패로 처리하는 fail-closed로 전환한다(이슈 #10).
 - 상세: `tdd-bdd-testing`, `release-deploy-workers` 스킬, ADR-0007.
 
 ## 버전 규칙
-- 0.x 단계: `0.1.0` scaffold → `0.2.0` Kakao OIDC → `0.3.0` D1 사용자 매핑 → `0.4.0` 세션·인증 API → `0.5.0` BDD 통합·배포.
+- 0.1.x 단계(패치 재편): `0.1.0` 하네스 보강(#9~#12)·scaffold → `0.1.1` Kakao OIDC → `0.1.2` D1 사용자 매핑 → `0.1.3` 세션·인증 API → `0.1.4` BDD 통합·배포. GitHub Milestone `0.1.0`~`0.1.4`가 각 단계와 대응한다.
 - 다음 기능 단위는 `1.0.0`부터 시작한다(일반 SemVer와 다른 프로젝트 내부 버전 규칙).
-- 실제 GitHub Milestone이 생성되기 전까지는 이슈 본문의 버전과 선행 링크가 우선순위 근거다. → ADR-0008
+- 우선순위 근거: GitHub Milestone(`0.1.0`~`0.1.4`)과 이슈 본문의 선행 링크. Milestone이 없으면 이슈 본문 버전이 근거다. → ADR-0008
 
 ## 스킬 인덱스
 
@@ -92,4 +95,4 @@
 | `tdd-bdd-testing` | 테스트 작성, BDD 시나리오, CI 게이트, PR 증거 |
 | `release-deploy-workers` | Workers 배포, 원격 D1 마이그레이션, Secrets, smoke 검증 |
 
-> 이 규칙과 스킬은 GitHub 이슈 #1–#7 및 사용자 확정 사항(브랜치·PR 플로우, 하네스·문서 관리, 스킬 스크립트 정책, 2026-10-18)에서 추출했습니다. 초기 결정은 `docs/adr/` ADR-0001–0010에 기록되어 있습니다. 이슈 내용과 충돌하면 이슈의 최신 합의를 우선하고, 합의된 변경을 문서에 반영합니다.
+> 이 규칙과 스킬은 GitHub 이슈 #1–#13 및 사용자 확정 사항(브랜치·PR 플로우, 하네스·문서 관리, 스킬 스크립트 정책, 2026-10-18)에서 추출했습니다. 초기 결정은 `docs/adr/` ADR-0001–0010으로 백필합니다(이슈 #1 첫 PR·#9 추적). 이슈 내용과 충돌하면 이슈의 최신 합의를 우선하고, 합의된 변경을 문서에 반영합니다.

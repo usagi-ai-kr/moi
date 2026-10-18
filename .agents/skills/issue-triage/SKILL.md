@@ -8,9 +8,9 @@ compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 
 출처: 이슈 #6(마일스톤 제안), #7(라벨 의미). `f`/`i`/`t`는 약칭일 뿐이며 **새 라벨을 만들지 않는다**.
 
-## 스크립트 (우선 실행)
+## 스크립트 (우선 실행 — repo root에서 실행)
 반복·결정적 작업은 스크립트로 수행하고 요약 출력만 읽는다.
-- `scripts/new-issue.sh <focus|instant|tuck> "<title>" [body-file]` — 라벨을 검증(약칭 금지)하고 이슈를 생성한다. body-file 생략 시 stdin. gh CLI 인증 필요.
+- `sh .agents/skills/issue-triage/scripts/new-issue.sh <focus|instant|tuck> "<title>" [body-file]` — 라벨을 검증(약칭 금지)하고 이슈를 생성한다. body-file 생략 시 stdin. gh CLI 인증 필요.
 
 ## 라벨 정의
 
@@ -38,15 +38,16 @@ compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 
 ## 운영 규칙
 - 각 이슈는 일반적으로 세 라벨 중 **한 개**만 지정한다(중복 분류 자제).
+- 라벨은 작업 성격 분류이며 진행 상태(open/blocked/in-progress/closed)를 나타내지 않는다. 진행 상태는 이슈 상태·본문/PR로 관리한다.
 - 분류가 바뀌면 라벨을 변경하고 사유를 댓글/PR에 남긴다.
-- `0.1.0`–`0.5.0` 실제 구현은 `focus`, GitHub Milestone 작성·수정 제안은 `instant`, 추후 개선 아이디어는 `tuck`.
+- `0.1.0`–`0.1.4` 실제 구현은 `focus`, GitHub Milestone 작성·수정 제안은 `instant`, 추후 개선 아이디어는 `tuck`.
 - 기존 GitHub 라벨 `focus`, `instant`, `tuck`을 그대로 재사용한다. **라벨 생성·이름 변경·삭제 금지.**
 
-## Milestone 정책 (이슈 #6)
-- Milestone 생성은 **사용자의 수동 작업**이다. 에이전트는 사용자가 명시적으로 요청하지 않는 한 생성·연결하지 않는다.
-- 제안된 마일스톤: 제목 `0.x — Kakao Login & Identity`, Due `2026-10-22`(KST, 설명에 19:00 명시), 대상 #1–#5.
-- 완료 정의: #1–#5 closed + TDD/BDD/반응형 통과 + 실제 Kakao 계정 smoke 성공 + 배포 URL·커밋 SHA 확인 + PASETO 만료/변조/폐기 검증.
-- 마일스톤이 아직 생성되지 않은 상태에서는 이슈 본문의 버전(0.1.0…)과 선행 링크가 우선순위 근거다.
+## Milestone 정책 (이슈 #6, 2026-10-18 재편)
+- Milestone 생성·연결은 기본적으로 **사용자의 수동 작업**이다. 에이전트는 사용자가 명시적으로 요청한 경우에만 수행한다.
+- 현재 체계: 패치 마일스톤 `0.1.0`~`0.1.4` — `0.1.0`=하네스 보강(#9~#12)+scaffold(#1), `0.1.1`=#2, `0.1.2`=#3, `0.1.3`=#4, `0.1.4`=#5. `0.1.0` Due `2026-10-22`(KST, 설명에 목표 19:00 명시).
+- 완료 정의: 단계별 이슈 closed + 해당 단계 TDD/BDD/게이트 통과. 최종 단계는 실제 Kakao 계정 smoke 성공 + 배포 URL·커밋 SHA 확인 + PASETO 만료/변조/폐기 검증 포함.
+- 우선순위 근거: Milestone과 이슈 본문의 버전·선행 링크.
 - 다음 기능 단위(1.x) 마일스톤은 요구사항 확정 전까지 만들지 않는다.
 
 ## 이슈/PR 관례
