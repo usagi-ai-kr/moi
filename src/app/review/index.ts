@@ -1,7 +1,14 @@
+import type { AttemptRecord } from '@/app/stats/attempt-ports';
 import { assertSessionOwned } from '@/domain/review/invariants';
 import { buildReviewSession, endSession, gradeCurrent, isExhausted, summarize } from '@/domain/review/session';
 import { REVIEW_MIN_CANDIDATES } from '@/domain/review/thresholds';
-import type { ReviewAttempt, ReviewCandidate, ReviewMode, ReviewResponse, ReviewSession } from '@/domain/review/types';
+import type {
+  ReviewAttempt,
+  ReviewCandidate,
+  ReviewMode,
+  ReviewResponse,
+  ReviewSession,
+} from '@/domain/review/types';
 import type { ReviewCandidateInput, ReviewDeps } from './ports';
 
 /**
@@ -10,6 +17,7 @@ import type { ReviewCandidateInput, ReviewDeps } from './ports';
  * - 한 문제씩 즉시 채점, 문제 수·시간 제한 없음, 사용자가 직접 종료(미채점은 오답 아님).
  * - 대상 소진 후 다음 회차는 소스의 최신 목록을 다시 섞는다.
  * - 다른 사용자/시험 세션 접근 금지(소유권 가드).
+ * - 채점 성공 시 study_attempts에 시도 1건 기록(이슈 #54, source='review').
  */
 
 export type StartReviewResult =
@@ -89,6 +97,29 @@ export async function answerReviewItem(
     return { outcome: 'rejected', reason: graded.reason === 'not_active' ? 'not_found' : graded.reason };
   }
   await deps.repository.save({ session: graded.session });
+  if (deps.attempts !== undefined) {
+    const prior = await deps.attempts.listByUserExam({ userId: input.userId, examId: input.examId });
+    const priorGraded = new Set(
+      prior.filter((a) => (a.outcome === 'correct' || a.outcome === 'wrong') && a.excludedAt === null).map((a) => a.questionId),
+    );
+    const occurredAt = deps.clock.now() * 1000;
+    const outcome = graded.attempt.response.kind === 'pass' ? 'pass' : graded.correct ? 'correct' : 'wrong';
+    const attempt: AttemptRecord = {
+      attemptId: `${graded.session.id}:${input.questionId}`,
+      userId: input.userId,
+      examId: input.examId,
+      questionId: input.questionId,
+      questionVersionId: graded.attempt.questionVersionId,
+      outcome,
+      occurredAt,
+      source: 'review',
+      sourceId: graded.session.id,
+      excludedAt: null,
+      firstAttempt: (outcome === 'correct' || outcome === 'wrong') && !priorGraded.has(input.questionId),
+    };
+    // 멱등 기록 — 채점 자체는 이미 세션에 저장됐고, attempt 기록 실패는 산출물 검증 단계에서 드러난다(트랜잭션 한계).
+    await deps.attempts.recordBatch({ attempts: [attempt] });
+  }
   return { outcome: 'answered', correct: graded.correct, attempt: graded.attempt, session: graded.session };
 }
 

@@ -1,3 +1,4 @@
+import type { AttemptRecord, StudyAttemptRepository } from '@/app/stats/attempt-ports';
 import type { ReviewCandidate, ReviewSession } from '@/domain/review/types';
 import type {
   ReviewClock,
@@ -107,4 +108,39 @@ export function fakeRepository() {
 /** 가짜 Clock/RNG — 고정 시각과 결정적 시드. */
 export function fakeTimeRng(seed = 123, now = 1700000000): { clock: ReviewClock; rng: ReviewRng } {
   return { clock: { now: () => now }, rng: { next: seededRng(seed) } };
+}
+
+/** 가짜 study_attempts 저장소 — (source, sourceId, questionId) 멱등 기록과 prior 이력을 메모리로 유지한다. */
+export function fakeAttemptRepository(seed: readonly AttemptRecord[] = []) {
+  const records = new Map<string, AttemptRecord>();
+  for (const record of seed) records.set(`${record.source}:${record.sourceId}:${record.questionId}`, record);
+  const calls = { recordBatch: 0, listByUserExam: 0 };
+  const repository: StudyAttemptRepository = {
+    async recordBatch({ attempts }) {
+      calls.recordBatch += 1;
+      for (const attempt of attempts) {
+        records.set(`${attempt.source}:${attempt.sourceId}:${attempt.questionId}`, attempt);
+      }
+    },
+    async hasGradedAttempt({ userId, examId, questionId }) {
+      return [...records.values()].some(
+        (a) =>
+          a.userId === userId &&
+          a.examId === examId &&
+          a.questionId === questionId &&
+          (a.outcome === 'correct' || a.outcome === 'wrong') &&
+          a.excludedAt === null,
+      );
+    },
+    async listByUserExam({ userId, examId }) {
+      calls.listByUserExam += 1;
+      return [...records.values()]
+        .filter((a) => a.userId === userId && a.examId === examId)
+        .sort((a, b) => a.occurredAt - b.occurredAt || a.attemptId.localeCompare(b.attemptId));
+    },
+    async excludeSetVersion() {
+      return 0;
+    },
+  };
+  return { repository, records, calls };
 }

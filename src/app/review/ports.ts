@@ -1,3 +1,4 @@
+import type { StudyAttemptRepository } from '@/app/stats/attempt-ports';
 import type { ReviewMode, ReviewSession } from '@/domain/review/types';
 
 /** 복습 application Port (이슈 #51, ADR-0020). DB/HTTP/UI는 infra에서 구현한다. */
@@ -45,4 +46,6 @@ export interface ReviewDeps {
   readonly repository: ReviewSessionRepository;
   readonly clock: ReviewClock;
   readonly rng: ReviewRng;
+  /** study_attempts 기록(이슈 #54) — 미주입 시 채점만 하고 시도 이력은 남기지 않는다. */
+  readonly attempts?: StudyAttemptRepository;
 }
