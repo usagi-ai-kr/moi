@@ -29,3 +29,36 @@ export interface ReportRateResult {
   /** 재검수 대기열 대상: 신고 ≥1 (자동 중지와 별도 필드). */
   readonly requiresRecheck: boolean;
 }
+
+/** 재검수 상태 — queued(대기) | running(실행 중) | succeeded(성공 종료) | failed(실패·재시도 가능). */
+export type RecheckStatus = 'queued' | 'running' | 'succeeded' | 'failed';
+
+/** 재검수 시도 상태 — 순수 전이 입력/출력. 시간은 epoch ms. */
+export interface RecheckState {
+  /** 현재 상태. */
+  readonly status: RecheckStatus;
+  /** 누적 시작 횟수 — `startRecheck`에서만 증가. */
+  readonly attempts: number;
+  /** 마지막 실패 종료 시각 — 미실패 시 null. */
+  readonly lastAttemptAt: number | null;
+  /** 실행 시작 시각 — running 동안 유효, 그 외는 마지막 시작 시각 유지(null 가능). */
+  readonly startedAt: number | null;
+}
+
+/** 재검수 시작 옵션 — runId는 외부 추적용(상태 저장 안 함). */
+export interface StartRecheckOptions {
+  /** 현재 시각(epoch ms). */
+  readonly now: number;
+  /** 실행 추적 ID(선택). */
+  readonly runId?: string;
+}
+
+/** 재검수 종료 옵션. */
+export interface FinishRecheckOptions {
+  /** 현재 시각(epoch ms). */
+  readonly now: number;
+  /** 종료 결과. */
+  readonly outcome: 'succeeded' | 'failed';
+  /** 실패 사유(선택). */
+  readonly reason?: string;
+}
