@@ -8,14 +8,16 @@ import { EXAM, NOW, OTHER_EXAM, entry, hundredFirstSolves } from './fixtures';
 
 function fakeHistory(entries: readonly StudyHistoryEntry[]): StudyHistoryPort {
   return {
-    // 서버 경계 재현: 요청된 시험의 이력만 반환한다(시험별 분리, ADR-0021).
-    async listByExam({ examId }) {
+    // 서버 경계 재현: 요청된 사용자/시험의 이력만 반환한다(사용자·시험별 분리, ADR-0021).
+    async load({ userId: _userId, examId }) {
+      void _userId;
       return entries.filter((e) => e.examId === examId);
     },
   };
 }
 
 const fixedClock: StatsClock = { now: () => NOW };
+const USER = 'u-1';
 
 describe('getStudyStats (use case)', () => {
   it('fake Port 이력 → 시험별 통계 반환(분모 500 기본)', async () => {
@@ -25,7 +27,7 @@ describe('getStudyStats (use case)', () => {
         entry({ questionId: `other-${i}`, domainId: 'cost-optimization', outcome: 'wrong', examId: OTHER_EXAM, firstAttempt: true }),
       ),
     ];
-    const stats = await getStudyStats({ history: fakeHistory(entries), clock: fixedClock }, { examId: EXAM });
+    const stats = await getStudyStats({ history: fakeHistory(entries), clock: fixedClock }, { userId: USER, examId: EXAM });
 
     expect(stats.examId).toBe(EXAM);
     expect(stats.totalQuestions).toBe(500);
@@ -37,7 +39,7 @@ describe('getStudyStats (use case)', () => {
   it('totalQuestions 주입 시 진도율 분모를 따른다', async () => {
     const stats = await getStudyStats(
       { history: fakeHistory(hundredFirstSolves(80)), clock: fixedClock },
-      { examId: EXAM, totalQuestions: 200 },
+      { userId: USER, examId: EXAM, totalQuestions: 200 },
     );
 
     expect(stats.totalQuestions).toBe(200);
@@ -45,7 +47,7 @@ describe('getStudyStats (use case)', () => {
   });
 
   it('빈 이력でも 예외 없이 빈 통계를 반환한다', async () => {
-    const stats = await getStudyStats({ history: fakeHistory([]), clock: fixedClock }, { examId: EXAM });
+    const stats = await getStudyStats({ history: fakeHistory([]), clock: fixedClock }, { userId: USER, examId: EXAM });
 
     expect(stats.uniqueFirstSolved).toBe(0);
     expect(stats.overallAccuracy).toBeNull();
@@ -58,7 +60,7 @@ describe('getStudyStats (use case)', () => {
       entry({ questionId: 'q1', domainId: 'security', outcome: 'wrong', daysAgo: 30 }),
       entry({ questionId: 'q1', domainId: 'security', outcome: 'correct', daysAgo: 3 }),
     ];
-    const stats = await getStudyStats({ history: fakeHistory(entries), clock: fixedClock }, { examId: EXAM });
+    const stats = await getStudyStats({ history: fakeHistory(entries), clock: fixedClock }, { userId: USER, examId: EXAM });
 
     expect(stats.domains[0].recentAccuracy).toBe(1);
   });
