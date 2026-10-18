@@ -83,7 +83,9 @@ export function useAnswerStudy(client: ApiClient) {
       }
       return { prev };
     },
-    onError: (_e, input, context) => {
+    onError: (e, input, context) => {
+      // 네트워크 실패(TypeError 등)는 낙관적 답안을 유지한다 — 오프라인 재전송 대기(이슈 #52). HTTP 오류는 롤백.
+      if (!(e instanceof HTTPError)) return;
       const ctx = context as { prev?: StudyActiveSet } | undefined;
       if (ctx?.prev) queryClient.setQueryData(setQueryKey(input.setId), ctx.prev);
     },

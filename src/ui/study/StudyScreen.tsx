@@ -1,5 +1,6 @@
 import { copy } from '../copy';
 import { isSubmittedSet, type ApiClient } from '../api/client';
+import { ConflictPanel } from './ConflictPanel';
 import { HistoryView } from './HistoryView';
 import { QuestionView } from './QuestionView';
 import { ResultView } from './ResultView';
@@ -32,8 +33,9 @@ function ConfirmDialog({
 }
 
 // 학습 화면 — React.lazy 청크로 홈 초기 번들에서 분리. 라우터 없이 로컬 view 상태.
-export function StudyScreen({ client }: { client: ApiClient }) {
-  const f = useStudyFlow(client);
+// userId로 계정별 초안·탭 상태를 격리한다(App이 key={userId}로 remount — 이슈 #52).
+export function StudyScreen({ client, userId }: { client: ApiClient; userId: string }) {
+  const f = useStudyFlow(client, userId);
   const { s, set, unanswered, setQuery, historyQuery } = f;
 
   if (s.view === 'history') {
@@ -73,6 +75,15 @@ export function StudyScreen({ client }: { client: ApiClient }) {
   if (set && s.view === 'active') {
     return (
       <div>
+        {f.conflicts.length > 0 && (
+          <ConflictPanel
+            conflicts={f.conflicts}
+            items={set.items}
+            pending={f.syncBusy}
+            onUseServer={(qid) => void f.resolveServer(qid)}
+            onUseMine={(qid) => void f.resolveMine(qid)}
+          />
+        )}
         {s.confirmSubmit && (
           <ConfirmDialog
             tone="moi-alert-warning"
@@ -103,11 +114,11 @@ export function StudyScreen({ client }: { client: ApiClient }) {
           unansweredCount={unanswered}
           submitError={f.submitError}
           onIndex={s.setIndex}
-          onAnswer={(qid, res) => f.handleAnswer(qid, res)}
+          onAnswer={(qid, res, prev) => f.handleAnswer(qid, res, prev)}
           onPass={(qid, prev) => f.handleAnswer(qid, { kind: 'pass' }, prev)}
           onClear={(qid, prev) => f.handleAnswer(qid, { kind: 'unanswered' }, prev)}
           onRetry={() => f.handleRetry()}
-          onSubmitRequest={() => (unanswered > 0 ? s.setConfirmSubmit(true) : f.doSubmit())}
+          onSubmitRequest={f.handleSubmitRequest}
           onAbandonRequest={() => s.setConfirmAbandon(true)}
         />
       </div>

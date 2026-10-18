@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
 import { getMe, logout, type ApiClient } from './api/client';
+import { clearDraftsForUser } from './study/drafts';
+import { clearTabStatesForUser } from './study/tab-state';
 
 export type { ApiClient };
 
@@ -49,12 +51,26 @@ export function useSessionId(client: ApiClient): {
   return { status: 'logged-in', userId: query.data, retry: () => void query.refetch() };
 }
 
-// 로그아웃 — 성공 후 캐시 무효화 + 제거 (ADR-0018).
-export function useLogout(client: ApiClient): () => Promise<void> {
+// 로그아웃 — 성공 후 초안·탭 상태 정리 + 캐시 무효화·제거 (ADR-0018, 이슈 #52).
+// 성공(onSuccess)한 경우에만 로컬 데이터를 지운다 — 실패 시 사용자 초안은 보존한다.
+export function useLogout(client: ApiClient, userId: string | null): () => Promise<void> {
   const queryClient = useQueryClient();
   const setLogoutPending = useUiStore((s) => s.setLogoutPending);
   const mutation = useMutation({
     mutationFn: () => logout(client),
+    onSuccess: () => {
+      if (userId === null) return;
+      try {
+        clearDraftsForUser(window.localStorage, userId);
+      } catch {
+        // 저장소 접근 실패는 무시 — 서버 세션은 이미 종료됐다
+      }
+      try {
+        clearTabStatesForUser(window.sessionStorage, userId);
+      } catch {
+        // 무시
+      }
+    },
     onSettled: () => {
       setLogoutPending(false);
       void queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });

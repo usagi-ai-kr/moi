@@ -12,7 +12,8 @@ export const STUDY_DOMAINS: ReadonlyArray<{ id: string; label: string }> = [
 ];
 
 export type StudyView = 'start' | 'active' | 'result' | 'history';
-export type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+/** idle/saving/saved/error에 offline(재전송 대기)·conflict(사용자 선택 필요)를 추가 — 이슈 #52. */
+export type SaveState = 'idle' | 'saving' | 'saved' | 'error' | 'offline' | 'conflict';
 export type StudyScope = StudyMode;
 
 export function scopeLabel(scope: StudyScope): string {

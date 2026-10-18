@@ -24,7 +24,7 @@ function CheckingView() {
 // client 주입 가능 — 테스트에서 가짜 클라이언트로 교체한다.
 export function App({ client }: { client: ApiClient }) {
   const { status, userId, retry } = useSessionId(client);
-  const doLogout = useLogout(client);
+  const doLogout = useLogout(client, userId);
   const logoutPending = useUiStore((s) => s.logoutPending);
   const authFailed = useAuthCallback('error');
   useAuthCallback('success');
@@ -69,15 +69,16 @@ export function App({ client }: { client: ApiClient }) {
                   </button>
                 )}
               </div>
-              {studyOpen && (
+              {studyOpen && userId !== null && (
                 <Suspense
+                  key={userId} // 계정 전환 시 remount — 이전 계정 초안·화면 상태를 노출하지 않는다 (이슈 #52)
                   fallback={
                     <p className="moi-note" role="status" aria-live="polite">
                       {copy.session.checking}
                     </p>
                   }
                 >
-                  <StudyScreen client={client} />
+                  <StudyScreen client={client} userId={userId} />
                 </Suspense>
               )}
             </>

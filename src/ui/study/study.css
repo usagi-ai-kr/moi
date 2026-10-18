@@ -145,3 +145,31 @@
   border-radius: var(--moi-radius-md);
   padding: var(--moi-space-3);
 }
+/* 서버/로컬 답안 충돌 — 320~1280 가로 오버플로 없음 (이슈 #52). */
+.moi-conflict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  margin-bottom: var(--moi-space-3);
+  border: 1px solid var(--moi-color-orange);
+  border-radius: var(--moi-radius-md);
+  padding: var(--moi-space-3);
+  overflow-wrap: anywhere;
+}
+.moi-conflict-title {
+  margin: 0;
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+}
+.moi-conflict-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+}
+.moi-conflict-q {
+  margin: 0;
+  font-weight: 600;
+}

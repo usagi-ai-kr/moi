@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { SaveState, StudyScope, StudyView } from './types';
 
 // 일시 UI 상태만 — 세트 본문·토큰 저장 금지 (ADR-0018).
-interface StudyUiState {
+export interface StudyUiState {
   view: StudyView;
   scope: StudyScope;
   domainId: string;
