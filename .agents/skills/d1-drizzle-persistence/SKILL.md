@@ -8,8 +8,8 @@ compatibility: wrangler 필요 (scripts/d1.sh).
 
 출처: 이슈 #3(선행 #2). PASETO `sub`에는 Kakao subject가 아니라 **앱 내부 user_id**를 담는다(#4).
 
-## 스크립트 (우선 실행)
-- `sh scripts/d1.sh status|apply|exec [local|remote] ["<SQL>"]` — wrangler D1 마이그레이션 상태/적용/조회 래퍼. DB 이름은 `DB_NAME` 환경변수(기본 moi-db, scaffold 확정 시 갱신).
+## 스크립트 (우선 실행 — repo root에서 실행)
+- `sh .agents/skills/d1-drizzle-persistence/scripts/d1.sh status|apply|exec [local|remote] ["<SQL>"]` — wrangler D1 마이그레이션 상태/적용/조회 래퍼. DB 이름은 `DB_NAME` 환경변수(기본 moi-db, scaffold 확정 시 갱신).
 
 ## 스키마
 - `users(id UUID PK, created_at, updated_at)`

@@ -8,8 +8,8 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 
 출처: 이슈 #1(2026-10-18 추가 아키텍처 결정 포함). 계층 위반은 CI에서 차단한다.
 
-## 스크립트 (우선 실행)
-- `node scripts/check-imports.mjs` — `src/` 계층 import 위반 정적 스캔(dependency-cruiser 도입 전 임시 게이트). 위반 시 exit 1, 요약 출력만. src/가 없으면(0.1.0 이전) 안내 후 통과.
+## 스크립트 (우선 실행 — repo root에서 실행)
+- `node .agents/skills/architecture-boundaries/scripts/check-imports.mjs` — `src/` 계층 import 위반 정적 스캔(dependency-cruiser 정식 전환 전 임시 게이트, #10). 위반 시 exit 1, 요약 출력만. src/가 없으면(0.1.0 이전) 안내 후 통과.
 
 ## 계층 구조 (`src/`)
 

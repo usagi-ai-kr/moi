@@ -8,8 +8,8 @@ compatibility: sh와 grep 필요 (scripts/check-redaction.sh).
 
 출처: 이슈 #2. 선행: #1(아키텍처·테스트 파이프라인 완료). PASETO 세션 발급은 #4의 책임이며 여기서 하지 않는다.
 
-## 스크립트 (우선 실행)
-- `sh scripts/check-redaction.sh <logfile ...>` — 로그/텍스트에서 PASETO·JWT·인가 코드·시크릿 패턴을 탐지한다(인자 없으면 stdin). 검출 시 exit 1.
+## 스크립트 (우선 실행 — repo root에서 실행)
+- `sh .agents/skills/kakao-oidc-auth/scripts/check-redaction.sh <logfile ...>` — 로그/텍스트에서 PASETO·JWT·인가 코드·시크릿 패턴을 탐지한다(인자 없으면 stdin). 검출 시 exit 1.
 
 ## 전제
 - Kakao Developers: 카카오 로그인/OIDC ON, 허용 Redirect URI 등록(정확히 일치).
