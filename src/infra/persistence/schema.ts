@@ -52,4 +52,18 @@ export const externalIdentities = sqliteTable(
   ],
 );
 
-// 0.1.3(#4)에서 sessions를 추가한다.
+/**
+ * `sessions` (이슈 #4, ADR-0005): 세션 발급/폐기 기록.
+ * - `jti_hash` PK — PASETO 원문 저장 금지, SHA-256(jti)만 저장한다.
+ * - `user_id` FK→users.id. `revoked_at`: 로그아웃/강제 폐기 즉시 적용.
+ * - 보호 요청마다 `revoked_at IS NULL AND expires_at > now`로 활성 검사.
+ */
+export const sessions = sqliteTable('sessions', {
+  jtiHash: text('jti_hash').primaryKey(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+  issuedAt: integer('issued_at').notNull(),
+  expiresAt: integer('expires_at').notNull(),
+  revokedAt: integer('revoked_at'),
+});

@@ -1,10 +1,14 @@
 import { Hono } from 'hono';
 import { registerAuthRoutes } from './auth/routes';
+import { registerSessionRoutes } from './session/routes';
 import type { KakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
+import type { SessionRuntime } from '@/infra/auth/session/runtime';
 
 export interface CreateAppOptions {
   /** 테스트에서 카카오 인증 포트를 스파이로 감싸는 등 조립을 교체할 때 사용한다. */
   readonly createAuthRuntime?: (env: Env, requestId: string) => KakaoAuthRuntime;
+  /** 테스트에서 세션 포트를 교체할 때 사용한다. */
+  readonly createSessionRuntime?: (env: Env, requestId: string) => SessionRuntime;
 }
 
 // Hono 앱 조립 — 라우트 등록 (DI/조립은 src/bootstrap/worker) [ADR-0001/0011]
@@ -13,13 +17,12 @@ export function createApp(options?: CreateAppOptions) {
 
   app.get('/api/health', (c) => c.json({ ok: true }));
 
-  // 0.1.3(#4)에서 실제 PASETO 세션 검증으로 대체. 지금은 미인증 응답 계약만 고정.
-  app.get('/api/me', (c) => {
-    c.header('Cache-Control', 'no-store');
-    return c.json({ error: 'unauthorized' }, 401);
+  // /api/me + /auth/logout: 실제 PASETO 세션 검증 (ADR-0005)
+  registerSessionRoutes(app, { createRuntime: options?.createSessionRuntime });
+  registerAuthRoutes(app, {
+    createRuntime: options?.createAuthRuntime,
+    createSessionRuntime: options?.createSessionRuntime,
   });
-
-  registerAuthRoutes(app, { createRuntime: options?.createAuthRuntime });
 
   return app;
 }

@@ -15,6 +15,13 @@
       "when": 1792312315588,
       "tag": "0001_add-users-external-identities",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792313585958,
+      "tag": "0002_add-sessions",
+      "breakpoints": true
     }
   ]
 }
