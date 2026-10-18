@@ -11,6 +11,7 @@ import migration0002 from '../../drizzle/migrations/0002_add-sessions.sql?raw';
 import migration0003 from '../../drizzle/migrations/0003_add-question-bank.sql?raw';
 import migration0004 from '../../drizzle/migrations/0004_add-admin-api.sql?raw';
 import migration0005 from '../../drizzle/migrations/0005_add-study-sets.sql?raw';
+import migration0006 from '../../drizzle/migrations/0006_add-study-item-content.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // 이슈 #49 후속 (ADR-0020) Worker+D1 통합 테스트 — 세션 인증·세트 생명주기·
@@ -93,7 +94,7 @@ async function seedBank(questionCount = 24, examId = EXAM): Promise<void> {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005]);
+  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006]);
   try {
     await db.exec('PRAGMA foreign_keys = ON;');
   } catch {
@@ -142,10 +143,15 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
       body: { examId: EXAM, mode: 'all' },
     });
     expect(started.status).toBe(201);
-    const set = (await started.json()) as { id: string; items: Array<{ questionId: string; answerOptionIds?: unknown }> };
+    const set = (await started.json()) as { id: string; items: Array<{ questionId: string; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown; stem?: unknown; options?: unknown }> };
     expect(set.items).toHaveLength(20);
     for (const item of set.items) {
       expect(item.answerOptionIds).toBeUndefined();
+      expect(item.explanation).toBeUndefined();
+      expect(item.sourceUrls).toBeUndefined();
+      expect(typeof item.stem).toBe('string');
+      expect((item.stem as string).length).toBeGreaterThan(0);
+      expect(item.options).toHaveLength(4);
     }
     const firstId = set.items[0]?.questionId ?? '';
     const answered = await studyRequest(`/api/study/sets/${set.id}/answers`, {
@@ -161,11 +167,16 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
     });
     expect(submitted.status).toBe(200);
     const result = (await submitted.json()) as {
+      items: Array<{ questionId: string; explanation: string; sourceUrls: string[] }>;
       result: { accuracyPercent: number; passCount: number; unansweredCount: number; perItem: Array<{ correctOptionIds: string[] | null }> };
     };
     expect(result.result.passCount).toBe(1);
     expect(result.result.unansweredCount).toBe(19);
     expect(result.result.perItem[0]?.correctOptionIds).toHaveLength(1);
+    for (const item of result.items) {
+      expect(item.explanation.length).toBeGreaterThan(0);
+      expect(Array.isArray(item.sourceUrls)).toBe(true);
+    }
     const history = await studyRequest('/api/study/sets?page=1&pageSize=20', { token });
     expect(history.status).toBe(200);
     const page = (await history.json()) as { items: unknown[]; total: number };

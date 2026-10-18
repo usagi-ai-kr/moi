@@ -22,6 +22,10 @@ export function toStudyItem(row: StudySetItemRow): StudySetItem {
     versionNo: row.versionNo,
     optionOrder: row.optionOrder,
     answerOptionIds: row.answerOptionIds,
+    stem: row.stem,
+    options: row.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+    explanation: row.explanation,
+    sourceUrls: [...row.sourceUrls],
   };
   switch (row.responseKind) {
     case 'answered':

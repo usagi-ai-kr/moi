@@ -34,6 +34,10 @@ export function createD1StudySetRepository(db: D1Database): StudySetRepository {
         versionNo: item.versionNo,
         optionOrder: [...item.optionOrder],
         answerOptionIds: [...item.answerOptionIds],
+        stem: item.stem,
+        options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+        explanation: item.explanation,
+        sourceUrls: [...item.sourceUrls],
         responseKind: item.response.kind,
         selectedOptionIds: item.response.kind === 'answered' ? [...item.response.optionIds] : [],
       }));

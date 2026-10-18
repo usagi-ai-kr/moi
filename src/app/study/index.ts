@@ -81,6 +81,10 @@ export async function startStudySet(
     versionNo: entry.version.versionNo,
     optionOrder: shuffleOptionOrder(entry.version.optionIds, rng),
     answerOptionIds: [...entry.version.answerOptionIds],
+    stem: entry.version.stem,
+    options: entry.version.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+    explanation: entry.version.explanation,
+    sourceUrls: [...entry.version.sourceUrls],
     response: { kind: 'unanswered' },
   }));
 

@@ -1,0 +1,148 @@
+import { copy } from '../copy';
+import type { ItemResponse, StudyActiveItem } from '../api/client';
+import type { SaveState } from './types';
+
+interface Props {
+  items: StudyActiveItem[];
+  index: number;
+  save: SaveState;
+  submitting: boolean;
+  unansweredCount: number;
+  submitError: string | null;
+  onIndex: (i: number) => void;
+  onAnswer: (questionId: string, response: ItemResponse, previous: ItemResponse) => void;
+  onPass: (questionId: string, previous: ItemResponse) => void;
+  onClear: (questionId: string, previous: ItemResponse) => void;
+  onRetry: (questionId: string) => void;
+  onSubmitRequest: () => void;
+  onAbandonRequest: () => void;
+}
+
+function isChecked(item: StudyActiveItem, optionId: string): boolean {
+  return item.response.kind === 'answered' && item.response.optionIds.includes(optionId);
+}
+
+function toggleOption(item: StudyActiveItem, optionId: string): ItemResponse {
+  const current = item.response.kind === 'answered' ? item.response.optionIds : [];
+  const next = current.includes(optionId) ? current.filter((id) => id !== optionId) : [...current, optionId];
+  return next.length === 0 ? { kind: 'unanswered' } : { kind: 'answered', optionIds: next };
+}
+
+function optionText(item: StudyActiveItem, optionId: string): string {
+  return item.options.find((o) => o.optionId === optionId)?.text ?? optionId;
+}
+
+function responseLabel(r: ItemResponse): string {
+  if (r.kind === 'answered') return `선택 ${r.optionIds.length}`;
+  if (r.kind === 'pass') return 'Pass';
+  return '미응답';
+}
+
+// 문제 화면 — 시작 시점 스냅샷 본문·보기 텍스트 렌더, 이전/다음, 자동 저장 상태.
+export function QuestionView(p: Props) {
+  const item = p.items[p.index];
+  if (!item) return null;
+  const total = p.items.length;
+  const saveText =
+    p.save === 'saving'
+      ? copy.study.saving
+      : p.save === 'saved'
+        ? copy.study.saved
+        : p.save === 'error'
+          ? copy.study.saveError
+          : '';
+  return (
+    <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
+      <p className="moi-study-progress" aria-live="polite">
+        {p.index + 1}/{total} · {responseLabel(item.response)}
+      </p>
+      <div className="moi-study-progressbar" aria-hidden="true">
+        <span style={{ width: `${Math.round(((p.index + 1) / total) * 100)}%` }} />
+      </div>
+      <h2 className="moi-study-title">{item.stem}</h2>
+      <p className="moi-note">
+        {item.questionId} · v{item.versionNo}
+      </p>
+      <fieldset className="moi-study-field">
+        <legend className="moi-study-legend">보기 선택</legend>
+        {item.optionOrder.map((optionId, k) => (
+          <label key={optionId} className="moi-study-check">
+            <input
+              type="checkbox"
+              checked={isChecked(item, optionId)}
+              onChange={() => p.onAnswer(item.questionId, toggleOption(item, optionId), item.response)}
+              aria-label={`보기 ${k + 1} ${optionText(item, optionId)}`}
+            />
+            <span>
+              {k + 1}. {optionText(item, optionId)}
+            </span>
+          </label>
+        ))}
+      </fieldset>
+      <div className="moi-study-actions">
+        <button
+          type="button"
+          className="moi-study-secondary"
+          onClick={() => p.onPass(item.questionId, item.response)}
+        >
+          {copy.study.pass}
+        </button>
+        <button
+          type="button"
+          className="moi-study-ghost"
+          onClick={() => p.onClear(item.questionId, item.response)}
+        >
+          {copy.study.clear}
+        </button>
+      </div>
+      {saveText && (
+        <p className="moi-note" role="status" aria-live="polite">
+          {saveText}
+          {p.save === 'error' && (
+            <button type="button" className="moi-alert-retry" onClick={() => p.onRetry(item.questionId)}>
+              {copy.study.retry}
+            </button>
+          )}
+        </p>
+      )}
+      {p.submitError && (
+        <div className="moi-alert moi-alert-error" role="alert">
+          <p className="moi-alert-text">{p.submitError}</p>
+        </div>
+      )}
+      <div className="moi-study-nav">
+        <button
+          type="button"
+          className="moi-study-secondary"
+          disabled={p.index === 0}
+          onClick={() => p.onIndex(p.index - 1)}
+        >
+          {copy.study.prev}
+        </button>
+        <button
+          type="button"
+          className="moi-study-secondary"
+          disabled={p.index >= total - 1}
+          onClick={() => p.onIndex(p.index + 1)}
+        >
+          {copy.study.next}
+        </button>
+      </div>
+      <div className="moi-study-actions">
+        <button
+          type="button"
+          className="moi-study-primary"
+          disabled={p.submitting}
+          aria-busy={p.submitting}
+          onClick={p.onSubmitRequest}
+        >
+          {copy.study.submit}
+          {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
+        </button>
+        <button type="button" className="moi-study-ghost" onClick={p.onAbandonRequest}>
+          {copy.study.abandon}
+        </button>
+      </div>
+    </section>
+  );
+}

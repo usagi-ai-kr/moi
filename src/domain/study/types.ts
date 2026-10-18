@@ -17,7 +17,7 @@ export type ItemResponse =
   | { readonly kind: 'pass' }
   | { readonly kind: 'unanswered' };
 
-/** 시작 시 고정되는 스냅샷(문제 개정 + 보기 순서 + 정답 집합). */
+/** 시작 시 고정되는 스냅샷(문제 개정 + 보기 순서 + 정답 집합 + 내용). */
 export interface StudySetItemSnapshot {
   readonly questionId: string;
   readonly questionVersionId: string;
@@ -26,6 +26,14 @@ export interface StudySetItemSnapshot {
   readonly optionOrder: readonly string[];
   /** 시작 시점 개정의 정답 집합 — 제출 채점은 pool 재조회가 아니라 이 스냅샷으로 한다(개정 불변). */
   readonly answerOptionIds: readonly string[];
+  /** 시작 시점 문제 본문 — 제출 전 DTO에 노출한다(#50). */
+  readonly stem: string;
+  /** 시작 시점 보기 텍스트 — 제출 전 DTO에 노출한다(#50). */
+  readonly options: ReadonlyArray<{ readonly optionId: string; readonly text: string }>;
+  /** 시작 시점 해설 — 제출 후에만 노출한다(#50). */
+  readonly explanation: string;
+  /** 시작 시점 근거 URL — 제출 후에만 노출한다(#50). */
+  readonly sourceUrls: readonly string[];
 }
 
 export interface StudySetItem extends StudySetItemSnapshot {

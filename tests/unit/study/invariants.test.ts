@@ -18,6 +18,10 @@ function buildSet(overrides?: Partial<StudySet>): StudySet {
     versionNo: 1,
     optionOrder: ['a', 'b', 'c', 'd'],
     answerOptionIds: ['b'],
+    stem: `문제 ${i} 본문`,
+    options: ['a', 'b', 'c', 'd'].map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
+    explanation: `문제 ${i} 해설`,
+    sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
     response: { kind: 'unanswered' } as const,
   }));
   const base: StudySet = {
