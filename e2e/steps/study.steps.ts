@@ -28,6 +28,42 @@ let active: {
 // 다음 PATCH /answers 1회만 실패시키는 플래그 (#52 오프라인 재연결 E2E).
 let failNextAnswer = false;
 
+// 학습 현황 고정 응답 (#54) — saa-c03 요청에만 제공한다.
+const STATS_DTO = {
+  examId: 'saa-c03',
+  totalQuestions: 500,
+  uniqueFirstSolved: 20,
+  coverage: 0.04,
+  overallAccuracy: 0.7,
+  domains: [
+    {
+      domainId: 'dom-security',
+      uniqueFirstSolved: 12,
+      gradedAttempts: 30,
+      cumulativeAccuracy: 0.75,
+      recentAccuracy: 0.6,
+      status: 'ok',
+    },
+    {
+      domainId: 'dom-cost',
+      uniqueFirstSolved: 8,
+      gradedAttempts: 15,
+      cumulativeAccuracy: 0.5,
+      recentAccuracy: 0.4,
+      status: 'insufficient-data',
+    },
+  ],
+  weakDomains: [
+    {
+      domainId: 'dom-cost',
+      score: 0.45,
+      cumulativeAccuracy: 0.5,
+      effectiveRecentAccuracy: 0.4,
+      uniqueFirstSolved: 8,
+    },
+  ],
+} as const;
+
 function freshSet(): { id: string; status: string; items: FakeItem[]; submittedAt?: number; result?: unknown } {
   const items: FakeItem[] = Array.from({ length: 20 }, (_, i) => ({
     questionId: `q-${i}`,
@@ -112,6 +148,15 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
     const url = new URL(req.url());
     const method = req.method();
     const path = url.pathname;
+    // 학습 현황(#54) — 세트/이력 mock과 충돌하지 않도록 stats를 먼저 처리한다.
+    if (method === 'GET' && path === '/api/study/stats') {
+      if (url.searchParams.get('examId') !== 'saa-c03') {
+        await route.fulfill({ status: 404, json: { error: 'not_found' } });
+        return;
+      }
+      await route.fulfill({ status: 200, json: STATS_DTO });
+      return;
+    }
     if (method === 'POST' && path === '/api/study/sets') {
       if (active && active.status === 'active') {
         await route.fulfill({ status: 409, json: { error: 'active_set_exists' } });
@@ -237,6 +282,10 @@ When('학습 이력 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: '학습 이력' }).click();
 });
 
+When('학습 현황 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '학습 현황' }).click();
+});
+
 Then('학습 범위 선택이 보인다', async ({ page }) => {
   await expect(page.getByText('학습 범위 선택')).toBeVisible();
 });
@@ -281,4 +330,11 @@ Then('포기 확인이 보인다', async ({ page }) => {
 
 Then('완료 세트가 보인다', async ({ page }) => {
   await expect(page.getByText('완료한 학습')).toBeVisible({ timeout: 10_000 });
+});
+
+Then('학습 현황이 보인다', async ({ page }) => {
+  const panel = page.locator('section.moi-stats');
+  await expect(panel.getByText('20/500')).toBeVisible({ timeout: 10_000 });
+  await expect(panel.getByText(/70%/)).toBeVisible();
+  await expect(panel.getByText('취약 추천')).toBeVisible();
 });
