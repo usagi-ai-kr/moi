@@ -71,6 +71,13 @@
       "when": 1792331093806,
       "tag": "0009_add-study-attempts",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1792333462946,
+      "tag": "0010_add-study-corrections",
+      "breakpoints": true
     }
   ]
 }
