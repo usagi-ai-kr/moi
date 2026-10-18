@@ -20,12 +20,12 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 
 ## 디자인 시스템 (ADR-0012·0014)
 - 팔레트: **AWS Orange(`#FF9900`) 액센트 + 무채색**(AWS Squid Ink 계열). 장식적 색 금지. (예외: 카카오 브랜드 버튼 — 공식 가이드 색)
-- 서체: 표시(브랜드/제목)=**KoddiUD 온고딕**, UI 텍스트=**Inter 계열**. KoddiUD는 **공식 웹폰트 경로**(눈누 제공 jsdelivr·저장소 미포함·형태 그대로)를 첫 페인트 이후 지연 주입 — `preload`·임계 경로 편입 금지.
+- 서체: 표시(브랜드/제목)=**KoddiUD 온고딕**, UI 텍스트=**Inter 계열**. KoddiUD는 **공식 웹폰트 경로**(눈누 제공 jsdelivr·저장소 미포함·형태 그대로)를 첫 페인트 이후 지연 주입 — `preload`·임계 경로 편입 금지. 주입 `@font-face`는 `font-display:optional` + 지연 주입으로 LCP 안정화(첫 로드 폴백·캐시 후 적용, ADR-0022).
 - 레이아웃: **container 내부 padding + flex/grid gap**으로 간격·충돌 방지, **overflow 지양**, position은 기본 fixed — **모달/드롭다운/툴팁 등 필요한 배치는 예외 허용**(사유 기록).
 - 여백 가드레일: 요소·경계(테두리·화면단)에 붙이지 않는다 — 요소 간 최소 8px, 화면단 최소 `clamp(16px,5vw,32px)`, **페이지 기본 패딩 축소 금지**.
 - 모션: ≤320ms 트랜지션·진입 애니메이션 허용, `prefers-reduced-motion` 존중. **hover 전용 의존 UX 금지**(호버는 보조 강화만 — 키보드 `focus-visible`·터치 동등 동작 보장).
 - **중앙 관리(하드코딩 금지)**: 색·박스모델·타이포·모션 = `src/ui/tokens.ts` → CSS 변수(`var(--moi-*)`)와 AntD 테마 동시 적용, 문구 = `src/ui/copy.ts`. 컴포넌트/CSS에 값·문구를 직접 쓰지 않는다. (예외: 폰트 URL — `tokens.ts`의 `typography.displayFontUrl`만)
-- **초기 번들 규칙**: 정적 텍스트·레이아웃은 시맨틱 HTML+토큰 CSS로 렌더하고 UI 라이브러리를 초기 번들에 넣지 않는다. AntD는 상호작용 화면부터, 무거운 화면은 라우트 단위 코드 분할로 지연 로드. 디스플레이 폰트는 `load`+1.2s 지연·`<style>` 주입.
+- **초기 번들 규칙**: 정적 텍스트·레이아웃은 시맨틱 HTML+토큰 CSS로 렌더하고 UI 라이브러리를 초기 번들에 넣지 않는다. AntD는 상호작용 화면부터, 무거운 화면은 라우트 단위 코드 분할로 지연 로드. 디스플레이 폰트는 `load`+1.2s 지연·`<style>` 주입. 로그인·로딩·취소·오류·로그아웃처럼 LCP가 중요한 소형 화면은 경량 시맨틱 HTML/CSS로 구현하고, AntD 6은 모달·폼·테이블 등 복잡한 상호작용에 사용한다(ADR-0018).
 - **카카오 로그인 버튼**(`KakaoLoginButton`, `/auth/kakao`): 공식 가이드 필수 — 컨테이너 `#FEE500`·말풍선 **심볼 `#000000`**(형태·비율·색 변경·심볼 생략 금지)·레이블 `#000 85%`·시스템 서체·radius 12px. 값은 `tokens.ts`의 `kakao`.
 - Lighthouse(모바일 기본) 4개 카테고리 ≥90 — `run-lighthouse.mjs`로 재현 실행하고 결과를 PR에 기록.
 

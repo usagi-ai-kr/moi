@@ -163,3 +163,18 @@ body {
     transform: translateY(0);
   }
 }
+
+/* 세션 상태 화면 — 값은 tokens.ts CSS 변수만 사용 (ADR-0012) */
+.moi-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--moi-space-3);
+  min-height: 160px;
+  justify-content: center;
+}
+
+.moi-alert {
+  width: 100%;
+  max-width: var(--moi-kakao-max-w);
+}
