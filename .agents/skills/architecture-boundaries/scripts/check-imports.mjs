@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// 계층 import 경계 정적 스캔 — dependency-cruiser 도입 전 임시 게이트 (ADR-0001).
+// 계층 import 경계 정적 스캔 — **보조 점검** (정식 게이트: dependency-cruiser `check:architecture`, ADR-0001/#10).
+// 단독 CI 게이트로 사용 금지: 단일 행·별칭 휴리스틱이라 false green 여지가 있다.
 // 의존성: Node.js (외부 패키지 없음)
-// 사용법: node scripts/check-imports.mjs
-// 종료 코드: 0 통과, 1 위반, 3 src/ 없음(스킵)
+// 사용법: node .agents/skills/architecture-boundaries/scripts/check-imports.mjs
+// 종료 코드: 0 통과, 1 위반, 3 src/ 없음(0.1.0 이전 — CI 게이트 아님)
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve, dirname, sep } from 'node:path';
 
@@ -20,8 +21,8 @@ const forbiddenLayers = {
 
 // 계층별 금지 패키지 (휴리스틱)
 const forbiddenPkgs = {
-  domain: [/^react(-dom)?$/, /^antd$/, /^@ant-design\//, /^hono$/, /^drizzle-orm/, /^pino$/, /^ky$/, /^zustand$/, /^@tanstack\//, /^paseto-ts$/, /^jose$/, /^cloudflare:/],
-  app: [/^react(-dom)?$/, /^antd$/, /^@ant-design\//, /^hono$/, /^drizzle-orm/, /^pino$/, /^ky$/, /^zustand$/, /^@tanstack\//, /^paseto-ts$/, /^jose$/, /^cloudflare:/],
+  domain: [/^react(-dom)?$/, /^antd$/, /^@ant-design\//, /^hono$/, /^drizzle-orm/, /^pino$/, /^ky$/, /^zustand$/, /^@tanstack\//, /^paseto-ts$/, /^jose$/, /^zod$/, /^(node:)?crypto$/, /^cloudflare:/],
+  app: [/^react(-dom)?$/, /^antd$/, /^@ant-design\//, /^hono$/, /^drizzle-orm/, /^pino$/, /^ky$/, /^zustand$/, /^@tanstack\//, /^paseto-ts$/, /^jose$/, /^(node:)?crypto$/, /^cloudflare:/],
   infra: [/^react(-dom)?$/, /^antd$/, /^@ant-design\//, /^zustand$/, /^@tanstack\//],
   ui: [/^drizzle-orm/, /^pino$/, /^paseto-ts$/, /^jose$/, /^cloudflare:/, /^hono$/],
   bootstrap: [],
@@ -105,5 +106,5 @@ if (violations.length === 0) {
 }
 console.log(`FAIL: 계층 import 위반 ${violations.length}건`);
 for (const v of violations) console.log(`  ${v}`);
-console.log('(단일 행 import 스캔 휴리스틱 — dependency-cruiser 도입 전 보조 게이트)');
+console.log('(보조 점검 — 단일 행·별칭 휴리스틱 한계. 정식 게이트는 dependency-cruiser check:architecture, #10/#1)');
 process.exit(1);

@@ -35,7 +35,10 @@
 - 결정 순서: ① 핵심 목표 + 집중 필요 → `focus` ② 지금 바로 처리하는 작은 부수 작업 → `instant` ③ 나중에 해도 되는 기록 → `tuck`. 단순 긴급함은 분류 기준이 아니다.
 - 라벨은 작업 성격(핵심 집중/즉시 부수/나중 보류) 분류이며 진행 상태(open/blocked/in-progress/closed)를 나타내지 않는다. 진행 상태는 이슈 상태·본문·PR로 관리한다.
 - 분류가 바뀌면 라벨을 변경하고 사유를 댓글·PR에 남긴다.
-- Milestone은 사용자가 GitHub UI에서 직접 생성한다. 에이전트는 사용자가 명시적으로 요청하지 않는 한 milestone을 생성·연결하지 않는다.
+- 검토 결과 라벨(별도 축, 최대 1개): `reviewed`(리뷰 완료 — **승인 아님**), `approved`(기준 충족 승인 — 이슈는 '설계/작업 수용'인지 '완료 증거 확인'인지 댓글로 명시), `rejected`(근거를 남긴 명시적 반려).
+- 검토 결과 전이: `reviewed → approved/rejected` 시 이전 검토 라벨을 제거하고 사유·근거(이슈/PR·테스트 증거)를 댓글로 남긴다. `closed`/`merged`와 검토 라벨은 별개다.
+- Milestone 생성은 사용자가 GitHub UI에서 직접 한다(사용자가 명시적으로 요청한 경우 에이전트가 대신 생성).
+- **모든 이슈는 적절한 Milestone에 연결(부착)한다 — 예외 없음.** 연결은 에이전트가 수행하고, 알맞은 Milestone이 없으면 생성하지 말고 사용자에게 요청한다.
 - 상세: `issue-triage` 스킬.
 
 ## 브랜치·PR 플로우
@@ -53,7 +56,7 @@
 - 백엔드: Hono, Cloudflare Workers (동일 오리진에서 정적 자산 + API 서빙)
 - DB: Cloudflare D1 + Drizzle ORM (마이그레이션 파일 버전 관리)
 - 테스트: Vitest(도메인·앱), React Testing Library(UI), @cloudflare/vitest-plugin(Worker/D1), Playwright + playwright-bdd(브라우저)
-- 계층 의존성 검사: dependency-cruiser 또는 eslint-plugin-boundaries, CI에서 차단
+- 계층 의존성 검사: dependency-cruiser(`check:architecture`), CI에서 차단
 - 초기 범위 도입 금지: SSR, 별도 API 서버, 마이크로서비스, Redux, Kakao JS SDK
 
 ## 아키텍처 계약 (요약)
@@ -73,7 +76,7 @@
 - AC → Given/When/Then 시나리오 먼저 정의 → Red → Green → Refactor. PR에 테스트 위치/실행 명령/결과를 기록한다.
 - 브라우저 검증 viewport: 핵심 화면은 320 / 375 / 768 / 1024 / 1280 전부, 보조 시나리오는 375 / 768 / 1280. (모바일 320–767 / 태블릿 768–1199 / 데스크탑 1200+)
 - CI는 실제 Kakao 계정을 사용하지 않는다(deterministic mock). 실계정 smoke는 배포된 스테이징/실서비스에서 별도 수행한다.
-- CI 게이트: `.github/workflows/ci.yml` — 스킬 검증은 항상 실행하고, `package.json` 이전에는 품질 게이트를 건너뛴다. scaffold 이후에는 미정의·스킵을 실패로 처리하는 fail-closed로 전환한다(이슈 #10).
+- CI 게이트: `.github/workflows/ci.yml` — 스킬 검증은 항상 실행한다. `package.json` 부재(0.1.0 이전)만 임시 예외로 건너뛰고, 이후에는 **미정의·스킵 게이트를 실패로 처리(fail-closed)**한다. → `tdd-bdd-testing`, #10
 - 상세: `tdd-bdd-testing`, `release-deploy-workers` 스킬, ADR-0007.
 
 ## 버전 규칙
