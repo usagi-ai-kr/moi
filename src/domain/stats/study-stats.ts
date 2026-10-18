@@ -18,8 +18,11 @@ import type {
  * 학습 현황 순수 계산 (이슈 #54, ADR-0021 "결정 — 학습 현황").
  * - 외부 패키지·DB·네트워크 의존 금지, 같은 입력 같은 결과(결정성).
  * - 시험별 분리: options.examId와 일치하지 않는 이력은 집계 전에 제외한다.
- * - 반복 영향 제한: 동일 attemptId 중복 제거 + 문제당 최근 채점 시도 REPEAT_GRADED_ATTEMPTS_CAP건만
- *   반영 + 문제당 동일 가중 평균(시도 수가 많은 문제의 지배 방지).
+ * - 누적 정답률(DomainStats.cumulativeAccuracy·전체)은 모든 유효 시도 기준
+ *   (정답 수 / 유효 채점 시도 수, attemptId 중복 제거·미래 제외·pass/unanswered 제외).
+ * - 반복 영향 제한: 취약 추천·최근 성과는 문제당 최근 채점 시도
+ *   REPEAT_GRADED_ATTEMPTS_CAP건만 반영 + 문제당 동일 가중 평균
+ *   (시도 수가 많은 문제의 지배 방지).
  * - 비채점(pass/unanswered)은 정답률 분모에 넣지 않고 첫 풀이로도 세지 않는다.
  */
 
@@ -65,8 +68,19 @@ interface QuestionRollup {
   readonly cumulative: number | null;
   readonly recent: number | null;
   readonly firstGraded: boolean;
-  /** 반영된 채점 시도 수(반복 상한 적용 후). */
+  /** 반영된 채점 시도 수(반복 상한 적용 후 — 취약 추천·최근 성과용). */
   readonly gradedAttempts: number;
+}
+
+/** 모든 유효 시도 기준 누적(반복 상한 없음): 분자 정답 수 / 분모 유효 채점 시도 수. */
+function allAttemptsStats(
+  entries: readonly StudyHistoryEntry[],
+  now: number,
+): { accuracy: number | null; gradedAttempts: number } {
+  const valid = dedupeAttempts(entries).filter((e) => isGraded(e) && e.occurredAt <= now);
+  if (valid.length === 0) return { accuracy: null, gradedAttempts: 0 };
+  const correct = valid.filter((e) => e.outcome === 'correct').length;
+  return { accuracy: correct / valid.length, gradedAttempts: valid.length };
 }
 
 function rollupPerQuestion(entries: readonly StudyHistoryEntry[], now: number): readonly QuestionRollup[] {
@@ -89,7 +103,7 @@ function rollupPerQuestion(entries: readonly StudyHistoryEntry[], now: number): 
   return rollups;
 }
 
-/** 영역별/전체 공통 집계: 첫 풀이 수, 채점 시도 수, 누적·최근 정답률. */
+/** 영역별/전체 공통 집계(반복 제한 — 취약 추천·최근 성과용): 첫 풀이 수, 상한 적용 시도 수, 문제당 평균 누적·최근. */
 function aggregate(rollups: readonly QuestionRollup[]): {
   uniqueFirstSolved: number;
   gradedAttempts: number;
@@ -127,12 +141,13 @@ export function computeStudyStats(
     const rollups = rollupPerQuestion(list, options.now);
     allRollups = allRollups.concat(rollups);
     const agg = aggregate(rollups);
-    const sufficient = agg.uniqueFirstSolved >= MIN_DOMAIN_SAMPLE && agg.cumulative !== null;
+    const all = allAttemptsStats(list, options.now);
+    const sufficient = agg.uniqueFirstSolved >= MIN_DOMAIN_SAMPLE && all.accuracy !== null;
     domainStats.push({
       domainId,
       uniqueFirstSolved: agg.uniqueFirstSolved,
-      gradedAttempts: agg.gradedAttempts,
-      cumulativeAccuracy: agg.cumulative,
+      gradedAttempts: all.gradedAttempts,
+      cumulativeAccuracy: all.accuracy,
       recentAccuracy: agg.recent,
       status: sufficient ? 'ok' : 'insufficient-data',
     });
@@ -149,6 +164,7 @@ export function computeStudyStats(
   }
 
   const overall = aggregate(allRollups);
+  const overallAll = allAttemptsStats(examEntries, options.now);
   const weakDomains: WeakDomainRecommendation[] = recommendable
     .filter((r) => r.score < WEAK_ACCURACY_THRESHOLD)
     .sort((a, b) => a.score - b.score || a.domainId.localeCompare(b.domainId))
@@ -168,7 +184,7 @@ export function computeStudyStats(
     totalQuestions: options.totalQuestions,
     uniqueFirstSolved: overall.uniqueFirstSolved,
     coverage: overall.uniqueFirstSolved / options.totalQuestions,
-    overallAccuracy: overall.cumulative,
+    overallAccuracy: overallAll.accuracy,
     domains: domainStats,
     weakDomains,
   };
