@@ -4,6 +4,7 @@ import { shuffleOptionOrder, unattemptedFirst, weightedSample, WEAK_WEIGHT_BASE 
 import { STUDY_SET_SIZE } from '@/domain/study/thresholds';
 import type { ItemResponse, StudySet, StudySetItem, StudySetMode, StudySetSummary } from '@/domain/study/types';
 import type { PoolEntry, StudyDeps } from './ports';
+import { buildSetAttempts } from '@/app/stats/attempt-builder';
 
 /**
  * 20문제 세트 use case (이슈 #49, ADR-0020).
@@ -147,7 +148,22 @@ export async function submitStudySet(
   }));
   const result = gradeItems(gradable, answers);
   const submitted: StudySet = { ...set, status: 'submitted', submittedAt: deps.clock.now(), result };
-  const ok = await deps.repository.submit({ set: submitted });
+  if (deps.attempts === undefined) {
+    const ok = await deps.repository.submit({ set: submitted });
+    if (!ok) return { outcome: 'rejected', reason: 'not_active' };
+    return { outcome: 'submitted', set: submitted };
+  }
+  const prior = await deps.attempts.listByUserExam({ userId: set.userId, examId: set.examId });
+  const priorGradedQuestionIds = new Set(
+    prior.filter((a) => (a.outcome === 'correct' || a.outcome === 'wrong') && a.excludedAt === null).map((a) => a.questionId),
+  );
+  const nowMs = deps.clock.now() * 1000;
+  const attempts = buildSetAttempts({
+    set: { ...submitted, submittedAt: nowMs },
+    priorGradedQuestionIds,
+    now: nowMs,
+  });
+  const ok = await deps.repository.submit({ set: submitted, attempts });
   if (!ok) return { outcome: 'rejected', reason: 'not_active' };
   return { outcome: 'submitted', set: submitted };
 }
