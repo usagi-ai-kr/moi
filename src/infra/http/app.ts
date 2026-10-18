@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { registerAdminRoutes } from './admin/routes';
 import { registerCorrectionAdminRoutes } from './admin/correction-routes';
 import { registerAuthRoutes } from './auth/routes';
+import { registerCorrectionListRoutes } from './corrections/routes';
 import { registerReportRoutes } from './reports/routes';
 import { registerSessionRoutes } from './session/routes';
 import { registerStatsRoutes } from './stats/routes';
@@ -41,6 +42,7 @@ export function createApp(options?: CreateAppOptions) {
     createSessionRuntime: options?.createSessionRuntime,
   });
   registerReportRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
+  registerCorrectionListRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
   registerStatsRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
 
   return app;
