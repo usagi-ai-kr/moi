@@ -186,3 +186,37 @@ export const auditLogs = sqliteTable('audit_logs', {
   requestId: text('request_id').notNull(),
   createdAt: integer('created_at').notNull(),
 });
+
+/**
+ * `admin_tokens` (이슈 #47, ADR-0019): 관리 주체별 토큰.
+ * - 원문 저장 금지 — SHA-256(token) hex만 저장한다. 서버는 제시된 Bearer를 해시해 조회한다.
+ * - `scope`: 'questions:read' | 'questions:write' (쓰기는 읽기 포함).
+ * - `revoked_at`: 개별 폐기. 교체는 폐기 + 신규 발급(#55 운영 절차).
+ * - 쿠키 미사용(CSRF 비대상), 브라우저 노출 금지.
+ */
+export const adminTokens = sqliteTable(
+  'admin_tokens',
+  {
+    id: text('id').primaryKey(),
+    tokenHash: text('token_hash').notNull().unique(),
+    actor: text('actor').notNull(),
+    scope: text('scope').notNull(),
+    revokedAt: integer('revoked_at'),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [index('admin_tokens_actor_idx').on(table.actor)],
+);
+
+/**
+ * `admin_idempotency` (이슈 #47, ADR-0019): 멱등 등록 응답 재현.
+ * - `key`(`Idempotency-Key` 헤더) PK. `request_hash` = SHA-256(method + path + body 원문).
+ * - 동일 key + 동일 해시 → 저장된 응답 재현. 다른 해시 → 409(충돌).
+ * - 응답 본문은 생성된 id 등 재현에 필요한 최소 JSON만 저장한다(토큰·payload 원문 금지).
+ */
+export const adminIdempotency = sqliteTable('admin_idempotency', {
+  key: text('key').primaryKey(),
+  requestHash: text('request_hash').notNull(),
+  statusCode: integer('status_code').notNull(),
+  responseBody: text('response_body').notNull(),
+  createdAt: integer('created_at').notNull(),
+});

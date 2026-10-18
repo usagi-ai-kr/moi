@@ -1,6 +1,8 @@
 import { Hono } from 'hono';
+import { registerAdminRoutes } from './admin/routes';
 import { registerAuthRoutes } from './auth/routes';
 import { registerSessionRoutes } from './session/routes';
+import type { AdminRuntime } from './admin/runtime';
 import type { KakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
 import type { SessionRuntime } from '@/infra/auth/session/runtime';
 
@@ -9,6 +11,8 @@ export interface CreateAppOptions {
   readonly createAuthRuntime?: (env: Env, requestId: string) => KakaoAuthRuntime;
   /** 테스트에서 세션 포트를 교체할 때 사용한다. */
   readonly createSessionRuntime?: (env: Env, requestId: string) => SessionRuntime;
+  /** 테스트에서 관리 API 런타임을 교체할 때 사용한다. */
+  readonly createAdminRuntime?: (env: Env, requestId: string) => AdminRuntime;
 }
 
 // Hono 앱 조립 — 라우트 등록 (DI/조립은 src/bootstrap/worker) [ADR-0001/0011]
@@ -23,6 +27,7 @@ export function createApp(options?: CreateAppOptions) {
     createRuntime: options?.createAuthRuntime,
     createSessionRuntime: options?.createSessionRuntime,
   });
+  registerAdminRoutes(app, { createRuntime: options?.createAdminRuntime });
 
   return app;
 }
