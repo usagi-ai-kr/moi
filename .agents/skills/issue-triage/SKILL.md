@@ -1,6 +1,6 @@
 ---
 name: issue-triage
-description: moi 저장소의 이슈 분류와 Milestone 정책. 새 이슈 생성, 라벨(focus/instant/tuck) 결정, 우선순위 판단, milestone 관련 요청 시 사용. f/i/t 약칭 라벨을 만들지 않고, milestone은 사용자가 수동 생성한다.
+description: moi 저장소의 이슈 분류와 Milestone 정책. 새 이슈 생성, 라벨(focus/instant/tuck) 결정, 우선순위 판단, milestone 관련 요청 시 사용. f/i/t 약칭 라벨을 만들지 않고, milestone 생성은 사용자 수동이되 모든 이슈를 적절한 milestone에 연결(부착)한다.
 compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 ---
 
@@ -44,7 +44,9 @@ compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 - 기존 GitHub 라벨 `focus`, `instant`, `tuck`을 그대로 재사용한다. **라벨 생성·이름 변경·삭제 금지.**
 
 ## Milestone 정책 (이슈 #6, 2026-10-18 재편)
-- Milestone 생성·연결은 기본적으로 **사용자의 수동 작업**이다. 에이전트는 사용자가 명시적으로 요청한 경우에만 수행한다.
+- Milestone **생성**은 기본적으로 사용자의 수동 작업이다(에이전트는 명시 요청 시 대행).
+- **모든 이슈는 적절한 Milestone에 연결(부착)한다 — 예외 없음.** 연결은 에이전트가 수행하며, 알맞은 Milestone이 없으면 생성하지 말고 사용자에게 요청한다.
+- 연결 예: 단계 구현 이슈 → 해당 패치 Milestone, 하네스·저장소 위생 → `0.1.0`, Kakao 설정 → `0.1.1`, Cloudflare·배포 준비 → `0.1.4`.
 - 현재 체계: 패치 마일스톤 `0.1.0`~`0.1.4` — `0.1.0`=하네스 보강(#9~#12)+scaffold(#1), `0.1.1`=#2, `0.1.2`=#3, `0.1.3`=#4, `0.1.4`=#5. `0.1.0` Due `2026-10-22`(KST, 설명에 목표 19:00 명시).
 - 완료 정의: 단계별 이슈 closed + 해당 단계 TDD/BDD/게이트 통과. 최종 단계는 실제 Kakao 계정 smoke 성공 + 배포 URL·커밋 SHA 확인 + PASETO 만료/변조/폐기 검증 포함.
 - 우선순위 근거: Milestone과 이슈 본문의 버전·선행 링크.
