@@ -35,6 +35,8 @@ export interface StudySetRepository {
   findActive(input: { userId: string; examId: string }): Promise<StudySet | null>;
   save(input: { set: StudySet }): Promise<void>;
   findById(input: { id: string }): Promise<StudySet | null>;
+  /** 조건부 제출 저장 — status='active'일 때만 submitted로 전이하고 true, 아니면 false. 동시 submit 원자성(#52). */
+  submit(input: { set: StudySet }): Promise<boolean>;
   listCompleted(input: { userId: string; page: number; pageSize: number }): Promise<{
     items: StudySet[];
     total: number;

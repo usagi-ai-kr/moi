@@ -28,6 +28,12 @@ function repoWith(sets: Map<string, StudySet>) {
     async findById({ id }) {
       return sets.get(id) ?? null;
     },
+    async submit({ set }) {
+      const current = sets.get(set.id);
+      if (!current || current.status !== 'active') return false;
+      sets.set(set.id, set);
+      return true;
+    },
     async listCompleted({ page, pageSize }) {
       const completed = [...sets.values()].filter((set) => set.status === 'submitted').sort((a, b) => (b.submittedAt ?? 0) - (a.submittedAt ?? 0));
       const start = (page - 1) * pageSize;
@@ -179,6 +185,21 @@ describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
     // 포기가 아닌 제출 후 채점 재시도 금지
     const again = await submitStudySet(f, { setId: set.id, userId: 'u1', confirmUnanswered: true });
     expect(again).toMatchObject({ outcome: 'rejected', reason: 'not_active' });
+  });
+
+  it('동시 제출 경합: 둘 중 하나만 submitted, 나머지는 not_active', async () => {
+    const f = fakes();
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
+    const set = (result as { set?: StudySet }).set as StudySet;
+    const [a, b] = await Promise.all([
+      submitStudySet(f, { setId: set.id, userId: 'u1', confirmUnanswered: true }),
+      submitStudySet(f, { setId: set.id, userId: 'u1', confirmUnanswered: true }),
+    ]);
+    const outcomes = [a.outcome, b.outcome].sort();
+    expect(outcomes).toEqual(['rejected', 'submitted']);
+    const rejected = a.outcome === 'rejected' ? a : b;
+    expect(rejected).toMatchObject({ reason: 'not_active' });
+    expect(f.sets.get(set.id)?.status).toBe('submitted');
   });
 
   it('개정 후에도 스냅샷 정답으로 채점한다(세트 채점 불변)', async () => {

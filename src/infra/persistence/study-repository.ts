@@ -82,6 +82,18 @@ export function createD1StudySetRepository(db: D1Database): StudySetRepository {
       return toStudySet(row, await listItems(row.id));
     },
 
+    async submit({ set }) {
+      // 조건부 전이: active일 때만 submitted로 갱신한다. 세트 items는 이미 저장된 스냅샷을 그대로 둔다.
+      const result = await db
+        .prepare(
+          "UPDATE study_sets SET status = 'submitted', submitted_at = ?1, result_json = ?2 WHERE id = ?3 AND status = 'active'",
+        )
+        .bind(set.submittedAt ?? null, set.result !== undefined ? JSON.stringify(set.result) : null, set.id)
+        .run();
+      const changes = (result.meta as { changes?: number } | undefined)?.changes ?? 0;
+      return changes === 1;
+    },
+
     async listCompleted({ userId, page, pageSize }) {
       const offset = (Math.max(page, 1) - 1) * Math.max(pageSize, 1);
       const rows = await d1
