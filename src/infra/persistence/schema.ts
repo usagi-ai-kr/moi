@@ -1,13 +1,7 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { sql } from 'drizzle-orm';
 
-/**
- * Drizzle 스키마 — infra(persistence) 전용. domain/app은 이 타입을 참조하지 않는다(ADR-0001/0004).
- *
- * `oauth_states` (이슈 #2, ADR-0003): 카카오 로그인 트랜잭션 상태.
- * - 원문 state/browser binding은 저장하지 않고 SHA-256 hex 해시만 저장한다.
- * - `state_hash` PK, 조건부 단일 UPDATE(... RETURNING)로 1회 소비(fail-closed)한다.
- * - 시간은 epoch seconds (INTEGER, mode number).
- */
+/** infra(persistence) 전용 — domain/app은 참조 금지(ADR-0001). `oauth_states`(#2/ADR-0003): state_hash PK, 해시만 저장, 1회 소비, epoch seconds. */
 export const oauthStates = sqliteTable('oauth_states', {
   stateHash: text('state_hash').primaryKey(),
   browserBindingHash: text('browser_binding_hash').notNull(),
@@ -18,23 +12,14 @@ export const oauthStates = sqliteTable('oauth_states', {
   consumedAt: integer('consumed_at'),
 });
 
-/**
- * `users` (이슈 #3, ADR-0004): 내부 사용자 — 데이터 소유권 기준 UUID PK.
- * 이메일/닉네임은 핵심키가 아니므로 컬럼을 두지 않는다(profile consent 필수화 금지).
- * 0.1.3(#4) sessions가 이 테이블을 참조한다.
- */
+/** `users`(#3/ADR-0004): 내부 사용자 UUID PK. 이메일/닉네임 컬럼 없음. */
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
 });
 
-/**
- * `external_identities` (이슈 #3, ADR-0004): 외부 계정 → 내부 user_id 1:1 매핑.
- * - `UNIQUE(provider, provider_subject)`: 동시 최초 로그인 경합의 원자적 승부처.
- * - `INDEX(user_id)`: user 기준 역방향 조회.
- * - 이메일/닉네임/동의 상태를 저장하지 않는다.
- */
+/** `external_identities`(#3/ADR-0004): UNIQUE(provider, subject) 경합 승부처, user_id 역방향 INDEX. */
 export const externalIdentities = sqliteTable(
   'external_identities',
   {
@@ -52,12 +37,7 @@ export const externalIdentities = sqliteTable(
   ],
 );
 
-/**
- * `sessions` (이슈 #4, ADR-0005): 세션 발급/폐기 기록.
- * - `jti_hash` PK — PASETO 원문 저장 금지, SHA-256(jti)만 저장한다.
- * - `user_id` FK→users.id. `revoked_at`: 로그아웃/강제 폐기 즉시 적용.
- * - 보호 요청마다 `revoked_at IS NULL AND expires_at > now`로 활성 검사.
- */
+/** `sessions`(#4/ADR-0005): jti_hash PK(원문 금지), user_id FK, revoked_at 즉시 폐기. */
 export const sessions = sqliteTable('sessions', {
   jtiHash: text('jti_hash').primaryKey(),
   userId: text('user_id')
@@ -68,10 +48,7 @@ export const sessions = sqliteTable('sessions', {
   revokedAt: integer('revoked_at'),
 });
 
-/**
- * `exams` (이슈 #46, ADR-0019): 시험 — 시험 독립 구조의 최상위.
- * - `code` UNIQUE(예: 'saa-c03'). 다른 자격시험은 행 추가로 확장한다.
- */
+/** `exams`(#46/ADR-0019): 시험 독립 구조 최상위, code UNIQUE. */
 export const exams = sqliteTable('exams', {
   id: text('id').primaryKey(),
   code: text('code').notNull().unique(),
@@ -79,11 +56,7 @@ export const exams = sqliteTable('exams', {
   createdAt: integer('created_at').notNull(),
 });
 
-/**
- * `exam_domains` (이슈 #46, ADR-0019): 시험별 출제 영역 + 가중치.
- * - `UNIQUE(exam_id, code)`: 시험 안에서 영역 코드 중복 금지.
- * - `weight`: 영역 배분 가중치(정수 percent, SAA-C03 합 100).
- */
+/** `exam_domains`(#46/ADR-0019): UNIQUE(exam_id, code), weight 정수 percent. */
 export const examDomains = sqliteTable(
   'exam_domains',
   {
@@ -101,11 +74,7 @@ export const examDomains = sqliteTable(
   ],
 );
 
-/**
- * `questions` (이슈 #46, ADR-0019): 문제 — 버전과 분리된 식별자.
- * - `status`: 'active' | 'inactive'. 풀이 이력이 있는 문제는 물리 삭제 대신 비활성화한다.
- * - `current_version_no`: 최신 개정 번호(NULL = 아직 버전 없음).
- */
+/** `questions`(#46/ADR-0019): status active|inactive(풀이 이력 물리 삭제 금지), current_version_no. */
 export const questions = sqliteTable(
   'questions',
   {
@@ -124,12 +93,7 @@ export const questions = sqliteTable(
   (table) => [index('questions_exam_status_idx').on(table.examId, table.status)],
 );
 
-/**
- * `question_versions` (이슈 #46, ADR-0019): 문제 개정 — 본문·보기·정답 스냅샷 단위.
- * - `UNIQUE(question_id, version_no)`: 개정 번호 단조 증가.
- * - `answer_option_ids`: 정답 보기 id 집합(JSON) — 저장 전 option id 부분집합 검증을 통과해야 한다.
- * - `option_set_hash`: 보기 집합 지문(중복·순열 검수용). `review_status`: 검수 상태.
- */
+/** `question_versions`(#46/ADR-0019): UNIQUE(question_id, version_no), 정답 JSON(부분집합 검증), hash/review 상태. */
 export const questionVersions = sqliteTable(
   'question_versions',
   {
@@ -153,10 +117,7 @@ export const questionVersions = sqliteTable(
   ],
 );
 
-/**
- * `question_options` (이슈 #46, ADR-0019): 개정별 보기 — 화면상 번호/위치와 분리된 고유 id.
- * - `UNIQUE(question_version_id, option_key)`: 개정 안에서 보기 키 중복 금지.
- */
+/** `question_options`(#46/ADR-0019): UNIQUE(version_id, option_key). */
 export const questionOptions = sqliteTable(
   'question_options',
   {
@@ -173,10 +134,7 @@ export const questionOptions = sqliteTable(
   ],
 );
 
-/**
- * `audit_logs` (이슈 #46, ADR-0019): 관리 작업 감사 최소 골격.
- * - actor/action/대상/요청 id만 기록한다. 토큰·개인정보 원문 저장 금지(ADR-0006).
- */
+/** `audit_logs`(#46/ADR-0019): actor/action/대상/요청 id만. 원문 저장 금지(ADR-0006). */
 export const auditLogs = sqliteTable('audit_logs', {
   id: text('id').primaryKey(),
   actor: text('actor').notNull(),
@@ -187,13 +145,7 @@ export const auditLogs = sqliteTable('audit_logs', {
   createdAt: integer('created_at').notNull(),
 });
 
-/**
- * `admin_tokens` (이슈 #47, ADR-0019): 관리 주체별 토큰.
- * - 원문 저장 금지 — SHA-256(token) hex만 저장한다. 서버는 제시된 Bearer를 해시해 조회한다.
- * - `scope`: 'questions:read' | 'questions:write' (쓰기는 읽기 포함).
- * - `revoked_at`: 개별 폐기. 교체는 폐기 + 신규 발급(#55 운영 절차).
- * - 쿠키 미사용(CSRF 비대상), 브라우저 노출 금지.
- */
+/** `admin_tokens`(#47/ADR-0019): token_hash UNIQUE(원문 금지), scope read/write, revoked_at 개별 폐기. */
 export const adminTokens = sqliteTable(
   'admin_tokens',
   {
@@ -207,12 +159,7 @@ export const adminTokens = sqliteTable(
   (table) => [index('admin_tokens_actor_idx').on(table.actor)],
 );
 
-/**
- * `admin_idempotency` (이슈 #47, ADR-0019): 멱등 등록 응답 재현.
- * - `key`(`Idempotency-Key` 헤더) PK. `request_hash` = SHA-256(method + path + body 원문).
- * - 동일 key + 동일 해시 → 저장된 응답 재현. 다른 해시 → 409(충돌).
- * - 응답 본문은 생성된 id 등 재현에 필요한 최소 JSON만 저장한다(토큰·payload 원문 금지).
- */
+/** `admin_idempotency`(#47/ADR-0019): key PK, request_hash로 재현/409 판정. 원문 저장 금지. */
 export const adminIdempotency = sqliteTable('admin_idempotency', {
   key: text('key').primaryKey(),
   requestHash: text('request_hash').notNull(),
@@ -220,3 +167,63 @@ export const adminIdempotency = sqliteTable('admin_idempotency', {
   responseBody: text('response_body').notNull(),
   createdAt: integer('created_at').notNull(),
 });
+
+/** `study_sets`(#49/ADR-0020): 부분 UNIQUE(user_id, exam_id WHERE active), result_json은 submitted만. */
+export const studySets = sqliteTable(
+  'study_sets',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    examId: text('exam_id').notNull(),
+    mode: text('mode').notNull(),
+    domainId: text('domain_id'),
+    status: text('status').notNull().default('active'),
+    createdAt: integer('created_at').notNull(),
+    submittedAt: integer('submitted_at'),
+    resultJson: text('result_json', { mode: 'json' }).$type<StudySetResultJson | null>(),
+  },
+  (table) => [
+    uniqueIndex('study_sets_user_exam_active_uq')
+      .on(table.userId, table.examId)
+      .where(sql`status = 'active'`),
+    index('study_sets_user_idx').on(table.userId),
+  ],
+);
+
+interface StudySetResultJson {
+  readonly answeredCount: number;
+  readonly correctCount: number;
+  readonly accuracyPercent: number;
+  readonly passCount: number;
+  readonly unansweredCount: number;
+  readonly perItem: ReadonlyArray<{
+    readonly questionId: string;
+    readonly responseKind: string;
+    readonly selectedOptionIds: readonly string[];
+    readonly correctOptionIds: readonly string[] | null;
+    readonly correct: boolean;
+  }>;
+}
+
+/** `study_set_items`(#49/ADR-0020): PK(set_id, question_id), 정답 스냅샷이 채점 기준. */
+export const studySetItems = sqliteTable(
+  'study_set_items',
+  {
+    setId: text('set_id')
+      .notNull()
+      .references(() => studySets.id),
+    questionId: text('question_id').notNull(),
+    questionVersionId: text('question_version_id').notNull(),
+    versionNo: integer('version_no').notNull(),
+    optionOrder: text('option_order', { mode: 'json' }).$type<string[]>().notNull(),
+    answerOptionIds: text('answer_option_ids', { mode: 'json' }).$type<string[]>().notNull(),
+    responseKind: text('response_kind').notNull().default('unanswered'),
+    selectedOptionIds: text('selected_option_ids', { mode: 'json' }).$type<string[]>().notNull().default([]),
+  },
+  (table) => [
+    primaryKey({ columns: [table.setId, table.questionId] }),
+    index('study_set_items_set_idx').on(table.setId),
+  ],
+);
