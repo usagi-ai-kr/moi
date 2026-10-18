@@ -67,3 +67,122 @@ export const sessions = sqliteTable('sessions', {
   expiresAt: integer('expires_at').notNull(),
   revokedAt: integer('revoked_at'),
 });
+
+/**
+ * `exams` (이슈 #46, ADR-0019): 시험 — 시험 독립 구조의 최상위.
+ * - `code` UNIQUE(예: 'saa-c03'). 다른 자격시험은 행 추가로 확장한다.
+ */
+export const exams = sqliteTable('exams', {
+  id: text('id').primaryKey(),
+  code: text('code').notNull().unique(),
+  name: text('name').notNull(),
+  createdAt: integer('created_at').notNull(),
+});
+
+/**
+ * `exam_domains` (이슈 #46, ADR-0019): 시험별 출제 영역 + 가중치.
+ * - `UNIQUE(exam_id, code)`: 시험 안에서 영역 코드 중복 금지.
+ * - `weight`: 영역 배분 가중치(정수 percent, SAA-C03 합 100).
+ */
+export const examDomains = sqliteTable(
+  'exam_domains',
+  {
+    id: text('id').primaryKey(),
+    examId: text('exam_id')
+      .notNull()
+      .references(() => exams.id),
+    code: text('code').notNull(),
+    name: text('name').notNull(),
+    weight: integer('weight').notNull(),
+  },
+  (table) => [
+    uniqueIndex('exam_domains_exam_code_uq').on(table.examId, table.code),
+    index('exam_domains_exam_id_idx').on(table.examId),
+  ],
+);
+
+/**
+ * `questions` (이슈 #46, ADR-0019): 문제 — 버전과 분리된 식별자.
+ * - `status`: 'active' | 'inactive'. 풀이 이력이 있는 문제는 물리 삭제 대신 비활성화한다.
+ * - `current_version_no`: 최신 개정 번호(NULL = 아직 버전 없음).
+ */
+export const questions = sqliteTable(
+  'questions',
+  {
+    id: text('id').primaryKey(),
+    examId: text('exam_id')
+      .notNull()
+      .references(() => exams.id),
+    domainId: text('domain_id')
+      .notNull()
+      .references(() => examDomains.id),
+    status: text('status').notNull().default('active'),
+    currentVersionNo: integer('current_version_no'),
+    createdAt: integer('created_at').notNull(),
+    updatedAt: integer('updated_at').notNull(),
+  },
+  (table) => [index('questions_exam_status_idx').on(table.examId, table.status)],
+);
+
+/**
+ * `question_versions` (이슈 #46, ADR-0019): 문제 개정 — 본문·보기·정답 스냅샷 단위.
+ * - `UNIQUE(question_id, version_no)`: 개정 번호 단조 증가.
+ * - `answer_option_ids`: 정답 보기 id 집합(JSON) — 저장 전 option id 부분집합 검증을 통과해야 한다.
+ * - `option_set_hash`: 보기 집합 지문(중복·순열 검수용). `review_status`: 검수 상태.
+ */
+export const questionVersions = sqliteTable(
+  'question_versions',
+  {
+    id: text('id').primaryKey(),
+    questionId: text('question_id')
+      .notNull()
+      .references(() => questions.id),
+    versionNo: integer('version_no').notNull(),
+    stem: text('stem').notNull(),
+    explanation: text('explanation').notNull(),
+    sourceUrls: text('source_urls', { mode: 'json' }).$type<string[]>().notNull(),
+    answerOptionIds: text('answer_option_ids', { mode: 'json' }).$type<string[]>().notNull(),
+    optionSetHash: text('option_set_hash').notNull(),
+    reviewStatus: text('review_status').notNull().default('pending'),
+    createdAt: integer('created_at').notNull(),
+    supersededAt: integer('superseded_at'),
+  },
+  (table) => [
+    uniqueIndex('question_versions_question_version_uq').on(table.questionId, table.versionNo),
+    index('question_versions_question_id_idx').on(table.questionId),
+  ],
+);
+
+/**
+ * `question_options` (이슈 #46, ADR-0019): 개정별 보기 — 화면상 번호/위치와 분리된 고유 id.
+ * - `UNIQUE(question_version_id, option_key)`: 개정 안에서 보기 키 중복 금지.
+ */
+export const questionOptions = sqliteTable(
+  'question_options',
+  {
+    id: text('id').primaryKey(),
+    questionVersionId: text('question_version_id')
+      .notNull()
+      .references(() => questionVersions.id),
+    optionKey: text('option_key').notNull(),
+    text: text('text').notNull(),
+  },
+  (table) => [
+    uniqueIndex('question_options_version_key_uq').on(table.questionVersionId, table.optionKey),
+    index('question_options_version_id_idx').on(table.questionVersionId),
+  ],
+);
+
+/**
+ * `audit_logs` (이슈 #46, ADR-0019): 관리 작업 감사 최소 골격.
+ * - actor/action/대상/요청 id만 기록한다. 토큰·개인정보 원문 저장 금지(ADR-0006).
+ */
+export const auditLogs = sqliteTable('audit_logs', {
+  id: text('id').primaryKey(),
+  actor: text('actor').notNull(),
+  action: text('action').notNull(),
+  targetType: text('target_type').notNull(),
+  targetId: text('target_id').notNull(),
+  requestId: text('request_id').notNull(),
+  createdAt: integer('created_at').notNull(),
+});
