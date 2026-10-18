@@ -26,4 +26,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0008 | 버전 규칙과 Milestone 체계 | Accepted | 2026-10-18 | [0008-version-and-milestones.md](./0008-version-and-milestones.md) |
 | ADR-0009 | 브랜치·PR 플로우 | Accepted | 2026-10-18 | [0009-branch-pr-flow.md](./0009-branch-pr-flow.md) |
 | ADR-0010 | 하네스·문서 관리 체계 | Accepted | 2026-10-18 | [0010-harness-doc-management.md](./0010-harness-doc-management.md) |
+| ADR-0011 | UI/Worker 실행 환경 경계와 배포 검증 계약 | Accepted | 2026-10-18 | [0011-runtime-boundary-release-contract.md](./0011-runtime-boundary-release-contract.md) |
 <!-- ADR_INDEX:END -->

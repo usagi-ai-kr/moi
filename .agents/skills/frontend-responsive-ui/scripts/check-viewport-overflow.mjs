@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// 반응형 가로 오버플로 검사 (ADR-0007, 이슈 #1: 320/375/768/1024/1280).
+// 반응형 가로 오버플로 검사 (ADR-0007/0011, 이슈 #1·#12: 320/375/768/1024/1280).
+// **가로 오버플로만 보증** — 겹침·클릭 가능·포커스·가시성은 Playwright 시나리오(#12) 몫.
 // 의존성: Node.js + playwright (프로젝트 devDependency)
-// 사용법: node scripts/check-viewport-overflow.mjs <base-url> [route ...]
-//   예: node scripts/check-viewport-overflow.mjs http://localhost:8787 / /login
+// 사용법: node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs <base-url> [route ...]
+//   예: node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs http://localhost:8787 / /login
 // 종료 코드: 0 통과, 1 위반, 2 사용 오류, 3 playwright 미설치
 const VIEWPORTS = [320, 375, 768, 1024, 1280];
 
@@ -45,5 +46,5 @@ for (const width of VIEWPORTS) {
   await page.close();
 }
 await browser.close();
-console.log(failed ? `FAIL: 가로 오버플로 ${failed}건` : 'OK: 전 viewport 가로 오버플로 없음');
+console.log(failed ? `FAIL: 가로 오버플로 ${failed}건` : 'OK: 전 viewport 가로 오버플로 없음 (가로 오버플로 한정 — 반응형 전체 판정 아님)');
 process.exit(failed ? 1 : 0);

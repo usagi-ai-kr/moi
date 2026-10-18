@@ -9,7 +9,7 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 출처: 이슈 #1(반응형 품질 기준, 라이브러리 책임), #4(화면·상태 설계). 관련: `architecture-boundaries`, `tdd-bdd-testing`.
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
-- `node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs <base-url> [route ...]` — 320/375/768/1024/1280px에서 가로 오버플로 검사(playwright 필요, 0.1.0 scaffold 이후). 위반 시 exit 1, 항목별 한 줄 요약.
+- `node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs <base-url> [route ...]` — 320/375/768/1024/1280px에서 **가로 오버플로만** 검사(playwright 필요, 0.1.0 scaffold 이후). 겹침·클릭 가능·포커스·가시성은 Playwright 시나리오가 검증(#12). 위반 시 exit 1, 항목별 한 줄 요약.
 
 ## 반응형 기준 (Mobile-first)
 - 브레이크포인트: 모바일 320–767px / 태블릿 768–1199px / 데스크탑 1200px 이상.
@@ -37,4 +37,5 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 ## 테스트
 - React Testing Library로 UI 상태·오류 처리 단위 테스트.
 - Playwright-BDD로 핵심 화면 320/375/768/1024/1280 전부, 보조 시나리오 375/768/1280 실행.
+- 반응형 판정 분리(ADR-0011): 가로 오버플로 도구의 통과는 **반응형 전체 통과가 아니다**. 핵심 화면 5종에서 주요 요소 가시성·클릭 가능·포커스 순서·스크린샷 비교는 Playwright 시나리오가 담당한다(#12).
 - 상태 소유권 테스트: TanStack Query가 진실 원천이고, Zustand에 토큰/중복 사용자 상태가 없음을 검증.
