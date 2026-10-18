@@ -287,3 +287,72 @@ describe('스냅샷 채점 (개정 불변)', () => {
     expect(result.result.perItem.find((i) => i.questionId === target.questionId)?.correct).toBe(true);
   });
 });
+
+describe('멱등성 (#52)', () => {
+  async function countActive(): Promise<number> {
+    const rows = await db.prepare("SELECT COUNT(*) AS c FROM study_sets WHERE status = 'active'").all<{ c: number }>();
+    return Number(rows.results[0]?.c ?? 0);
+  }
+
+  it('중복 세트 생성(순차): 첫 201, 둘째 409 active_set_exists, 활성 1개', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c1');
+    const first = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    expect(first.status).toBe(201);
+    const second = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    expect(second.status).toBe(409);
+    expect((await second.json()) as { error: string }).toMatchObject({ error: 'active_set_exists' });
+    expect(await countActive()).toBe(1);
+  });
+
+  it('중복 제출(순차): 첫 200, 재제출 409 not_active, 이력 중복 없음', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c2');
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    const set = (await started.json()) as { id: string };
+    const first = await studyRequest(`/api/study/sets/${set.id}/submit`, {
+      method: 'POST',
+      token,
+      body: { confirmUnanswered: true },
+    });
+    expect(first.status).toBe(200);
+    const retry = await studyRequest(`/api/study/sets/${set.id}/submit`, {
+      method: 'POST',
+      token,
+      body: { confirmUnanswered: true },
+    });
+    expect(retry.status).toBe(409);
+    expect((await retry.json()) as { error: string }).toMatchObject({ error: 'not_active' });
+    const history = await studyRequest('/api/study/sets?page=1&pageSize=20', { token });
+    expect(history.status).toBe(200);
+    expect(((await history.json()) as { total: number }).total).toBe(1);
+  });
+
+  it('답안 PATCH 반복: 둘 다 200, GET response 동일·중복 없음', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c3');
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    const set = (await started.json()) as { id: string; items: Array<{ questionId: string }> };
+    const qid = set.items[0]?.questionId ?? '';
+    const body = { questionId: qid, response: { kind: 'pass' } };
+    const a = await studyRequest(`/api/study/sets/${set.id}/answers`, { method: 'PATCH', token, body });
+    const b = await studyRequest(`/api/study/sets/${set.id}/answers`, { method: 'PATCH', token, body });
+    expect(a.status).toBe(200);
+    expect(b.status).toBe(200);
+    const got = await studyRequest(`/api/study/sets/${set.id}`, { token });
+    expect(got.status).toBe(200);
+    const view = (await got.json()) as { items: Array<{ questionId: string; response: { kind: string } }> };
+    expect(view.items).toHaveLength(20);
+    expect(view.items.filter((i) => i.questionId === qid)).toHaveLength(1);
+    expect(view.items.find((i) => i.questionId === qid)?.response).toMatchObject({ kind: 'pass' });
+  });
+
+  it('동시 세트 생성: 201 1건·409 1건, 활성 1개(순서 무관)', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c4');
+    const [a, b] = await Promise.all([
+      studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } }),
+      studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([201, 409]);
+    const rejected = a.status === 409 ? a : b;
+    expect((await rejected.json()) as { error: string }).toMatchObject({ error: 'active_set_exists' });
+    expect(await countActive()).toBe(1);
+  });
+});
