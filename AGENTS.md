@@ -1,6 +1,6 @@
 # AGENTS.md — moi 프로젝트 규칙
 
-**moi**는 문제 중심 시험 대비 플랫폼입니다(첫 지원 시험: AWS SAA-C03). Cloudflare Workers 단일 배포 단위에서 React SPA(정적 자산) + Hono API를 함께 서빙합니다.
+**moi**는 문제 중심 시험 대비 플랫폼입니다. Cloudflare Workers 단일 배포 단위에서 React SPA(정적 자산) + Hono API를 함께 서빙합니다.
 이 문서는 이 저장소에서 작업하는 모든 에이전트의 최상위 규칙입니다. 세부 실행 절차는 `.agents/skills/`의 스킬을 따르고, 기술적 판단의 기록은 `docs/adr/`에서 관리합니다.
 
 ## 작업 원칙
@@ -85,10 +85,10 @@
 
 ## 버전 규칙
 - 0.1.x 단계(패치 재편): `0.1.0` 하네스 보강(#9~#12)·scaffold → `0.1.1` Kakao OIDC → `0.1.2` D1 사용자 매핑 → `0.1.3` 세션·인증 API → `0.1.4` BDD 통합·배포. GitHub Milestone `0.1.0`~`0.1.4`가 각 단계와 대응한다.
-- 0.2.0 단계(학습 제품): `0.2.0 — AWS SAA-C03 학습 제품` (PR #35 계약, ADR-0017·0019·0020·0021).
+- 0.2.0(학습 제품): `0.2.0 — AWS SAA-C03 학습 제품` (PR #35 계약, ADR-0017·0019·0020·0021).
 - 0.2.0 이후 minor 확장은 추상 `1.0.0` Milestone을 placeholder로 사용하고, 범위 확정 시 해당 minor Milestone(예: `0.3.0`)을 만든다.
 - 각 minor의 최종 patch는 wiki 페이지·annotated tag(`v<minor>.<patch>`)·GitHub Release·`release/<minor>` branch를 모두 남긴다. 넷 중 하나라도 없으면 릴리스 완료가 아니다.
-- 우선순위 근거: GitHub Milestone(`0.1.0`~`0.1.4`, `0.2.0`, 추상 `1.0.0`)과 이슈 본문의 선행 링크. Milestone이 없으면 이슈 본문 버전이 근거다. → ADR-0017 (ADR-0008 대체)
+- 우선순위 근거: GitHub Milestone(`0.1.0`~`0.1.4`, `0.2.0`, 추상 `1.0.0`)과 이슈 본문의 선행 링크. → ADR-0017
 
 ## 스킬 인덱스
 
