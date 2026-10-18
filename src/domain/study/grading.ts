@@ -19,6 +19,7 @@ export interface VersionAnswer {
 }
 
 function sameOptionSet(a: readonly string[], b: readonly string[]): boolean {
+  if (a.length === 0 || b.length === 0) return false;
   if (a.length !== b.length) return false;
   const left = new Set(a);
   const right = new Set(b);

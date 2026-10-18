@@ -35,7 +35,7 @@ export interface StudySetPerItem {
   readonly responseKind: ResponseKind;
   readonly selectedOptionIds: readonly string[];
   readonly correctOptionIds: readonly string[] | null;
-  readonly correct: boolean | null;
+  readonly correct: boolean;
 }
 
 export interface StudySetResult {

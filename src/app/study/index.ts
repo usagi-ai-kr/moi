@@ -166,7 +166,7 @@ export async function listCompletedSets(
   input: { userId: string; page: number; pageSize: number },
 ): Promise<CompletedSetsPage> {
   const page = await deps.repository.listCompleted(input);
-  const items: StudySetSummary[] = page.items.map((set) => ({
+  const items: StudySetSummary[] = page.items.filter((set) => set.status === 'submitted').map((set) => ({
     id: set.id,
     examId: set.examId,
     mode: set.mode,

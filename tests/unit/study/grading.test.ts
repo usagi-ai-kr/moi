@@ -62,6 +62,11 @@ describe('gradeItems (일괄 채점)', () => {
     expect(result.unansweredCount).toBe(3);
   });
 
+  it('빈 정답 집합은 완전 일치로 인정하지 않는다(fail-closed)', () => {
+    const result = gradeItems([item('8', { kind: 'answered', optionIds: [] })], [{ questionVersionId: 'qv-8', answerOptionIds: [] }]);
+    expect(result.perItem[0]?.correct).toBe(false);
+  });
+
   it('정답 집합이 누락된 개정(데이터 결함)은 오답으로 fail-closed', () => {
     const result = gradeItems([item('9', { kind: 'answered', optionIds: ['b'] })], []);
     expect(result.perItem[0]?.correct).toBe(false);
