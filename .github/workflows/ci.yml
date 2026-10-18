@@ -1,0 +1,71 @@
+# moi CI — 0.x 품질 게이트 샘플 (이슈 #5)
+# - scaffold(0.1.0) 이전에는 package.json이 없어 게이트를 건너뛰고 성공으로 종료한다.
+# - scaffold 이후 package.json scripts에 정의된 게이트만 순차 실행한다.
+#   게이트 목록: lint, typecheck, check:architecture, test:unit, test:integration, test:bdd, build
+# - pnpm 버전은 package.json의 packageManager 필드로 고정한다 (scaffold 시 포함).
+name: CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate skills (Agent Skills spec)
+        run: node .agents/scripts/validate-skills.mjs
+
+      - name: Detect scaffold
+        id: scaffold
+        run: |
+          if [ -f package.json ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip notice (no scaffold)
+        if: steps.scaffold.outputs.ready != 'true'
+        run: echo "::notice::package.json이 아직 없어 CI 게이트를 건너뜁니다. 0.1.0 scaffold 완료 후 자동 활성화됩니다."
+
+      - name: Setup pnpm
+        if: steps.scaffold.outputs.ready == 'true'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        if: steps.scaffold.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        if: steps.scaffold.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Quality gates
+        if: steps.scaffold.outputs.ready == 'true'
+        run: |
+          for script in lint typecheck check:architecture test:unit test:integration test:bdd build; do
+            if node -e "process.exit(require('./package.json').scripts?.['$script'] ? 0 : 1)"; then
+              echo "::group::pnpm run $script"
+              pnpm run "$script"
+              echo "::endgroup::"
+            else
+              echo "::notice::'$script' 스크립트 미정의 — 건너뜀 (0.x 단계에서 순차 활성화)"
+            fi
+          done
