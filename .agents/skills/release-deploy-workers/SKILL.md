@@ -9,7 +9,8 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 출처: 이슈 #5(선행 #4). 관련: `tdd-bdd-testing`, `session-paseto`.
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
-- `sh .agents/skills/release-deploy-workers/scripts/smoke-check.sh <base-url>` — 배포 기본 smoke: `/` 200, `/api/me` 401, `Cache-Control: no-store` 확인. 실패 사유만 간결 출력.
+- `sh .agents/skills/release-deploy-workers/scripts/smoke-check.sh <base-url>` — 배포 smoke(**fail-closed**): `/` 200, `/api/me` **단일 응답**에서 401 + `Cache-Control: no-store` 동시 확인 — 누락 시 exit 1. 응답 원문(Set-Cookie·토큰) 미출력.
+- `sh .agents/skills/release-deploy-workers/scripts/smoke-check.test.sh` — smoke 판정 회귀 테스트(mock 서버).
 
 ## 배포 전 체크리스트
 - [ ] 동일 Worker 배포 단위에서 SPA 정적 자산 + Hono API 서빙 확인
@@ -20,6 +21,16 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 - [ ] `paseto-ts` Workers 번들 호환 검증
 - [ ] Pino 구조화 로그(thread transport 미사용) 검증
 - [ ] CI 게이트 전체 통과: lint / typecheck / check:architecture / test:unit / test:integration / test:bdd / build
+
+## 릴리스 runbook (순서 · 중단 · 복구)
+1. 로컬: `run-gates` 전체 + 하네스 selftests 통과
+2. 원격 D1: 백업/내보내기 → migration 사전 검증(로컬 리허설)
+3. Secrets: 등록/갱신(`session-paseto` 키 회전 절차 준수, 값 비노출)
+4. `wrangler deploy` → 버전·URL 기록 — **실패 시 다음 단계 중단**
+5. Kakao Redirect URI 등록값 = 요청값 일치 확인
+6. smoke: `smoke-check.sh https://moi.qus0in.workers.dev` (fail-closed)
+7. 실계정 수동 smoke(아래 체크리스트)
+- 실패 시 복구: 코드는 `wrangler versions rollback`, D1은 forward-only(백업 복원) — 서로 다름을 구분해 기록. 초기에는 수동/`workflow_dispatch` 중심.
 
 ## 자동 검증 (CI/BDD)
 - [ ] playwright-bdd feature files & steps로 0.x 시나리오 실행

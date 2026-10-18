@@ -60,7 +60,8 @@
 - 초기 범위 도입 금지: SSR, 별도 API 서버, 마이크로서비스, Redux, Kakao JS SDK
 
 ## 아키텍처 계약 (요약)
-- `src/` 기준 `ui/`, `app/`, `domain/`, `infra/`, `bootstrap/` 분리.
+- `src/` 기준 `ui/`, `app/`, `domain/`, `infra/`, `bootstrap/` 분리 — `bootstrap`은 `bootstrap/web`(브라우저 진입)·`bootstrap/worker`(Worker 진입).
+- 실행 환경 경계: 브라우저 번들에는 `ui`(+`ui/api`)·`bootstrap/web`과 사이드이펙트 없는 공유 타입/DTO만 — `infra`·Cloudflare 바인딩·Secret 유입 금지(번들 검사로 차단). → `architecture-boundaries`, ADR-0011
 - 의존 방향: 논리 흐름 `ui → app → domain`. Worker 호출은 `ui(타입 안전 API client) → infra(Hono) → app(use case)`. `app`/`domain`에서 `infra`/`ui`로의 역방향 import 금지.
 - API: `GET /auth/kakao`, `GET /auth/kakao/callback`, `GET /api/me`, `POST /auth/logout`
 - 상세(계층별 허용/금지 라이브러리): `architecture-boundaries` 스킬, ADR-0001.
