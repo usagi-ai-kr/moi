@@ -3,6 +3,7 @@ import { registerAdminRoutes } from './admin/routes';
 import { registerAuthRoutes } from './auth/routes';
 import { registerReportRoutes } from './reports/routes';
 import { registerSessionRoutes } from './session/routes';
+import { registerStatsRoutes } from './stats/routes';
 import { registerStudyRoutes } from './study/routes';
 import type { AdminRuntime } from './admin/runtime';
 import type { StudyRuntime } from './study/runtime';
@@ -38,6 +39,7 @@ export function createApp(options?: CreateAppOptions) {
     createSessionRuntime: options?.createSessionRuntime,
   });
   registerReportRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
+  registerStatsRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
 
   return app;
 }
