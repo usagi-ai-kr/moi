@@ -53,6 +53,11 @@ Feature: 0.2.1 학습 UI — 20문제 핵심 흐름 (#50)
     And 학습 이력 버튼을 누르면
     Then 완료 세트가 보인다
 
+  Scenario: 학습 현황 패널
+    When 홈 페이지에 접속하면
+    And 학습 현황 버튼을 누르면
+    Then 학습 현황이 보인다
+
   Scenario Outline: 학습 화면 반응형 가로 오버플로 없음
     Given 뷰포트 너비가 <width>px이면
     When 홈 페이지에 접속하면
