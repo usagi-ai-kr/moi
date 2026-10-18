@@ -2,7 +2,10 @@
 export const copy = {
   brand: 'moi',
   tagline: 'AWS SAA 자격증 학습',
+  login: {
+    kakao: '카카오 로그인',
+  },
   home: {
-    note: '0.1.0 스캐폴드 — 카카오 로그인은 다음 단계에서 추가됩니다.',
+    note: '0.1.0 스캐폴드 — 카카오 로그인 연동은 다음 업데이트에서 활성화됩니다.',
   },
 } as const;
