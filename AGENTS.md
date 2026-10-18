@@ -1,6 +1,6 @@
 # AGENTS.md — moi 프로젝트 규칙
 
-**moi**는 AWS SAA 자격증 학습 사이트입니다. Cloudflare Workers 단일 배포 단위에서 React SPA(정적 자산) + Hono API를 함께 서빙합니다.
+**moi**는 문제 중심 시험 대비 플랫폼입니다(첫 지원 시험: AWS SAA-C03). Cloudflare Workers 단일 배포 단위에서 React SPA(정적 자산) + Hono API를 함께 서빙합니다.
 이 문서는 이 저장소에서 작업하는 모든 에이전트의 최상위 규칙입니다. 세부 실행 절차는 `.agents/skills/`의 스킬을 따르고, 기술적 판단의 기록은 `docs/adr/`에서 관리합니다.
 
 ## 작업 원칙
