@@ -8,8 +8,8 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 
 출처: 이슈 #5(선행 #4). 관련: `tdd-bdd-testing`, `session-paseto`.
 
-## 스크립트 (우선 실행)
-- `sh scripts/smoke-check.sh <base-url>` — 배포 기본 smoke: `/` 200, `/api/me` 401, `Cache-Control: no-store` 확인. 실패 사유만 간결 출력.
+## 스크립트 (우선 실행 — repo root에서 실행)
+- `sh .agents/skills/release-deploy-workers/scripts/smoke-check.sh <base-url>` — 배포 기본 smoke: `/` 200, `/api/me` 401, `Cache-Control: no-store` 확인. 실패 사유만 간결 출력.
 
 ## 배포 전 체크리스트
 - [ ] 동일 Worker 배포 단위에서 SPA 정적 자산 + Hono API 서빙 확인
@@ -19,7 +19,7 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 - [ ] Kakao Developers Redirect URI 정확히 등록
 - [ ] `paseto-ts` Workers 번들 호환 검증
 - [ ] Pino 구조화 로그(thread transport 미사용) 검증
-- [ ] CI 게이트 전체 통과: lint / typecheck / architecture check / test:unit / test:integration / test:bdd / build
+- [ ] CI 게이트 전체 통과: lint / typecheck / check:architecture / test:unit / test:integration / test:bdd / build
 
 ## 자동 검증 (CI/BDD)
 - [ ] playwright-bdd feature files & steps로 0.x 시나리오 실행
@@ -38,4 +38,4 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 ## 보고 형식 (PR/이슈에 기록)
 - 배포 URL, commit SHA, DB migration 내역, 테스트 명령/결과, 미해결 blocker
 - 완료 후 다음 신규 기능 단위는 `1.0.0`으로 기획한다(프로젝트 내부 버전 규칙).
-- Milestone은 사용자가 수동 생성한다. 실제 생성 전까지 이슈 본문 버전과 선행 링크가 우선순위 근거다. → `issue-triage`
+- Milestone은 사용자가 수동 생성한다(에이전트는 명시 요청 시에만). 우선순위 근거: Milestone `0.1.0`~`0.1.4`와 이슈 본문 버전·선행 링크. → `issue-triage`

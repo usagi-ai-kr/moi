@@ -1,14 +1,17 @@
 # dependencies / build
 node_modules/
 dist/
+coverage/
 
 # cloudflare / wrangler
 .wrangler/
-.dev.vars
+.dev.vars*
+!.dev.vars.example
 
 # env / secrets
 .env
 .env.*
+!.env.example
 
 # logs
 *.log
