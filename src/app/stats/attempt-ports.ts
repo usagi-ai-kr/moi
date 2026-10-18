@@ -24,4 +24,15 @@ export interface StudyAttemptRepository {
   hasGradedAttempt(input: { readonly userId: string; readonly examId: string; readonly questionId: string }): Promise<boolean>;
   /** occurredAt asc, attemptId asc. */
   listByUserExam(input: { readonly userId: string; readonly examId: string }): Promise<AttemptRecord[]>;
+  /**
+   * 세트 소속 시도를 제외 처리한다(이슈 #53 정정 적용).
+   * `source='set' AND source_id=setId AND user_id=userId AND question_version_id=versionId`의
+   * `excluded_at`을 `now`로 UPDATE하고 변경 행 수를 반환한다(멱등 — 재호출은 같은 값으로 덮어쓴다).
+   */
+  excludeSetVersion(input: {
+    readonly userId: string;
+    readonly setId: string;
+    readonly questionVersionId: string;
+    readonly now: number;
+  }): Promise<number>;
 }
