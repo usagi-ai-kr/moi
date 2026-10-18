@@ -28,4 +28,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0010 | 하네스·문서 관리 체계 | Accepted | 2026-10-18 | [0010-harness-doc-management.md](./0010-harness-doc-management.md) |
 | ADR-0011 | UI/Worker 실행 환경 경계와 배포 검증 계약 | Accepted | 2026-10-18 | [0011-runtime-boundary-release-contract.md](./0011-runtime-boundary-release-contract.md) |
 | ADR-0012 | 디자인 시스템 — AWS 팔레트·KoddiUD 온고딕/Inter·레이아웃·모션 | Accepted | 2026-10-18 | [0012-design-system-aws-koddiud-inter.md](./0012-design-system-aws-koddiud-inter.md) |
+| ADR-0013 | 하네스 모듈 길이 예산 — 검사·관리 자동화 | Accepted | 2026-10-18 | [0013-harness-module-length-budget.md](./0013-harness-module-length-budget.md) |
 <!-- ADR_INDEX:END -->
