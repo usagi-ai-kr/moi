@@ -1,7 +1,14 @@
+import { Suspense, lazy, useState } from 'react';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
+import { useStudyUiStore } from './study/store';
 import { AuthErrorAlert, LoadErrorAlert, LoggedInCard } from './widgets';
+
+// 학습 화면은 lazy 청크로 분리 — 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50).
+const StudyScreen = lazy(() =>
+  import('./study/StudyScreen').then((m) => ({ default: m.StudyScreen })),
+);
 
 // 경량 CSS 스피너 로딩 화면 — AntD Spin을 쓰지 않는다 (perf).
 function CheckingView() {
@@ -23,6 +30,13 @@ export function App({ client }: { client: ApiClient }) {
   useAuthCallback('success');
   const bannerDismissed = useUiStore((s) => s.authBannerDismissed);
   const showAuthError = authFailed && !bannerDismissed;
+  const [studyOpen, setStudyOpen] = useState(false);
+
+  const openStudy = (view: 'start' | 'history') => {
+    useStudyUiStore.getState().setView(view);
+    useStudyUiStore.getState().resetFlow();
+    setStudyOpen(true);
+  };
 
   return (
     <>
@@ -39,7 +53,34 @@ export function App({ client }: { client: ApiClient }) {
           {status === 'error' && <LoadErrorAlert onRetry={retry} />}
           {showAuthError && <AuthErrorAlert />}
           {status === 'logged-in' && userId !== null ? (
-            <LoggedInCard userId={userId} pending={logoutPending} onLogout={() => void doLogout()} />
+            <>
+              <LoggedInCard userId={userId} pending={logoutPending} onLogout={() => void doLogout()} />
+              <div className="moi-cta moi-study-cta-row">
+                <button
+                  type="button"
+                  className="moi-study-open"
+                  onClick={() => (studyOpen ? setStudyOpen(false) : openStudy('start'))}
+                >
+                  {studyOpen ? copy.session.dismiss : copy.study.cta}
+                </button>
+                {!studyOpen && (
+                  <button type="button" className="moi-study-link" onClick={() => openStudy('history')}>
+                    {copy.study.historyLink}
+                  </button>
+                )}
+              </div>
+              {studyOpen && (
+                <Suspense
+                  fallback={
+                    <p className="moi-note" role="status" aria-live="polite">
+                      {copy.session.checking}
+                    </p>
+                  }
+                >
+                  <StudyScreen client={client} />
+                </Suspense>
+              )}
+            </>
           ) : (
             status !== 'loading' && (
               <>

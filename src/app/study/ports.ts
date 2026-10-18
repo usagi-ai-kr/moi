@@ -20,6 +20,10 @@ export interface PoolEntry {
     readonly versionNo: number;
     readonly optionIds: readonly string[];
     readonly answerOptionIds: readonly string[];
+    readonly stem: string;
+    readonly options: ReadonlyArray<{ readonly optionId: string; readonly text: string }>;
+    readonly explanation: string;
+    readonly sourceUrls: readonly string[];
   };
 }
 

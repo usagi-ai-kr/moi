@@ -207,7 +207,7 @@ interface StudySetResultJson {
   }>;
 }
 
-/** `study_set_items`(#49/ADR-0020): PK(set_id, question_id), 정답 스냅샷이 채점 기준. */
+/** `study_set_items`(#49/ADR-0020, #50 내용 스냅샷): PK(set_id, question_id), 정답 스냅샷이 채점 기준. */
 export const studySetItems = sqliteTable(
   'study_set_items',
   {
@@ -219,6 +219,14 @@ export const studySetItems = sqliteTable(
     versionNo: integer('version_no').notNull(),
     optionOrder: text('option_order', { mode: 'json' }).$type<string[]>().notNull(),
     answerOptionIds: text('answer_option_ids', { mode: 'json' }).$type<string[]>().notNull(),
+    /** 시작 시점 문제 본문 스냅샷 — 제출 전 DTO에 노출한다(#50). */
+    stem: text('stem').notNull().default(''),
+    /** 시작 시점 보기 텍스트 스냅샷 — 제출 전 DTO에 노출한다(#50). */
+    options: text('options_json', { mode: 'json' }).$type<Array<{ optionId: string; text: string }>>().notNull().default([]),
+    /** 시작 시점 해설 스냅샷 — 제출 후에만 노출한다(#50). */
+    explanation: text('explanation').notNull().default(''),
+    /** 시작 시점 근거 URL 스냅샷 — 제출 후에만 노출한다(#50). */
+    sourceUrls: text('source_urls', { mode: 'json' }).$type<string[]>().notNull().default([]),
     responseKind: text('response_kind').notNull().default('unanswered'),
     selectedOptionIds: text('selected_option_ids', { mode: 'json' }).$type<string[]>().notNull().default([]),
   },

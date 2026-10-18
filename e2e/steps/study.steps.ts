@@ -1,0 +1,262 @@
+import { expect } from '@playwright/test';
+import { createBdd } from 'playwright-bdd';
+
+// 학습 UI E2E route mock (#50) — 실제 백엔드 대신 결정적 20문제 세트를 제공한다.
+// "API 모의가 준비되면"(auth.steps)과 충돌하지 않게 별도 문구를 사용한다.
+const { Given, When, Then } = createBdd();
+
+interface FakeItem {
+  questionId: string;
+  questionVersionId: string;
+  versionNo: number;
+  optionOrder: string[];
+  stem: string;
+  options: Array<{ optionId: string; text: string }>;
+  explanation: string;
+  sourceUrls: string[];
+  response: { kind: string; optionIds?: string[] };
+}
+
+let active: {
+  id: string;
+  status: string;
+  items: FakeItem[];
+  submittedAt?: number;
+  result?: unknown;
+} | null = null;
+
+function freshSet(): { id: string; status: string; items: FakeItem[]; submittedAt?: number; result?: unknown } {
+  const items: FakeItem[] = Array.from({ length: 20 }, (_, i) => ({
+    questionId: `q-${i}`,
+    questionVersionId: `qv-${i}`,
+    versionNo: 1,
+    optionOrder: [`q-${i}-a`, `q-${i}-b`, `q-${i}-c`, `q-${i}-d`],
+    stem: `문제 ${i} 본문: VPC와 서브넷 구성은?`,
+    options: [`q-${i}-a`, `q-${i}-b`, `q-${i}-c`, `q-${i}-d`].map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
+    explanation: `문제 ${i} 해설: 정답은 q-${i}-a이다.`,
+    sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
+    response: { kind: 'unanswered' },
+  }));
+  return { id: 'set-e2e-1', status: 'active', items };
+}
+
+function toActiveDto(s: NonNullable<typeof active>) {
+  return {
+    id: s.id,
+    userId: 'e2e-user-1',
+    examId: 'saa-c03',
+    mode: 'all',
+    status: s.status,
+    createdAt: 1700000000000,
+    // 실제 API 계약과 동일: 제출 전에는 해설·근거를 제외한다.
+    items: s.items.map((it) => ({
+      questionId: it.questionId,
+      questionVersionId: it.questionVersionId,
+      versionNo: it.versionNo,
+      optionOrder: it.optionOrder,
+      stem: it.stem,
+      options: it.options,
+      response: it.response,
+    })),
+  };
+}
+
+function submittedDto(s: NonNullable<typeof active>) {
+  const perItem = s.items.map((it) => {
+    const selected = it.response.kind === 'answered' ? (it.response.optionIds ?? []) : [];
+    const correctIds = [`${it.questionId}-a`];
+    const correct = selected.length === 1 && selected[0] === correctIds[0];
+    return {
+      questionId: it.questionId,
+      responseKind: it.response.kind,
+      selectedOptionIds: selected,
+      correctOptionIds: correctIds,
+      correct,
+    };
+  });
+  const correctCount = perItem.filter((p) => p.correct).length;
+  const passCount = s.items.filter((i) => i.response.kind === 'pass').length;
+  const unansweredCount = s.items.filter((i) => i.response.kind === 'unanswered').length;
+  const result = {
+    answeredCount: 20 - passCount - unansweredCount,
+    correctCount,
+    accuracyPercent: Math.round((correctCount / 20) * 100),
+    passCount,
+    unansweredCount,
+    perItem,
+  };
+  return {
+    id: s.id,
+    userId: 'e2e-user-1',
+    examId: 'saa-c03',
+    mode: 'all',
+    status: 'submitted',
+    createdAt: 1700000000000,
+    submittedAt: 1700000001000,
+    items: s.items,
+    result,
+  };
+}
+
+Given('학습 API 모의가 준비되면', async ({ page }) => {
+  active = null;
+  await page.route('**/api/me', async (route) => {
+    await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
+  });
+  await page.route('**/api/study/**', async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const method = req.method();
+    const path = url.pathname;
+    if (method === 'POST' && path === '/api/study/sets') {
+      if (active && active.status === 'active') {
+        await route.fulfill({ status: 409, json: { error: 'active_set_exists' } });
+        return;
+      }
+      active = freshSet();
+      const created = active;
+      await route.fulfill({ status: 201, json: toActiveDto(created) });
+      return;
+    }
+    const m = path.match(/^\/api\/study\/sets\/([^/]+)(\/(answers|submit|abandon))?$/);
+    if (m) {
+      const id = m[1];
+      const sub = m[3];
+      if (!active || active.id !== id) {
+        await route.fulfill({ status: 404, json: { error: 'not_found' } });
+        return;
+      }
+      if (method === 'GET' && !sub) {
+        await route.fulfill({ status: 200, json: active.status === 'submitted' ? submittedDto(active) : toActiveDto(active) });
+        return;
+      }
+      if (method === 'PATCH' && sub === 'answers') {
+        let body: { questionId?: string; response?: FakeItem['response'] } | null = null;
+        try {
+          body = req.postDataJSON() as { questionId?: string; response?: FakeItem['response'] };
+        } catch {
+          body = null;
+        }
+        const item = active.items.find((i) => i.questionId === body?.questionId);
+        if (!item || !body?.response) {
+          await route.fulfill({ status: 404, json: { error: 'not_found' } });
+          return;
+        }
+        item.response = body.response;
+        await route.fulfill({ status: 200, json: { outcome: body.response.kind } });
+        return;
+      }
+      if (method === 'POST' && sub === 'submit') {
+        let body: { confirmUnanswered?: boolean } | null = null;
+        try {
+          body = req.postDataJSON() as { confirmUnanswered?: boolean };
+        } catch {
+          body = null;
+        }
+        const hasUnanswered = active.items.some((i) => i.response.kind === 'unanswered');
+        if (hasUnanswered && body?.confirmUnanswered !== true) {
+          await route.fulfill({ status: 422, json: { error: 'unanswered_not_confirmed' } });
+          return;
+        }
+        active.status = 'submitted';
+        active.submittedAt = 1700000001000;
+        active.result = true;
+        await route.fulfill({ status: 200, json: submittedDto(active) });
+        return;
+      }
+      if (method === 'POST' && sub === 'abandon') {
+        active.status = 'abandoned';
+        await route.fulfill({ status: 200, json: toActiveDto(active) });
+        return;
+      }
+    }
+    if (method === 'GET' && path === '/api/study/sets') {
+      const items =
+        active && active.status === 'submitted'
+          ? [
+              {
+                id: active.id,
+                examId: 'saa-c03',
+                mode: 'all',
+                submittedAt: 1700000001000,
+                correctCount: 1,
+                accuracyPercent: 5,
+              },
+            ]
+          : [];
+      await route.fulfill({ status: 200, json: { items, total: items.length } });
+      return;
+    }
+    await route.fulfill({ status: 404, json: { error: 'not_found' } });
+  });
+});
+
+When('20문제 학습 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '20문제 학습' }).click();
+});
+
+When('학습 시작 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '학습 시작' }).click();
+});
+
+When('첫 번째 보기를 선택하면', async ({ page }) => {
+  await page.getByLabel(/보기 1/).first().click();
+});
+
+When('제출하기 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: /제출하기/ }).click();
+});
+
+When('제출을 확인하면', async ({ page }) => {
+  await page.getByRole('button', { name: '제출 확인' }).click();
+});
+
+When('포기하기 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '포기하기' }).click();
+});
+
+When('포기를 확인하면', async ({ page }) => {
+  await page.getByRole('button', { name: '포기 확인' }).click();
+});
+
+When('학습 이력 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '학습 이력' }).click();
+});
+
+Then('학습 범위 선택이 보인다', async ({ page }) => {
+  await expect(page.getByText('학습 범위 선택')).toBeVisible();
+});
+
+Then('문제 화면이 보인다', async ({ page }) => {
+  await expect(page.getByText(/1\/20/)).toBeVisible();
+});
+
+Then('문제 본문과 보기가 보인다', async ({ page }) => {
+  await expect(page.getByText('문제 0 본문: VPC와 서브넷 구성은?')).toBeVisible();
+  await expect(page.getByText('1. 보기 q-0-a 내용')).toBeVisible();
+});
+
+Then('저장됨 표시가 보인다', async ({ page }) => {
+  await expect(page.getByText('저장됨')).toBeVisible({ timeout: 10_000 });
+});
+
+Then('미응답 확인이 보인다', async ({ page }) => {
+  await expect(page.getByText(/풀지 않은 문제/)).toBeVisible();
+});
+
+Then('학습 결과가 보인다', async ({ page }) => {
+  await expect(page.getByText('학습 결과')).toBeVisible({ timeout: 10_000 });
+});
+
+Then('해설과 근거가 보인다', async ({ page }) => {
+  await expect(page.getByText(/문제 0 해설: 정답은/)).toBeVisible();
+  await expect(page.getByRole('link', { name: /docs.aws.amazon.com/ }).first()).toBeVisible();
+});
+
+Then('포기 확인이 보인다', async ({ page }) => {
+  await expect(page.getByText(/정말 포기할까요/)).toBeVisible();
+});
+
+Then('완료 세트가 보인다', async ({ page }) => {
+  await expect(page.getByText('완료한 학습')).toBeVisible({ timeout: 10_000 });
+});

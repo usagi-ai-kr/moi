@@ -25,11 +25,18 @@ export function scriptedRng(values: readonly number[]): () => number {
 export const DOMAIN_CODES = ['dom-security', 'dom-resilience', 'dom-performance', 'dom-cost'] as const;
 
 /** 공식 영역 비중(150/130/120/100)을 domainWeight로 반영한 풀 엔트리를 만든다. */
-export function makePoolEntry(overrides?: Partial<PoolEntry> & { index?: number; domainIndex?: number }): PoolEntry {
+export function makePoolEntry(
+  overrides?: Partial<Omit<PoolEntry, 'version'>> & {
+    index?: number;
+    domainIndex?: number;
+    version?: Partial<PoolEntry['version']>;
+  },
+): PoolEntry {
   const domainIndex = overrides?.domainIndex ?? 0;
   const domainId = overrides?.domainId ?? DOMAIN_CODES[domainIndex] ?? 'dom-security';
   const domainWeight = overrides?.domainWeight ?? [150, 130, 120, 100][domainIndex] ?? 150;
   const index = overrides?.index ?? 0;
+  const optionIds = overrides?.version?.optionIds ?? ['a', 'b', 'c', 'd'];
   return {
     questionId: overrides?.questionId ?? `q-${index}`,
     domainId,
@@ -39,8 +46,13 @@ export function makePoolEntry(overrides?: Partial<PoolEntry> & { index?: number;
     version: {
       questionVersionId: overrides?.version?.questionVersionId ?? `qv-${index}-v1`,
       versionNo: overrides?.version?.versionNo ?? 1,
-      optionIds: overrides?.version?.optionIds ?? ['a', 'b', 'c', 'd'],
+      optionIds,
       answerOptionIds: overrides?.version?.answerOptionIds ?? ['b'],
+      stem: overrides?.version?.stem ?? `문제 ${index} 본문`,
+      options:
+        overrides?.version?.options ?? optionIds.map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
+      explanation: overrides?.version?.explanation ?? `문제 ${index} 해설`,
+      sourceUrls: overrides?.version?.sourceUrls ?? [`https://docs.aws.amazon.com/q-${index}`],
     },
   };
 }

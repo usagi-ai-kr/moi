@@ -62,6 +62,22 @@ describe('StartStudySet (활성 세트 1개·스냅샷)', () => {
     }
   });
 
+  it('시작 시 pool의 문제 내용(stem·보기·해설·근거)을 스냅샷에 보존한다', async () => {
+    const f = fakes();
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
+    expect(result.outcome).toBe('started');
+    if (result.outcome === 'started') {
+      const pool = await f.pool.listPool();
+      for (const item of result.set.items) {
+        const entry = pool.find((e) => e.questionId === item.questionId) as ReturnType<typeof makePoolEntry>;
+        expect(item.stem).toBe(entry.version.stem);
+        expect(item.options).toEqual(entry.version.options);
+        expect(item.explanation).toBe(entry.version.explanation);
+        expect(item.sourceUrls).toEqual([...entry.version.sourceUrls]);
+      }
+    }
+  });
+
   it('활성 세트가 있으면 거부하고 이어풀기 사유를 반환한다', async () => {
     const f = fakes();
     await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });

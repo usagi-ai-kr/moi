@@ -46,10 +46,14 @@ export function createD1QuestionPool(db: D1Database, examIdOrCode: string): Ques
           ? await d1.select().from(questionOptions).where(inArray(questionOptions.questionVersionId, versionIds))
           : [];
       const optionIdsByVersion = new Map<string, string[]>();
+      const optionsByVersion = new Map<string, Array<{ optionId: string; text: string }>>();
       for (const o of options) {
-        const list = optionIdsByVersion.get(o.questionVersionId) ?? [];
-        list.push(o.id);
-        optionIdsByVersion.set(o.questionVersionId, list);
+        const ids = optionIdsByVersion.get(o.questionVersionId) ?? [];
+        ids.push(o.id);
+        optionIdsByVersion.set(o.questionVersionId, ids);
+        const list = optionsByVersion.get(o.questionVersionId) ?? [];
+        list.push({ optionId: o.id, text: o.text });
+        optionsByVersion.set(o.questionVersionId, list);
       }
       const pool: PoolEntry[] = [];
       for (const q of active) {
@@ -66,6 +70,10 @@ export function createD1QuestionPool(db: D1Database, examIdOrCode: string): Ques
             versionNo: version.versionNo,
             optionIds: optionIdsByVersion.get(version.id) ?? [],
             answerOptionIds: version.answerOptionIds,
+            stem: version.stem,
+            options: optionsByVersion.get(version.id) ?? [],
+            explanation: version.explanation,
+            sourceUrls: version.sourceUrls,
           },
         });
       }

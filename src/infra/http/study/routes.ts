@@ -18,7 +18,7 @@ import { abandonBodySchema, answerBodySchema, historyQuerySchema, startSetBodySc
  * 20문제 세트 HTTP API (이슈 #49 후속, ADR-0020).
  * - 인증: `__Host-moi_session` 쿠키를 세션 런타임으로 검증해 user_id를 얻는다.
  *   body의 userId는 무시한다(IDOR 금지). 미인증 401.
- * - 제출 전 응답에는 정답을 포함하지 않는다(스냅샷 answerOptionIds 제거).
+ * - 제출 전 응답에는 정답·해설·근거를 포함하지 않는다(스냅샷 answerOptionIds·explanation·sourceUrls 제거, stem·options만 노출).
  * - `Cache-Control: no-store`. 로그에 세션·토큰·정답 원문 금지.
  */
 
@@ -58,7 +58,7 @@ function authed(
   };
 }
 
-/** 제출 전 DTO — 스냅샷 정답(answerOptionIds)을 제거한다. */
+/** 제출 전 DTO — 본문·보기 텍스트는 포함, 정답·해설·근거는 제거한다(#50). */
 function toActiveDto(set: StudySet) {
   return {
     id: set.id,
@@ -74,6 +74,8 @@ function toActiveDto(set: StudySet) {
       questionVersionId: item.questionVersionId,
       versionNo: item.versionNo,
       optionOrder: [...item.optionOrder],
+      stem: item.stem,
+      options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
       response: item.response,
     })),
   };
