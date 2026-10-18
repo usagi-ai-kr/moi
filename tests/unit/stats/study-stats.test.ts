@@ -139,9 +139,43 @@ describe('computeStudyStats — 취약 영역 추천', () => {
 });
 
 describe('computeStudyStats — 반복·시험별 분리', () => {
-  it('같은 문제 반복 오답은 문제당 동일 가중 + 최근 3회 상한으로 영향이 제한된다', () => {
+  it('누적 정답률은 모든 유효 시도 기준이다(문제당 평균이 아님)', () => {
+    // 한 문제 3회(정답 1·오답 2) + 다른 문제 1회 정답 → 2/4=0.5 (문제당 평균 (1/3+1)/2≈0.667이 아님).
+    const entries = [
+      entry({ questionId: 'q-a', domainId: 'security', outcome: 'correct', daysAgo: 2, attemptId: 'a-1' }),
+      entry({ questionId: 'q-a', domainId: 'security', outcome: 'wrong', daysAgo: 1, attemptId: 'a-2' }),
+      entry({ questionId: 'q-a', domainId: 'security', outcome: 'wrong', daysAgo: 0, attemptId: 'a-3' }),
+      entry({ questionId: 'q-b', domainId: 'security', outcome: 'correct', daysAgo: 0, attemptId: 'a-4' }),
+    ];
+    const stats = computeStudyStats(entries, opts);
+
+    expect(stats.domains[0].gradedAttempts).toBe(4);
+    expect(stats.domains[0].cumulativeAccuracy).toBeCloseTo(0.5, 10);
+    expect(stats.overallAccuracy).toBeCloseTo(0.5, 10);
+  });
+
+  it('취약 추천은 반복 제한(문제당 최근 3회·동일 가중) 로직을 유지한다', () => {
+    // 5문제: 각 문제 과거 정답 1회 + 최근 오답 3회.
+    // 표시 누적은 모든 시도 기준 5/20=0.25지만, 추천 누적은 반복 제한 평균 0(최근 3회만)을 쓴다.
+    const entries = Array.from({ length: 5 }, (_, i) => [
+      entry({ questionId: `capped-${i}`, domainId: 'security', outcome: 'correct', daysAgo: 30, attemptId: `c-${i}-old` }),
+      ...[3, 2, 1].map((d, k) =>
+        entry({ questionId: `capped-${i}`, domainId: 'security', outcome: 'wrong', daysAgo: d, attemptId: `c-${i}-new-${k}` }),
+      ),
+    ]).flat();
+    const stats = computeStudyStats(entries, opts);
+
+    expect(stats.domains[0].cumulativeAccuracy).toBeCloseTo(0.25, 10);
+    expect(stats.domains[0].gradedAttempts).toBe(20);
+    const weak = stats.weakDomains.find((w) => w.domainId === 'security');
+    expect(weak).toBeDefined();
+    expect(weak?.cumulativeAccuracy).toBeCloseTo(0, 10);
+    expect(weak?.score).toBeCloseTo(0, 10);
+  });
+
+  it('같은 문제 반복 오답은 누적에 전부 반영된다(반복 상한은 추천·최근용)', () => {
     // 6문제: 5문제 정답 1회 + 1문제 정답 후 오답 10회 반복.
-    // 반복 반영이 없으면 정답률 5/16 ≈ 0.31이지만, 문제당 동일 가중 + 최근 3회 상한이면 (5×1 + 0)/6 ≈ 0.833.
+    // 모든 시도 기준: 정답 6 / 유효 16 = 0.375 (문제당 평균 5/6≈0.833이 아님).
     const entries = [
       ...Array.from({ length: 5 }, (_, i) =>
         entry({ questionId: `ok-${i}`, domainId: 'security', outcome: 'correct', daysAgo: 5, attemptId: `a-ok-${i}` }),
@@ -153,8 +187,8 @@ describe('computeStudyStats — 반복·시험별 분리', () => {
     ];
     const stats = computeStudyStats(entries, opts);
 
-    expect(stats.domains[0].gradedAttempts).toBe(8); // 5문제×1 + 반복 문제 상한 3
-    expect(stats.overallAccuracy).toBeCloseTo(5 / 6, 10);
+    expect(stats.domains[0].gradedAttempts).toBe(16); // 반복 상한 없이 전부
+    expect(stats.overallAccuracy).toBeCloseTo(6 / 16, 10);
   });
 
   it('동일 attemptId 중복 기록은 1회로 병합한다', () => {

@@ -30,20 +30,23 @@ export interface DomainStats {
   readonly domainId: string;
   /** 첫 풀이(채점 가능 첫 시도) 고유 문제 수 — 영역 표본 크기이자 진도. */
   readonly uniqueFirstSolved: number;
-  /** 정답률 분모로 반영된 채점 시도 수(반복 상한 적용 후). */
+  /** 정답률 분모로 반영된 유효 채점 시도 총수(반복 상한 없음). */
   readonly gradedAttempts: number;
-  /** 누적 정답률(0~1) — 표본 0이면 null. */
+  /** 누적 정답률(0~1) — 모든 유효 시도 기준(정답 수 / 유효 채점 시도 수). 표본 0이면 null. */
   readonly cumulativeAccuracy: number | null;
   /** 최근 창(상수 참조) 내 정답률(0~1) — 최근 채점 시도가 없으면 null. */
   readonly recentAccuracy: number | null;
   readonly status: 'ok' | 'insufficient-data';
 }
 
-/** 취약 영역 추천 — 누적 정답률 + 최근 성과를 결합한 점수 기준 오름차순. */
+/** 취약 영역 추천 — 누적 정답률 + 최근 성과를 결합한 점수 기준 오름차순.
+ * cumulativeAccuracy는 추천용 반복 제한 누적값(문제당 최근 3회·동일 가중 평균)으로,
+ * 표시용 DomainStats.cumulativeAccuracy(모든 유효 시도 기준)와 다를 수 있다. */
 export interface WeakDomainRecommendation {
   readonly domainId: string;
   /** 결합 점수(0~1, 낮을수록 취약). */
   readonly score: number;
+  /** 추천용 반복 제한 누적 정답률(표시용 도메인 누적과 다를 수 있음). */
   readonly cumulativeAccuracy: number;
   /** 최근 성과 — 최근 채점 시도가 없으면 누적값으로 대체해 계산한 값. */
   readonly effectiveRecentAccuracy: number;
@@ -58,7 +61,7 @@ export interface StudyStats {
   readonly uniqueFirstSolved: number;
   /** uniqueFirstSolved / totalQuestions (0~1). */
   readonly coverage: number;
-  /** 전체 누적 정답률 — 채점 표본 0이면 null. */
+  /** 전체 누적 정답률 — 모든 유효 시도 기준(정답 수 / 유효 채점 시도 수). 채점 표본 0이면 null. */
   readonly overallAccuracy: number | null;
   readonly domains: readonly DomainStats[];
   readonly weakDomains: readonly WeakDomainRecommendation[];
