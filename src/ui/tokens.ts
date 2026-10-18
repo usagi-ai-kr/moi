@@ -8,6 +8,8 @@ export const colors = {
   border: '#E5E7EB',
   surface: '#F7F8FA',
   white: '#FFFFFF',
+  danger: '#F5222D', // AntD red-6 — 로그아웃·오류 강조 (tokens 단일 소스 유지)
+  warning: '#FAAD14', // AntD gold-6 — 경고 강조
 } as const;
 
 // 카카오 로그인 버튼 — 카카오 공식 디자인 가이드 값(변경 금지, ADR-0014)
