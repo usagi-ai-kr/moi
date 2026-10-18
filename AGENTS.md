@@ -53,7 +53,7 @@
 - 백엔드: Hono, Cloudflare Workers (동일 오리진에서 정적 자산 + API 서빙)
 - DB: Cloudflare D1 + Drizzle ORM (마이그레이션 파일 버전 관리)
 - 테스트: Vitest(도메인·앱), React Testing Library(UI), @cloudflare/vitest-plugin(Worker/D1), Playwright + playwright-bdd(브라우저)
-- 계층 의존성 검사: dependency-cruiser 또는 eslint-plugin-boundaries, CI에서 차단
+- 계층 의존성 검사: dependency-cruiser(`check:architecture`), CI에서 차단
 - 초기 범위 도입 금지: SSR, 별도 API 서버, 마이크로서비스, Redux, Kakao JS SDK
 
 ## 아키텍처 계약 (요약)
@@ -73,7 +73,7 @@
 - AC → Given/When/Then 시나리오 먼저 정의 → Red → Green → Refactor. PR에 테스트 위치/실행 명령/결과를 기록한다.
 - 브라우저 검증 viewport: 핵심 화면은 320 / 375 / 768 / 1024 / 1280 전부, 보조 시나리오는 375 / 768 / 1280. (모바일 320–767 / 태블릿 768–1199 / 데스크탑 1200+)
 - CI는 실제 Kakao 계정을 사용하지 않는다(deterministic mock). 실계정 smoke는 배포된 스테이징/실서비스에서 별도 수행한다.
-- CI 게이트: `.github/workflows/ci.yml` — 스킬 검증은 항상 실행하고, `package.json` 이전에는 품질 게이트를 건너뛴다. scaffold 이후에는 미정의·스킵을 실패로 처리하는 fail-closed로 전환한다(이슈 #10).
+- CI 게이트: `.github/workflows/ci.yml` — 스킬 검증은 항상 실행한다. `package.json` 부재(0.1.0 이전)만 임시 예외로 건너뛰고, 이후에는 **미정의·스킵 게이트를 실패로 처리(fail-closed)**한다. → `tdd-bdd-testing`, #10
 - 상세: `tdd-bdd-testing`, `release-deploy-workers` 스킬, ADR-0007.
 
 ## 버전 규칙

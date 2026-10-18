@@ -1,6 +1,6 @@
 ---
 name: architecture-boundaries
-description: moi의 Clean Architecture 계층 규칙. 새 모듈·폴더 추가, import 경계 판단, 계층별 허용/금지 라이브러리 확인, dependency-cruiser 또는 eslint-plugin-boundaries 설정, 코드 리뷰 시 사용.
+description: moi의 Clean Architecture 계층 규칙. 새 모듈·폴더 추가, import 경계 판단, 계층별 허용/금지 라이브러리 확인, dependency-cruiser 설정·검사, 코드 리뷰 시 사용.
 compatibility: Node.js 필요 (scripts/check-imports.mjs).
 ---
 
@@ -9,7 +9,7 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 출처: 이슈 #1(2026-10-18 추가 아키텍처 결정 포함). 계층 위반은 CI에서 차단한다.
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
-- `node .agents/skills/architecture-boundaries/scripts/check-imports.mjs` — `src/` 계층 import 위반 정적 스캔(dependency-cruiser 정식 전환 전 임시 게이트, #10). 위반 시 exit 1, 요약 출력만. src/가 없으면(0.1.0 이전) 안내 후 통과.
+- `node .agents/skills/architecture-boundaries/scripts/check-imports.mjs` — `src/` 계층 import 위반 **보조 점검**(단일 행·별칭 휴리스틱 — 단독 게이트 금지). 정식 게이트는 dependency-cruiser(`check:architecture`, #1 scaffold에서 구성·#10). 위반 시 exit 1, src/ 없음(0.1.0 이전)은 exit 3 안내.
 
 ## 계층 구조 (`src/`)
 
@@ -25,6 +25,7 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 - 논리 흐름: `ui → app → domain`.
 - Worker 요청 경로: React 컴포넌트 → query/usecase facade → Ky client → Hono middleware → app usecase → Domain/Port/Drizzle.
 - `app`/`domain`에서 `infra`/`ui`로의 역방향 import 금지.
+- 계층 위반은 CI에서 `check:architecture`(dependency-cruiser) **실패**로 차단한다. 위반 테스트에 직접 import·별칭 경유·재export·type-only import를 포함한다(#10 → #1).
 
 ## 계층별 라이브러리 책임 (핵심)
 - **TanStack Query** (`ui/`): 서버 상태(`/api/me`) 캐시·재검증·무효화. **사용자 인증 여부의 진실 원천은 서버.**
@@ -43,7 +44,7 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 
 ## 확인 체크리스트
 - [ ] 새 파일이 계층 폴더와 책임 표에 맞는가?
-- [ ] 역방향 import가 없는가? (dependency-cruiser 또는 eslint-plugin-boundaries 통과)
+- [ ] 역방향 import가 없는가? (dependency-cruiser `check:architecture` 통과 — 보조: check-imports.mjs)
 - [ ] `app`/`domain`이 금지 라이브러리를 import하지 않는가?
 - [ ] UI가 서버 상태(TanStack Query)와 UI 상태(Zustand)를 올바른 도구로 나누었는가?
 - [ ] API client 호출이 Ky 어댑터 한 곳으로 모여 있는가?

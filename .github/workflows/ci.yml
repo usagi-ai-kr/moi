@@ -1,8 +1,9 @@
-# moi CI — 0.x 품질 게이트 샘플 (이슈 #5)
-# - scaffold(0.1.0) 이전에는 package.json이 없어 게이트를 건너뛰고 성공으로 종료한다.
-# - scaffold 이후 package.json scripts에 정의된 게이트만 순차 실행한다.
-#   게이트 목록: lint, typecheck, check:architecture, test:unit, test:integration, test:bdd, build
-# - pnpm 버전은 package.json의 packageManager 필드로 고정한다 (scaffold 시 포함).
+# moi CI — 0.x 품질 게이트 (fail-closed, 이슈 #10)
+# - 임시 예외: scaffold(0.1.0) 이전에는 package.json이 없어 게이트를 건너뛴다.
+#   package.json이 생성되면 이 예외는 자동 종료된다(문서: tdd-bdd-testing 스킬 '게이트 fail-closed 규칙').
+# - scaffold 이후 필수 게이트: lint, typecheck, check:architecture, test:unit, test:integration, test:bdd, build
+#   미정의·스킵은 실패로 처리한다(fail-closed). test:bdd는 실제 실행되는 smoke만 인정한다.
+# - pnpm 버전은 package.json의 packageManager 필드(pnpm 정확 버전)로 고정한다 — 없으면 실패.
 name: CI
 
 on:
@@ -22,6 +23,7 @@ concurrency:
 jobs:
   gates:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,9 +40,9 @@ jobs:
             echo "ready=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Skip notice (no scaffold)
+      - name: Skip notice (no scaffold — 0.1.0 이전 임시 예외)
         if: steps.scaffold.outputs.ready != 'true'
-        run: echo "::notice::package.json이 아직 없어 CI 게이트를 건너뜁니다. 0.1.0 scaffold 완료 후 자동 활성화됩니다."
+        run: echo "::notice::package.json이 아직 없어 품질 게이트를 건너뜁니다(0.1.0 이전 임시 예외). scaffold PR에서 자동 종료됩니다."
 
       - name: Setup pnpm
         if: steps.scaffold.outputs.ready == 'true'
@@ -53,19 +55,33 @@ jobs:
           node-version: 22
           cache: pnpm
 
+      - name: Verify packageManager pin
+        if: steps.scaffold.outputs.ready == 'true'
+        run: |
+          node -e "
+            const p = require('./package.json');
+            if (!p.packageManager || !/^pnpm@\d+\.\d+\.\d+/.test(p.packageManager)) {
+              console.error('::error::packageManager(pnpm 정확 버전)이 없습니다 — #1 scaffold 요구사항');
+              process.exit(1);
+            }
+          "
+
       - name: Install
         if: steps.scaffold.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Quality gates
+      - name: Quality gates (fail-closed)
         if: steps.scaffold.outputs.ready == 'true'
         run: |
+          missing=0
           for script in lint typecheck check:architecture test:unit test:integration test:bdd build; do
             if node -e "process.exit(require('./package.json').scripts?.['$script'] ? 0 : 1)"; then
               echo "::group::pnpm run $script"
               pnpm run "$script"
               echo "::endgroup::"
             else
-              echo "::notice::'$script' 스크립트 미정의 — 건너뜀 (0.x 단계에서 순차 활성화)"
+              echo "::error::필수 게이트 '$script'가 package.json에 없습니다 — fail-closed (#10)"
+              missing=1
             fi
           done
+          exit "$missing"
