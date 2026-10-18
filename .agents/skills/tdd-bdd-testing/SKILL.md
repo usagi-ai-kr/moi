@@ -9,7 +9,8 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 출처: 이슈 #1(실행 규약), #2–#5(단계별 테스트). 관련: `architecture-boundaries`, `release-deploy-workers`.
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
-- `node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]` — CI와 동일한 필수 게이트(lint/typecheck/check:architecture/test:unit/test:integration/test:bdd/build)를 로컬에서 순차 실행한다. **fail-closed**: package.json이 있으면 미정의·실패 게이트에서 exit 1, package.json 이전(0.1.0 이전)만 안내 후 exit 0(임시 예외).
+- `node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]` — CI와 동일한 필수 게이트(lint/typecheck/check:architecture/test:unit/test:integration/test:bdd/build)를 로컬에서 순차 실행한다. **fail-closed**: package.json이 있으면(읽기/JSON 오류 포함) 미정의·실패 게이트에서 exit 1, **파일 자체가 없을 때만** 안내 후 exit 0(임시 예외).
+- `sh .agents/skills/tdd-bdd-testing/scripts/run-gates.test.sh` — 판정 회귀 테스트(부재→0 · 잘못된 JSON→1 · 미정의→1 · 전 게이트→0).
 
 ## 실행 규약
 1. 이슈의 Acceptance Criteria를 **Given/When/Then 시나리오로 먼저 정의**하고 재현 가능한 실행 테스트로 구현한다.
@@ -24,7 +25,7 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 
 ## 게이트 fail-closed 규칙 (#10)
 - scaffold 이후 필수 게이트는 **없거나 스킵이면 실패**다('미정의 스킵-성공' 금지). CI와 `run-gates.mjs`가 동일 규칙을 적용한다.
-- 임시 예외는 package.json 부재(0.1.0 이전)뿐이며, package.json이 생성되면 자동 종료된다.
+- 임시 예외는 package.json **파일 부재(ENOENT)**뿐이다. 파일이 존재하나 읽기/JSON 파싱 오류면 실패(exit 1)로 처리한다. package.json이 생성되면 예외는 자동 종료된다.
 - `test:bdd`는 실제 실행되는 smoke만 인정한다(0.1.0: 홈/health/API). 로그인 시나리오는 0.1.1~0.1.3에서 누적.
 - Cloudflare Worker/D1 통합 테스트는 `@cloudflare/vitest-plugin` + 호환 Vitest 버전을 사용한다(`@cloudflare/vitest-pool-workers` 신규 도입 금지).
 - CI job 타임아웃 15분(fail 시 로그·아티팩트 확인).
