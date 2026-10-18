@@ -32,7 +32,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0014 | 디자인 시스템 보강 — 폰트 제공·UI 제약 예외·여백·Lighthouse·카카오 버튼 | Accepted | 2026-10-18 | [0014-design-system-supplement-font-ui-kakao.md](./0014-design-system-supplement-font-ui-kakao.md) |
 | ADR-0015 | src 모듈 길이 예산 — 하네스·src 통합 | Accepted | 2026-10-18 | [0015-src-module-length-budget.md](./0015-src-module-length-budget.md) |
 | ADR-0016 | Kakao OIDC 구현 — 상태 소비·JWKS 검증·응답/로그 계약 | Accepted | 2026-10-18 | [0016-kakao-oidc-implementation.md](./0016-kakao-oidc-implementation.md) |
-| ADR-0017 | 0.2.0 버전·거버넌스·출시 게이트 | Accepted | 2026-10-18 | [0017-version-governance-0.2.0.md](./0017-version-governance-0.2.0.md) |
+| ADR-0017 | 0.2.x 버전·거버넌스·출시 게이트 | Accepted | 2026-10-18 | [0017-version-governance-0.2.x.md](./0017-version-governance-0.2.x.md) |
 | ADR-0018 | 세션·UI 상태 계약 — 서버 진실 원천과 캐시 규칙 | Accepted | 2026-10-18 | [0018-session-ui-state-contract.md](./0018-session-ui-state-contract.md) |
 | ADR-0019 | 0.2.0 문제은행·품질·관리 API | Accepted | 2026-10-18 | [0019-question-bank-quality.md](./0019-question-bank-quality.md) |
 | ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Accepted | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
