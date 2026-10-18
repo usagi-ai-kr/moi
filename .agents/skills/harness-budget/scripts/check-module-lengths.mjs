@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 하네스 모듈 길이 예산 검사 — AGENTS.md·SKILL.md·ADR의 줄/바이트를 예산과 비교한다 (ADR-0013).
+// 하네스·src 모듈 길이 예산 검사 — AGENTS.md·SKILL.md·ADR·src의 줄/바이트를 예산과 비교한다 (ADR-0015).
 // 사용법: node .agents/skills/harness-budget/scripts/check-module-lengths.mjs [--json]   (repo root에서 실행)
 // 종료 코드: 0 예산 이내(경고 가능), 1 상한 초과, 2 설정/사용 오류
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -19,32 +19,124 @@ try {
 }
 
 // 패턴 확장 — 지원: 정확한 경로(AGENTS.md), 디렉터리 와일드카드(.agents/skills/*/SKILL.md),
-// 파일 와일드카드(docs/adr/*.md) — repo root 기준
-function expand(pattern) {
+// 파일 와일드카드(docs/adr/*.md), 재귀(**)·brace({a,b}) — repo root 기준
+// 예: src/**/*.{ts,tsx,css} → src 하위 모든 깊이의 ts/tsx/css. `**` 탐색에서 숨김 디렉터리(.)·node_modules 제외.
+function expandBraces(pattern) {
+  const start = pattern.indexOf('{');
+  if (start === -1) return [pattern];
+  const end = pattern.indexOf('}', start);
+  if (end === -1) return [pattern];
+  const prefix = pattern.slice(0, start);
+  const suffix = pattern.slice(end + 1);
+  const options = pattern.slice(start + 1, end).split(',');
+  return options.flatMap((opt) => expandBraces(prefix + opt + suffix));
+}
+
+function segmentToRegExp(seg) {
+  let re = '';
+  for (const ch of seg) {
+    if (ch === '*') re += '[^/]*';
+    else if (ch === '?') re += '[^/]';
+    else if ('\\^$+.()|[]{}'.includes(ch)) re += `\\${ch}`;
+    else re += ch;
+  }
+  return new RegExp(`^${re}$`);
+}
+
+function expandOne(pattern) {
   const segs = pattern.split('/');
-  const starIdx = segs.findIndex((s) => s.includes('*'));
-  if (starIdx === -1) return existsSync(join(repoRoot, pattern)) ? [pattern] : [];
-  const dir = join(repoRoot, segs.slice(0, starIdx).join('/') || '.');
-  if (!existsSync(dir)) return [];
-  const star = segs[starIdx];
-  const rest = segs.slice(starIdx + 1);
-  const entries = readdirSync(dir).map((name) => ({
-    name,
-    isDir: statSync(join(dir, name)).isDirectory(),
-  }));
-  if (star === '*' && rest.length > 0) {
-    return entries
-      .filter((e) => e.isDir)
-      .map((e) => [...segs.slice(0, starIdx), e.name, ...rest].join('/'))
-      .filter((p) => existsSync(join(repoRoot, p)));
+  const out = [];
+  function rec(absDir, idx, rel) {
+    if (idx === segs.length) {
+      const abs = join(repoRoot, rel);
+      try {
+        if (rel && existsSync(abs) && !statSync(abs).isDirectory()) out.push(rel);
+      } catch {
+        // 무시
+      }
+      return;
+    }
+    const seg = segs[idx];
+    if (seg === '**') {
+      rec(absDir, idx + 1, rel); // 0 depth
+      let entries;
+      try {
+        entries = readdirSync(absDir);
+      } catch {
+        return;
+      }
+      for (const name of entries) {
+        if (name.startsWith('.') || name === 'node_modules') continue;
+        const childAbs = join(absDir, name);
+        let isDir = false;
+        try {
+          isDir = statSync(childAbs).isDirectory();
+        } catch {
+          continue;
+        }
+        if (!isDir) continue;
+        rec(childAbs, idx, rel ? `${rel}/${name}` : name);
+      }
+      return;
+    }
+    if (seg.includes('*') || seg.includes('?')) {
+      const re = segmentToRegExp(seg);
+      const isLast = idx === segs.length - 1;
+      let entries;
+      try {
+        entries = readdirSync(absDir);
+      } catch {
+        return;
+      }
+      for (const name of entries) {
+        if (name.startsWith('.') && !seg.startsWith('.')) continue;
+        if (name === 'node_modules') continue;
+        if (!re.test(name)) continue;
+        const childAbs = join(absDir, name);
+        let isDir = false;
+        try {
+          isDir = statSync(childAbs).isDirectory();
+        } catch {
+          continue;
+        }
+        const childRel = rel ? `${rel}/${name}` : name;
+        if (isLast) {
+          if (!isDir) out.push(childRel);
+        } else if (isDir) {
+          rec(childAbs, idx + 1, childRel);
+        }
+      }
+      return;
+    }
+    const childAbs = join(absDir, seg);
+    const childRel = rel ? `${rel}/${seg}` : seg;
+    if (!existsSync(childAbs)) return;
+    if (idx === segs.length - 1) {
+      try {
+        if (!statSync(childAbs).isDirectory()) out.push(childRel);
+      } catch {
+        // 무시
+      }
+    } else {
+      rec(childAbs, idx + 1, childRel);
+    }
   }
-  if (star.startsWith('*')) {
-    const suffix = star.slice(1);
-    return entries
-      .filter((e) => !e.isDir && e.name.endsWith(suffix))
-      .map((e) => [...segs.slice(0, starIdx), e.name].join('/'));
+  rec(repoRoot, 0, '');
+  return out;
+}
+
+function expand(pattern) {
+  const seen = new Set();
+  const out = [];
+  for (const p of expandBraces(pattern)) {
+    for (const f of expandOne(p)) {
+      if (!seen.has(f)) {
+        seen.add(f);
+        out.push(f);
+      }
+    }
   }
-  return [];
+  return out;
 }
 
 const rows = [];
@@ -83,7 +175,7 @@ for (const b of budgets) {
 if (asJson) {
   console.log(JSON.stringify({ ok: violations.length === 0, modules: rows, violations, warnings }, null, 2));
 } else {
-  console.log('하네스 모듈 길이 예산 검사 (ADR-0013 · 설정: scripts/budgets.json)');
+  console.log('하네스·src 모듈 길이 예산 검사 (ADR-0015 · 설정: .agents/skills/harness-budget/scripts/budgets.json)');
   console.log('');
   const pad = Math.max(...rows.map((r) => r.file.length), 24);
   console.log(
