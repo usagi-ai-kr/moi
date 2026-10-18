@@ -147,7 +147,8 @@ export async function submitStudySet(
   }));
   const result = gradeItems(gradable, answers);
   const submitted: StudySet = { ...set, status: 'submitted', submittedAt: deps.clock.now(), result };
-  await deps.repository.save({ set: submitted });
+  const ok = await deps.repository.submit({ set: submitted });
+  if (!ok) return { outcome: 'rejected', reason: 'not_active' };
   return { outcome: 'submitted', set: submitted };
 }
 

@@ -326,6 +326,27 @@ describe('멱등성 (#52)', () => {
     expect(((await history.json()) as { total: number }).total).toBe(1);
   });
 
+  it('동시 제출 경합: 200 1건·409 1건, 이력 1·결과 1회 저장', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c5');
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    const set = (await started.json()) as { id: string };
+    const [a, b] = await Promise.all([
+      studyRequest(`/api/study/sets/${set.id}/submit`, { method: 'POST', token, body: { confirmUnanswered: true } }),
+      studyRequest(`/api/study/sets/${set.id}/submit`, { method: 'POST', token, body: { confirmUnanswered: true } }),
+    ]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    const rejected = a.status === 409 ? a : b;
+    expect((await rejected.json()) as { error: string }).toMatchObject({ error: 'not_active' });
+    const history = await studyRequest('/api/study/sets?page=1&pageSize=20', { token });
+    expect(history.status).toBe(200);
+    expect(((await history.json()) as { total: number }).total).toBe(1);
+    const got = await studyRequest(`/api/study/sets/${set.id}`, { token });
+    expect(got.status).toBe(200);
+    const view = (await got.json()) as { status: string; result?: { correctCount: number } };
+    expect(view.status).toBe('submitted');
+    expect(view.result).toBeDefined();
+  });
+
   it('답안 PATCH 반복: 둘 다 200, GET response 동일·중복 없음', async () => {
     const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c3');
     const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
