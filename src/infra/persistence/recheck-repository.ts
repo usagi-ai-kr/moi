@@ -1,5 +1,5 @@
-import type { RecheckRepository } from '@/app/reports/recheck-port';
-import { finishRecheck, startRecheck } from '@/domain/reports/recheck';
+import type { RecheckDue, RecheckRepository } from '@/app/reports/recheck-port';
+import { canStartRecheck, finishRecheck, startRecheck } from '@/domain/reports/recheck';
 import type { RecheckState, RecheckStatus } from '@/domain/reports/types';
 
 interface RecheckRow {
@@ -7,6 +7,10 @@ interface RecheckRow {
   readonly attempts: number;
   readonly last_attempt_at: number | null;
   readonly started_at: number | null;
+}
+
+interface RecheckDueRow extends RecheckRow {
+  readonly question_version_id: string;
 }
 
 function toState(row: RecheckRow): RecheckState {
@@ -36,6 +40,24 @@ export function createD1RecheckRepository(db: D1Database): RecheckRepository {
 
   return {
     find,
+
+    async listDue({ now, limit }): Promise<RecheckDue[]> {
+      if (limit <= 0) return [];
+      const { results } = await db
+        .prepare(
+          "SELECT question_version_id, status, attempts, last_attempt_at, started_at FROM question_recheck_queue WHERE status = 'queued' OR status = 'failed' ORDER BY updated_at ASC",
+        )
+        .all<RecheckDueRow>();
+      const due: RecheckDue[] = [];
+      for (const row of results) {
+        const state = toState(row);
+        if (canStartRecheck(state, { now })) {
+          due.push({ versionId: row.question_version_id, state });
+          if (due.length >= limit) break;
+        }
+      }
+      return due;
+    },
 
     async start({ versionId, now }) {
       const current = await find(versionId);
