@@ -5,6 +5,7 @@
 
 ## 작업 원칙
 - 이슈 기반으로 작업한다. 관련 이슈의 Acceptance Criteria(BDD)와 완료 정의를 구현·검증의 기준으로 삼는다.
+- 워커는 피처명으로 고정 배치·명명하지 않는다. 기존 워커 풀에서 작성자와 다른 모델이 리뷰·보조·보완한다. 새 에이전트·페인·리뷰어와 범위 밖 작업은 사용자 승인 후에만 한다.
 - 문서·이슈·PR·커밋 메시지는 한국어로 작성한다.
 - 비밀값·토큰·인가 코드·개인정보를 이슈, 코드, 커밋, CI 로그에 남기지 않는다.
 - 계층 검사·테스트·타입 검사가 통과하지 않으면 완료로 표시하지 않는다.
@@ -24,8 +25,8 @@
 - **모든 기술적 추가 판단·변경은 ADR로 기록한다.** 기존 결정을 뒤집으면 기존 ADR을 `Superseded by ADR-NNNN`으로 바꾸고 새 ADR을 추가한다(본문 수정 금지, 오탈자 제외). 생성·인덱스 갱신은 `adr-management` 스킬의 스크립트를 사용한다.
 - **AGENTS.md 변경은 PR로만 반영한다.** 규칙이 바뀌면 같은 PR에서 관련 스킬·문서를 함께 갱신한다.
 - **모든 스킬은 `SKILL.md` + `scripts/` 구조를 가진다.** 반복적·결정적·출력이 큰 작업은 스크립트(sh/python/node)로 구현하고, 에이전트는 스크립트를 호출한 뒤 요약 출력만 읽는다(효율적 입출력·토큰 사용량 최적화). 새 스킬 추가 시 스크립트 1개 이상을 포함하고 아래 스킬 인덱스에 등록한다.
-- **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 길이는 모듈 예산(≤120줄, ADR-0013)을 따른다. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
-- **모듈 길이 예산**: AGENTS.md·SKILL.md·ADR 길이는 `harness-budget` 스킬이 검사한다(CI 필수·초과 차단). 초과 시 ① 중복 제거 ② 스크립트화 ③ 분리 순으로 해소하고, 예산 변경은 ADR 갱신과 함께한다.
+- **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 길이는 모듈 예산(≤120줄, ADR-0015)을 따른다. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
+- **모듈 길이 예산**: AGENTS.md·SKILL.md·ADR + `src/**/*.{ts,tsx,css}`(목표 150/상한 250줄·16KB, 위반 시 분할 신호) 길이는 `harness-budget` 스킬이 검사한다(CI 필수·초과 차단, ADR-0015). 초과 시 ① 중복 제거 ② 스크립트화 ③ 분리 순으로 해소하고, 예산 변경은 ADR 갱신과 함께한다.
 - 스킬 문서의 실행 명령 예시는 repo root 기준 경로(`.agents/skills/<스킬>/scripts/<스크립트>`)로 표기하고, 실행 CWD가 root임을 명시한다.
 - 이슈 완료 시 확정된 합의를 ADR/AGENTS.md/스킬에 반영(승격)한다. 이슈는 작업 추적용이고, 영속 규칙은 문서에 둔다.
 - 우선순위(충돌 시): **사용자가 승인한 이슈 합의 > Accepted ADR > AGENTS.md > 스킬 세부 절차.** 이슈 합의가 문서와 충돌하면 같은 PR에서 ADR supersede·문서 동기화로 반영한다.
@@ -83,8 +84,10 @@
 
 ## 버전 규칙
 - 0.1.x 단계(패치 재편): `0.1.0` 하네스 보강(#9~#12)·scaffold → `0.1.1` Kakao OIDC → `0.1.2` D1 사용자 매핑 → `0.1.3` 세션·인증 API → `0.1.4` BDD 통합·배포. GitHub Milestone `0.1.0`~`0.1.4`가 각 단계와 대응한다.
-- 다음 기능 단위는 `1.0.0`부터 시작한다(일반 SemVer와 다른 프로젝트 내부 버전 규칙).
-- 우선순위 근거: GitHub Milestone(`0.1.0`~`0.1.4`)과 이슈 본문의 선행 링크. Milestone이 없으면 이슈 본문 버전이 근거다. → ADR-0008
+- 0.2.0 단계(학습 제품): `0.2.0 — AWS SAA-C03 학습 제품` (PR #35 계약, ADR 번호는 병합 시 확정).
+- 0.2.0 이후 minor 확장은 추상 `1.0.0` Milestone을 placeholder로 사용하고, 범위 확정 시 해당 minor Milestone(예: `0.3.0`)을 만든다.
+- 각 minor의 최종 patch는 wiki 페이지·annotated tag(`v<minor>.<patch>`)·GitHub Release·`release/<minor>` branch를 모두 남긴다. 넷 중 하나라도 없으면 릴리스 완료가 아니다.
+- 우선순위 근거: GitHub Milestone(`0.1.0`~`0.1.4`, `0.2.0`, 추상 `1.0.0`)과 이슈 본문의 선행 링크. Milestone이 없으면 이슈 본문 버전이 근거다. → ADR-0008
 
 ## 스킬 인덱스
 
