@@ -80,6 +80,7 @@ export async function startStudySet(
     questionVersionId: entry.version.questionVersionId,
     versionNo: entry.version.versionNo,
     optionOrder: shuffleOptionOrder(entry.version.optionIds, rng),
+    answerOptionIds: [...entry.version.answerOptionIds],
     response: { kind: 'unanswered' },
   }));
 
@@ -131,8 +132,6 @@ export async function submitStudySet(
     return { outcome: 'rejected', reason: 'unanswered_not_confirmed' };
   }
 
-  const pool = await deps.pool.listPool();
-  const answerByVersion = new Map(pool.map((entry) => [entry.version.questionVersionId, entry.version.answerOptionIds]));
   const gradable: GradableItem[] = set.items.map((item) => ({
     questionId: item.questionId,
     questionVersionId: item.questionVersionId,
@@ -140,7 +139,7 @@ export async function submitStudySet(
   }));
   const answers = set.items.map((item) => ({
     questionVersionId: item.questionVersionId,
-    answerOptionIds: answerByVersion.get(item.questionVersionId) ?? [],
+    answerOptionIds: item.answerOptionIds,
   }));
   const result = gradeItems(gradable, answers);
   const submitted: StudySet = { ...set, status: 'submitted', submittedAt: deps.clock.now(), result };

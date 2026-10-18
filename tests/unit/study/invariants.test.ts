@@ -17,6 +17,7 @@ function buildSet(overrides?: Partial<StudySet>): StudySet {
     questionVersionId: `qv-${i}-v1`,
     versionNo: 1,
     optionOrder: ['a', 'b', 'c', 'd'],
+    answerOptionIds: ['b'],
     response: { kind: 'unanswered' } as const,
   }));
   const base: StudySet = {
