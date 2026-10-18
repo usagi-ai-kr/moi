@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { registerAdminRoutes } from './admin/routes';
 import { registerAuthRoutes } from './auth/routes';
+import { registerReportRoutes } from './reports/routes';
 import { registerSessionRoutes } from './session/routes';
 import { registerStudyRoutes } from './study/routes';
 import type { AdminRuntime } from './admin/runtime';
@@ -36,6 +37,7 @@ export function createApp(options?: CreateAppOptions) {
     createRuntime: options?.createStudyRuntime,
     createSessionRuntime: options?.createSessionRuntime,
   });
+  registerReportRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
 
   return app;
 }
