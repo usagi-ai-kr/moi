@@ -63,8 +63,8 @@
 - 상세(계층별 허용/금지 라이브러리): `architecture-boundaries` 스킬, ADR-0001.
 
 ## 보안·데이터 규칙 (요약)
-- 외부 인증: Kakao OAuth2 Authorization Code + OIDC, 서버 측 code 교환, state 일회성·만료 검증, nonce 검증, ID token JWKS 서명 + iss/aud/exp 검증. → `kakao-oidc-auth`, ADR-0003
-- 내부 세션: PASETO v4.local. `__Host-` + Secure + HttpOnly + SameSite=Lax + Path=/ 쿠키. 자체 JWT 발급·opaque session 대체·JWT fallback 금지. → `session-paseto`, ADR-0005
+- 외부 인증: Kakao OAuth2 Authorization Code + OIDC, 서버 측 code 교환, state·브라우저 바인딩·nonce 검증(D1 `oauth_states` 원자적 일회성 소비, PKCE S256), ID token JWKS 서명 + iss/aud/exp 검증. → `kakao-oidc-auth`, ADR-0003
+- 내부 세션: PASETO v4.local(절대 만료 24시간, jti 해시 D1 폐기). `__Host-` + Secure + HttpOnly + SameSite=Lax + Path=/ 쿠키. 자체 JWT 발급·opaque session 대체·JWT fallback 금지. → `session-paseto`, ADR-0005
 - 식별: 내부 UUID `user_id`가 데이터 소유권 기준. `(provider='kakao', provider_subject=sub)` UNIQUE. 이메일/닉네임은 핵심키가 아니며 동의를 필수화하지 않는다. → `d1-drizzle-persistence`, ADR-0004
 - 저장·로그: PASETO 원문 저장 금지(D1에는 jti 해시만), 서버 비밀값은 Cloudflare Secrets만 사용, Pino redaction으로 토큰·쿠키·인가 코드·Secret 제거. → ADR-0006
 - 브라우저에 PASETO/앱 토큰을 노출하거나 localStorage/sessionStorage에 저장하지 않는다. 앱 인증 상태의 진실 원천은 서버(`/api/me`)다.
