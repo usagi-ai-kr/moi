@@ -22,6 +22,16 @@ function isChecked(item: StudyActiveItem, optionId: string): boolean {
   return item.response.kind === 'answered' && item.response.optionIds.includes(optionId);
 }
 
+// 저장 상태 문구 — 실제 상태(서버 확인·오프라인·충돌)를 그대로 표시한다 (이슈 #52).
+const SAVE_TEXT: Record<SaveState, string> = {
+  idle: '',
+  saving: copy.study.saving,
+  saved: copy.study.saved,
+  error: copy.study.saveError,
+  offline: copy.study.offlineSaving,
+  conflict: copy.study.conflictNeeded,
+};
+
 function toggleOption(item: StudyActiveItem, optionId: string): ItemResponse {
   const current = item.response.kind === 'answered' ? item.response.optionIds : [];
   const next = current.includes(optionId) ? current.filter((id) => id !== optionId) : [...current, optionId];
@@ -43,14 +53,7 @@ export function QuestionView(p: Props) {
   const item = p.items[p.index];
   if (!item) return null;
   const total = p.items.length;
-  const saveText =
-    p.save === 'saving'
-      ? copy.study.saving
-      : p.save === 'saved'
-        ? copy.study.saved
-        : p.save === 'error'
-          ? copy.study.saveError
-          : '';
+  const saveText = SAVE_TEXT[p.save];
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
       <p className="moi-study-progress" aria-live="polite">
@@ -98,7 +101,7 @@ export function QuestionView(p: Props) {
       {saveText && (
         <p className="moi-note" role="status" aria-live="polite">
           {saveText}
-          {p.save === 'error' && (
+          {(p.save === 'error' || p.save === 'offline') && (
             <button type="button" className="moi-alert-retry" onClick={() => p.onRetry(item.questionId)}>
               {copy.study.retry}
             </button>

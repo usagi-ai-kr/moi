@@ -65,6 +65,7 @@ interface FakeOpts {
   start?: StudyActiveSet | { status: number; body: unknown };
   get?: StudyActiveSet;
   patchFailTimes?: number;
+  patchHttpFailTimes?: number;
   submit?: StudyActiveSet;
   abandon?: StudyActiveSet;
   calls?: { patch: unknown[]; post: string[] };
@@ -106,6 +107,7 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
       return {
         json: async () => {
           if (o.patchFailTimes && patchCalls <= o.patchFailTimes) throw new TypeError('fetch failed');
+          if (o.patchHttpFailTimes && patchCalls <= o.patchHttpFailTimes) throw httpError(500, { error: 'internal' });
           return { outcome: 'answered' };
         },
       };
@@ -129,13 +131,15 @@ function renderStudy(client: ApiClient) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <StudyScreen client={client} />
+      <StudyScreen client={client} userId="user-1" />
     </QueryClientProvider>,
   );
 }
 
 beforeEach(() => {
   window.history.replaceState(null, '', '/');
+  window.localStorage.clear();
+  window.sessionStorage.clear();
   vi.restoreAllMocks();
 });
 
@@ -193,16 +197,29 @@ describe('문제 풀이·자동 저장', () => {
     expect(calls.patch[0]).toMatchObject({ response: { kind: 'pass' } });
   });
 
-  it('자동 저장 실패 시 오류를 보이고 다시 시도하면 다시 PATCH한다', async () => {
+  it('HTTP 오류 저장 실패 시 오류를 보이고 다시 시도하면 초안을 재전송한다', async () => {
     const calls = { patch: [] as unknown[], post: [] as string[] };
-    renderStudy(fakeStudyClient({ start: makeSet(), patchFailTimes: 99, calls }));
+    renderStudy(fakeStudyClient({ start: makeSet(), get: makeSet(), patchHttpFailTimes: 1, calls }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
     await screen.findByText(/1\/20/);
     fireEvent.click(screen.getByLabelText(/보기 1/));
     expect(await screen.findByText(/저장 실패/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     await waitFor(() => expect(calls.patch.length).toBe(2));
-    expect(await screen.findByText(/저장 실패/)).toBeInTheDocument();
+    expect(await screen.findByText('저장됨')).toBeInTheDocument();
+  });
+
+  it('PATCH 네트워크 실패는 오프라인 임시 저장으로 표시하고 선택을 유지한다(#52)', async () => {
+    const calls = { patch: [] as unknown[], post: [] as string[] };
+    // GET도 함께 실패(전체 오프라인) — 낙관적 선택이 서버 확인 전에 지워지지 않는다
+    renderStudy(fakeStudyClient({ start: makeSet(), patchFailTimes: 99, calls }));
+    fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/20/);
+    fireEvent.click(screen.getByLabelText(/보기 1/));
+    expect(await screen.findByText('오프라인 임시 저장')).toBeInTheDocument();
+    expect(screen.getByLabelText(/보기 1/)).toBeChecked(); // optimistic 선택 유지 (롤백 없음)
+    expect(screen.queryByText('저장됨')).not.toBeInTheDocument(); // 서버 확인 전 '저장됨' 금지
+    expect(Object.keys(window.localStorage).some((k) => k.startsWith('moi.study.draft.v1'))).toBe(true);
   });
 
   it('이전/다음으로 이동한다', async () => {
@@ -260,7 +277,7 @@ describe('제출·결과·포기', () => {
     const client = fakeStudyClient({ get: submittedSet() });
     render(
       <QueryClientProvider client={queryClient}>
-        <StudyScreen client={client} />
+        <StudyScreen client={client} userId="user-1" />
       </QueryClientProvider>,
     );
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();

@@ -60,13 +60,15 @@ function renderHistory(client: ApiClient) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <StudyScreen client={client} />
+      <StudyScreen client={client} userId="user-1" />
     </QueryClientProvider>,
   );
 }
 
 beforeEach(() => {
   window.history.replaceState(null, '', '/');
+  window.localStorage.clear();
+  window.sessionStorage.clear();
   vi.restoreAllMocks();
 });
 
