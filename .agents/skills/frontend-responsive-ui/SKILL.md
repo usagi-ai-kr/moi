@@ -1,6 +1,6 @@
 ---
 name: frontend-responsive-ui
-description: React SPA + Ant Design 6 반응형 UI 구현 규칙. 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
+description: React SPA + Ant Design 6 반응형 UI 구현 규칙(AWS 팔레트·KoddiUD 온고딕/Inter·Lighthouse). 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
 compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDependency (scripts/check-viewport-overflow.mjs).
 ---
 
@@ -16,6 +16,15 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 - AntD 6 `Grid`/`Flex`/`ConfigProvider` token 사용. 한 화면에서 viewport별 레이아웃을 조절한다.
 - 검증 viewport: **320 / 375 / 768 / 1024 / 1280px** — 로그인·로그아웃·오류 화면에서 가로 스크롤/겹침 없음.
 - 접근성: 키보드 포커스, 접근 가능한 버튼 명칭, 터치 타깃 크기, 로딩/에러 상태 표시 포함.
+
+## 디자인 시스템 (ADR-0012)
+- 팔레트: **AWS Orange(`#FF9900`) 액센트 + 무채색**(AWS Squid Ink 계열). 장식적 색 금지.
+- 서체: 표시(브랜드/제목)=**KoddiUD 온고딕**, UI 텍스트=**Inter 계열**. 폰트는 **번들 내장**(KoddiUD=`display-font.css` base64, Inter=fontsource)하고, 디스플레이 폰트는 **첫 페인트 이후 지연 로드**(`load` 후 동적 import) — `preload`·임계 경로 편입 금지.
+- 레이아웃: 간격·충돌 방지는 **container 내부 padding**으로, **flex/grid** 사용, **overflow 지양**, **position은 fixed만**.
+- 모션: ≤320ms 트랜지션·진입 애니메이션 허용, `prefers-reduced-motion` 존중, **hover 의존 상호작용 금지**.
+- **중앙 관리(하드코딩 금지)**: 색·박스모델·타이포·모션 = `src/ui/tokens.ts` → CSS 변수(`var(--moi-*)`)와 AntD 테마 동시 적용, 문구 = `src/ui/copy.ts`. 컴포넌트/CSS에 값·문구를 직접 쓰지 않는다. (예외: 폰트 경로 — `src/ui/display-font.css`의 `@font-face`만)
+- **초기 번들 규칙**: 정적 텍스트·레이아웃은 시맨틱 HTML+토큰 CSS로 렌더하고 UI 라이브러리를 초기 번들에 넣지 않는다. AntD는 상호작용 화면부터, 무거운 화면은 라우트 단위 코드 분할로 지연 로드한다. 디스플레이 폰트는 `load`+1.2s 지연·`<style>` 주입.
+- Lighthouse(모바일 기본) 4개 카테고리 ≥90 — 미달 시 원인·후속을 PR에 기록.
 
 ## 상태 소유권 (위반 금지)
 - 사용자 인증 상태의 진실 원천은 **서버**(`/api/me`). TanStack Query가 캐시·재검증·무효화 담당.
@@ -33,6 +42,8 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 - [ ] 로그아웃 화면/동작
 - [ ] 5개 viewport에서 잘림/가로 스크롤/겹침 없음
 - [ ] 키보드 포커스·버튼 명칭·터치 타깃·로딩/오류 상태 확인
+- [ ] hover 비의존 · 문구(`copy.ts`)·수치(`tokens.ts`) 하드코딩 없음
+- [ ] Lighthouse(모바일) 4개 카테고리 ≥90 (미달 시 원인·후속 기록)
 
 ## 테스트
 - React Testing Library로 UI 상태·오류 처리 단위 테스트.

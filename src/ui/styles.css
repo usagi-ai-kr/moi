@@ -1,0 +1,116 @@
+/* 기본 스타일 — 값은 src/ui/tokens.ts(단일 소스)가 주입하는 CSS 변수만 사용한다 (ADR-0012).
+   디스플레이 폰트(@font-face)는 src/ui/display-font.css(지연 로드·번들 내장)에서만 정의한다. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  font-family: var(--moi-font-ui);
+  line-height: var(--moi-lh-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 레이아웃: container 내부 padding으로 충돌 방지 · flex/grid · overflow 지양 (ADR-0012) */
+.moi-container {
+  width: 100%;
+  max-width: var(--moi-container-max);
+  margin-inline: auto;
+  padding-inline: var(--moi-container-pad-x);
+}
+
+.moi-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 10;
+  height: var(--moi-header-h);
+  display: flex;
+  align-items: center;
+  background: var(--moi-color-white);
+  border-bottom: 1px solid var(--moi-color-border);
+}
+
+.moi-header-inner {
+  display: flex;
+  align-items: baseline;
+  gap: var(--moi-space-3);
+}
+
+.moi-brand {
+  font-family: var(--moi-font-display);
+  font-weight: 700;
+  font-size: var(--moi-size-brand);
+  color: var(--moi-color-ink);
+}
+
+.moi-brand-sub {
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+.moi-main {
+  min-height: 100vh;
+  padding-top: calc(var(--moi-header-h) + var(--moi-space-7));
+  padding-bottom: var(--moi-space-7);
+  display: flex;
+}
+
+.moi-main-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+}
+
+.moi-accent {
+  width: var(--moi-accent-w);
+  height: var(--moi-accent-h);
+  border-radius: var(--moi-radius-sm);
+  background: var(--moi-color-orange);
+  margin-bottom: var(--moi-space-4);
+}
+
+.moi-title {
+  font-family: var(--moi-font-display);
+  font-size: var(--moi-size-h1);
+  line-height: var(--moi-lh-tight);
+  margin: 0;
+}
+
+.moi-lead {
+  font-size: var(--moi-size-lead);
+  color: var(--moi-color-ink);
+  margin: 0;
+}
+
+.moi-note {
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+  margin: 0;
+}
+
+/* 모션: 진입 애니메이션만 — hover 의존 상호작용 없음 (ADR-0012) */
+@media (prefers-reduced-motion: no-preference) {
+  .moi-enter {
+    animation: moi-enter var(--moi-motion-enter) var(--moi-ease) both;
+  }
+}
+
+@keyframes moi-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--moi-enter-shift));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
