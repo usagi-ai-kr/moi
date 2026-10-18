@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 하네스 자체 검증 — Agent Skills 표준(https://agentskills.io/specification) + moi 규칙(SKILL.md + scripts/ 필수)
+// 하네스 자체 검증 — Agent Skills 표준(https://agentskills.io/specification) + moi 규칙(SKILL.md + scripts/ 필수, AGENTS.md 스킬 인덱스 등록)
 // 사용법: node .agents/scripts/validate-skills.mjs [skills-dir]
 // 종료 코드: 0 정상, 1 위반, 2 사용 오류
 import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs';
@@ -67,10 +67,29 @@ for (const dir of entries) {
   }
 }
 
+// AGENTS.md 스킬 인덱스 대조 (moi 규칙: 새 스킬은 AGENTS.md 스킬 인덱스에 등록)
+const agentsMd = resolve(root, '..', '..', 'AGENTS.md');
+if (existsSync(agentsMd)) {
+  const md = readFileSync(agentsMd, 'utf8');
+  const indexed = new Set();
+  for (const line of md.split('\n')) {
+    const m = /^\|\s*`([a-z0-9][a-z0-9-]*)`\s*\|/.exec(line);
+    if (m) indexed.add(m[1]);
+  }
+  for (const dir of entries) {
+    if (!indexed.has(dir)) errors.push(`${dir}: AGENTS.md 스킬 인덱스에 미등록`);
+  }
+  for (const id of indexed) {
+    if (!entries.includes(id)) errors.push(`AGENTS.md 스킬 인덱스 '${id}': 대응 스킬 디렉터리 없음`);
+  }
+} else {
+  warnings.push(`AGENTS.md 없음(${agentsMd}) — 스킬 인덱스 대조 생략`);
+}
+
 for (const w of warnings) console.log(`WARN ${w}`);
 if (errors.length) {
   console.log(`FAIL: 스킬 표준 위반 ${errors.length}건`);
   for (const e of errors) console.log(`  - ${e}`);
   process.exit(1);
 }
-console.log(`OK: 스킬 ${entries.length}개 표준 점검 통과 (name/description/scripts)`);
+console.log(`OK: 스킬 ${entries.length}개 표준 점검 통과 (name/description/scripts/인덱스)`);
