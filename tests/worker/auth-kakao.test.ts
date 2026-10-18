@@ -4,7 +4,9 @@ import { createWebCryptoOAuthCrypto } from '@/infra/auth/kakao/crypto';
 import { createKakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
 import { createApp } from '@/infra/http/app';
 import type { OAuthIdentity } from '@/domain/auth/identity';
-import migrationSql from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
+import migration0000 from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
+import migration0001 from '../../drizzle/migrations/0001_add-users-external-identities.sql?raw';
+import migration0002 from '../../drizzle/migrations/0002_add-sessions.sql?raw';
 import {
   applyD1Migrations,
   createFakeKakaoServer,
@@ -18,12 +20,23 @@ import {
 
 // Worker+D1 통합 테스트 — 실제 카카오는 사용하지 않고 URL별 fake(token/JWKS)로 stub한다(ADR-0007).
 // 각 테스트는 BDD Given/When/Then 주석으로 이슈 #2 AC와 매핑된다.
+// #4(0.1.3)부터 callback 계약: 성공 302 /?auth=success + 세션 쿠키, 실패/취소 302 /?auth=error + 임시 쿠키 삭제.
+
+/** 32바이트 무작위 표준 base64 키(put-paseto-key.sh 형식) — .dev.vars를 읽지 않고 테스트만 자체 생성한다. */
+function randomBase64Key(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  let binary = '';
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}
 
 const testEnv: Env = {
   ...env,
   KAKAO_CLIENT_ID: FAKE_CLIENT_ID,
   KAKAO_CLIENT_SECRET: FAKE_CLIENT_SECRET,
   KAKAO_REDIRECT_URI: FAKE_REDIRECT_URI,
+  PASETO_KEY_V1: randomBase64Key(),
 };
 
 const cryptoPort = createWebCryptoOAuthCrypto();
@@ -56,10 +69,13 @@ function createAppWithSpy() {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(testEnv.DB, [migrationSql]);
+  await applyD1Migrations(testEnv.DB, [migration0000, migration0001, migration0002]);
 });
 
 beforeEach(async () => {
+  await testEnv.DB.prepare('DELETE FROM sessions').run();
+  await testEnv.DB.prepare('DELETE FROM external_identities').run();
+  await testEnv.DB.prepare('DELETE FROM users').run();
   await testEnv.DB.prepare('DELETE FROM oauth_states').run();
 });
 
@@ -137,6 +153,21 @@ function callbackRequest(state: string, options?: { code?: string | null; bindin
   return new Request(url, { headers });
 }
 
+/** Set-Cookie 헤더를 개별 행으로 분리한다(workerd는 ', '로 결합해 내려올 수 있다). */
+function splitSetCookie(res: Response): string[] {
+  return (res.headers.get('set-cookie') ?? '')
+    .split(/,(?=[^;]+=)/)
+    .map((line) => line.trim());
+}
+
+async function expectErrorRedirect(res: Response): Promise<void> {
+  expect(res.status).toBe(302);
+  expect(res.headers.get('location')).toBe('/?auth=error');
+  expect(res.headers.get('cache-control')).toBe('no-store');
+  expect(splitSetCookie(res).some((line) => line.startsWith('__Host-moi_oauth=; Max-Age=0'))).toBe(true);
+  expect(splitSetCookie(res).some((line) => line.startsWith('__Host-moi_session='))).toBe(false);
+}
+
 describe('GET /auth/kakao (로그인 시작)', () => {
   it('AC1 전제: 302·인가 파라미터·쿠키 속성·해시 저장·TTL 600을 만족한다', async () => {
     const fake = await createFakeKakaoServer();
@@ -176,8 +207,8 @@ describe('GET /auth/kakao (로그인 시작)', () => {
   });
 });
 
-describe('GET /auth/kakao/callback (AC1 정상 경로)', () => {
-  it('AC1: Given 올바른 code/state/서명된 ID token When callback Then 200이고 검증된 provider=kakao, sub를 얻는다', async () => {
+describe('GET /auth/kakao/callback (AC1 정상 경로 → 세션 발급)', () => {
+  it('AC1: Given 올바른 code/state/서명된 ID token When callback Then 302 /?auth=success이고 검증된 provider=kakao, sub를 얻어 세션이 발급된다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -185,24 +216,20 @@ describe('GET /auth/kakao/callback (AC1 정상 경로)', () => {
 
     const res = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(302);
+    expect(res.headers.get('location')).toBe('/?auth=success');
     expect(res.headers.get('cache-control')).toBe('no-store');
-    // 모든 콜백 응답에서 임시 쿠키를 삭제한다(Max-Age=0)
-    const setCookie = res.headers.get('set-cookie') ?? '';
-    expect(setCookie).toContain('__Host-moi_oauth=');
-    expect(setCookie).toContain('Max-Age=0');
-    expect(setCookie).toContain('Path=/');
-    expect(setCookie).toContain('Secure');
-    expect(setCookie).toContain('HttpOnly');
-    expect(setCookie).toContain('SameSite=Lax');
+    // 세션 쿠키 발급 + 임시 쿠키 삭제가 함께 설정된다
+    expect(splitSetCookie(res).some((line) => line.startsWith('__Host-moi_session=v4.local.'))).toBe(true);
+    expect(splitSetCookie(res).some((line) => line.startsWith('__Host-moi_oauth=; Max-Age=0'))).toBe(true);
     expect(capture.identity).toEqual({ provider: 'kakao', sub: FAKE_SUB });
 
-    // 성공 응답 본문에 토큰·sub·코드 원문이 없다
+    // 리다이렉트 본문/URL에 토큰·sub·코드 원문이 없다
     const body = await res.text();
     expect(body.includes(FAKE_SUB)).toBe(false);
     expect(body.includes(arranged.idToken)).toBe(false);
     expect(body.includes('fake-access-token')).toBe(false);
-    expect(body.includes(arranged.state)).toBe(false);
+    expect(res.headers.get('location')?.includes(FAKE_SUB)).toBe(false);
 
     // 토큰 교환: code_verifier가 저장된 verifier와 일치(S256(challenge) = 인가 요청 challenge)
     expect(fake.tokenRequests).toHaveLength(1);
@@ -217,25 +244,27 @@ describe('GET /auth/kakao/callback (AC1 정상 경로)', () => {
       arranged.location.searchParams.get('code_challenge'),
     );
 
-    // 성공 경로에서도 소비 완료(재사용 불가)
+    // 성공 경로에서도 소비 완료(재사용 불가) + 세션 발급 기록
     const after = await readStateRow(testEnv.DB, await cryptoPort.sha256Hex(arranged.state));
     expect((after as StateRow).consumed_at).not.toBeNull();
+    const sessions = await testEnv.DB.prepare('SELECT count(*) AS c FROM sessions').first<{ c: number }>();
+    expect(sessions?.c).toBe(1);
   });
 });
 
 describe('GET /auth/kakao/callback (AC2 state 검증)', () => {
-  it('AC2: Given 재사용된 state(이중 콜백) When callback Then 거부한다', async () => {
+  it('AC2: Given 재사용된 state(이중 콜백) When callback Then /?auth=error로 거부한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
     const arranged = await arrangeValidCallback(fake, app);
     const first = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
-    expect(first.status).toBe(200);
+    expect(first.status).toBe(302);
+    expect(first.headers.get('location')).toBe('/?auth=success');
 
     const second = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
 
-    expect(second.status).toBe(400);
-    expect(second.headers.get('cache-control')).toBe('no-store');
+    await expectErrorRedirect(second);
   });
 
   it('부가: 잘못된 Zod payload(빈 state 쿼리)는 거부한다', async () => {
@@ -248,12 +277,11 @@ describe('GET /auth/kakao/callback (AC2 state 검증)', () => {
       testEnv,
     );
 
-    expect(res.status).toBe(400);
-    expect(res.headers.get('cache-control')).toBe('no-store');
+    await expectErrorRedirect(res);
     expect(fake.tokenRequests).toHaveLength(0);
   });
 
-  it('AC2: Given 잘못된 state When callback Then 거부한다', async () => {
+  it('AC2: Given 잘못된 state When callback Then /?auth=error로 거부한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -262,10 +290,10 @@ describe('GET /auth/kakao/callback (AC2 state 검증)', () => {
     const badState = 'a'.repeat(43);
     const res = await app.fetch(callbackRequest(badState), testEnv);
 
-    expect(res.status).toBe(400);
+    await expectErrorRedirect(res);
   });
 
-  it('AC2: Given 만료된 state When callback Then 거부한다', async () => {
+  it('AC2: Given 만료된 state When callback Then /?auth=error로 거부한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -278,7 +306,7 @@ describe('GET /auth/kakao/callback (AC2 state 검증)', () => {
 
     const res = await app.fetch(callbackRequest(started.state, { binding: started.binding }), testEnv);
 
-    expect(res.status).toBe(400);
+    await expectErrorRedirect(res);
   });
 });
 
@@ -293,13 +321,13 @@ describe('GET /auth/kakao/callback (바인딩·취소·PKCE)', () => {
       callbackRequest(arranged.state, { binding: 'other-browser-binding-token' }),
       testEnv,
     );
-    expect(mismatch.status).toBe(400);
+    await expectErrorRedirect(mismatch);
     // fail-closed: 소비는 쿠키 확인 전에 일어났다
     const afterMismatch = await readStateRow(testEnv.DB, await cryptoPort.sha256Hex(arranged.state));
     expect((afterMismatch as StateRow).consumed_at).not.toBeNull();
 
     const retryWithCorrectCookie = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
-    expect(retryWithCorrectCookie.status).toBe(400);
+    await expectErrorRedirect(retryWithCorrectCookie);
     expect(fake.tokenRequests).toHaveLength(0); // 코드 교환 자체가 일어나지 않는다
   });
 
@@ -311,10 +339,10 @@ describe('GET /auth/kakao/callback (바인딩·취소·PKCE)', () => {
 
     const res = await app.fetch(callbackRequest(arranged.state, { binding: null }), testEnv);
 
-    expect(res.status).toBe(400);
+    await expectErrorRedirect(res);
   });
 
-  it('AC4: Given 사용자 동의 취소(error=access_denied) When callback Then 공통 실패(400)로 수렴하고 state는 소비된다', async () => {
+  it('AC4: Given 사용자 동의 취소(error=access_denied) When callback Then /?auth=error로 수렴하고 state는 소비된다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -325,19 +353,13 @@ describe('GET /auth/kakao/callback (바인딩·취소·PKCE)', () => {
       testEnv,
     );
 
-    expect(res.status).toBe(400);
-    expect(res.headers.get('cache-control')).toBe('no-store');
-    // 실패 응답에서도 임시 쿠키를 삭제한다(Max-Age=0)
-    const deniedCookie = res.headers.get('set-cookie') ?? '';
-    expect(deniedCookie).toContain('__Host-moi_oauth=');
-    expect(deniedCookie).toContain('Max-Age=0');
-    const body = await res.text();
-    expect(body.includes('access_denied')).toBe(false); // 내부 오류 코드 미노출
+    await expectErrorRedirect(res);
+    expect(res.headers.get('location')?.includes('access_denied')).toBe(false); // 내부 오류 코드 미노출
     const after = await readStateRow(testEnv.DB, await cryptoPort.sha256Hex(arranged.state));
     expect((after as StateRow).consumed_at).not.toBeNull();
   });
 
-  it('부가: PKCE verifier 불일치(upstream이 코드 교환 거절)는 502로 수렴한다', async () => {
+  it('부가: PKCE verifier 불일치(upstream이 코드 교환 거절)는 /?auth=error로 수렴한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -350,14 +372,13 @@ describe('GET /auth/kakao/callback (바인딩·취소·PKCE)', () => {
 
     const res = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
 
-    expect(res.status).toBe(502);
-    expect(res.headers.get('cache-control')).toBe('no-store');
+    await expectErrorRedirect(res);
     expect(capture.identity).toBeNull();
   });
 });
 
 describe('GET /auth/kakao/callback (AC3 OIDC 검증·upstream 장애)', () => {
-  it('AC3: nonce 불일치 ID token은 거부한다(502)', async () => {
+  it('AC3: nonce 불일치 ID token은 /?auth=error로 거부한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -375,16 +396,11 @@ describe('GET /auth/kakao/callback (AC3 OIDC 검증·upstream 장애)', () => {
 
     const res = await app.fetch(callbackRequest(started.state, { binding: started.binding }), testEnv);
 
-    expect(res.status).toBe(502);
-    expect(res.headers.get('cache-control')).toBe('no-store');
-    // 검증 실패 응답에서도 임시 쿠키를 삭제한다(Max-Age=0)
-    const failedCookie = res.headers.get('set-cookie') ?? '';
-    expect(failedCookie).toContain('__Host-moi_oauth=');
-    expect(failedCookie).toContain('Max-Age=0');
+    await expectErrorRedirect(res);
     expect(capture.identity).toBeNull();
   });
 
-  it('AC3: 서명 실패(JWKS에 없는 키로 서명된 토큰)는 거부한다(502)', async () => {
+  it('AC3: 서명 실패(JWKS에 없는 키로 서명된 토큰)는 /?auth=error로 거부한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -401,11 +417,11 @@ describe('GET /auth/kakao/callback (AC3 OIDC 검증·upstream 장애)', () => {
 
     const res = await app.fetch(callbackRequest(started.state, { binding: started.binding }), testEnv);
 
-    expect(res.status).toBe(502);
+    await expectErrorRedirect(res);
     expect(capture.identity).toBeNull();
   });
 
-  it('부가: upstream 네트워크 오류(토큰 교환)는 502로 수렴한다', async () => {
+  it('부가: upstream 네트워크 오류(토큰 교환)는 /?auth=error로 수렴한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -414,11 +430,11 @@ describe('GET /auth/kakao/callback (AC3 OIDC 검증·upstream 장애)', () => {
 
     const res = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
 
-    expect(res.status).toBe(502);
+    await expectErrorRedirect(res);
     expect(capture.identity).toBeNull();
   });
 
-  it('부가: 비정상 token JSON은 502로 수렴한다', async () => {
+  it('부가: 비정상 token JSON은 /?auth=error로 수렴한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -427,10 +443,10 @@ describe('GET /auth/kakao/callback (AC3 OIDC 검증·upstream 장애)', () => {
 
     const res = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
 
-    expect(res.status).toBe(502);
+    await expectErrorRedirect(res);
   });
 
-  it('부가: 잘못된 JWKS 응답은 502로 수렴한다', async () => {
+  it('부가: 잘못된 JWKS 응답은 /?auth=error로 수렴한다', async () => {
     const fake = await createFakeKakaoServer();
     vi.stubGlobal('fetch', fake.fetch);
     const app = createAppWithSpy();
@@ -439,7 +455,7 @@ describe('GET /auth/kakao/callback (AC3 OIDC 검증·upstream 장애)', () => {
 
     const res = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
 
-    expect(res.status).toBe(502);
+    await expectErrorRedirect(res);
     expect(capture.identity).toBeNull();
   });
 });
