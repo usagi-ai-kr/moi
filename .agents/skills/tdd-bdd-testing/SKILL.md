@@ -9,13 +9,26 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 출처: 이슈 #1(실행 규약), #2–#5(단계별 테스트). 관련: `architecture-boundaries`, `release-deploy-workers`.
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
-- `node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]` — CI와 동일한 게이트(lint/typecheck/check:architecture/test:unit/test:integration/test:bdd/build)를 로컬에서 순차 실행한다. 미정의 스크립트는 건너뛰고 요약만 출력(fail-closed 전환은 #10).
+- `node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]` — CI와 동일한 필수 게이트(lint/typecheck/check:architecture/test:unit/test:integration/test:bdd/build)를 로컬에서 순차 실행한다. **fail-closed**: package.json이 있으면(읽기/JSON 오류 포함) 미정의·실패 게이트에서 exit 1, **파일 자체가 없을 때만** 안내 후 exit 0(임시 예외).
+- `sh .agents/skills/tdd-bdd-testing/scripts/run-gates.test.sh` — 판정 회귀 테스트(부재→0 · 잘못된 JSON→1 · 미정의→1 · 전 게이트→0).
 
 ## 실행 규약
 1. 이슈의 Acceptance Criteria를 **Given/When/Then 시나리오로 먼저 정의**하고 재현 가능한 실행 테스트로 구현한다.
 2. **Red(실패 테스트) → Green(최소 구현) → Refactor(경계 준수)** 순서를 유지한다.
 3. PR에 대응 테스트 위치/실행 명령/결과를 기록한다.
 4. CI는 실제 Kakao 계정을 필요로 하지 않도록 외부 OIDC를 deterministic mock으로 대체한다.
+
+## 증거 추적 (AC ↔ feature ↔ test ↔ PR)
+- feature/스텝에 이슈 AC 번호를 주석으로 병기해 추적한다.
+- PR 본문에 테스트 위치·실행 커맨드·결과(로그·뷰포트 스크린샷)와 남은 blocker를 기록한다.
+- 실패 시 비밀정보를 제거한 trace/screenshot 아티팩트를 보존하고 재현 커맨드를 남긴다. 기본 재시도 0(플레이크 은폐 방지).
+
+## 게이트 fail-closed 규칙 (#10)
+- scaffold 이후 필수 게이트는 **없거나 스킵이면 실패**다('미정의 스킵-성공' 금지). CI와 `run-gates.mjs`가 동일 규칙을 적용한다.
+- 임시 예외는 package.json **파일 부재(ENOENT)**뿐이다. 파일이 존재하나 읽기/JSON 파싱 오류면 실패(exit 1)로 처리한다. package.json이 생성되면 예외는 자동 종료된다.
+- `test:bdd`는 실제 실행되는 smoke만 인정한다(0.1.0: 홈/health/API). 로그인 시나리오는 0.1.1~0.1.3에서 누적.
+- Cloudflare Worker/D1 통합 테스트는 `@cloudflare/vitest-plugin` + 호환 Vitest 버전을 사용한다(`@cloudflare/vitest-pool-workers` 신규 도입 금지).
+- CI job 타임아웃 15분(fail 시 로그·아티팩트 확인).
 
 ## 계층별 테스트 도구
 | 대상 | 도구 | 방식 |
@@ -43,8 +56,9 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 - Given 로그인 사용자 When 로그아웃 Then 서버 세션이 폐기되고 이후 보호 API는 401이다.
 - Given 320/375/768/1024/1280 viewport When 로그인·오류 화면 방문 Then 잘리지 않고 조작 가능하다.
 
-## CI 게이트 (전부 통과해야 함)
+## CI 게이트 (전부 통과해야 함 — fail-closed)
 `pnpm lint` · `typecheck` · `check:architecture` · `test:unit` · `test:integration` · `test:bdd` · `build`
+- 미정의·스킵은 실패다. 0.1.0 scaffold 이전(package.json 부재)만 임시 예외다.
 
 ## PR 증거 형식
 - 테스트 위치(파일), 실행 명령, 결과(성공/로그), viewport별 스크린샷, 남은 blocker.
