@@ -38,6 +38,13 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 | infra (Worker/D1) | @cloudflare/vitest-plugin | 실제 Worker/D1 플러그인 + 가짜 Kakao 응답 통합 테스트 |
 | 브라우저 | Playwright + playwright-bdd | 핵심 화면 320/375/768/1024/1280 전부, 보조 375/768/1280 |
 
+## 0.x 단계별 테스트 적용 범위
+| 단계 | 필수 |
+| --- | --- |
+| 0.1.0 | unit/integration smoke + 홈/health/API BDD + 번들 경계 검사 |
+| 0.1.1~0.1.3 | 해당 기능 unit/integration + BDD 시나리오 누적(인증·사용자 식별·세션) |
+| 0.1.4 | 전체 BDD(핵심 5종 viewport) + 배포 smoke + 실계정 smoke(수동) |
+
 ## 필수 테스트 항목 (누적)
 - 상태 소유권: TanStack Query `/api/me`가 진실 원천, Zustand에 토큰/중복 사용자 상태 없음.
 - Ky: 인증 오류, 중단/타임아웃 처리. 401 → 캐시 재검증/리셋.

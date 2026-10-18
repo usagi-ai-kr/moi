@@ -18,14 +18,19 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 | `domain/` | User, ExternalIdentity 등 엔티티/VO/비즈니스 규칙 (순수 TS) | 프레임워크·DB·네트워크 import, Drizzle 스키마 타입 직접 참조, Zod/런타임 DB 모델 직접 의존 |
 | `app/` | use case(LoginWithKakao, GetCurrentUser, Logout) + Port(UserRepository, SessionRepository, OidcVerifier). `domain`만 의존 | TanStack Query/Zustand/Hono/Drizzle/Pino/암호화 라이브러리 직접 import |
 | `infra/` | Hono 라우트·미들웨어, Kakao OIDC 어댑터, Drizzle D1 저장소, 세션·쿠키 구현. app Port 구현 | 도메인 규칙 재구현 |
-| `ui/` | AntD 6 컴포넌트, 로그인 페이지, 라우팅, ViewModel/API client | 도메인 규칙 재구현, D1·Kakao 토큰 직접 접근, PASETO 노출/저장 |
-| `bootstrap/` | Worker 의존성 주입/라우팅 조립, React 앱 bootstrap (composition root) | 비즈니스 규칙 |
+| `ui/` | AntD 6 컴포넌트, 로그인 페이지, 라우팅, ViewModel, 브라우저 전용 API client(`ui/api`) | 도메인 규칙 재구현, D1·Kakao 토큰 직접 접근, PASETO 노출/저장 |
+| `bootstrap/` | composition root — `bootstrap/worker`(Worker 조립)와 `bootstrap/web`(React 진입) 분리 | 비즈니스 규칙 |
 
 ## 의존성 방향
 - 논리 흐름: `ui → app → domain`.
 - Worker 요청 경로: React 컴포넌트 → query/usecase facade → Ky client → Hono middleware → app usecase → Domain/Port/Drizzle.
 - `app`/`domain`에서 `infra`/`ui`로의 역방향 import 금지.
 - 계층 위반은 CI에서 `check:architecture`(dependency-cruiser) **실패**로 차단한다. 위반 테스트에 직접 import·별칭 경유·재export·type-only import를 포함한다(#10 → #1).
+
+## 실행 환경 경계 (브라우저 vs Worker)
+- 브라우저 번들: `src/ui`(+`src/ui/api`)·`bootstrap/web` + 사이드이펙트 없는 공유 타입/DTO만. 서버 전용 구현(Hono·Drizzle·PASETO·Pino)과 Cloudflare 바인딩·Secret 유입 금지.
+- Worker 번들: `src/infra`·`bootstrap/worker`(+`app`/`domain`). 공통 계약은 타입/DTO로 제한.
+- 강제: dependency-cruiser + Vite 번들 검사(브라우저 번들 내 서버 모듈·`cloudflare:` 참조 부재) — #1 scaffold에서 테스트로 구성(#12, ADR-0011).
 
 ## 계층별 라이브러리 책임 (핵심)
 - **TanStack Query** (`ui/`): 서버 상태(`/api/me`) 캐시·재검증·무효화. **사용자 인증 여부의 진실 원천은 서버.**
@@ -48,3 +53,4 @@ compatibility: Node.js 필요 (scripts/check-imports.mjs).
 - [ ] `app`/`domain`이 금지 라이브러리를 import하지 않는가?
 - [ ] UI가 서버 상태(TanStack Query)와 UI 상태(Zustand)를 올바른 도구로 나누었는가?
 - [ ] API client 호출이 Ky 어댑터 한 곳으로 모여 있는가?
+- [ ] 브라우저 번들에 서버 코드(`infra`·Cloudflare 바인딩·Secret)가 포함되지 않는가? (번들 검사, ADR-0011)
