@@ -1,5 +1,6 @@
 import type { StudyDeps } from '@/app/study/ports';
 import { createD1QuestionPool } from '@/infra/persistence/study-pool';
+import { createD1StudyAttemptRepository } from '@/infra/persistence/study-attempt-repository';
 import { createD1StudySetRepository } from '@/infra/persistence/study-repository';
 import { createJsonLogger, type JsonLogger, type JsonLogSink } from '@/infra/logging/json-logger';
 
@@ -22,6 +23,7 @@ export function createStudyRuntime(env: Env, requestId: string, sink?: JsonLogSi
     createDeps: ({ examId }) => ({
       pool: createD1QuestionPool(db, examId),
       repository: createD1StudySetRepository(db),
+      attempts: createD1StudyAttemptRepository(db),
       clock: { now: () => Math.floor(Date.now() / 1000) },
       rng: { next: () => Math.random() },
     }),

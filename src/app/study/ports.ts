@@ -1,5 +1,5 @@
 import type { StudySet } from '@/domain/study/types';
-import type { AttemptRecord } from '@/app/stats/attempt-ports';
+import type { AttemptRecord, StudyAttemptRepository } from '@/app/stats/attempt-ports';
 
 /** 20문제 세트 application Port (이슈 #49, ADR-0020). DB/HTTP/UI는 infra에서 구현한다. */
 
@@ -57,4 +57,5 @@ export interface StudyDeps {
   readonly repository: StudySetRepository;
   readonly clock: StudyClock;
   readonly rng: StudyRng;
+  readonly attempts?: StudyAttemptRepository;
 }

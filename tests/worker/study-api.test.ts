@@ -12,6 +12,7 @@ import migration0003 from '../../drizzle/migrations/0003_add-question-bank.sql?r
 import migration0004 from '../../drizzle/migrations/0004_add-admin-api.sql?raw';
 import migration0005 from '../../drizzle/migrations/0005_add-study-sets.sql?raw';
 import migration0006 from '../../drizzle/migrations/0006_add-study-item-content.sql?raw';
+import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // 이슈 #49 후속 (ADR-0020) Worker+D1 통합 테스트 — 세션 인증·세트 생명주기·
@@ -94,7 +95,7 @@ async function seedBank(questionCount = 24, examId = EXAM): Promise<void> {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006]);
+  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0009]);
   try {
     await db.exec('PRAGMA foreign_keys = ON;');
   } catch {
@@ -104,6 +105,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   for (const t of [
+    'study_attempts',
     'study_set_items',
     'study_sets',
     'question_options',
@@ -375,5 +377,56 @@ describe('멱등성 (#52)', () => {
     const rejected = a.status === 409 ? a : b;
     expect((await rejected.json()) as { error: string }).toMatchObject({ error: 'active_set_exists' });
     expect(await countActive()).toBe(1);
+  });
+});
+
+describe('제출→attempt 저장 (#54)', () => {
+  it('제출 후 study_attempts 20행·source·firstAttempt·stats 반영', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000d1');
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    expect(started.status).toBe(201);
+    const set = (await started.json()) as {
+      id: string;
+      items: Array<{ questionId: string; optionOrder: string[] }>;
+    };
+    expect(set.items).toHaveLength(20);
+    const first = set.items[0] as { questionId: string; optionOrder: string[] };
+    const second = set.items[1] as { questionId: string };
+    await studyRequest(`/api/study/sets/${set.id}/answers`, {
+      method: 'PATCH',
+      token,
+      body: { questionId: first.questionId, response: { kind: 'answered', optionIds: [first.optionOrder[0]] } },
+    });
+    await studyRequest(`/api/study/sets/${set.id}/answers`, {
+      method: 'PATCH',
+      token,
+      body: { questionId: second.questionId, response: { kind: 'pass' } },
+    });
+    const submitted = await studyRequest(`/api/study/sets/${set.id}/submit`, {
+      method: 'POST',
+      token,
+      body: { confirmUnanswered: true },
+    });
+    expect(submitted.status).toBe(200);
+    const rows = await db
+      .prepare(
+        'SELECT question_id AS questionId, source, source_id AS sourceId, outcome, occurred_at AS occurredAt, first_attempt AS firstAttempt FROM study_attempts WHERE source_id = ?1',
+      )
+      .bind(set.id)
+      .all<{ questionId: string; source: string; sourceId: string; outcome: string; occurredAt: number; firstAttempt: number }>();
+    expect(rows.results).toHaveLength(20);
+    for (const r of rows.results) {
+      expect(r.source).toBe('set');
+      expect(r.sourceId).toBe(set.id);
+      expect(r.occurredAt).toBeGreaterThan(1_000_000_000_000);
+    }
+    const byQ = new Map(rows.results.map((r) => [r.questionId, r]));
+    expect(byQ.get(first.questionId)?.firstAttempt).toBe(1);
+    expect(byQ.get(second.questionId)?.firstAttempt).toBe(0);
+    const stats = await studyRequest(`/api/study/stats?examId=${EXAM}`, { token });
+    expect(stats.status).toBe(200);
+    const body = (await stats.json()) as { uniqueFirstSolved: number; overallAccuracy: number | null };
+    expect(body.uniqueFirstSolved).toBe(1);
+    expect(body.overallAccuracy).not.toBeNull();
   });
 });
