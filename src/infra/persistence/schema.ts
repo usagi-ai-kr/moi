@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 /**
  * Drizzle 스키마 — infra(persistence) 전용. domain/app은 이 타입을 참조하지 않는다(ADR-0001/0004).
@@ -18,4 +18,38 @@ export const oauthStates = sqliteTable('oauth_states', {
   consumedAt: integer('consumed_at'),
 });
 
-// 0.1.2(#3)에서 users/external_identities, 0.1.3(#4)에서 sessions를 추가한다.
+/**
+ * `users` (이슈 #3, ADR-0004): 내부 사용자 — 데이터 소유권 기준 UUID PK.
+ * 이메일/닉네임은 핵심키가 아니므로 컬럼을 두지 않는다(profile consent 필수화 금지).
+ * 0.1.3(#4) sessions가 이 테이블을 참조한다.
+ */
+export const users = sqliteTable('users', {
+  id: text('id').primaryKey(),
+  createdAt: integer('created_at').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+});
+
+/**
+ * `external_identities` (이슈 #3, ADR-0004): 외부 계정 → 내부 user_id 1:1 매핑.
+ * - `UNIQUE(provider, provider_subject)`: 동시 최초 로그인 경합의 원자적 승부처.
+ * - `INDEX(user_id)`: user 기준 역방향 조회.
+ * - 이메일/닉네임/동의 상태를 저장하지 않는다.
+ */
+export const externalIdentities = sqliteTable(
+  'external_identities',
+  {
+    id: text('id').primaryKey(),
+    provider: text('provider').notNull(),
+    providerSubject: text('provider_subject').notNull(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    createdAt: integer('created_at').notNull(),
+  },
+  (table) => [
+    uniqueIndex('external_identities_provider_subject_uq').on(table.provider, table.providerSubject),
+    index('external_identities_user_id_idx').on(table.userId),
+  ],
+);
+
+// 0.1.3(#4)에서 sessions를 추가한다.
