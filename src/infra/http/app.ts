@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { registerAdminRoutes } from './admin/routes';
+import { registerCorrectionAdminRoutes } from './admin/correction-routes';
 import { registerAuthRoutes } from './auth/routes';
 import { registerReportRoutes } from './reports/routes';
 import { registerSessionRoutes } from './session/routes';
@@ -34,6 +35,7 @@ export function createApp(options?: CreateAppOptions) {
     createSessionRuntime: options?.createSessionRuntime,
   });
   registerAdminRoutes(app, { createRuntime: options?.createAdminRuntime });
+  registerCorrectionAdminRoutes(app, { createRuntime: options?.createAdminRuntime });
   registerStudyRoutes(app, {
     createRuntime: options?.createStudyRuntime,
     createSessionRuntime: options?.createSessionRuntime,
