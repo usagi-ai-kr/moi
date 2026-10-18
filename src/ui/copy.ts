@@ -56,6 +56,6 @@ export const copy = {
     continueStudy: '이어풀기',
     detail: '상세 보기',
     close: '닫기',
-    needLogin: '로그인이 필요합니다. 먼저 카카오 로그인을 해주세요.',
+    needLogin: '로그인이 필요합니다. 먼저 카카오 로그인을 해주세요. 다른 기기에서 로그인하면 현재 세션이 만료될 수 있습니다.',
   },
 } as const;
