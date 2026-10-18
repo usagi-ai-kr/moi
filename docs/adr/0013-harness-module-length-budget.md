@@ -1,7 +1,7 @@
 ---
 id: ADR-0013
 title: 하네스 모듈 길이 예산 — 검사·관리 자동화
-status: Accepted
+status: Superseded by ADR-0015
 date: 2026-10-18
 related: ["#38", "#9", "#10"]
 ---

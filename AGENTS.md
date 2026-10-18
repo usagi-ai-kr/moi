@@ -24,8 +24,8 @@
 - **모든 기술적 추가 판단·변경은 ADR로 기록한다.** 기존 결정을 뒤집으면 기존 ADR을 `Superseded by ADR-NNNN`으로 바꾸고 새 ADR을 추가한다(본문 수정 금지, 오탈자 제외). 생성·인덱스 갱신은 `adr-management` 스킬의 스크립트를 사용한다.
 - **AGENTS.md 변경은 PR로만 반영한다.** 규칙이 바뀌면 같은 PR에서 관련 스킬·문서를 함께 갱신한다.
 - **모든 스킬은 `SKILL.md` + `scripts/` 구조를 가진다.** 반복적·결정적·출력이 큰 작업은 스크립트(sh/python/node)로 구현하고, 에이전트는 스크립트를 호출한 뒤 요약 출력만 읽는다(효율적 입출력·토큰 사용량 최적화). 새 스킬 추가 시 스크립트 1개 이상을 포함하고 아래 스킬 인덱스에 등록한다.
-- **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 길이는 모듈 예산(≤120줄, ADR-0013)을 따른다. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
-- **모듈 길이 예산**: AGENTS.md·SKILL.md·ADR 길이는 `harness-budget` 스킬이 검사한다(CI 필수·초과 차단). 초과 시 ① 중복 제거 ② 스크립트화 ③ 분리 순으로 해소하고, 예산 변경은 ADR 갱신과 함께한다.
+- **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 길이는 모듈 예산(≤120줄, ADR-0015)을 따른다. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
+- **모듈 길이 예산**: AGENTS.md·SKILL.md·ADR + `src/**/*.{ts,tsx,css}`(목표 150/상한 250줄·16KB, 위반 시 분할 신호) 길이는 `harness-budget` 스킬이 검사한다(CI 필수·초과 차단, ADR-0015). 초과 시 ① 중복 제거 ② 스크립트화 ③ 분리 순으로 해소하고, 예산 변경은 ADR 갱신과 함께한다.
 - 스킬 문서의 실행 명령 예시는 repo root 기준 경로(`.agents/skills/<스킬>/scripts/<스크립트>`)로 표기하고, 실행 CWD가 root임을 명시한다.
 - 이슈 완료 시 확정된 합의를 ADR/AGENTS.md/스킬에 반영(승격)한다. 이슈는 작업 추적용이고, 영속 규칙은 문서에 둔다.
 - 우선순위(충돌 시): **사용자가 승인한 이슈 합의 > Accepted ADR > AGENTS.md > 스킬 세부 절차.** 이슈 합의가 문서와 충돌하면 같은 PR에서 ADR supersede·문서 동기화로 반영한다.
