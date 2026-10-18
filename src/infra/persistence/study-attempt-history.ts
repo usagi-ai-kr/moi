@@ -1,4 +1,4 @@
-import type { StudyHistoryPort } from '@/app/stats/history-ports';
+import type { StudyHistoryPort } from '@/app/stats/ports';
 import type { StudyHistoryEntry, StudyOutcome } from '@/domain/stats/types';
 
 interface HistoryRow {

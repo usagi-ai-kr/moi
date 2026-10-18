@@ -7,8 +7,8 @@ import type { StudyHistoryEntry } from '@/domain/stats/types';
  */
 
 export interface StudyHistoryPort {
-  /** 한 시험의 학습 이력 — 시험별 분리의 서버 경계(ADR-0021). */
-  listByExam(input: { examId: string }): Promise<readonly StudyHistoryEntry[]>;
+  /** 한 사용자의 한 시험 학습 이력 — 사용자/시험별 분리의 서버 경계(ADR-0021). */
+  load(input: { readonly userId: string; readonly examId: string }): Promise<readonly StudyHistoryEntry[]>;
 }
 
 /** 북마크 Port — 추천 보강용 계약만 정의하고 본 단위에서는 주입하지 않는다(범위 밖: 사용 시 주입). */
