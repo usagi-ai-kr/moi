@@ -141,6 +141,17 @@ export async function abandonStudySet(client: ApiClient, setId: string): Promise
   return client.post(`api/study/sets/${setId}/abandon`, { json: { confirm: true } }).json<StudyActiveSet>();
 }
 
+// 신고 사유(서버 reportBodySchema와 동일한 4종 — #53).
+export type ReportReason = 'answer' | 'explanation' | 'ambiguous' | 'typo';
+
+// POST /api/study/reports — 201(recorded) · 200 {outcome:'duplicate'} · 401/422/500.
+export async function submitQuestionReport(
+  client: ApiClient,
+  input: { questionId: string; questionVersionId: string; reason: ReportReason },
+): Promise<unknown> {
+  return client.post('api/study/reports', { json: input }).json();
+}
+
 export async function listStudyHistory(
   client: ApiClient,
   input: { page: number; pageSize: number },

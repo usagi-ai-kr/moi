@@ -1,8 +1,10 @@
 import { copy } from '../copy';
-import type { ItemResponse, StudyActiveItem } from '../api/client';
+import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
+import { ReportButton } from './ReportButton';
 import type { SaveState } from './types';
 
 interface Props {
+  client: ApiClient;
   items: StudyActiveItem[];
   index: number;
   save: SaveState;
@@ -65,6 +67,7 @@ export function QuestionView(p: Props) {
       <h2 className="moi-study-title">{item.stem}</h2>
       <p className="moi-note">
         {item.questionId} · v{item.versionNo}
+        <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
       </p>
       <fieldset className="moi-study-field">
         <legend className="moi-study-legend">보기 선택</legend>
