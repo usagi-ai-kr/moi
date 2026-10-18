@@ -17,13 +17,15 @@ export type ItemResponse =
   | { readonly kind: 'pass' }
   | { readonly kind: 'unanswered' };
 
-/** 시작 시 고정되는 스냅샷(문제 개정 + 보기 순서). */
+/** 시작 시 고정되는 스냅샷(문제 개정 + 보기 순서 + 정답 집합). */
 export interface StudySetItemSnapshot {
   readonly questionId: string;
   readonly questionVersionId: string;
   readonly versionNo: QuestionVersion['versionNo'];
   /** 시작 시 섞어 고정한 보기 순서(옵션 id 배열). 다른 회차는 새로 섞는다. */
   readonly optionOrder: readonly string[];
+  /** 시작 시점 개정의 정답 집합 — 제출 채점은 pool 재조회가 아니라 이 스냅샷으로 한다(개정 불변). */
+  readonly answerOptionIds: readonly string[];
 }
 
 export interface StudySetItem extends StudySetItemSnapshot {

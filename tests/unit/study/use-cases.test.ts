@@ -165,6 +165,40 @@ describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
     expect(again).toMatchObject({ outcome: 'rejected', reason: 'not_active' });
   });
 
+  it('개정 후에도 스냅샷 정답으로 채점한다(세트 채점 불변)', async () => {
+    let liveAnswers = ['b'];
+    const pool: QuestionPool = {
+      async listPool() {
+        return Array.from({ length: 30 }, (_, i) =>
+          makePoolEntry({
+            questionId: `rq-${i}`,
+            index: i,
+            version: {
+              questionVersionId: `rqv-${i}-v1`,
+              versionNo: 1,
+              optionIds: ['a', 'b', 'c', 'd'],
+              answerOptionIds: [...liveAnswers],
+            },
+          }),
+        );
+      },
+    };
+    const sets = new Map<string, StudySet>();
+    const clock: StudyClock = { now: () => 1700000000 };
+    const rng: StudyRng = { next: seededRng(7) };
+    const deps = { pool, repository: repoWith(sets), clock, rng };
+    const started = await startStudySet(deps, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
+    const set = (started as { set?: StudySet }).set as StudySet;
+    expect(set.items[0]?.answerOptionIds).toEqual(['b']);
+    for (const item of set.items) {
+      await answerStudyItem(deps, { setId: set.id, userId: 'u1', questionId: item.questionId, response: { kind: 'answered', optionIds: ['b'] } });
+    }
+    liveAnswers = ['c']; // 시작 후 문제 개정 시뮬레이션
+    const submitted = await submitStudySet(deps, { setId: set.id, userId: 'u1', confirmUnanswered: false });
+    expect(submitted.outcome).toBe('submitted');
+    expect(sets.get(set.id)?.result?.accuracyPercent).toBe(100);
+  });
+
   it('Pass/미응답은 오답으로 채점되고 요약에 포함된다', async () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });

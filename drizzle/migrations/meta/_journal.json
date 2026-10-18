@@ -36,6 +36,13 @@
       "when": 1792317035952,
       "tag": "0004_add-admin-api",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792318439529,
+      "tag": "0005_add-study-sets",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,13 @@ import type { StudySet } from '@/domain/study/types';
 
 /** 20문제 세트 application Port (이슈 #49, ADR-0020). DB/HTTP/UI는 infra에서 구현한다. */
 
+/** 동시 시작 경합 — 부분 UNIQUE가 두 번째 활성 세트 저장을 거부했을 때 발생한다. */
+export class ConcurrentSetConflictError extends Error {
+  constructor() {
+    super('study: concurrent active set');
+  }
+}
+
 export interface PoolEntry {
   readonly questionId: string;
   readonly domainId: string;
