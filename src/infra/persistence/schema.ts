@@ -37,16 +37,20 @@ export const externalIdentities = sqliteTable(
   ],
 );
 
-/** `sessions`(#4/ADR-0005): jti_hash PK(원문 금지), user_id FK, revoked_at 즉시 폐기. */
-export const sessions = sqliteTable('sessions', {
-  jtiHash: text('jti_hash').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id),
-  issuedAt: integer('issued_at').notNull(),
-  expiresAt: integer('expires_at').notNull(),
-  revokedAt: integer('revoked_at'),
-});
+/** `sessions`(#4/ADR-0005, #52 단일 활성): jti_hash PK(원문 금지), user_id FK, revoked_at 즉시 폐기. 활성 세션은 사용자당 1개(부분 UNIQUE). */
+export const sessions = sqliteTable(
+  'sessions',
+  {
+    jtiHash: text('jti_hash').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id),
+    issuedAt: integer('issued_at').notNull(),
+    expiresAt: integer('expires_at').notNull(),
+    revokedAt: integer('revoked_at'),
+  },
+  (table) => [uniqueIndex('sessions_user_active_uq').on(table.userId).where(sql`revoked_at IS NULL`)],
+);
 
 /** `exams`(#46/ADR-0019): 시험 독립 구조 최상위, code UNIQUE. */
 export const exams = sqliteTable('exams', {

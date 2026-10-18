@@ -164,10 +164,11 @@ describe('학습 시작', () => {
     expect(await screen.findByText(/이미 진행 중인 세트/)).toBeInTheDocument();
   });
 
-  it('401이면 로그인 안내를 보인다', async () => {
+  it('401이면 로그인 안내와 다른 기기 로그인 시 세션 만료 가능 문구를 보인다', async () => {
     renderStudy(fakeStudyClient({ start: { status: 401, body: { error: 'unauthorized' } } }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
     expect(await screen.findByText(/로그인이 필요합니다/)).toBeInTheDocument();
+    expect(screen.getByText(/다른 기기에서 로그인하면 현재 세션이 만료될 수 있습니다/)).toBeInTheDocument();
   });
 });
 

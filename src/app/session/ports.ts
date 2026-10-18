@@ -21,7 +21,10 @@ export type SessionVerifyResult =
   | { readonly outcome: 'invalid'; readonly reason: 'malformed' | 'tampered' | 'wrong_key' | 'expired' };
 
 export interface SessionRepository {
-  /** 세션 활성화 기록(jti 해시만 저장 — PASETO 원문 저장 금지). */
+  /**
+   * 세션 활성화 기록(jti 해시만 저장 — PASETO 원문 저장 금지).
+   * 계정당 단일 활성 세션(#52): 같은 사용자의 기존 활성 세션을 먼저 폐기한 뒤 새 jti를 활성화한다(원자적·경합 안전).
+   */
   activate(input: { jti: string; userId: string; issuedAt: number; expiresAt: number }): Promise<void>;
   /** jti 활성 여부(revoked_at IS NULL AND expires_at > now). */
   findActive(input: { jti: string; now: number }): Promise<{ userId: string; expiresAt: number } | null>;
