@@ -1,0 +1,5 @@
+# pnpm 설정 (pnpm 11+: settings live in pnpm-workspace.yaml)
+# 빌드 스크립트 승인 (workerd 바이너리·esbuild) — 신규 의존성은 명시 검토 후 추가한다
+allowBuilds:
+  esbuild: true
+  workerd: true

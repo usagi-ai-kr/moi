@@ -70,6 +70,10 @@ jobs:
         if: steps.scaffold.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright browsers (chromium)
+        if: steps.scaffold.outputs.ready == 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Quality gates (fail-closed)
         if: steps.scaffold.outputs.ready == 'true'
         run: |

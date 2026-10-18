@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "moi",
+  "main": "src/bootstrap/worker/index.ts",
+  "compatibility_date": "2026-10-18",
+  "assets": {
+    "run_worker_first": ["/api/*", "/auth/*"],
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "moi-db",
+      "database_id": "db4ce82a-e1ce-4215-a508-c2694beecd44",
+      "migrations_dir": "drizzle/migrations"
+    }
+  ]
+}
