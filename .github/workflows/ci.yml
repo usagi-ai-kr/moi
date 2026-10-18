@@ -31,7 +31,7 @@ jobs:
       - name: Validate skills (Agent Skills spec)
         run: node .agents/scripts/validate-skills.mjs
 
-      - name: Check harness module budgets (ADR-0013)
+      - name: Check harness/src module budgets (ADR-0015)
         run: node .agents/skills/harness-budget/scripts/check-module-lengths.mjs
 
       - name: Detect scaffold
