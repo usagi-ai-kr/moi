@@ -82,15 +82,46 @@ export function createD1StudySetRepository(db: D1Database): StudySetRepository {
       return toStudySet(row, await listItems(row.id));
     },
 
-    async submit({ set }) {
-      // 조건부 전이: active일 때만 submitted로 갱신한다. 세트 items는 이미 저장된 스냅샷을 그대로 둔다.
-      const result = await db
+    async submit({ set, attempts }) {
+      // 제출+attempt 원자 저장(#54): UPDATE(active→submitted)와 attempt INSERT를 D1 batch로 묶는다.
+      // INSERT는 제출 성공 시에만 저장되도록 EXISTS(submitted) 가드로 no-op화하고 충돌은 무시한다.
+      const updateStmt = db
         .prepare(
           "UPDATE study_sets SET status = 'submitted', submitted_at = ?1, result_json = ?2 WHERE id = ?3 AND status = 'active'",
         )
-        .bind(set.submittedAt ?? null, set.result !== undefined ? JSON.stringify(set.result) : null, set.id)
-        .run();
-      const changes = (result.meta as { changes?: number } | undefined)?.changes ?? 0;
+        .bind(set.submittedAt ?? null, set.result !== undefined ? JSON.stringify(set.result) : null, set.id);
+      const list = attempts ?? [];
+      if (list.length === 0) {
+        const result = await updateStmt.run();
+        const changes = (result.meta as { changes?: number } | undefined)?.changes ?? 0;
+        return changes === 1;
+      }
+      const stmts = [
+        updateStmt,
+        ...list.map((a) =>
+          db
+            .prepare(
+              'INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) ' +
+                "SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11 WHERE EXISTS (SELECT 1 FROM study_sets WHERE id = ?12 AND status = 'submitted') ON CONFLICT DO NOTHING",
+            )
+            .bind(
+              a.attemptId,
+              a.userId,
+              a.examId,
+              a.questionId,
+              a.questionVersionId,
+              a.outcome,
+              a.occurredAt,
+              a.source,
+              a.sourceId,
+              a.excludedAt,
+              a.firstAttempt ? 1 : 0,
+              set.id,
+            ),
+        ),
+      ];
+      const results = await db.batch(stmts);
+      const changes = (results[0]?.meta as { changes?: number } | undefined)?.changes ?? 0;
       return changes === 1;
     },
 
