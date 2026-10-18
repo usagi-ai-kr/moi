@@ -11,8 +11,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  build: {
-    // 디스플레이 폰트(대용량·서브셋 금지)는 CSS에 base64로 내장 — 별도 요청 제거 (ADR-0012)
-    assetsInlineLimit: (filePath: string) => (filePath.endsWith('.woff') ? true : undefined),
-  },
 });
