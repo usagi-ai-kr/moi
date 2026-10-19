@@ -41,5 +41,6 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0023 | 에이전트 컨텍스트 리셋·워커 산출물 검증 | Accepted | 2026-10-18 | [0023-agent-context-and-output-verification.md](./0023-agent-context-and-output-verification.md) |
 | ADR-0024 | 학습 통계·취약 영역 파라미터 | Accepted | 2026-10-18 | [0024-study-stats-parameters.md](./0024-study-stats-parameters.md) |
 | ADR-0025 | study_attempts attempt/firstAttempt D1 집계 저장 계약 | Proposed | 2026-10-18 | [0025-study-attempt-aggregation.md](./0025-study-attempt-aggregation.md) |
+| ADR-0026 | lockfile 기반 제삼자 라이선스 고지 생성 | Proposed | 2026-10-19 | [0026-third-party-notices.md](./0026-third-party-notices.md) |
 | ADR-0027 | 복습 회차 D1 스냅샷 영속화 | Proposed | 2026-10-19 | [0027-review-session-persistence.md](./0027-review-session-persistence.md) |
 <!-- ADR_INDEX:END -->
