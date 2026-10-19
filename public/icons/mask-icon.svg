@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="moi-bird-title">
+  <title id="moi-bird-title">moi — 모이를 쪼는 작은 새</title>
+  <!-- 배경: 잉크 사각(라운드). maskable 파생 시 rx를 제거해 풀블리드로 사용 -->
+  <!-- 새 단일 실루엣: 꼬리(들어 올림) + 통통한 몸 + 아래를 향한 머리 + 부리 -->
+  <g fill="currentColor">
+    <path d="M112 216 L92 152 Q98 140 110 152 L186 222 Z"/>
+    <ellipse cx="224" cy="278" rx="148" ry="130"/>
+    <circle cx="312" cy="230" r="88"/>
+    <path d="M382 262 L414 320 L338 284 Z"/>
+  </g>
+  <!-- 날개: 진한 오렌지 음영(작은 크기에서는 실루엣에 흡수됨) -->
+  <path d="M170 300 Q240 288 268 344 Q216 372 164 340 Q158 316 170 300 Z" fill="currentColor"/>
+      <!-- 모이 씨앗 2알 -->
+  <ellipse cx="404" cy="338" rx="16" ry="11" transform="rotate(-18 404 338)" fill="currentColor"/>
+  <circle cx="372" cy="362" r="9" fill="currentColor"/>
+</svg>
