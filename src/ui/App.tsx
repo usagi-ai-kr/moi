@@ -52,8 +52,6 @@ export function App({ client }: { client: ApiClient }) {
       <main className="moi-main">
         <div className="moi-container moi-main-inner moi-enter">
           <div className="moi-accent" aria-hidden="true" />
-          {status === 'loading' && <CheckingView />}
-          {status === 'error' && <LoadErrorAlert onRetry={retry} />}
           {showAuthError && <AuthErrorAlert />}
           {status === 'logged-in' && userId !== null ? (
             <>
@@ -95,16 +93,18 @@ export function App({ client }: { client: ApiClient }) {
               )}
             </>
           ) : (
-            status !== 'loading' && (
-              <>
-                <h1 className="moi-title">{copy.brand}</h1>
-                <p className="moi-lead">{copy.tagline}</p>
+            <>
+              <h1 className="moi-title">{copy.brand}</h1>
+              <p className="moi-lead">{copy.tagline}</p>
+              {status === 'loading' && <CheckingView />}
+              {status === 'error' && <LoadErrorAlert onRetry={retry} />}
+              {status === 'logged-out' && (
                 <div className="moi-cta">
                   <KakaoLoginButton />
                 </div>
-                <p className="moi-note">{copy.home.note}</p>
-              </>
-            )
+              )}
+              <p className="moi-note">{copy.home.note}</p>
+            </>
           )}
         </div>
       </main>

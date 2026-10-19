@@ -45,4 +45,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0027 | 복습 회차 D1 스냅샷 영속화 | Proposed | 2026-10-19 | [0027-review-session-persistence.md](./0027-review-session-persistence.md) |
 | ADR-0030 | 0.2 수업 실사용·디자인과 0.3 이관 | Accepted | 2026-10-19 | [0030-classroom-scope-and-design.md](./0030-classroom-scope-and-design.md) |
 | ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Proposed | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
+| ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
 <!-- ADR_INDEX:END -->
