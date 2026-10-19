@@ -28,11 +28,19 @@ export function writeStudyParam(id: string | null): void {
   }
 }
 
-// 시작·답안·제출·포기 흐름 — 화면(StudyScreen)은 렌더만 담당한다.
-// 계정(userId)별 초안·탭 상태를 연결하고 오프라인 재전송·충돌 선택을 처리한다 (이슈 #52, ADR-0021).
-export function useStudyFlow(client: ApiClient, userId: string) {
+// 시작·답안·제출·포기 흐름 (이슈 #52, ADR-0021). 라우트 분리(#148): route param 우선,
+// 콜백 있으면 라우터 이동, 없으면 writeStudyParam legacy fallback (직접 렌더 호환).
+export interface StudyFlowOptions {
+  initialSetId?: string | null;
+  onSetStarted?: (id: string) => void;
+  onSubmitted?: (id: string) => void;
+  onAbandoned?: () => void;
+}
+
+export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlowOptions) {
   const s = useStudyUiStore();
-  const [setId, setSetId] = useState<string | null>(() => readStudyParam());
+  const initialOpt = opts?.initialSetId;
+  const [setId, setSetId] = useState<string | null>(() => (initialOpt !== undefined ? initialOpt : readStudyParam()));
   const [startError, setStartError] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const [unauth, setUnauth] = useState(false);
@@ -48,10 +56,11 @@ export function useStudyFlow(client: ApiClient, userId: string) {
   useTabState(userId, setId, setQuery.data ?? null, s);
 
   useEffect(() => {
+    if (initialOpt !== undefined) setSetId(initialOpt);
+  }, [initialOpt]);
+  useEffect(() => {
     if (setId && s.view === 'start') s.setView('active');
   }, [setId]);
-
-  // 충돌·미전송 초안이 남거나 재전송 중이면 제출을 막는다 — 재전송 결과 확인 전 채점되는 것을 방지한다 (이슈 #52).
   const blocked = sync.conflicts.length > 0 || sync.unsynced.size > 0 || sync.busy;
   useEffect(() => {
     if (!blocked) setSubmitError((prev) => (prev === copy.study.syncBlocked ? null : prev));
@@ -68,9 +77,10 @@ export function useStudyFlow(client: ApiClient, userId: string) {
       {
         onSuccess: (set) => {
           setSetId(set.id);
-          writeStudyParam(set.id);
           s.resetFlow();
           s.setView('active');
+          if (opts?.onSetStarted) opts.onSetStarted(set.id);
+          else writeStudyParam(set.id);
         },
         onError: (err) => {
           if (isConflict(err)) {
@@ -86,7 +96,7 @@ export function useStudyFlow(client: ApiClient, userId: string) {
         },
       },
     );
-  }, [s, setId, startMut]);
+  }, [s, setId, startMut, opts]);
 
   const handleAnswer = useCallback(
     (questionId: string, response: ItemResponse, previous?: ItemResponse) => {
@@ -94,7 +104,6 @@ export function useStudyFlow(client: ApiClient, userId: string) {
       s.setSave('saving');
       const current = setQuery.data?.items.find((i) => i.questionId === questionId)?.response;
       const base = previous ?? current ?? { kind: 'unanswered' as const };
-      // 서버 확인 답안을 base로 초안에 기록 — localStorage 예외는 저장 실패로 처리하고 앱은 계속한다 (이슈 #52).
       const draft = recordDraft(openDraftStorage(), userId, setId, questionId, response, base);
       if (draft === 'saved') sync.markUnsynced(questionId);
       else sync.clearUnsynced(questionId);
@@ -111,7 +120,6 @@ export function useStudyFlow(client: ApiClient, userId: string) {
           onError: (e) => {
             if (isUnauthorized(e)) return setUnauth(true);
             if (!(e instanceof HTTPError)) {
-              // 네트워크 실패 — optimistic 답안을 유지하고 '오프라인 임시 저장'으로 표시한다(재전송 대기).
               s.setSave(draft === 'failed' ? 'error' : 'offline');
               return;
             }
@@ -124,8 +132,7 @@ export function useStudyFlow(client: ApiClient, userId: string) {
     [answerMut, s, setId, setQuery.data, sync, userId],
   );
 
-  // 저장 실패·오프라인 재시도 — 초안을 서버와 대조해 재전송한다 (이슈 #52).
-  // 초안 sync 우선, 저장소 없음·초안 없음 + failed 있음이면 마지막 실패 응답 1회 재전송(충돌 자동 덮어쓰기 금지).
+  // 저장 실패·오프라인 재시도 (이슈 #52).
   const handleRetry = useCallback(() => {
     if (!setId) return;
     let hasDrafts = false;
@@ -145,12 +152,7 @@ export function useStudyFlow(client: ApiClient, userId: string) {
       return;
     }
     const cur = setQuery.data?.items.find((i) => i.questionId === last.questionId)?.response;
-    // 서버가 이미 제3의 값(로컬 실패 응답도 base도 아님)이면 자동 덮어쓰지 않는다.
-    if (
-      cur &&
-      cur.kind !== 'unanswered' &&
-      JSON.stringify(cur) !== JSON.stringify(last.response)
-    ) {
+    if (cur && cur.kind !== 'unanswered' && JSON.stringify(cur) !== JSON.stringify(last.response)) {
       sync.retrySync();
       return;
     }
@@ -184,20 +186,20 @@ export function useStudyFlow(client: ApiClient, userId: string) {
     submitMut.mutate(
       { setId, confirmUnanswered: true },
       {
-        onSuccess: () => {
+        onSuccess: (submitted) => {
           s.setConfirmSubmit(false);
           s.setView('result');
+          if (opts?.onSubmitted) opts.onSubmitted(submitted.id);
         },
         onError: (e) => setSubmitError(isUnauthorized(e) ? copy.study.needLogin : '제출하지 못했습니다.'),
       },
     );
-  }, [setId, submitMut, s]);
+  }, [setId, submitMut, s, opts]);
 
   const set = setQuery.data ?? null;
   const unanswered = set ? set.items.filter((i) => i.response.kind === 'unanswered').length : 0;
 
   const handleSubmitRequest = useCallback(() => {
-    // 재전송 중(sync.busy)에도 같은 안내로 제출을 막는다 — 사용자 선택·재시도를 기다린 뒤 제출한다 (이슈 #52).
     if (sync.conflicts.length > 0 || sync.unsynced.size > 0 || sync.busy) {
       setSubmitError(copy.study.syncBlocked);
       return;
@@ -215,11 +217,12 @@ export function useStudyFlow(client: ApiClient, userId: string) {
         dropTabState(userId, setId);
         s.resetFlow();
         setSetId(null);
-        writeStudyParam(null);
         s.setView('start');
+        if (opts?.onAbandoned) opts.onAbandoned();
+        else writeStudyParam(null);
       },
     });
-  }, [abandonMut, s, setId, userId]);
+  }, [abandonMut, s, setId, userId, opts]);
 
   const restart = useCallback(() => {
     if (setId) {
@@ -227,10 +230,11 @@ export function useStudyFlow(client: ApiClient, userId: string) {
       dropTabState(userId, setId);
     }
     setSetId(null);
-    writeStudyParam(null);
     s.resetFlow();
     s.setView('start');
-  }, [s, setId, userId]);
+    if (opts?.onAbandoned) opts.onAbandoned();
+    else writeStudyParam(null);
+  }, [s, setId, userId, opts]);
 
   return {
     s, set, setId, unanswered, setQuery, historyQuery,

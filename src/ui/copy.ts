@@ -73,6 +73,8 @@ export const copy = {
     sources: '근거',
     historyTitle: '완료한 학습',
     emptyHistory: '아직 완료한 학습이 없습니다.',
+    historyBack: '이력으로 돌아가기',
+    notFoundSet: '학습 세트를 찾을 수 없습니다.',
     backToStart: '새 세트 시작',
     continueStudy: '이어풀기',
     detail: '상세 보기',
