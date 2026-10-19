@@ -1,0 +1,407 @@
+{
+  "packId": "cost-04",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-cost-0076",
+      "domainCode": "cost-optimization",
+      "stem": "한 회사가 최근 6개월간 서비스별 지출 추이를 월 단위로 비교하려 한다. 추가 도구 없이 가장 빠르게 확인하는 방법은?",
+      "explanation": "Cost Explorer에서 기간을 최근 6개월로 지정하고 월별 세분성으로 Service 기준 그룹화하면 서비스별 추이를 바로 볼 수 있다. 별도 보고서를 만들 필요가 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Cost Explorer에서 월별 세분성으로 Service 기준 그룹화를 적용한다." },
+        { "optionKey": "B", "text": "CloudTrail 이벤트를 서비스 이름으로 정렬해 집계한다." },
+        { "optionKey": "C", "text": "각 리전의 VPC 흐름 로그를 월별로 합산한다." },
+        { "optionKey": "D", "text": "Trusted Advisor 보안 점검 결과를 서비스별로 분류한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0077",
+      "domainCode": "cost-optimization",
+      "stem": "다음 분기 예상 청구액을 미리 파악해 예산 계획에 반영하려 한다. 가장 적절한 도구는?",
+      "explanation": "Cost Explorer의 Forecast는 과거 사용량을 기반으로 향후 최대 12개월의 비용을 예측한다. 예측값은 기간과 필터를 바꿔 다시 계산할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-forecast.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Budgets의 예산 알림 이메일" },
+        { "optionKey": "B", "text": "Cost Explorer의 Forecast 기능" },
+        { "optionKey": "C", "text": "Cost and Usage Report의 월별 CSV" },
+        { "optionKey": "D", "text": "Trusted Advisor의 비용 최적화 점검" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0078",
+      "domainCode": "cost-optimization",
+      "stem": "이번 달 총비용이 지난달보다 크게 늘었다. 어느 날짜에 어떤 사용량 때문에 증가했는지 확인하려면?",
+      "explanation": "Cost Explorer에서 일별 세분성으로 전환하고 Usage Type이나 서비스 기준으로 그룹화하면 급증한 날짜와 원인을 좁힐 수 있다. 월별 합계만으로는 특정 일의 변화를 찾기 어렵다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/ce-filtering.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "월별 총액만 비교해 증가 폭을 확인한다." },
+        { "optionKey": "B", "text": "연간 예산을 새로 만들어 알림을 받는다." },
+        { "optionKey": "C", "text": "일별 세분성으로 바꾸고 Usage Type으로 그룹화한다." },
+        { "optionKey": "D", "text": "S3 버킷의 객체 수를 매일 집계한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0079",
+      "domainCode": "cost-optimization",
+      "stem": "한 팀이 월 1,000달러 예산을 넘지 않도록 실제 지출이 80퍼센트에 도달할 때 이메일 알림을 받으려 한다. 필요한 구성은?",
+      "explanation": "AWS Budgets에서 비용 예산을 만들고 실제 지출 기준 임계값을 80퍼센트로 설정한 뒤 SNS 주제를 연결한다. SNS 주제에 이메일 구독을 추가하면 알림을 받을 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-create.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "CloudTrail에서 1,000달러 초과 이벤트를 탐지한다." },
+        { "optionKey": "B", "text": "Cost Explorer에서 월별 보고서를 수동으로 내려받는다." },
+        { "optionKey": "C", "text": "Trusted Advisor에서 비용 최적화 점검을 새로고침한다." },
+        { "optionKey": "D", "text": "AWS Budgets에서 실제 지출 임계값과 SNS 알림을 구성한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0080",
+      "domainCode": "cost-optimization",
+      "stem": "월 예산을 초과할 것으로 예상될 때 미리 알림을 받고 싶다. AWS Budgets에서 설정할 기준은?",
+      "explanation": "Budgets는 실제 지출과 예측 지출을 각각 기준으로 알림을 만들 수 있다. 예측 기준을 사용하면 월말 전에 초과 가능성을 통보받는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "예측 지출이 예산을 초과할 것으로 계산된 시점" },
+        { "optionKey": "B", "text": "실제 지출이 예산의 100퍼센트에 도달한 시점" },
+        { "optionKey": "C", "text": "예산과 무관하게 매월 1일 고정 시각" },
+        { "optionKey": "D", "text": "S3 버킷의 스토리지 클래스 변경 시점" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0081",
+      "domainCode": "cost-optimization",
+      "stem": "개발 계정의 월 비용이 예산의 120퍼센트를 넘으면 해당 계정의 비용 발생 리소스를 제한하려 한다. 가장 자동화된 방법은?",
+      "explanation": "AWS Budgets의 예산 작업은 임계값 도달 시 SCP 적용이나 EC2 인스턴스 중지 같은 조치를 자동 실행한다. 승인 흐름과 알림도 함께 구성할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-controls.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "매월 담당자가 콘솔에서 리소스를 직접 삭제한다." },
+        { "optionKey": "B", "text": "AWS Budgets의 예산 작업으로 SCP를 적용한다." },
+        { "optionKey": "C", "text": "Cost Explorer에서 비용을 조회한 뒤 수동으로 계정을 닫는다." },
+        { "optionKey": "D", "text": "CloudTrail 로그를 분석해 다음 분기에 조치한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0082",
+      "domainCode": "cost-optimization",
+      "stem": "예산 대비 사용률을 기준으로 여러 임계값에서 알림을 받고, 예측 초과도 함께 감시하려 한다. 가장 적합한 서비스는?",
+      "explanation": "AWS Budgets는 예산 대비 실제·예측 사용률로 임계값별 알림을 제공한다. CloudWatch 청구 알람은 추정 요금의 단일 임계값 감시에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "CloudWatch 청구 알람" },
+        { "optionKey": "B", "text": "Cost Explorer의 Forecast" },
+        { "optionKey": "C", "text": "AWS Budgets의 비용 예산" },
+        { "optionKey": "D", "text": "Trusted Advisor의 비용 최적화 점검" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0083",
+      "domainCode": "cost-optimization",
+      "stem": "특정 태그로 팀별 비용을 분리해 보려고 리소스에 태그를 붙였다. 비용 할당 태그가 비용 보고서에 반영되기까지 필요한 조치는?",
+      "explanation": "비용 할당 태그는 청구 콘솔에서 활성화해야 보고서에 반영되며, 활성화 후 데이터 반영까지 최대 24시간이 걸릴 수 있다. 관리 계정에서 활성화해야 연결된 계정 전체에 적용된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "각 리소스에 태그를 다시 붙이고 24시간을 기다린다." },
+        { "optionKey": "B", "text": "S3 버킷 정책에 태그 조건을 추가한다." },
+        { "optionKey": "C", "text": "CloudTrail에서 태그 이벤트를 조회한다." },
+        { "optionKey": "D", "text": "관리 계정의 청구 콘솔에서 해당 태그를 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0084",
+      "domainCode": "cost-optimization",
+      "stem": "비용 할당 태그를 활성화했는데 Cost Explorer에서 일부 리소스가 같은 팀으로 묶이지 않는다. 태그 키가 Cost와 cost로 서로 다르게 입력된 것을 발견했다. 원인은?",
+      "explanation": "비용 할당 태그의 키는 대소문자를 구분하므로 Cost와 cost는 서로 다른 태그로 집계된다. 태그 키 표기를 표준화해야 같은 그룹으로 묶인다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "태그 키의 대소문자가 서로 다르다." },
+        { "optionKey": "B", "text": "태그 값에 공백이 포함되어 있다." },
+        { "optionKey": "C", "text": "태그가 S3 객체에만 적용되어 있다." },
+        { "optionKey": "D", "text": "태그 활성화 후 24시간이 지나지 않았다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0085",
+      "domainCode": "cost-optimization",
+      "stem": "수백 개 리소스 중 필수 태그가 누락된 리소스를 찾아 일괄로 태그를 추가하려 한다. 가장 적절한 도구는?",
+      "explanation": "Resource Groups Tag Editor에서 리소스 유형과 리전을 지정해 태그 없는 리소스를 검색하고 여러 리소스에 같은 태그를 한 번에 적용할 수 있다. 리소스마다 콘솔을 열 필요가 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/tag-editor/latest/userguide/tag-editor.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Config 규칙만으로 태그를 자동 추가한다." },
+        { "optionKey": "B", "text": "Tag Editor에서 누락 리소스를 검색해 일괄 태그한다." },
+        { "optionKey": "C", "text": "Cost Explorer에서 태그를 편집한다." },
+        { "optionKey": "D", "text": "Trusted Advisor에서 태그를 일괄 삭제한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0086",
+      "domainCode": "cost-optimization",
+      "stem": "월별 태그별 비용을 CSV로 받아 회계 시스템에 업로드하려 한다. 가장 간단한 보고서는?",
+      "explanation": "월별 비용 할당 리포트는 태그별로 집계된 CSV를 제공해 회계 시스템 연동에 적합하다. 시간·리소스 수준의 상세 분석이 필요하면 Cost and Usage Report를 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/configurecostallocreport.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "Cost and Usage Report의 시간별 데이터" },
+        { "optionKey": "B", "text": "CloudTrail 이벤트 기록" },
+        { "optionKey": "C", "text": "월별 비용 할당 리포트" },
+        { "optionKey": "D", "text": "Trusted Advisor 점검 결과 내보내기" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0087",
+      "domainCode": "cost-optimization",
+      "stem": "시간별·리소스별 비용을 외부 데이터 웨어하우스에서 직접 분석하려 한다. 가장 상세한 데이터 원천은?",
+      "explanation": "Cost and Usage Report는 리소스 ID와 사용 유형 수준의 시간별 데이터를 S3로 전달한다. Cost Explorer의 집계 화면보다 세밀한 분석에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cur/latest/userguide/what-is-cur.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "Cost Explorer의 월별 요약 화면" },
+        { "optionKey": "B", "text": "AWS Budgets의 예산 알림 기록" },
+        { "optionKey": "C", "text": "Trusted Advisor의 비용 최적화 점검" },
+        { "optionKey": "D", "text": "Cost and Usage Report" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0088",
+      "domainCode": "cost-optimization",
+      "stem": "S3에 쌓인 Cost and Usage Report를 Athena로 조회할 때 스캔 비용을 줄이는 방법은?",
+      "explanation": "CUR를 Parquet 같은 열 기반 형식으로 변환하면 Athena가 필요한 열만 읽어 스캔량을 줄인다. 파티셔닝을 적용하면 조회 범위도 좁힐 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cur/latest/userguide/cur-query-athena.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Parquet로 변환하고 파티션을 적용한다." },
+        { "optionKey": "B", "text": "CSV 원본을 그대로 두고 모든 열을 조회한다." },
+        { "optionKey": "C", "text": "Athena 대신 CloudTrail에서 쿼리한다." },
+        { "optionKey": "D", "text": "보고서를 매일 전체 다운로드한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0089",
+      "domainCode": "cost-optimization",
+      "stem": "머신러닝으로 서비스별 지출 패턴을 학습해 평소와 다른 비용 급증을 자동으로 감지하려 한다. 가장 적절한 기능은?",
+      "explanation": "AWS Cost Anomaly Detection은 사용량 패턴을 학습해 비정상 지출을 감지하고 알림을 보낸다. 비용 탐지기와 알림 구독을 만들어 서비스·계정·태그 단위로 감시할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cost-management/latest/userguide/manage-ad.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Budgets의 고정 임계값 알림" },
+        { "optionKey": "B", "text": "AWS Cost Anomaly Detection" },
+        { "optionKey": "C", "text": "Trusted Advisor의 비용 최적화 점검" },
+        { "optionKey": "D", "text": "Cost Explorer의 월별 보고서 다운로드" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0090",
+      "domainCode": "cost-optimization",
+      "stem": "Trusted Advisor의 비용 최적화 범주에서 확인할 수 있는 점검 두 가지를 고르시오.",
+      "explanation": "비용 최적화 범주에는 유휴 로드밸런서, 연결되지 않은 Elastic IP, 저사용 EC2 인스턴스 등의 점검이 포함된다. 루트 계정 MFA와 버전 관리는 각각 보안·복원력 범주의 점검이다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awssupport/latest/user/cost-optimization-checks.html"
+      ],
+      "answerOptionKeys": ["A", "B"],
+      "options": [
+        { "optionKey": "A", "text": "유휴 로드밸런서" },
+        { "optionKey": "B", "text": "연결되지 않은 Elastic IP 주소" },
+        { "optionKey": "C", "text": "루트 계정의 MFA 활성화" },
+        { "optionKey": "D", "text": "S3 버킷 버전 관리 활성화" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0091",
+      "domainCode": "cost-optimization",
+      "stem": "Trusted Advisor의 모든 점검 항목과 비용 최적화 점검을 사용하려면 어떤 지원 플랜이 필요한가?",
+      "explanation": "Business, Enterprise On-Ramp, Enterprise 지원 플랜에서 전체 점검과 비용 최적화 점검을 사용할 수 있다. Basic과 Developer 플랜은 일부 점검만 제공한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "Basic 지원 플랜" },
+        { "optionKey": "B", "text": "Developer 지원 플랜" },
+        { "optionKey": "C", "text": "Business 이상 지원 플랜" },
+        { "optionKey": "D", "text": "지원 플랜 없이 무료로 전체 사용" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0092",
+      "domainCode": "cost-optimization",
+      "stem": "AWS Organizations의 여러 계정에서 Trusted Advisor 점검 결과를 한 화면에서 비교하려면?",
+      "explanation": "Trusted Advisor의 Organizational view를 사용하면 조직 내 계정별 점검 결과와 집계를 한곳에서 볼 수 있다. 관리 계정에서 조직 수준으로 활성화해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awssupport/latest/user/organizational-view.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "각 계정에 로그인해 결과를 수동으로 합산한다." },
+        { "optionKey": "B", "text": "Cost Explorer에서 리전별 비용을 비교한다." },
+        { "optionKey": "C", "text": "CloudWatch 대시보드를 계정마다 만든다." },
+        { "optionKey": "D", "text": "Organizational view를 활성화해 계정별 결과를 조회한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0093",
+      "domainCode": "cost-optimization",
+      "stem": "프라이빗 서브넷에서 S3와 DynamoDB에 대량 접근해 NAT Gateway 데이터 처리 비용이 크다. 비용을 줄이는 구성 두 가지를 고르시오.",
+      "explanation": "게이트웨이 엔드포인트를 사용하면 S3와 DynamoDB 트래픽이 NAT Gateway를 거치지 않으며 엔드포인트 자체에는 추가 요금이 없다. 두 서비스 모두 게이트웨이 엔드포인트를 지원한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html",
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-ddb.html"
+      ],
+      "answerOptionKeys": ["A", "B"],
+      "options": [
+        { "optionKey": "A", "text": "S3용 게이트웨이 엔드포인트를 라우트 테이블에 추가한다." },
+        { "optionKey": "B", "text": "DynamoDB용 게이트웨이 엔드포인트를 라우트 테이블에 추가한다." },
+        { "optionKey": "C", "text": "NAT Gateway를 더 큰 인스턴스 유형으로 교체한다." },
+        { "optionKey": "D", "text": "모든 프라이빗 서브넷을 퍼블릭으로 전환한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0094",
+      "domainCode": "cost-optimization",
+      "stem": "프라이빗 서브넷에서 자체 VPC의 엔드포인트 서비스로 시간당 수백 기가바이트를 전송한다. NAT Gateway 대신 인터페이스 엔드포인트를 검토하는 이유는?",
+      "explanation": "인터페이스 엔드포인트는 NAT Gateway의 시간당 요금과 데이터 처리 요금을 우회하고 트래픽을 AWS 네트워크 안에서 처리한다. 엔드포인트에도 시간당·데이터 요금이 있으므로 사용량을 비교해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/interface-endpoints.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "시간당 요금과 데이터 처리 요금을 비교해 절감하기 위해" },
+        { "optionKey": "B", "text": "NAT Gateway의 가용 영역을 줄이기 위해" },
+        { "optionKey": "C", "text": "퍼블릭 IP 주소를 더 많이 확보하기 위해" },
+        { "optionKey": "D", "text": "인터넷 게이트웨이를 이중화하기 위해" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0095",
+      "domainCode": "cost-optimization",
+      "stem": "3개 가용 영역에 각각 NAT Gateway를 두고 있는데 비용이 예상보다 높다. NAT Gateway 요금 구성으로 맞는 것은?",
+      "explanation": "NAT Gateway는 프로비저닝된 시간과 처리한 데이터 양에 대해 각각 요금이 부과된다. 가용 영역마다 NAT Gateway를 두면 시간당 요금도 가용 영역 수만큼 발생한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "시간당 요금만 부과되고 데이터는 무료이다." },
+        { "optionKey": "B", "text": "시간당 요금과 처리 데이터 요금이 함께 부과된다." },
+        { "optionKey": "C", "text": "처리 데이터 요금만 부과되고 시간은 무료이다." },
+        { "optionKey": "D", "text": "고정 월 요금만 부과되고 사용량은 무관하다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0096",
+      "domainCode": "cost-optimization",
+      "stem": "비용에 민감한 개발 환경에서 NAT 기능이 필요하지만 관리 부담을 감수할 수 있다. NAT Gateway보다 낮은 비용을 위해 검토할 수 있는 대안은?",
+      "explanation": "NAT 인스턴스는 EC2 인스턴스를 NAT로 사용해 NAT Gateway보다 낮은 비용으로 운영할 수 있지만 패치와 장애 조치를 직접 관리해야 한다. 처리량과 가용성 요구가 낮은 환경에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-comparison.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "인터넷 게이트웨이를 서브넷마다 추가한다." },
+        { "optionKey": "B", "text": "VPC 피어링을 모든 리전에 연결한다." },
+        { "optionKey": "C", "text": "NAT 인스턴스를 직접 운영한다." },
+        { "optionKey": "D", "text": "프라이빗 서브넷을 퍼블릭으로 바꾼다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0097",
+      "domainCode": "cost-optimization",
+      "stem": "개발 계정에서 사용하지 않는 Elastic IP 주소가 여러 개 남아 있다. 이 리소스의 비용 처리로 맞는 것은?",
+      "explanation": "연결되지 않은 Elastic IP 주소에는 시간당 요금이 부과되므로 사용하지 않는 주소는 즉시 해제해야 한다. 연결된 주소도 일부 조건에서 요금이 발생할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "연결되지 않은 주소에는 요금이 부과되지 않는다." },
+        { "optionKey": "B", "text": "주소를 해제하면 오히려 추가 요금이 발생한다." },
+        { "optionKey": "C", "text": "S3 버킷을 만들어야만 요금이 발생한다." },
+        { "optionKey": "D", "text": "연결되지 않은 주소에도 시간당 요금이 부과된다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0098",
+      "domainCode": "cost-optimization",
+      "stem": "인스턴스 종료 후 남아 있는 미연결 EBS 볼륨을 정리하려 한다. 가장 먼저 확인할 지표는?",
+      "explanation": "EBS 볼륨은 인스턴스에 연결되어 있지 않아도 프로비저닝된 용량과 유형에 따라 계속 요금이 부과된다. 미연결 볼륨을 찾아 스냅샷으로 보관한 뒤 삭제하면 비용을 줄일 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-deleting-volume.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "볼륨의 상태가 available인지 확인한다." },
+        { "optionKey": "B", "text": "볼륨의 스냅샷이 암호화되었는지 확인한다." },
+        { "optionKey": "C", "text": "인스턴스의 CPU 사용률이 낮은지 확인한다." },
+        { "optionKey": "D", "text": "보안 그룹의 인바운드 규칙을 확인한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0099",
+      "domainCode": "cost-optimization",
+      "stem": "한 달에 한 번만 사용하는 테스트용 RDS DB 인스턴스의 비용을 줄이려 한다. 인스턴스를 삭제하지 않고 절감하는 방법은?",
+      "explanation": "RDS DB 인스턴스를 중지하면 사용하지 않는 기간의 컴퓨팅 비용을 절감할 수 있지만 7일 후 자동으로 다시 시작된다. 장기간 사용하지 않는다면 스냅샷을 남기고 삭제하는 편이 낫다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_StopInstance.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "읽기 복제본을 추가해 부하를 분산한다." },
+        { "optionKey": "B", "text": "DB 인스턴스를 중지하고 필요할 때 다시 시작한다." },
+        { "optionKey": "C", "text": "스토리지 용량을 두 배로 늘린다." },
+        { "optionKey": "D", "text": "Multi-AZ 배포로 전환한다." }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0100",
+      "domainCode": "cost-optimization",
+      "stem": "트래픽이 거의 없는 로드밸런서가 여러 개 남아 있어 월 비용이 발생한다. 가장 적절한 조치는?",
+      "explanation": "사용하지 않는 로드밸런서는 삭제해 시간당 요금과 관련 리소스 비용을 줄인다. 삭제 전에 대상 그룹과 연결된 서비스가 없는지 확인한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-delete.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "로드밸런서의 리스너 규칙을 모두 삭제한다." },
+        { "optionKey": "B", "text": "대상 그룹을 추가로 만들어 트래픽을 분산한다." },
+        { "optionKey": "C", "text": "사용하지 않는 로드밸런서를 삭제한다." },
+        { "optionKey": "D", "text": "스티키 세션을 활성화한다." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,414 @@
+{
+  "packId": "cost-03",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-cost-0051",
+      "domainCode": "cost-optimization",
+      "stem": "한 회사가 Compute Optimizer를 켜고 EC2 인스턴스의 라이트사이징 추천을 받으려 한다. 추천 계산에 주로 사용되는 데이터는?",
+      "explanation": "Compute Optimizer는 CloudWatch 지표와 인스턴스 구성을 분석해 과다 프로비저닝된 리소스를 찾는다. 메모리 사용률까지 반영하려면 CloudWatch 에이전트로 지표를 수집해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "CloudWatch 사용률 지표와 리소스 구성" },
+        { "optionKey": "B", "text": "계정의 월별 청구서 총액 요약" },
+        { "optionKey": "C", "text": "리소스에 붙은 태그 편집 이력" },
+        { "optionKey": "D", "text": "보안 그룹의 인바운드 허용 규칙" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0052",
+      "domainCode": "cost-optimization",
+      "stem": "AWS Organizations로 여러 계정을 운영하는 회사가 모든 멤버 계정의 Compute Optimizer 추천을 중앙에서 활성화하려면?",
+      "explanation": "관리 계정에서 조직 수준 옵트인을 켜면 멤버 계정의 추천을 한곳에서 관리할 수 있다. 멤버 계정은 관리 계정의 옵트인 설정을 따른다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/compute-optimizer/latest/ug/account-opt-in.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "각 멤버 계정에서 루트 사용자로 개별 옵트인한다" },
+        { "optionKey": "B", "text": "관리 계정에서 조직 수준 옵트인을 활성화한다" },
+        { "optionKey": "C", "text": "모든 계정에 AdministratorAccess 정책을 연결한다" },
+        { "optionKey": "D", "text": "추천 대상 리소스에 CostCenter 태그를 추가한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0053",
+      "domainCode": "cost-optimization",
+      "stem": "Compute Optimizer가 기본적으로 제공하는 추천 유형으로 볼 수 없는 것은?",
+      "explanation": "Compute Optimizer는 EC2, EBS, Lambda, ECS, RDS 등의 권고를 제공하지만 S3 스토리지 클래스는 다루지 않는다. S3 비용 최적화는 S3 Storage Lens와 수명주기 규칙 등으로 수행한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/compute-optimizer/latest/ug/what-is-compute-optimizer.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "EC2 인스턴스 유형" },
+        { "optionKey": "B", "text": "EBS 볼륨 구성" },
+        { "optionKey": "C", "text": "S3 버킷 스토리지 클래스" },
+        { "optionKey": "D", "text": "Lambda 함수 메모리" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0054",
+      "domainCode": "cost-optimization",
+      "stem": "웹 서버군의 평균 CPU 사용률이 15%인데 피크 대응을 위해 큰 인스턴스를 상시 유지하고 있다. 비용을 줄이는 가장 적절한 접근은?",
+      "explanation": "상시 저사용 인스턴스는 라이트사이징하고 변동 부하는 Auto Scaling에 맡겨야 고정 비용을 줄일 수 있다. 평균 사용률뿐 아니라 피크와 지연 목표를 함께 확인해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/right-sizing.html",
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "모든 인스턴스를 최대 사양으로 통일해 운영한다" },
+        { "optionKey": "B", "text": "사용률과 무관하게 인스턴스 수를 두 배로 늘린다" },
+        { "optionKey": "C", "text": "야간에도 동일한 고정 용량을 그대로 유지한다" },
+        { "optionKey": "D", "text": "인스턴스 유형을 줄이고 Auto Scaling으로 피크를 흡수한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0055",
+      "domainCode": "cost-optimization",
+      "stem": "Compute Optimizer가 제시한 EC2 라이트사이징 추천을 운영 환경에 적용하기 전에 가장 먼저 확인할 것은?",
+      "explanation": "추천은 사용률 기반이므로 아키텍처 호환성과 피크 성능, 라이선스 조건을 확인한 뒤 적용해야 한다. 운영 환경에는 소규모 검증 후 단계적으로 반영하는 것이 안전하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ec2-recommendations.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "추천 유형의 아키텍처·라이선스·성능 호환성" },
+        { "optionKey": "B", "text": "추천을 생성한 AWS 계정의 결제 통화" },
+        { "optionKey": "C", "text": "리소스에 연결된 비용 할당 태그의 개수" },
+        { "optionKey": "D", "text": "인스턴스가 속한 서브넷의 CIDR 블록 크기" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0056",
+      "domainCode": "cost-optimization",
+      "stem": "Compute Optimizer의 EBS 볼륨 추천이 주로 찾아내는 비용 낭비 유형은?",
+      "explanation": "Compute Optimizer는 볼륨 사용률을 분석해 과다 프로비저닝된 용량과 IOPS를 줄이도록 권고한다. 암호화나 태그 규칙은 비용 추천의 주된 판단 기준이 아니다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/compute-optimizer/latest/ug/view-ebs-recommendations.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "볼륨에 연결된 인스턴스의 태그 누락" },
+        { "optionKey": "B", "text": "실제 사용량보다 크게 프로비저닝된 용량이나 IOPS" },
+        { "optionKey": "C", "text": "볼륨이 암호화되지 않은 구성" },
+        { "optionKey": "D", "text": "스냅샷이 다른 리전에 복사된 상태" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0057",
+      "domainCode": "cost-optimization",
+      "stem": "Graviton 인스턴스로 전환해 비용을 줄이려는 팀이 가장 먼저 확인해야 할 것은?",
+      "explanation": "Graviton은 arm64 아키텍처를 사용하므로 애플리케이션과 컨테이너 이미지, 네이티브 라이브러리의 호환성을 먼저 확인해야 한다. 호환되면 동급 x86 인스턴스보다 나은 가격 대비 성능을 기대할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "인스턴스의 퍼블릭 IP 주소 개수" },
+        { "optionKey": "B", "text": "루트 볼륨이 gp2인지 여부" },
+        { "optionKey": "C", "text": "애플리케이션과 바이너리의 arm64 지원" },
+        { "optionKey": "D", "text": "인스턴스가 배치되는 가용 영역의 수" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0058",
+      "domainCode": "cost-optimization",
+      "stem": "하루 대부분 유휴 상태이고 가끔 짧게 CPU를 집중 사용하는 배치 작업의 컴퓨팅 비용을 줄이려면?",
+      "explanation": "간헐적으로 CPU를 사용하는 작업에는 크레딧 기반 버스터블 인스턴스가 적합하며 유휴 시간에는 중지해 비용을 줄인다. 지속적인 고부하 작업에는 버스터블 인스턴스가 적합하지 않다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "고성능 GPU 인스턴스를 상시 가동한다" },
+        { "optionKey": "B", "text": "메모리 최적화 인스턴스를 최대 사양으로 유지한다" },
+        { "optionKey": "C", "text": "전용 호스트를 1년 약정으로 예약한다" },
+        { "optionKey": "D", "text": "버스터블 인스턴스를 필요한 시간에만 실행한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0059",
+      "domainCode": "cost-optimization",
+      "stem": "오토스케일링 그룹이 야간에는 거의 유휴 상태이고 낮에는 일정한 트래픽을 받는다. 비용 효율적인 조정 구성은?",
+      "explanation": "반복되는 패턴은 예약 조정으로 미리 맞추고 예상 밖 변동은 대상 추적 조정으로 흡수하면 과잉 용량을 줄일 수 있다. 야간에도 최대 용량을 유지하면 유휴 비용이 그대로 남는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html",
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "예약 조정과 대상 추적 조정을 함께 사용한다" },
+        { "optionKey": "B", "text": "최대 용량을 24시간 내내 고정한다" },
+        { "optionKey": "C", "text": "트래픽과 무관하게 매시간 인스턴스를 재시작한다" },
+        { "optionKey": "D", "text": "모든 인스턴스를 스팟으로만 두고 최소 용량을 최대로 설정한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0060",
+      "domainCode": "cost-optimization",
+      "stem": "ALB 뒤 웹 계층의 평균 CPU 사용률을 50%로 유지하도록 Auto Scaling을 구성하려면?",
+      "explanation": "대상 추적 정책은 지정한 지표 목표에 맞춰 용량을 자동으로 조정한다. 최소·최대 용량을 같게 하면 조정 기능이 사실상 비활성화된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "매일 운영자가 인스턴스 수를 수동으로 조정한다" },
+        { "optionKey": "B", "text": "대상 추적 조정 정책에서 CPU 사용률 목표를 50%로 설정한다" },
+        { "optionKey": "C", "text": "인스턴스 유형을 최대 사양으로 고정한다" },
+        { "optionKey": "D", "text": "최소 용량과 최대 용량을 같은 값으로 설정한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0061",
+      "domainCode": "cost-optimization",
+      "stem": "Auto Scaling 그룹에서 가용성을 유지하면서 컴퓨팅 비용을 낮추려는 mixed instances policy 구성으로 가장 적절한 것은?",
+      "explanation": "여러 인스턴스 유형과 구매 옵션을 조합하면 Spot 중단 위험을 분산하면서 비용을 낮출 수 있다. 용량 기반 선택은 가격과 가용성을 함께 고려한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-mixed-instances-groups.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "단일 인스턴스 유형을 온디맨드로만 고정한다" },
+        { "optionKey": "B", "text": "모든 용량을 최대 사양 인스턴스로 통일한다" },
+        { "optionKey": "C", "text": "여러 유형과 AZ에 Spot과 On-Demand를 조합한다" },
+        { "optionKey": "D", "text": "최소 용량을 최대 용량과 같게 설정한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0062",
+      "domainCode": "cost-optimization",
+      "stem": "오토스케일링 그룹의 최소 용량을 0으로 설정하는 것이 가장 적절한 사례는?",
+      "explanation": "사용 패턴이 명확한 비운영 환경은 유휴 시간에 용량을 0으로 줄여 컴퓨팅 비용을 없앨 수 있다. 상시 트래픽이 있는 서비스는 최소 용량을 유지해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-scheduled-scaling.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "24시간 상시 운영하는 결제 API" },
+        { "optionKey": "B", "text": "최소 지연이 중요한 실시간 게임 서버" },
+        { "optionKey": "C", "text": "항상 대기해야 하는 데이터베이스 프록시" },
+        { "optionKey": "D", "text": "근무 시간에만 쓰는 개발 환경의 배치 서버" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0063",
+      "domainCode": "cost-optimization",
+      "stem": "RDS 예약 인스턴스가 가장 큰 비용 절감 효과를 주는 경우는?",
+      "explanation": "예약 인스턴스는 장기간 지속되는 안정적 사용량에 온디맨드보다 낮은 요금을 제공한다. 단기·간헐적 워크로드는 온디맨드나 서버리스가 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "1년 이상 계속 실행할 안정적인 데이터베이스" },
+        { "optionKey": "B", "text": "몇 시간만 사용하고 삭제할 테스트 데이터베이스" },
+        { "optionKey": "C", "text": "사용량이 매일 크게 달라지는 서버리스 워크로드" },
+        { "optionKey": "D", "text": "단기간만 필요한 데이터 마이그레이션 작업" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0064",
+      "domainCode": "cost-optimization",
+      "stem": "RDS DB 인스턴스를 야간에 중지했는데 예약 인스턴스 요금이 계속 청구됐다. 그 이유로 옳은 것은?",
+      "explanation": "예약 인스턴스는 용량을 미리 약정하는 대가로 할인을 받는 방식이라 인스턴스를 중지해도 약정 요금은 유지된다. 중지로 줄어드는 것은 인스턴스 시간 요금이며 스토리지 요금은 계속 발생한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithReservedDBInstances.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "중지하면 예약 인스턴스가 자동으로 환불된다" },
+        { "optionKey": "B", "text": "예약 인스턴스는 실행 여부와 무관하게 약정 기간 동안 청구된다" },
+        { "optionKey": "C", "text": "중지한 인스턴스에는 스토리지 요금이 발생하지 않는다" },
+        { "optionKey": "D", "text": "예약 인스턴스는 중지한 인스턴스에만 적용된다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0065",
+      "domainCode": "cost-optimization",
+      "stem": "RDS 예약 인스턴스의 크기 유연성(size flexibility)에 대한 설명으로 옳은 것은?",
+      "explanation": "크기 유연성은 지원되는 엔진에서 동일 인스턴스 패밀리의 정규화된 크기 단위로 할인을 적용한다. 리전이나 계정을 넘는 이전은 허용되지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/ri-size-flexibility.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "모든 DB 엔진에서 인스턴스 패밀리를 자유롭게 바꿀 수 있다" },
+        { "optionKey": "B", "text": "예약을 다른 리전으로 자유롭게 이전할 수 있다" },
+        { "optionKey": "C", "text": "지원되는 엔진에서 같은 패밀리 내 크기 조합에 할인이 적용될 수 있다" },
+        { "optionKey": "D", "text": "예약 인스턴스를 여러 계정에 동시에 적용할 수 있다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0066",
+      "domainCode": "cost-optimization",
+      "stem": "Aurora Serverless v2의 비용 특성으로 옳은 것은?",
+      "explanation": "Aurora Serverless v2는 최소·최대 ACU 범위에서 워크로드에 맞춰 확장·축소하며 사용량 기반으로 과금된다. 최대 ACU를 제한하면 예상치 못한 비용 급증을 막을 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-how-it-works.html",
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "고정된 DB 인스턴스 크기에 대해 월 단위로만 과금된다" },
+        { "optionKey": "B", "text": "최대 용량을 설정할 수 없어 항상 최대 ACU로 실행된다" },
+        { "optionKey": "C", "text": "사용하지 않을 때 자동으로 삭제되어 스토리지 비용도 사라진다" },
+        { "optionKey": "D", "text": "설정한 ACU 범위에서 용량이 조정되고 사용량에 비례해 과금된다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0067",
+      "domainCode": "cost-optimization",
+      "stem": "하루 몇 시간만 사용하는 Aurora 데이터베이스의 비용을 줄이는 구성으로 가장 적절한 것은?",
+      "explanation": "사용량이 간헐적이면 필요한 만큼만 용량을 쓰는 Aurora Serverless v2가 고정 인스턴스보다 유리하다. 최소 ACU를 낮추면 유휴 시간의 비용도 줄어든다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Aurora Serverless v2로 전환하고 최소 ACU를 낮춘다" },
+        { "optionKey": "B", "text": "더 큰 고정 인스턴스로 마이그레이션해 상시 운영한다" },
+        { "optionKey": "C", "text": "읽기 복제본을 여러 개 추가해 읽기 부하를 분산한다" },
+        { "optionKey": "D", "text": "Multi-AZ 배포로 변경하고 24시간 상시 가동한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0068",
+      "domainCode": "cost-optimization",
+      "stem": "Aurora Serverless v2에서 예상치 못한 비용 급증을 막는 가장 직접적인 설정은?",
+      "explanation": "최대 ACU는 서버리스 클러스터가 확장할 수 있는 상한을 정하므로 비용 상한을 통제할 수 있다. 백업 보존 기간은 복원력 설정이며 비용 상한과 직접 관련이 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-how-it-works.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "스토리지 암호화를 활성화한다" },
+        { "optionKey": "B", "text": "최대 ACU를 워크로드에 맞게 제한한다" },
+        { "optionKey": "C", "text": "백업 보존 기간을 0일로 설정한다" },
+        { "optionKey": "D", "text": "리더 인스턴스를 모두 삭제한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0069",
+      "domainCode": "cost-optimization",
+      "stem": "출시 직후 트래픽을 예측하기 어려운 신규 서비스의 DynamoDB 테이블에 가장 적합한 용량 모드는?",
+      "explanation": "온디맨드 모드는 요청량에 따라 용량을 자동으로 조정하고 사용한 만큼만 과금한다. 초기 트래픽 예측이 어려운 워크로드에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "프로비저닝 모드에서 최소 용량만 설정한다" },
+        { "optionKey": "B", "text": "프로비저닝 모드에서 최대 용량을 고정한다" },
+        { "optionKey": "C", "text": "온디맨드 모드" },
+        { "optionKey": "D", "text": "예약 용량을 먼저 구매한 프로비저닝 모드" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0070",
+      "domainCode": "cost-optimization",
+      "stem": "DynamoDB 프로비저닝 모드에서 예측 가능한 기본 부하와 계절적 피크가 있을 때 비용을 줄이는 방법은?",
+      "explanation": "프로비저닝 모드에 Auto Scaling을 적용하면 평상시 용량을 낮게 유지하면서 피크 수요에 대응할 수 있다. 피크 기준 고정 용량은 대부분의 시간에 유휴 용량을 남긴다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/AutoScaling.html",
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/provisioned-capacity-mode.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "온디맨드 모드로 전환하고 모든 요청을 로그로 남긴다" },
+        { "optionKey": "B", "text": "테이블을 여러 리전에 복제한다" },
+        { "optionKey": "C", "text": "프로비저닝 용량을 최대 피크에 고정한다" },
+        { "optionKey": "D", "text": "Auto Scaling으로 평상시는 낮게, 피크에는 확장한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0071",
+      "domainCode": "cost-optimization",
+      "stem": "DynamoDB 예약 용량(reserved capacity)이 비용 절감에 적합한 경우는?",
+      "explanation": "예약 용량은 장기간 일정한 프로비저닝 처리량에 시간당 요금 할인을 제공한다. 변동이 크거나 단기인 워크로드에는 적합하지 않다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ReservedCapacity.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "수년간 일정하게 유지될 프로비저닝 처리량" },
+        { "optionKey": "B", "text": "하루 만에 끝나는 데이터 마이그레이션" },
+        { "optionKey": "C", "text": "트래픽이 거의 없는 개발용 테이블" },
+        { "optionKey": "D", "text": "온디맨드 모드로 전환한 테이블" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0072",
+      "domainCode": "cost-optimization",
+      "stem": "DynamoDB 테이블을 온디맨드 모드에서 프로비저닝 모드로 전환할 때의 제약으로 옳은 것은?",
+      "explanation": "DynamoDB 용량 모드 전환은 24시간에 한 번으로 제한된다. 전환 후 프로비저닝 용량을 워크로드에 맞게 조정해야 비용을 관리할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "전환 즉시 테이블 데이터가 삭제된다" },
+        { "optionKey": "B", "text": "전환은 24시간에 한 번만 가능하다" },
+        { "optionKey": "C", "text": "전환하려면 테이블을 다시 생성해야 한다" },
+        { "optionKey": "D", "text": "전환 후에는 Auto Scaling을 사용할 수 없다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0073",
+      "domainCode": "cost-optimization",
+      "stem": "DynamoDB 온디맨드 모드의 요금 특성으로 옳은 것은?",
+      "explanation": "온디맨드 모드는 실제 요청량에 따라 과금되므로 유휴 시간에도 용량 요금을 내는 프로비저닝 모드와 다르다. 지속적인 고부하에서는 프로비저닝 모드가 더 저렴할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/on-demand-capacity-mode.html",
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/capacity-mode.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "프로비저닝한 용량에 대해 사용 여부와 무관하게 과금된다" },
+        { "optionKey": "B", "text": "읽기·쓰기 요청이 무료이며 스토리지 요금만 발생한다" },
+        { "optionKey": "C", "text": "사용한 읽기·쓰기 요청 단위로 과금되어 유휴 용량 비용이 없다" },
+        { "optionKey": "D", "text": "최대 처리량을 미리 구매해야 한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0074",
+      "domainCode": "cost-optimization",
+      "stem": "DynamoDB 프로비저닝 테이블에서 글로벌 보조 인덱스(GSI)의 비용을 줄이는 방법으로 가장 적절한 것은?",
+      "explanation": "GSI는 자체 읽기·쓰기 용량을 소비하므로 실제 쿼리 부하에 맞춰 용량을 조정해야 낭비를 줄일 수 있다. 모든 속성을 프로젝션하면 인덱스 스토리지와 쓰기 비용이 커진다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html",
+        "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-cost-optimization.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "GSI를 다른 리전에 추가로 복제한다" },
+        { "optionKey": "B", "text": "GSI 프로젝션에 모든 속성을 포함한다" },
+        { "optionKey": "C", "text": "기본 테이블의 용량만 늘린다" },
+        { "optionKey": "D", "text": "GSI 프로비저닝 용량을 실제 쿼리 부하에 맞게 조정한다" }
+      ]
+    },
+    {
+      "questionId": "saa-cost-0075",
+      "domainCode": "cost-optimization",
+      "stem": "스팟 인스턴스를 Auto Scaling과 함께 사용해 비용을 줄이려는 워크로드에 가장 적합한 특성은?",
+      "explanation": "스팟 인스턴스는 회수될 수 있으므로 중단에 견디고 재시도 가능한 상태 비저장 워크로드에 적합하다. 상태를 로컬에만 두거나 중단 불가능한 서비스에는 적합하지 않다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "중단되어도 재시도할 수 있는 상태 비저장 작업" },
+        { "optionKey": "B", "text": "중단되면 안 되는 단일 인스턴스 데이터베이스" },
+        { "optionKey": "C", "text": "라이선스가 인스턴스에 고정된 상시 서비스" },
+        { "optionKey": "D", "text": "로컬 디스크에만 상태를 저장하는 작업" }
+      ]
+    }
+  ]
+}

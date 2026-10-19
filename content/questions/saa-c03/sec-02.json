@@ -1,0 +1,758 @@
+{
+  "packId": "sec-02",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-sec-0026",
+      "domainCode": "security",
+      "stem": "한 회사가 AWS Organizations로 여러 부서 계정을 관리한다. 보안 팀은 조직 전체에서 특정 서비스 사용을 막고 싶지만, 각 계정의 IAM 정책은 이미 해당 서비스 사용을 허용하고 있다. 이때 SCP(서비스 제어 정책)의 동작으로 옳은 것은?",
+      "explanation": "SCP는 조직·OU·계정에 적용되는 권한 상한으로, 허용 범위를 제한할 뿐 권한을 부여하지 않는다. 따라서 IAM 정책이 허용하더라도 SCP에서 거부한 작업은 수행할 수 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+      ],
+      "answerOptionKeys": [
+        "B"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "SCP는 허용된 작업만 남기고 권한을 추가로 부여하는 역할을 한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "SCP는 계정의 최대 사용 가능 권한을 제한하며 그 자체로 권한을 부여하지 않는다."
+        },
+        {
+          "optionKey": "C",
+          "text": "SCP는 IAM 정책보다 우선하지 않으므로 계정별 정책을 모두 수정해야 한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "SCP는 Organizations 관리 계정에만 적용되고 멤버 계정에는 영향을 주지 않는다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0027",
+      "domainCode": "security",
+      "stem": "규제 요구로 모든 워크로드를 서울 리전에서만 운영해야 한다. 조직의 모든 멤버 계정에서 다른 리전의 리소스 생성 API 호출을 차단하려면 무엇을 구성해야 하는가?",
+      "explanation": "SCP의 Condition에 aws:RequestedRegion을 지정하면 조직 단위에서 허용할 리전을 강제할 수 있다. 콘솔 숨김이나 기본 리전 설정은 API 호출 자체를 차단하지 못한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "각 계정의 IAM 사용자에게 서울 리전만 연결하는 정책을 붙인다."
+        },
+        {
+          "optionKey": "B",
+          "text": "CloudTrail을 서울 리전에만 구성해 다른 리전 호출을 기록한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "서울 리전을 기본 리전으로 설정하고 다른 리전 콘솔 접근을 숨긴다."
+        },
+        {
+          "optionKey": "D",
+          "text": "Organizations SCP에서 aws:RequestedRegion 조건으로 서울 외 리전을 거부한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0028",
+      "domainCode": "security",
+      "stem": "보안 팀이 Organizations 관리 계정에도 SCP를 연결해 루트 사용자 작업을 제한하려 한다. 이 구성에 대한 설명으로 옳은 것은?",
+      "explanation": "SCP는 조직의 관리 계정에는 적용되지 않으므로 관리 계정은 루트 MFA, 최소 사용, 액세스 키 제거 등 별도 통제로 보호해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_best-practices_mgmt-acct.html"
+      ],
+      "answerOptionKeys": [
+        "A"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "SCP는 관리 계정에는 적용되지 않으므로 다른 수단으로 보호해야 한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "SCP는 관리 계정을 포함한 조직 내 모든 계정에 적용된다."
+        },
+        {
+          "optionKey": "C",
+          "text": "SCP를 연결하면 관리 계정의 루트 사용자에게만 적용된다."
+        },
+        {
+          "optionKey": "D",
+          "text": "관리 계정은 SCP 대신 권한 경계로만 제한할 수 있다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0029",
+      "domainCode": "security",
+      "stem": "한 조직이 OU를 개발·운영으로 나누고 각 OU에 서로 다른 SCP를 연결했다. 운영 OU의 한 계정에 별도 SCP를 추가로 연결했을 때 권한은 어떻게 평가되는가?",
+      "explanation": "SCP는 루트부터 계정까지 이어지는 계층에서 모두 평가되며, 어느 하나라도 거부하면 해당 작업은 허용되지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
+      ],
+      "answerOptionKeys": [
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "계정에 연결한 SCP가 상위 OU 정책을 완전히 대체한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "OU 정책만 적용되고 계정에 연결한 정책은 무시된다."
+        },
+        {
+          "optionKey": "C",
+          "text": "루트·OU·계정의 SCP가 모두 평가되어 가장 제한적인 결과가 적용된다."
+        },
+        {
+          "optionKey": "D",
+          "text": "SCP 충돌 시 조직 관리자가 수동으로 하나를 선택해 적용한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0030",
+      "domainCode": "security",
+      "stem": "새로 만든 AWS Organizations에서 SCP를 사용하려고 하자 콘솔에 정책 연결 메뉴가 보이지 않는다. 가장 먼저 확인해야 할 설정은?",
+      "explanation": "SCP를 비롯한 고급 조직 기능은 모든 기능을 활성화한 조직에서만 사용할 수 있다. 통합 결제만 사용하는 조직에서는 SCP를 적용할 수 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_org_support-all-features.html"
+      ],
+      "answerOptionKeys": [
+        "B"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "멤버 계정의 IAM 사용자에게 organizations:AttachPolicy 권한을 준다."
+        },
+        {
+          "optionKey": "B",
+          "text": "조직에서 모든 기능(All features)을 활성화했는지 확인한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "관리 계정에 CloudTrail 조직 추적을 생성한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "각 멤버 계정에서 서비스 제어 정책을 직접 생성한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0031",
+      "domainCode": "security",
+      "stem": "한 팀이 프런트엔드, 결제, 분석 워크로드를 하나의 AWS 계정에서 운영하다가 보안 사고의 영향 범위를 줄이려 한다. 가장 효과적인 계정 격리 설계는?",
+      "explanation": "AWS 계정은 강한 보안 경계이므로 워크로드별로 계정을 분리하면 권한·할당량·사고 영향 범위가 격리된다. OU와 SCP를 함께 사용하면 분리된 계정에 일관된 가드레일을 적용할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "모든 워크로드를 동일 VPC의 다른 서브넷으로 분리한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "리소스마다 태그를 붙여 비용만 분리한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "단일 계정에서 IAM 그룹으로 팀별 권한을 나눈다."
+        },
+        {
+          "optionKey": "D",
+          "text": "워크로드별로 별도 멤버 계정을 만들고 OU와 SCP로 통제한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0032",
+      "domainCode": "security",
+      "stem": "IAM Identity Center를 도입한 회사가 개발자 그룹에게 개발 계정의 PowerUserAccess 수준 접근을 부여하려 한다. 올바른 절차는?",
+      "explanation": "Identity Center에서는 permission set으로 권한 집합을 정의하고 대상 계정에 사용자나 그룹을 할당한다. 할당 시 해당 계정에 대응하는 IAM 역할이 자동으로 생성된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
+      ],
+      "answerOptionKeys": [
+        "A"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "Permission set을 만들어 개발 계정에 개발자 그룹을 할당한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "각 개발자에게 IAM 사용자를 만들고 액세스 키를 배포한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "개발 계정의 루트 사용자를 개발자 그룹과 공유한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "SAML 앱을 만들고 계정마다 별도 자격 증명을 발급한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0033",
+      "domainCode": "security",
+      "stem": "회사가 외부 IdP를 IAM Identity Center와 연동했고, 입사·퇴사가 잦아 사용자와 그룹 변경을 자동으로 반영하려 한다. 필요한 구성은?",
+      "explanation": "SCIM을 사용하면 IdP의 사용자·그룹 생성과 비활성화가 Identity Center에 자동으로 동기화된다. 수동 생성이나 정적 SAML 어설션은 퇴사자 권한 회수 지연을 만든다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/provision-automatically.html"
+      ],
+      "answerOptionKeys": [
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "IdP에서 SAML 어설션에 그룹 목록을 수동으로 붙인다."
+        },
+        {
+          "optionKey": "B",
+          "text": "사용자마다 Identity Center에서 수동으로 계정을 만든다."
+        },
+        {
+          "optionKey": "C",
+          "text": "IdP와 Identity Center 간 SCIM 자동 프로비저닝을 활성화한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "퇴사자의 액세스 키를 주기적으로 교체하는 스크립트를 둔다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0034",
+      "domainCode": "security",
+      "stem": "기업이 이미 Active Directory Federation Services를 운영한다. 직원이 기존 자격 증명으로 AWS 콘솔에 접속하되 장기 액세스 키를 발급하지 않으려면 어떻게 구성해야 하는가?",
+      "explanation": "SAML 자격 증명 공급자와 역할을 구성하면 IdP 인증 결과로 임시 자격 증명을 받아 콘솔에 접속할 수 있다. 이 방식은 장기 액세스 키를 만들지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html"
+      ],
+      "answerOptionKeys": [
+        "B"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "모든 직원에게 IAM 사용자와 액세스 키를 생성한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "IAM SAML 자격 증명 공급자와 역할을 구성해 AssumeRoleWithSAML을 사용한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "AWS Directory Service for Microsoft AD에 사용자를 복제한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "Cognito 사용자 풀을 만들어 직원 계정을 다시 저장한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0035",
+      "domainCode": "security",
+      "stem": "모바일 앱 사용자가 Google 계정으로 로그인해 S3의 자기 파일에만 접근하게 하려 한다. AWS 자격 증명을 안전하게 얻는 방법은?",
+      "explanation": "Cognito 자격 증명 풀은 외부 IdP 토큰을 검증하고 사용자별 임시 AWS 자격 증명을 발급한다. 자격 증명을 앱에 하드코딩하면 누구나 키를 추출할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "앱에 IAM 사용자 액세스 키를 하드코딩해 배포한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "모든 사용자에게 동일한 교차 계정 역할을 부여해 사용하게 한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "앱 번들에 임시 자격 증명을 미리 넣어 함께 배포한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "Cognito 자격 증명 풀의 웹 자격 증명 페더레이션으로 임시 자격 증명을 발급한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0036",
+      "domainCode": "security",
+      "stem": "A 계정의 애플리케이션이 B 계정의 S3 버킷에 접근해야 한다. B 계정 관리자가 A 계정에만 역할 전환을 허용하려면 B 계정에서 무엇을 구성해야 하는가?",
+      "explanation": "교차 계정 접근은 대상 계정의 역할 신뢰 정책에 호출 주체 계정을 명시하고, 호출 측이 sts:AssumeRole 권한을 가질 때 성립한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html"
+      ],
+      "answerOptionKeys": [
+        "A"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "신뢰 정책에 A 계정을 Principal로 지정한 IAM 역할을 만든다."
+        },
+        {
+          "optionKey": "B",
+          "text": "A 계정의 IAM 사용자에게 B 계정 관리자 정책을 복사한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "B 계정의 S3 버킷을 퍼블릭 읽기로 연다."
+        },
+        {
+          "optionKey": "D",
+          "text": "A 계정에 B 계정의 루트 액세스 키를 저장한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0037",
+      "domainCode": "security",
+      "stem": "SaaS 벤더가 고객의 AWS 계정에 접근해 비용 리포트를 수집한다. 여러 고객이 같은 벤더 계정을 사용할 때 혼동된 대리자 문제를 막는 방법은?",
+      "explanation": "ExternalId 조건은 벤더가 각 고객에게 발급한 고유 값을 제시해야 역할을 수임하게 해 혼동된 대리자 공격을 차단한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html"
+      ],
+      "answerOptionKeys": [
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "벤더에게 고객 계정의 루트 자격 증명을 그대로 제공한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "고객 계정의 S3 버킷을 퍼블릭 읽기로 공개한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "역할 신뢰 정책의 sts:ExternalId 조건에 고객별 고유 값을 요구한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "벤더 계정과 고객 계정을 하나의 조직으로 통합한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0038",
+      "domainCode": "security",
+      "stem": "C 계정의 분석 팀이 D 계정이 소유한 S3 버킷의 객체를 읽어야 한다. D 계정에서 버킷 정책으로 C 계정 역할에 읽기 권한을 부여했다. C 계정에서 추가로 필요한 것은?",
+      "explanation": "교차 계정 S3 접근은 버킷 정책과 호출 주체의 자격 증명 정책이 모두 허용해야 성립한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-alternatives-guidelines.html"
+      ],
+      "answerOptionKeys": [
+        "B"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "D 계정의 KMS 키를 C 계정에 복사한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "C 계정 역할의 자격 증명 정책에 해당 버킷 접근을 허용한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "D 계정에서 버킷 ACL을 퍼블릭 읽기로 변경한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "C 계정에서 동일한 이름의 버킷을 새로 만든다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0039",
+      "domainCode": "security",
+      "stem": "보안 요구상 관리자 역할을 전환할 때 MFA를 반드시 사용해야 한다. 교차 계정 역할의 신뢰 정책에 추가할 조건 키는?",
+      "explanation": "신뢰 정책에 aws:MultiFactorAuthPresent를 true로 요구하면 MFA로 인증한 세션만 역할을 수임할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "aws:SourceIp"
+        },
+        {
+          "optionKey": "B",
+          "text": "aws:PrincipalOrgID"
+        },
+        {
+          "optionKey": "C",
+          "text": "aws:SecureTransport"
+        },
+        {
+          "optionKey": "D",
+          "text": "aws:MultiFactorAuthPresent"
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0040",
+      "domainCode": "security",
+      "stem": "수백 명의 직원이 여러 AWS 계정을 사용하는 조직이 중앙에서 접근을 관리하고 퇴사 시 즉시 회수하려 한다. 가장 적절한 접근 방식은?",
+      "explanation": "IAM Identity Center는 조직의 여러 계정에 대한 SSO와 중앙 권한 관리를 제공하며, 사용자 비활성화로 접근을 즉시 회수할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/what-is.html"
+      ],
+      "answerOptionKeys": [
+        "A"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "IAM Identity Center에서 그룹과 permission set으로 접근을 관리한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "계정마다 IAM 사용자를 만들고 암호를 수동으로 배포해 관리한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "각 계정의 루트 사용자를 팀 리더가 공유해 사용하도록 한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "계정별로 액세스 키를 만들어 개인 노트북에 저장해 사용한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0041",
+      "domainCode": "security",
+      "stem": "여러 멤버 계정의 API 활동을 중앙 보안 계정의 S3 버킷에 모아 감사하려 한다. 새 멤버 계정이 추가되어도 자동으로 로그가 수집되게 하려면?",
+      "explanation": "조직 추적은 조직의 모든 계정에 적용되어 새 계정도 자동으로 포함된다. 로그는 중앙 S3 버킷으로 전달해 감사와 보존을 통합할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-an-organizational-trail.html"
+      ],
+      "answerOptionKeys": [
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "각 계정에 개별 추적을 만들고 로그를 수동으로 복사한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "관리 계정에서만 CloudTrail을 활성화한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "관리 계정에서 조직 추적(organization trail)을 생성한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "멤버 계정의 CloudTrail 로그를 CloudWatch로만 보낸다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0042",
+      "domainCode": "security",
+      "stem": "새 계정을 빠르게 온보딩하면서도 위험한 서비스만 차단하는 SCP 전략을 선택하려 한다. 운영 부담이 가장 낮은 접근은?",
+      "explanation": "거부 목록(deny list)은 기본 허용 정책을 유지하고 예외만 거부하므로 새 서비스가 추가되어도 운영 부담이 작다. 허용 목록은 모든 서비스를 명시해야 하므로 유지 관리 비용이 크다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_strategies.html"
+      ],
+      "answerOptionKeys": [
+        "B"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "모든 서비스를 명시적으로 허용하는 허용 목록을 만든다."
+        },
+        {
+          "optionKey": "B",
+          "text": "기본 FullAWSAccess 정책에 거부할 서비스만 추가하는 거부 목록을 쓴다."
+        },
+        {
+          "optionKey": "C",
+          "text": "SCP 없이 IAM 정책만으로 서비스 사용을 통제한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "계정마다 SCP를 새로 작성해 서비스 목록을 복사한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0043",
+      "domainCode": "security",
+      "stem": "보안 팀이 관리 계정의 자격 증명을 쓰지 않고 조직의 멤버 계정에 보안 서비스를 배포하려 한다. 가장 적절한 구성은?",
+      "explanation": "위임된 관리자 계정은 관리 계정 대신 조직 수준의 보안 서비스를 운영할 수 있어 관리 계정 사용을 줄인다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_integrate_services.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "모든 멤버 계정의 루트 자격 증명을 보안 팀에 전달한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "관리 계정의 IAM 사용자를 보안 팀에 여러 개 만든다."
+        },
+        {
+          "optionKey": "C",
+          "text": "멤버 계정마다 교차 계정 역할을 수동으로 만든다."
+        },
+        {
+          "optionKey": "D",
+          "text": "보안 계정을 Organizations의 위임된 관리자로 등록한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0044",
+      "domainCode": "security",
+      "stem": "한 멤버 계정 안에서 특정 IAM 역할이 가질 수 있는 최대 권한을 제한하되 다른 계정에는 영향을 주지 않으려 한다. 적절한 도구는?",
+      "explanation": "권한 경계는 특정 IAM 사용자나 역할에 적용되는 권한 상한으로, 계정 전체나 조직 전체에 영향을 주지 않는다. SCP는 조직·OU·계정 단위에 적용된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+      ],
+      "answerOptionKeys": [
+        "A"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "해당 역할에 권한 경계(permissions boundary)를 설정한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "조직 루트에 SCP를 연결해 모든 계정에 적용한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "모든 멤버 계정에 동일한 SCP를 일괄 연결한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "관리 계정의 서비스 제어 정책을 직접 수정해 적용한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0045",
+      "domainCode": "security",
+      "stem": "SAML 페더레이션으로 여러 부서 직원이 하나의 역할을 공유한다. CloudTrail에서 누가 어떤 작업을 했는지 구분하려면 어떻게 해야 하는가?",
+      "explanation": "역할 세션 이름에 사용자 식별 속성을 매핑하면 공유 역할을 사용해도 CloudTrail에서 개별 사용자를 구분할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_saml.html"
+      ],
+      "answerOptionKeys": [
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "모든 직원에게 동일한 액세스 키를 발급한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "역할 이름을 부서 수만큼 복제해 만든다."
+        },
+        {
+          "optionKey": "C",
+          "text": "SAML 어설션의 속성을 역할 세션 이름에 매핑한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "CloudTrail 로그의 원본 IP만으로 사용자를 식별한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0046",
+      "domainCode": "security",
+      "stem": "조직의 모든 멤버 계정에서 루트 사용자의 결제·계정 설정 변경을 막고 싶다. SCP로 루트 사용자 작업을 제한할 때 올바른 설명은?",
+      "explanation": "SCP는 멤버 계정의 루트 사용자에게도 적용되므로 거부 정책으로 민감한 작업을 차단할 수 있다. 관리 계정의 루트 사용자는 SCP 적용 대상이 아니므로 별도로 보호해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
+      ],
+      "answerOptionKeys": [
+        "B"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "SCP는 루트 사용자에게 적용되지 않으므로 불가능하다."
+        },
+        {
+          "optionKey": "B",
+          "text": "멤버 계정의 루트 사용자 작업은 SCP로 제한할 수 있다."
+        },
+        {
+          "optionKey": "C",
+          "text": "루트 사용자는 SCP를 우회하는 별도 정책이 있다."
+        },
+        {
+          "optionKey": "D",
+          "text": "루트 사용자 제한은 통합 결제를 끊어야만 가능하다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0047",
+      "domainCode": "security",
+      "stem": "조직에 속한 모든 계정의 역할만 사내 중앙 로그 버킷에 쓸 수 있게 하려 한다. 계정이 추가될 때마다 버킷 정책을 수정하지 않으려면 어떤 조건을 사용하는가?",
+      "explanation": "aws:PrincipalOrgID 조건은 조직 ID를 기준으로 모든 멤버 계정의 주체를 한 번에 허용하므로 계정 추가 시 정책을 고칠 필요가 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "aws:SourceVpc"
+        },
+        {
+          "optionKey": "B",
+          "text": "aws:username"
+        },
+        {
+          "optionKey": "C",
+          "text": "aws:PrincipalTag"
+        },
+        {
+          "optionKey": "D",
+          "text": "aws:PrincipalOrgID"
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0048",
+      "domainCode": "security",
+      "stem": "IAM Identity Center에서 사용자 그룹에게 특정 AWS 계정의 접근 권한을 부여하는 데 필요한 작업 두 가지를 고르시오.",
+      "explanation": "Permission set으로 권한을 정의하고 대상 계정에 그룹을 할당하면 Identity Center가 대응하는 IAM 역할을 프로비저닝한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/singlesignon/latest/userguide/useraccess.html"
+      ],
+      "answerOptionKeys": [
+        "A",
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "Permission set을 생성해 필요한 권한을 정의한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "각 사용자에게 장기 IAM 액세스 키를 발급한다."
+        },
+        {
+          "optionKey": "C",
+          "text": "대상 AWS 계정에 그룹을 할당한다."
+        },
+        {
+          "optionKey": "D",
+          "text": "계정의 루트 사용자로 그룹을 직접 만든다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0049",
+      "domainCode": "security",
+      "stem": "A 계정의 역할이 B 계정의 역할을 수임해 B 계정 리소스에 접근하려 한다. 이 교차 계정 접근이 성립하는 데 필요한 조건 두 가지를 고르시오.",
+      "explanation": "대상 계정의 신뢰 정책이 호출 주체를 허용하고, 호출 주체의 자격 증명 정책이 sts:AssumeRole을 허용해야 한다. 리전 일치나 루트 키 공유는 필요하지 않다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html"
+      ],
+      "answerOptionKeys": [
+        "A",
+        "C"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "B 계정 역할의 신뢰 정책이 A 계정을 Principal로 허용한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "A 계정에 B 계정의 루트 액세스 키가 저장되어 있다."
+        },
+        {
+          "optionKey": "C",
+          "text": "A 계정의 역할에 sts:AssumeRole 권한이 있다."
+        },
+        {
+          "optionKey": "D",
+          "text": "두 계정이 동일한 AWS 리전에 있어야 한다."
+        }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0050",
+      "domainCode": "security",
+      "stem": "여러 사업부가 각자 AWS 계정을 사용하는 조직에서 계정 간 보안 경계를 유지하면서 감사 로그와 가드레일을 중앙에서 관리하는 설계로 가장 적절한 것은?",
+      "explanation": "워크로드와 로그·보안 계정을 분리하면 침해 시 영향 범위를 줄이고 감사 로그를 독립적으로 보존할 수 있다. SCP와 중앙 로그 수집으로 일관된 가드레일을 적용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html"
+      ],
+      "answerOptionKeys": [
+        "D"
+      ],
+      "options": [
+        {
+          "optionKey": "A",
+          "text": "모든 사업부를 하나의 계정과 VPC로 통합한다."
+        },
+        {
+          "optionKey": "B",
+          "text": "각 계정에 관리자 권한을 가진 공용 IAM 사용자를 만든다."
+        },
+        {
+          "optionKey": "C",
+          "text": "계정 간 보안 그룹을 모두 0.0.0.0/0으로 연다."
+        },
+        {
+          "optionKey": "D",
+          "text": "워크로드 계정과 로그·보안 계정을 분리하고 중앙 로그와 SCP로 통제한다."
+        }
+      ]
+    }
+  ]
+}
