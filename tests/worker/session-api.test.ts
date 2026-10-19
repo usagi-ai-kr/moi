@@ -37,7 +37,13 @@ const KEY_V1 = randomBase64Key();
 const KEY_V2 = randomBase64Key();
 
 function envWithKeys(keys: { v1: string; v2?: string }): Env {
-  const merged = { ...env, PASETO_KEY_V1: keys.v1 } as Record<string, unknown>;
+  const merged = {
+    ...env,
+    PASETO_KEY_V1: keys.v1,
+    KAKAO_CLIENT_ID: FAKE_CLIENT_ID,
+    KAKAO_CLIENT_SECRET: 'fake-client-secret',
+    KAKAO_REDIRECT_URI: 'https://moi.test/auth/kakao/callback',
+  } as Record<string, unknown>;
   if (keys.v2 !== undefined) merged.PASETO_KEY_V2 = keys.v2;
   return merged as unknown as Env;
 }
