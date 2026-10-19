@@ -20,7 +20,7 @@
       "questionId": "saa-perf-0052",
       "domainCode": "performance",
       "stem": "한 회사가 RDS for PostgreSQL을 Multi-AZ 배포로 전환한 뒤에도 보고서 쿼리 속도가 개선되지 않았다. 그 이유로 가장 적절한 것은?",
-      "explanation": "Multi-AZ의 대기 인스턴스는 동기 복제로 장애 조치를 준비할 뿐 읽기 요청을 처리하지 않는다. 읽기 확장에는 읽기 복제본을 사용해야 한다.",
+      "explanation": "**핵심:** Multi-AZ의 **대기 인스턴스는 동기 복제로 장애 조치를 준비할 뿐 읽기 요청을 처리하지 않는다**. 읽기 확장에는 **읽기 복제본**을 사용해야 한다.\n```mermaid\nflowchart LR\n  A[애플리케이션] -->|쓰기·읽기| P[기본 인스턴스]\n  P -->|동기 복제| S[대기 인스턴스]\n  A -->|읽기 전용| R1[읽기 복제본]\n  P -->|복제| R1\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZSingleStandby.html",
         "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"
@@ -51,7 +51,7 @@
       "questionId": "saa-perf-0054",
       "domainCode": "performance",
       "stem": "재해로 기본 리전의 RDS for MySQL 인스턴스가 손실되었다. 다른 리전에 있는 읽기 복제본을 독립 실행형 DB로 전환해 복구하려면 어떻게 해야 하는가?",
-      "explanation": "읽기 복제본 승격은 복제를 중단하고 독립 실행형 DB 인스턴스로 전환한다. 리전 장애 시 복구 시간을 줄이는 데 사용할 수 있다.",
+      "explanation": "**핵심:** 읽기 복제본 **승격(promote)** 은 복제를 중단하고 독립 실행형 DB 인스턴스로 전환한다. 리전 장애 시 복구 시간을 줄이는 데 사용할 수 있다.\n```mermaid\nflowchart LR\n  P[기본 리전 DB] -->|비동기 복제| R[다른 리전 읽기 복제본]\n  P -->|재해 발생| X[기본 DB 손실]\n  R -->|승격| N[독립 실행형 DB]\n```",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.Promote.html"],
       "answerOptionKeys": ["D"],
       "options": [
@@ -93,7 +93,7 @@
       "questionId": "saa-perf-0057",
       "domainCode": "performance",
       "stem": "Lambda 함수가 요청마다 RDS 연결을 새로 열어 피크 시간에 연결 수 한도에 도달했다. 애플리케이션 구조를 크게 바꾸지 않고 연결을 재사용하려면?",
-      "explanation": "RDS Proxy는 애플리케이션 대신 DB 연결을 풀링하고 재사용한다. 연결이 짧게 반복되는 Lambda 워크로드에서 연결 고갈을 줄인다.",
+      "explanation": "**핵심:** **RDS Proxy**는 애플리케이션 대신 DB 연결을 풀링하고 재사용한다. 연결이 짧게 반복되는 Lambda 워크로드에서 연결 고갈을 줄인다.\n```mermaid\nflowchart LR\n  L1[Lambda] --> P[RDS Proxy]\n  L2[Lambda] --> P\n  L3[Lambda] --> P\n  P -->|연결 풀 재사용| D[(RDS)]\n```",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html"],
       "answerOptionKeys": ["A"],
       "options": [
@@ -107,7 +107,7 @@
       "questionId": "saa-perf-0058",
       "domainCode": "performance",
       "stem": "Aurora MySQL 클러스터에 여러 Aurora Replica가 있다. 애플리케이션이 읽기 트래픽을 사용 가능한 복제본에 자동으로 분산하도록 하려면 어떤 엔드포인트를 사용해야 하는가?",
-      "explanation": "Aurora 리더 엔드포인트는 연결 시점에 사용 가능한 Aurora Replica로 부하를 분산한다. 라이터 엔드포인트는 기본 인스턴스로 쓰기와 읽기를 보낸다.",
+      "explanation": "**핵심:** Aurora **리더 엔드포인트**는 연결 시점에 사용 가능한 Aurora Replica로 부하를 분산한다. 라이터 엔드포인트는 기본 인스턴스로 쓰기와 읽기를 보낸다.\n```mermaid\nflowchart LR\n  A[애플리케이션] -->|읽기| R[리더 엔드포인트]\n  A -->|쓰기| W[라이터 엔드포인트]\n  R --> R1[Aurora Replica 1]\n  R --> R2[Aurora Replica 2]\n  W --> P[기본 인스턴스]\n```",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Aurora.Overview.Endpoints.html"],
       "answerOptionKeys": ["D"],
       "options": [
@@ -121,7 +121,7 @@
       "questionId": "saa-perf-0059",
       "domainCode": "performance",
       "stem": "트래픽 변동이 큰 Aurora MySQL 워크로드가 있다. 피크에는 빠르게 확장하고 유휴 시에는 낮은 용량으로 줄이되 클러스터를 재시작하지 않아야 한다. 가장 적합한 구성은?",
-      "explanation": "Aurora Serverless v2는 워크로드에 따라 ACU 단위로 세밀하게 확장하며 클러스터를 유지한 채 용량을 조정한다. 최소·최대 ACU로 기준 성능과 비용 상한을 정한다.",
+      "explanation": "**핵심:** **Aurora Serverless v2**는 워크로드에 따라 **ACU** 단위로 세밀하게 확장하며 클러스터를 유지한 채 용량을 조정한다. 최소·최대 ACU로 기준 성능과 비용 상한을 정한다.\n```mermaid\nflowchart LR\n  L[낮은 트래픽] -->|최소 ACU| C[Aurora Serverless v2]\n  H[피크 트래픽] -->|최대 ACU까지 확장| C\n  C --> D[(공유 스토리지)]\n```",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-2.html"],
       "answerOptionKeys": ["B"],
       "options": [

@@ -96,7 +96,7 @@
       "questionId": "saa-sec-0029",
       "domainCode": "security",
       "stem": "한 조직이 OU를 개발·운영으로 나누고 각 OU에 서로 다른 SCP를 연결했다. 운영 OU의 한 계정에 별도 SCP를 추가로 연결했을 때 권한은 어떻게 평가되는가?",
-      "explanation": "SCP는 루트부터 계정까지 이어지는 계층에서 모두 평가되며, 어느 하나라도 거부하면 해당 작업은 허용되지 않는다.",
+      "explanation": "**핵심:** SCP는 **루트 → OU → 계정**의 모든 수준에서 평가되며, 하나라도 거부하면 차단된다.\n\n```mermaid\nflowchart TD\n  O[Organizations 루트] --> U[운영 OU SCP]\n  U --> A[계정 SCP]\n  A --> E{모든 SCP 허용?}\n  E -->|예| Y[작업 허용]\n  E -->|아니오| N[작업 거부]\n```\n\n계정에 SCP를 추가해도 상위 OU의 거부를 우회할 수 없다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html"
       ],
@@ -186,7 +186,7 @@
       "questionId": "saa-sec-0032",
       "domainCode": "security",
       "stem": "IAM Identity Center를 도입한 회사가 개발자 그룹에게 개발 계정의 PowerUserAccess 수준 접근을 부여하려 한다. 올바른 절차는?",
-      "explanation": "Identity Center에서는 permission set으로 권한 집합을 정의하고 대상 계정에 사용자나 그룹을 할당한다. 할당 시 해당 계정에 대응하는 IAM 역할이 자동으로 생성된다.",
+      "explanation": "**핵심:** Identity Center는 **permission set 정의 → 대상 계정에 그룹 할당** 순으로 구성한다.\n\n```mermaid\nflowchart LR\n  P[Permission set] --> A[계정에 그룹 할당]\n  G[개발자 그룹] --> A\n  A --> R[대상 계정에 IAM 역할 자동 생성]\n```\n\n할당이 완료되면 사용자는 SSO로 해당 역할을 사용한다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/singlesignon/latest/userguide/permissionsetsconcept.html"
       ],
@@ -366,7 +366,7 @@
       "questionId": "saa-sec-0038",
       "domainCode": "security",
       "stem": "C 계정의 분석 팀이 D 계정이 소유한 S3 버킷의 객체를 읽어야 한다. D 계정에서 버킷 정책으로 C 계정 역할에 읽기 권한을 부여했다. C 계정에서 추가로 필요한 것은?",
-      "explanation": "교차 계정 S3 접근은 버킷 정책과 호출 주체의 자격 증명 정책이 모두 허용해야 성립한다.",
+      "explanation": "**핵심:** 교차 계정 S3 읽기는 **버킷 정책(D 계정)과 호출 주체의 자격 증명 정책(C 계정)**이 모두 허용해야 한다.\n\n| 위치 | 필요한 허용 |\n| --- | --- |\n| D 계정 | 버킷 정책에서 C 계정 역할에 `s3:GetObject` 허용 |\n| C 계정 | 역할의 자격 증명 정책에서 해당 버킷 ARN 읽기 허용 |\n\n어느 한쪽만으로는 액세스가 성립하지 않는다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-alternatives-guidelines.html"
       ],
@@ -456,7 +456,7 @@
       "questionId": "saa-sec-0041",
       "domainCode": "security",
       "stem": "여러 멤버 계정의 API 활동을 중앙 보안 계정의 S3 버킷에 모아 감사하려 한다. 새 멤버 계정이 추가되어도 자동으로 로그가 수집되게 하려면?",
-      "explanation": "조직 추적은 조직의 모든 계정에 적용되어 새 계정도 자동으로 포함된다. 로그는 중앙 S3 버킷으로 전달해 감사와 보존을 통합할 수 있다.",
+      "explanation": "**핵심:** **조직 트레일**은 관리 계정에서 한 번 만들면 모든 멤버 계정과 리전을 자동 포함한다.\n\n```mermaid\nflowchart LR\n  M[관리 계정: 조직 트레일] --> O[Organizations 전체 계정]\n  O --> R[모든 리전 이벤트]\n  R --> S[중앙 감사 S3 버킷]\n```\n\n새 멤버 계정도 자동으로 수집 대상에 포함된다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-an-organizational-trail.html"
       ],
@@ -636,7 +636,7 @@
       "questionId": "saa-sec-0047",
       "domainCode": "security",
       "stem": "조직에 속한 모든 계정의 역할만 사내 중앙 로그 버킷에 쓸 수 있게 하려 한다. 계정이 추가될 때마다 버킷 정책을 수정하지 않으려면 어떤 조건을 사용하는가?",
-      "explanation": "aws:PrincipalOrgID 조건은 조직 ID를 기준으로 모든 멤버 계정의 주체를 한 번에 허용하므로 계정 추가 시 정책을 고칠 필요가 없다.",
+      "explanation": "**핵심:** `aws:PrincipalOrgID` 조건으로 **조직 ID**를 기준에 두면 멤버 계정 전체를 한 번에 허용할 수 있다.\n\n- 새 계정이 추가되어도 버킷 정책을 수정할 필요가 없다.\n- 조직 외부 주체는 같은 조건을 만족하지 못하므로 차단된다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
       ],

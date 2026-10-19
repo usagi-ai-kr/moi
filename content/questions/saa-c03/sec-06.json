@@ -6,7 +6,7 @@
       "questionId": "saa-sec-0126",
       "domainCode": "security",
       "stem": "한 회사가 다수의 AWS 계정으로 구성된 Organizations 환경에서 모든 계정·모든 리전의 API 호출을 감사하려 한다. 가장 적은 운영 부담으로 이를 달성하는 방법은?",
-      "explanation": "조직 트레일은 관리 계정에서 한 번 생성하면 조직의 모든 계정에 적용되고, 모든 리전 활성화로 리전 누락 없이 감사할 수 있다. 계정별 개별 트레일은 누락과 관리 부담이 크다.",
+      "explanation": "**핵심:** **조직 트레일 + 모든 리전** 설정이 계정별 개별 트레일 없이 감사 범위를 완성한다.\n\n```mermaid\nflowchart LR\n  M[관리 계정] --> T[조직 트레일]\n  T --> A[모든 멤버 계정]\n  A --> R[모든 리전]\n  R --> S[중앙 S3 버킷]\n```\n\n계정이 추가되어도 자동으로 감사 대상에 포함된다.",
       "sourceUrls": ["https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html"],
       "answerOptionKeys": ["A"],
       "options": [
@@ -104,7 +104,7 @@
       "questionId": "saa-sec-0133",
       "domainCode": "security",
       "stem": "한 회사가 VPC Flow Logs, CloudTrail 관리 이벤트, DNS 쿼리 로그를 기반으로 계정 내 악의적 활동(크립토마이닝, 비정상 API 호출 등)을 자동 탐지하려 한다. 가장 적절한 서비스는?",
-      "explanation": "GuardDuty는 CloudTrail, VPC Flow Logs, DNS 쿼리 로그 등을 분석해 악의적 활동을 자동 탐지하는 위협 탐지 서비스다.",
+      "explanation": "**핵심:** **GuardDuty**는 여러 로그 소스를 결합해 악의적 활동을 자동 탐지한다.\n\n| 데이터 소스 | 탐지 예 |\n| --- | --- |\n| CloudTrail 관리 이벤트 | 비정상 API 호출 |\n| VPC Flow Logs | 크립토마이닝 통신 |\n| DNS 쿼리 로그 | 악성 도메인 조회 |\n\nCloudTrail S3 데이터 이벤트와 Kubernetes 감사 로그도 분석 대상이다.",
       "sourceUrls": ["https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"],
       "answerOptionKeys": ["D"],
       "options": [
@@ -118,7 +118,7 @@
       "questionId": "saa-sec-0134",
       "domainCode": "security",
       "stem": "GuardDuty가 높은 심각도 발견 항목을 생성할 때 온콜 엔지니어에게 즉시 알림을 보내고 싶다. 가장 적절한 구성은?",
-      "explanation": "GuardDuty는 발견 항목을 EventBridge 이벤트로 게시하므로 규칙으로 SNS 주제나 Lambda에 라우팅해 즉시 알림을 보낼 수 있다.",
+      "explanation": "**핵심:** GuardDuty 발견 항목은 **EventBridge → SNS**로 라우팅해 온콜에 즉시 전달한다.\n\n```mermaid\nflowchart LR\n  G[GuardDuty 발견 항목] --> E[EventBridge 규칙]\n  E --> S[SNS 주제]\n  S --> O[온콜 엔지니어]\n```\n\n심각도 조건으로 규칙을 필터링하고 필요하면 Lambda 후속 자동화를 연결한다.",
       "sourceUrls": ["https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudwatch.html"],
       "answerOptionKeys": ["A"],
       "options": [

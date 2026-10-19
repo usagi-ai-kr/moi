@@ -48,7 +48,7 @@
       "questionId": "saa-sec-0104",
       "domainCode": "security",
       "stem": "금융 규제 준수를 위해 S3 객체를 일정 기간 삭제와 덮어쓰기가 불가능하게 보관하려 한다. 가장 적절한 방법은?",
-      "explanation": "S3 Object Lock을 Compliance 모드로 설정하면 지정된 보존 기간 동안 누구도 객체를 삭제할 수 없다. 규제 대응을 위한 WORM 보관이 가능하다.",
+      "explanation": "**핵심:** **S3 Object Lock의 Compliance 모드**는 보존 기간 동안 삭제·덮어쓰기를 차단한다.\n\n| 모드 | 보존 기간 중 삭제 | 기간 단축 |\n| --- | --- | --- |\n| Governance | 특별 권한으로 가능 | 특별 권한으로 가능 |\n| Compliance | 불가 | 불가 |\n\nWORM 보관이 필요한 규제 대응에 적합하다.",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"],
       "answerOptionKeys": ["D"],
       "options": [
@@ -160,7 +160,7 @@
       "questionId": "saa-sec-0112",
       "domainCode": "security",
       "stem": "S3에 보관된 중요 문서가 랜섬웨어로 삭제되거나 덮어쓰기되는 위험을 줄이려 한다. 가장 적절한 조합은?",
-      "explanation": "S3 버전 관리와 MFA Delete를 함께 사용하면 삭제와 버전 제거에 추가 인증이 필요하다. 우발적 삭제와 악의적 삭제를 모두 완화한다.",
+      "explanation": "**핵심:** **버전 관리 + MFA Delete** 조합이 삭제와 덮어쓰기를 함께 완화한다.\n\n- 버전 관리는 덮어쓴 객체를 이전 버전으로 보존한다.\n- MFA Delete는 버전 영구 삭제와 버전 관리 중단에 추가 인증을 요구한다.",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html"],
       "answerOptionKeys": ["D"],
       "options": [
@@ -188,7 +188,7 @@
       "questionId": "saa-sec-0114",
       "domainCode": "security",
       "stem": "모바일 앱 사용자가 S3에 사진을 직접 업로드하며 서버 부하를 줄이려 한다. 자격 증명 노출 없이 구현하는 방법은?",
-      "explanation": "서버가 짧은 유효기간의 presigned URL을 발급하면 앱은 그 URL로 직접 업로드할 수 있다. 장기 자격 증명을 앱에 내장하지 않아도 된다.",
+      "explanation": "**핵심:** 서버가 **짧은 유효기간의 presigned URL**을 발급하고 앱은 S3로 직접 업로드한다.\n\n```mermaid\nsequenceDiagram\n  participant App as 모바일 앱\n  participant API as 애플리케이션 서버\n  participant S3 as S3\n  App->>API: 업로드 URL 요청\n  API-->>App: presigned URL\n  App->>S3: PUT 업로드\n```\n\n장기 자격 증명을 앱에 내장하지 않아도 된다.",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html"],
       "answerOptionKeys": ["B"],
       "options": [
