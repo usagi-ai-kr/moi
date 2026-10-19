@@ -32,15 +32,16 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0014 | 디자인 시스템 보강 — 폰트 제공·UI 제약 예외·여백·Lighthouse·카카오 버튼 | Accepted | 2026-10-18 | [0014-design-system-supplement-font-ui-kakao.md](./0014-design-system-supplement-font-ui-kakao.md) |
 | ADR-0015 | src 모듈 길이 예산 — 하네스·src 통합 | Accepted | 2026-10-18 | [0015-src-module-length-budget.md](./0015-src-module-length-budget.md) |
 | ADR-0016 | Kakao OIDC 구현 — 상태 소비·JWKS 검증·응답/로그 계약 | Accepted | 2026-10-18 | [0016-kakao-oidc-implementation.md](./0016-kakao-oidc-implementation.md) |
-| ADR-0017 | 0.2.x 버전·거버넌스·출시 게이트 | Accepted | 2026-10-18 | [0017-version-governance-0.2.x.md](./0017-version-governance-0.2.x.md) |
+| ADR-0017 | 0.2.x 버전·거버넌스·출시 게이트 | Superseded by ADR-0030 | 2026-10-18 | [0017-version-governance-0.2.x.md](./0017-version-governance-0.2.x.md) |
 | ADR-0018 | 세션·UI 상태 계약 — 서버 진실 원천과 캐시 규칙 | Accepted | 2026-10-18 | [0018-session-ui-state-contract.md](./0018-session-ui-state-contract.md) |
-| ADR-0019 | 0.2.0 문제은행·품질·관리 API | Accepted | 2026-10-18 | [0019-question-bank-quality.md](./0019-question-bank-quality.md) |
-| ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Accepted | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
-| ADR-0021 | 0.2.0 저장·복구·단일 세션·신고·정정·통계 | Accepted | 2026-10-18 | [0021-storage-reports-stats.md](./0021-storage-reports-stats.md) |
+| ADR-0019 | 0.2.0 문제은행·품질·관리 API | Superseded by ADR-0030 | 2026-10-18 | [0019-question-bank-quality.md](./0019-question-bank-quality.md) |
+| ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Superseded by ADR-0030 | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
+| ADR-0021 | 0.2.0 저장·복구·단일 세션·신고·정정·통계 | Superseded by ADR-0030 | 2026-10-18 | [0021-storage-reports-stats.md](./0021-storage-reports-stats.md) |
 | ADR-0022 | 디스플레이 폰트 LCP 안정화 — optional·지연 주입 | Accepted | 2026-10-18 | [0022-display-font-lcp-stability.md](./0022-display-font-lcp-stability.md) |
 | ADR-0023 | 에이전트 컨텍스트 리셋·워커 산출물 검증 | Accepted | 2026-10-18 | [0023-agent-context-and-output-verification.md](./0023-agent-context-and-output-verification.md) |
 | ADR-0024 | 학습 통계·취약 영역 파라미터 | Accepted | 2026-10-18 | [0024-study-stats-parameters.md](./0024-study-stats-parameters.md) |
 | ADR-0025 | study_attempts attempt/firstAttempt D1 집계 저장 계약 | Proposed | 2026-10-18 | [0025-study-attempt-aggregation.md](./0025-study-attempt-aggregation.md) |
 | ADR-0026 | lockfile 기반 제삼자 라이선스 고지 생성 | Proposed | 2026-10-19 | [0026-third-party-notices.md](./0026-third-party-notices.md) |
 | ADR-0027 | 복습 회차 D1 스냅샷 영속화 | Proposed | 2026-10-19 | [0027-review-session-persistence.md](./0027-review-session-persistence.md) |
+| ADR-0030 | 0.2 수업 실사용·디자인과 0.3 이관 | Accepted | 2026-10-19 | [0030-classroom-scope-and-design.md](./0030-classroom-scope-and-design.md) |
 <!-- ADR_INDEX:END -->

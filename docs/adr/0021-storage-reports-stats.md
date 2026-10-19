@@ -1,7 +1,7 @@
 ---
 id: ADR-0021
 title: 0.2.0 저장·복구·단일 세션·신고·정정·통계
-status: Accepted
+status: Superseded by ADR-0030
 date: 2026-10-18
 related: ["#35", "#52", "#53", "#54", "ADR-0017"]
 ---
