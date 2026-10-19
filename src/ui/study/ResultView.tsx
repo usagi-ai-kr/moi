@@ -1,5 +1,5 @@
 import { copy } from '../copy';
-import type { ApiClient, StudySubmittedSet } from '../api/client';
+import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
 import { ReportButton } from './ReportButton';
 import { scopeLabel } from './types';
 
@@ -8,13 +8,36 @@ interface Props {
   set: StudySubmittedSet;
   onRestart: () => void;
   onHistory: () => void;
+  corrections?: StudyCorrections;
+}
+
+// 신고 사유 라벨 — copy.report.reason* 재사용, 미정의 사유는 원문 노출.
+function correctionReasonLabel(reason: string): string {
+  switch (reason) {
+    case 'answer':
+      return copy.report.reasonAnswer;
+    case 'explanation':
+      return copy.report.reasonExplanation;
+    case 'ambiguous':
+      return copy.report.reasonAmbiguous;
+    case 'typo':
+      return copy.report.reasonTypo;
+    default:
+      return reason;
+  }
 }
 
 // 결과 — 요약·문항별 선택/정답 + 스냅샷 해설·근거 링크(제출 후 노출).
-export function ResultView({ client, set, onRestart, onHistory }: Props) {
+// 정정 이력(corrections)이 있으면 최초→정정 정답률·유효 분모·사유를 덧붙인다(#53).
+// 정정 없음·조회 실패(undefined·0건) 시 기존 결과 화면 그대로 둔다.
+export function ResultView({ client, set, onRestart, onHistory, corrections }: Props) {
   const r = set.result;
   const total = set.items.length;
   const contentOf = (questionId: string) => set.items.find((i) => i.questionId === questionId);
+  const showCorrections = corrections !== undefined && corrections.items.length > 0;
+  const corrected = corrections?.corrected;
+  const indexOfVersion = (questionVersionId: string) =>
+    set.items.findIndex((i) => i.questionVersionId === questionVersionId);
   return (
     <section className="moi-study" aria-label={copy.study.resultTitle}>
       <h2 className="moi-study-title">{copy.study.resultTitle}</h2>
@@ -72,6 +95,28 @@ export function ResultView({ client, set, onRestart, onHistory }: Props) {
           );
         })}
       </ol>
+      {showCorrections && corrected && (
+        <section className="moi-study-detail" aria-label={copy.study.correctionTitle}>
+          <h3>{copy.study.correctionTitle}</h3>
+          <p className="moi-note">
+            {`${copy.study.correctionOriginal} ${r.accuracyPercent}% → ${copy.study.correctionCorrected} ${
+              corrected.accuracyPercent !== null
+                ? `${corrected.accuracyPercent}%`
+                : copy.study.correctionUngraded
+            }`}
+          </p>
+          <p className="moi-note">
+            {`${copy.study.correctionValid} ${corrected.validTotal}${copy.study.questionLabel} · ${copy.study.correctionExcluded} ${corrected.excludedCount}${copy.study.questionLabel}`}
+          </p>
+          <ul>
+            {corrections.items.map((c) => (
+              <li key={c.id}>
+                {`${copy.study.questionLabel} ${indexOfVersion(c.questionVersionId) + 1} · ${correctionReasonLabel(c.reason)}`}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <div className="moi-study-actions">
         <button type="button" className="moi-study-primary" onClick={onRestart}>
           {copy.study.backToStart}

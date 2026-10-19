@@ -5,6 +5,7 @@ import { HistoryView } from './HistoryView';
 import { QuestionView } from './QuestionView';
 import { ResultView } from './ResultView';
 import { StartView } from './StartView';
+import { useStudyCorrections } from './queries';
 import { useStudyFlow } from './useStudyFlow';
 import './study.css';
 
@@ -37,6 +38,8 @@ function ConfirmDialog({
 export function StudyScreen({ client, userId }: { client: ApiClient; userId: string }) {
   const f = useStudyFlow(client, userId);
   const { s, set, unanswered, setQuery, historyQuery } = f;
+  // 제출 세트일 때만 정정 이력을 조회한다 — useStudyFlow는 수정하지 않는다 (#53).
+  const correctionsQuery = useStudyCorrections(client, set && isSubmittedSet(set) ? set.id : null);
 
   if (s.view === 'history') {
     return (
@@ -69,7 +72,15 @@ export function StudyScreen({ client, userId }: { client: ApiClient; userId: str
   }
 
   if (set && isSubmittedSet(set)) {
-    return <ResultView client={client} set={set} onRestart={f.restart} onHistory={() => s.setView('history')} />;
+    return (
+      <ResultView
+        client={client}
+        set={set}
+        onRestart={f.restart}
+        onHistory={() => s.setView('history')}
+        corrections={correctionsQuery.data}
+      />
+    );
   }
 
   if (set && s.view === 'active') {

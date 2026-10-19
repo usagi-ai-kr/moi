@@ -3,6 +3,7 @@ import { HTTPError } from 'ky';
 import {
   abandonStudySet,
   answerStudyItem,
+  getStudyCorrections,
   getStudySet,
   listStudyHistory,
   startStudySet,
@@ -38,6 +39,18 @@ export function useStudyHistory(client: ApiClient, page: number, pageSize: numbe
     enabled,
     retry: false,
     staleTime: 30_000,
+  });
+}
+
+// 완료 세트 정정 이력 — 제출 세트 결과 화면에서만 조회한다 (#53).
+// 조회 실패는 결과 화면 전체를 막지 않도록 호출자가 data 유무로만 분기한다.
+export function useStudyCorrections(client: ApiClient, setId: string | null) {
+  return useQuery({
+    queryKey: ['study', 'corrections', setId],
+    queryFn: () => getStudyCorrections(client, setId as string),
+    enabled: setId !== null,
+    retry: false,
+    staleTime: 10_000,
   });
 }
 
