@@ -4,10 +4,12 @@ import { registerCorrectionAdminRoutes } from './admin/correction-routes';
 import { registerAuthRoutes } from './auth/routes';
 import { registerCorrectionListRoutes } from './corrections/routes';
 import { registerReportRoutes } from './reports/routes';
+import { registerReviewRoutes } from './review/routes';
 import { registerSessionRoutes } from './session/routes';
 import { registerStatsRoutes } from './stats/routes';
 import { registerStudyRoutes } from './study/routes';
 import type { AdminRuntime } from './admin/runtime';
+import type { ReviewRuntime } from './review/runtime';
 import type { StudyRuntime } from './study/runtime';
 import type { KakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
 import type { SessionRuntime } from '@/infra/auth/session/runtime';
@@ -21,6 +23,8 @@ export interface CreateAppOptions {
   readonly createAdminRuntime?: (env: Env, requestId: string) => AdminRuntime;
   /** 테스트에서 학습 세트 런타임을 교체할 때 사용한다. */
   readonly createStudyRuntime?: (env: Env, requestId: string) => StudyRuntime;
+  /** 테스트에서 복습 런타임을 교체할 때 사용한다. */
+  readonly createReviewRuntime?: (env: Env, requestId: string) => ReviewRuntime;
 }
 
 // Hono 앱 조립 — 라우트 등록 (DI/조립은 src/bootstrap/worker) [ADR-0001/0011]
@@ -44,6 +48,10 @@ export function createApp(options?: CreateAppOptions) {
   registerReportRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
   registerCorrectionListRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
   registerStatsRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
+  registerReviewRoutes(app, {
+    createRuntime: options?.createReviewRuntime,
+    createSessionRuntime: options?.createSessionRuntime,
+  });
 
   return app;
 }

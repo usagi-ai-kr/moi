@@ -1,7 +1,11 @@
 import { env } from 'cloudflare:workers';
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { ReviewSession } from '@/domain/review/types';
+import type { AttemptRecord } from '@/app/stats/attempt-ports';
+import type { StudySet } from '@/domain/study/types';
+import { createD1StudySetRepository } from '../../src/infra/persistence/study-repository';
 import { createD1ReviewGradingRepository } from '../../src/infra/persistence/review-grading-repository';
+import { createD1ReviewSessionRepository } from '../../src/infra/persistence/review-session-repository';
 import migration0000 from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
 import migration0001 from '../../drizzle/migrations/0001_add-users-external-identities.sql?raw';
 import migration0002 from '../../drizzle/migrations/0002_add-sessions.sql?raw';
@@ -20,6 +24,7 @@ import { applyD1Migrations } from './fixtures/kakao-fakes';
 const db = env.DB;
 const NOW = 1792998000;
 const repo = createD1ReviewGradingRepository(db);
+const sessionRepo = createD1ReviewSessionRepository(db);
 
 function item(q: string, state: ReviewSession['items'][number]['state']): ReviewSession['items'][number] {
   return {
@@ -80,13 +85,26 @@ async function loadSession(id: string) {
 async function countAttempts() {
   return (await db.prepare('SELECT COUNT(*) AS c FROM study_attempts').first<{ c: number }>())?.c ?? -1;
 }
+function submittedSet(id: string): StudySet {
+  return {
+    id, userId: 'u-1', examId: 'e-1', mode: 'all', status: 'submitted', createdAt: NOW,
+    submittedAt: NOW + 100, items: [],
+    result: { answeredCount: 1, correctCount: 1, accuracyPercent: 100, passCount: 0, unansweredCount: 0, perItem: [] },
+  };
+}
+function setAttempt(): AttemptRecord {
+  return {
+    attemptId: 'set-1:q-1', userId: 'u-1', examId: 'e-1', questionId: 'q-1', questionVersionId: 'q-1-v1',
+    outcome: 'correct', occurredAt: NOW * 1000 + 10, source: 'set', sourceId: 'set-1', excludedAt: null, firstAttempt: true,
+  };
+}
 
 beforeAll(async () => {
   await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011]);
   try { await db.exec('PRAGMA foreign_keys = ON;'); } catch { /* pragma 미지원 시 FK 강제 여부 자체가 검증 대상 */ }
 });
 beforeEach(async () => {
-  for (const t of ['study_attempts', 'review_sessions', 'question_versions', 'questions']) await db.prepare(`DELETE FROM ${t}`).run();
+  for (const t of ['study_attempts', 'study_set_items', 'study_sets', 'review_sessions', 'question_versions', 'questions']) await db.prepare(`DELETE FROM ${t}`).run();
   for (const t of ['users', 'exam_domains', 'exams']) await db.prepare(`DELETE FROM ${t}`).run();
   await seedBase();
 });
@@ -185,6 +203,69 @@ describe('review 원자 채점 저장 (#54)', () => {
     expect(await countAttempts()).toBe(1);
   });
 
+  it('UPDATE가 0행이면 attempt도 삭제해 false·쓰기 0건이다', async () => {
+    await seedSession(baseSession());
+    await db.exec("CREATE TRIGGER trg_ignore_review_update BEFORE UPDATE ON review_sessions BEGIN SELECT RAISE(IGNORE); END;");
+    try {
+      expect(await repo.commit({ session: nextSession(), expectedCursor: 0, attempt: attempt() })).toBe(false);
+    } finally {
+      await db.exec('DROP TRIGGER IF EXISTS trg_ignore_review_update;');
+    }
+    expect(await loadSession('rs-1')).toEqual({ cursor: 0, items: JSON.stringify(baseSession().items) });
+    expect(await countAttempts()).toBe(0);
+  });
+
+  it('INSERT가 0행이면 cursor/items를 남기지 않고 false·쓰기 0건이다', async () => {
+    await seedSession(baseSession());
+    await db.exec("CREATE TRIGGER trg_ignore_review_attempt_insert BEFORE INSERT ON study_attempts BEGIN SELECT RAISE(IGNORE); END;");
+    try {
+      expect(await repo.commit({ session: nextSession(), expectedCursor: 0, attempt: attempt() })).toBe(false);
+    } finally {
+      await db.exec('DROP TRIGGER IF EXISTS trg_ignore_review_attempt_insert;');
+    }
+    expect(await loadSession('rs-1')).toEqual({ cursor: 0, items: JSON.stringify(baseSession().items) });
+    expect(await countAttempts()).toBe(0);
+  });
+
+  it('서로 다른 복습 모드 회차가 교차 경합해도 firstAttempt는 한 번만 true다', async () => {
+    await seedSession(baseSession());
+    await seedSession({ ...baseSession(), id: 'rs-2', mode: 'bookmark' });
+    const review = nextSession({
+      id: 'rs-2',
+      mode: 'bookmark',
+      items: [item('q-1', graded(false)), item('q-2', { kind: 'pending' })],
+    });
+    const [correct, wrong] = await Promise.all([
+      repo.commit({ session: nextSession(), expectedCursor: 0, attempt: attempt('q-1', 'correct') }),
+      repo.commit({ session: review, expectedCursor: 0, attempt: { ...attempt('q-1', 'wrong'), attemptId: 'rs-2:q-1' } }),
+    ]);
+    expect(correct).toBe(true);
+    expect(wrong).toBe(true);
+    const rows = await db.prepare('SELECT first_attempt AS firstAttempt FROM study_attempts ORDER BY attempt_id').all<{ firstAttempt: number }>();
+    expect(rows.results.map((row) => row.firstAttempt).sort()).toEqual([0, 1]);
+  });
+
+  it('실제 세트 제출 어댑터와 복습 commit이 경합해도 firstAttempt는 한 번만 true다', async () => {
+    await seedSession(baseSession());
+    await seedSession({ ...baseSession(), id: 'rs-2', mode: 'bookmark' });
+    await db.prepare("INSERT INTO study_sets (id, user_id, exam_id, mode, domain_id, status, created_at, submitted_at, result_json) VALUES ('set-1', 'u-1', 'e-1', 'all', NULL, 'active', ?1, NULL, NULL)").bind(NOW).run();
+    const studyRepo = createD1StudySetRepository(db);
+    const review = nextSession({
+      id: 'rs-2',
+      mode: 'bookmark',
+      items: [item('q-1', graded(false)), item('q-2', { kind: 'pending' })],
+    });
+    const [reviewSaved, setSubmitted] = await Promise.all([
+      repo.commit({ session: review, expectedCursor: 0, attempt: { ...attempt('q-1', 'wrong'), attemptId: 'rs-2:q-1' } }),
+      studyRepo.submit({ set: submittedSet('set-1'), attempts: [setAttempt()] }),
+    ]);
+    expect(reviewSaved).toBe(true);
+    expect(setSubmitted).toBe(true);
+    const rows = await db.prepare('SELECT source, first_attempt AS firstAttempt FROM study_attempts ORDER BY source').all<{ source: string; firstAttempt: number }>();
+    expect(rows.results.map((row) => row.source)).toEqual(['review', 'set']);
+    expect(rows.results.map((row) => row.firstAttempt).sort()).toEqual([0, 1]);
+  });
+
   it('firstAttempt는 SQL로 산정한다(중복0·pass제외·user/exam격리·excluded무시)', async () => {
     await seedSession(baseSession());
     expect(await repo.commit({ session: nextSession(), expectedCursor: 0, attempt: attempt('q-1', 'correct') })).toBe(true);
@@ -231,5 +312,32 @@ describe('review 원자 채점 저장 (#54)', () => {
     const fifth: ReviewSession = { ...baseSession(), id: 'rs-5', cursor: 1, items: [q4graded, item('q-2', { kind: 'pending' })] };
     expect(await repo.commit({ session: fifth, expectedCursor: 0, attempt: { attemptId: 'rs-5:q-4', userId: 'u-1', examId: 'e-1', questionId: 'q-4', questionVersionId: 'q-4-v1', outcome: 'correct', occurredAt: NOW * 1000 + 50 } })).toBe(true);
     expect((await db.prepare("SELECT first_attempt AS f FROM study_attempts WHERE attempt_id = 'rs-5:q-4'").first<{ f: number }>())?.f).toBe(1);
+  });
+});
+
+
+describe('복습 종료 cursor CAS (ADR-0041)', () => {
+  it('Given 답안 commit 후 stale 종료 snapshot When 종료 CAS Then cursor와 attempt를 보존하고 최신 snapshot 종료를 허용한다', async () => {
+    await seedSession(baseSession());
+    const answered = nextSession({
+      items: [item('q-1', graded(false, true)), item('q-2', { kind: 'pending' })],
+    });
+    expect(await repo.commit({ session: answered, expectedCursor: 0, attempt: attempt('q-1', 'pass') })).toBe(true);
+
+    const staleEnded = { ...baseSession(), status: 'ended' as const, endedAt: NOW + 20 };
+    expect(await sessionRepo.end({ session: staleEnded, expectedCursor: 0 })).toBe(false);
+    const afterStaleEnd = await loadSession('rs-1');
+    expect(afterStaleEnd?.cursor).toBe(1);
+    expect(JSON.parse(afterStaleEnd?.items ?? '[]')[0]?.state).toMatchObject({ kind: 'graded', response: { kind: 'pass' } });
+    expect(await countAttempts()).toBe(1);
+
+    const latestEnded = { ...answered, status: 'ended' as const, endedAt: NOW + 30 };
+    expect(await sessionRepo.end({ session: latestEnded, expectedCursor: 1 })).toBe(true);
+    const afterFreshEnd = await loadSession('rs-1');
+    expect(afterFreshEnd?.cursor).toBe(1);
+    expect(JSON.parse(afterFreshEnd?.items ?? '[]')[0]?.state).toMatchObject({ kind: 'graded', response: { kind: 'pass' } });
+    const row = await db.prepare('SELECT status FROM review_sessions WHERE id = ?1').bind('rs-1').first<{ status: string }>();
+    expect(row?.status).toBe('ended');
+    expect(await countAttempts()).toBe(1);
   });
 });

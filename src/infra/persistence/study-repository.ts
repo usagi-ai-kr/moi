@@ -83,7 +83,8 @@ export function createD1StudySetRepository(db: D1Database): StudySetRepository {
     },
 
     async submit({ set, attempts }) {
-      // 제출+attempt 원자 저장(#54): UPDATE(active→submitted)와 attempt INSERT를 D1 batch로 묶는다.
+      // 제출+attempt 원자 저장(#54/ADR-0038): firstAttempt는 기존 유효 이력을 같은 D1 batch SQL에서 판정한다.
+      // UPDATE(active→submitted)와 attempt INSERT를 D1 batch로 묶는다.
       // INSERT는 제출 성공 시에만 저장되도록 EXISTS(submitted) 가드로 no-op화하고 충돌은 무시한다.
       const updateStmt = db
         .prepare(
@@ -102,7 +103,11 @@ export function createD1StudySetRepository(db: D1Database): StudySetRepository {
           db
             .prepare(
               'INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) ' +
-                "SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11 WHERE EXISTS (SELECT 1 FROM study_sets WHERE id = ?12 AND status = 'submitted') ON CONFLICT DO NOTHING",
+                "SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, " +
+                "CASE WHEN ?6 IN ('correct','wrong') AND ?10 IS NULL AND NOT EXISTS " +
+                "(SELECT 1 FROM study_attempts WHERE user_id = ?2 AND exam_id = ?3 AND question_id = ?4 " +
+                "AND outcome IN ('correct','wrong') AND excluded_at IS NULL) THEN 1 ELSE 0 END " +
+                "WHERE EXISTS (SELECT 1 FROM study_sets WHERE id = ?11 AND status = 'submitted') ON CONFLICT DO NOTHING",
             )
             .bind(
               a.attemptId,
@@ -115,7 +120,6 @@ export function createD1StudySetRepository(db: D1Database): StudySetRepository {
               a.source,
               a.sourceId,
               a.excludedAt,
-              a.firstAttempt ? 1 : 0,
               set.id,
             ),
         ),

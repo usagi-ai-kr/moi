@@ -1,7 +1,7 @@
 ---
 id: ADR-0028
 title: 복습 회차 진행과 시도 기록 원자 저장
-status: Proposed
+status: Superseded by ADR-0038
 date: 2026-10-19
 related: ["#54", "#51", "ADR-0020", "ADR-0025", "ADR-0027"]
 ---

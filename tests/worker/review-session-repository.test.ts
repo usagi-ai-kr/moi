@@ -91,7 +91,7 @@ describe('ReviewSessionRepository D1 어댑터', () => {
 
   it('endedAt을 저장·복원하고 종료 후 같은 (user, exam, mode) 활성 회차를 다시 시작할 수 있다', async () => {
     await repo.save({ session: session() });
-    await repo.save({ session: session({ status: 'ended', endedAt: NOW + 500 }) });
+    expect(await repo.end({ session: session({ status: 'ended', endedAt: NOW + 500 }), expectedCursor: 2 })).toBe(true);
     const ended = await repo.findActive({ userId: 'u-1', examId: 'e-1', mode: 'wrong' });
     expect(ended).toBeNull();
     // 부분 UNIQUE가 해제되어 새 활성 회차 시작 가능 (종료 → 신규)
@@ -134,7 +134,7 @@ describe('ReviewSessionRepository D1 어댑터', () => {
 
   it('종료 회차 부활 금지 — ended 이후 활성 복원 save는 거부한다', async () => {
     await repo.save({ session: session() });
-    await repo.save({ session: session({ status: 'ended', endedAt: NOW + 500 }) });
+    expect(await repo.end({ session: session({ status: 'ended', endedAt: NOW + 500 }), expectedCursor: 2 })).toBe(true);
     await expect(repo.save({ session: session({ cursor: 7 }) })).rejects.toThrow();
     const row = await db.prepare('SELECT status FROM review_sessions WHERE id = ?1').bind('rs-1').first<{ status: string }>();
     expect(row?.status).toBe('ended');
@@ -143,14 +143,15 @@ describe('ReviewSessionRepository D1 어댑터', () => {
   it('종료 회차는 동일 스냅샷 재저장만 허용하고 이력 수정 저장은 거부한다', async () => {
     await repo.save({ session: session() });
     const ended = session({ status: 'ended', endedAt: NOW + 500 });
-    await repo.save({ session: ended });
-    // 동일 스냅샷 재저장 — 멱등 허용(채점 이력 불변)
-    await repo.save({ session: ended });
+    expect(await repo.end({ session: ended, expectedCursor: 2 })).toBe(true);
+    // 동일 종료 snapshot 재요청 — 멱등 성공(채점 이력 불변)
+    expect(await repo.end({ session: ended, expectedCursor: 2 })).toBe(true);
     // cursor·items 등 이력 수정 시도 — 거부
-    await expect(repo.save({ session: session({ status: 'ended', endedAt: NOW + 500, cursor: 7 }) })).rejects.toThrow();
-    await expect(
-      repo.save({ session: session({ status: 'ended', endedAt: NOW + 500, items: [item('q-1', { kind: 'pending' })] }) }),
-    ).rejects.toThrow();
+    expect(await repo.end({ session: session({ status: 'ended', endedAt: NOW + 500, cursor: 7 }), expectedCursor: 7 })).toBe(false);
+    expect(await repo.end({
+      session: session({ status: 'ended', endedAt: NOW + 500, items: [item('q-1', { kind: 'pending' })] }),
+      expectedCursor: 2,
+    })).toBe(false);
     const row = await db
       .prepare('SELECT status, cursor, items FROM review_sessions WHERE id = ?1')
       .bind('rs-1')
