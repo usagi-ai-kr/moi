@@ -167,6 +167,47 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
       await route.fulfill({ status: 201, json: toActiveDto(created) });
       return;
     }
+    // 완료 세트 정정 이력(#53) — generic /sets/:id regex보다 먼저 처리한다.
+    if (method === 'GET') {
+      const cm = path.match(/^\/api\/study\/sets\/([^/]+)\/corrections$/);
+      if (cm) {
+        const cid = cm[1];
+        if (active && active.status === 'submitted' && active.id === cid) {
+          await route.fulfill({
+            status: 200,
+            json: {
+              items: [
+                {
+                  id: 'c-e2e-1',
+                  setId: active.id,
+                  questionId: 'q-0',
+                  questionVersionId: 'qv-0',
+                  reason: 'typo',
+                  source: 'admin',
+                  actor: 'system',
+                  createdAt: 1700000002000,
+                },
+              ],
+              corrected: {
+                answeredCount: 19,
+                correctCount: 0,
+                accuracyPercent: 0,
+                passCount: 0,
+                unansweredCount: 19,
+                ungraded: false,
+                validTotal: 19,
+                excludedCount: 1,
+                excludedQuestionVersionIds: ['qv-0'],
+                perItem: [],
+              },
+            },
+          });
+          return;
+        }
+        await route.fulfill({ status: 404, json: { error: 'not_found' } });
+        return;
+      }
+    }
     const m = path.match(/^\/api\/study\/sets\/([^/]+)(\/(answers|submit|abandon))?$/);
     if (m) {
       const id = m[1];
@@ -337,4 +378,12 @@ Then('학습 현황이 보인다', async ({ page }) => {
   await expect(panel.getByText('20/500')).toBeVisible({ timeout: 10_000 });
   await expect(panel.getByText(/70%/)).toBeVisible();
   await expect(panel.getByText('취약 추천')).toBeVisible();
+});
+
+Then('정정 반영이 보인다', async ({ page }) => {
+  const panel = page.locator('section.moi-study-detail');
+  await expect(panel.getByText('정정 반영')).toBeVisible({ timeout: 10_000 });
+  await expect(panel.getByText('최초 정답률 5% → 정정 정답률 0%')).toBeVisible();
+  await expect(panel.getByText('유효 19문제 · 제외 1문제')).toBeVisible();
+  await expect(panel.getByText('문제 1 · 오탈자가 있습니다')).toBeVisible();
 });
