@@ -190,3 +190,39 @@ export async function getStudyStats(client: ApiClient, examId: string): Promise<
   const search = new URLSearchParams({ examId });
   return client.get(`api/study/stats?${search}`).json<StudyStats>();
 }
+
+// 완료 세트 정정 이력 — GET /api/study/sets/:id/corrections (#53).
+// 서버·DB·도메인은 수정하지 않고 이 읽기 전용 DTO만 사용한다.
+export interface StudyCorrection {
+  id: string;
+  setId: string;
+  questionId: string;
+  questionVersionId: string;
+  reason: string;
+  source: string;
+  actor: string;
+  createdAt: number;
+}
+export interface StudyCorrectedPerItem extends StudyPerItem {
+  excluded: boolean;
+}
+export interface StudyCorrectedResult {
+  answeredCount: number;
+  correctCount: number;
+  accuracyPercent: number | null;
+  passCount: number;
+  unansweredCount: number;
+  ungraded: boolean;
+  validTotal: number;
+  excludedCount: number;
+  excludedQuestionVersionIds: string[];
+  perItem: StudyCorrectedPerItem[];
+}
+export interface StudyCorrections {
+  items: StudyCorrection[];
+  corrected: StudyCorrectedResult;
+}
+
+export async function getStudyCorrections(client: ApiClient, setId: string): Promise<StudyCorrections> {
+  return client.get(`api/study/sets/${setId}/corrections`).json<StudyCorrections>();
+}
