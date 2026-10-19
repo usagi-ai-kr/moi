@@ -1,7 +1,6 @@
 import { Suspense, lazy } from 'react';
 import {
   MemoryRouter,
-  Navigate,
   Route,
   Routes,
   useInRouterContext,
@@ -19,6 +18,9 @@ import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
 // 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
 const StudyRoute = lazy(() => import('./pages/StudyRoute').then((m) => ({ default: m.StudyRoute })));
+const LegacyStudyRedirect = lazy(() =>
+  import('./pages/LegacyStudyRedirect').then((m) => ({ default: m.LegacyStudyRedirect })),
+);
 const HistoryDetailPage = lazy(() =>
   import('./pages/HistoryDetailPage').then((m) => ({ default: m.HistoryDetailPage })),
 );
@@ -79,12 +81,18 @@ function LoggedOutView({
 
 // 로그인 홈 — 계정·통계·로그아웃은 각자의 화면/메뉴로 이동한다.
 // CTA는 라우터로 이동해 뒤로가기/새로고침/직접 URL을 유지한다.
-function Home({ showAuthError }: { showAuthError: boolean }) {
+function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiClient }) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const legacyStudy = params.get('study');
-  // legacy: 기존 /?study=<UUID> 북마크는 /study/<UUID>로 replace (#148).
-  if (legacyStudy) return <Navigate to={`/study/${legacyStudy}`} replace />;
+  // legacy: /?study=<UUID> 북마크도 서버 소유권 확인 후 새 주소로 replace (#148).
+  if (legacyStudy) {
+    return (
+      <Suspense fallback={<StudyFallback />}>
+        <LegacyStudyRedirect client={client} setId={legacyStudy} />
+      </Suspense>
+    );
+  }
   return (
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
@@ -126,8 +134,15 @@ function AppContent({ client }: { client: ApiClient }) {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Home showAuthError={showAuthError} />} />
-        <Route path="study" element={<Navigate to="/study/new" replace />} />
+        <Route index element={<Home showAuthError={showAuthError} client={client} />} />
+        <Route
+          path="study"
+          element={
+            <Suspense key={userId} fallback={<StudyFallback />}>
+              <StudyRoute client={client} userId={userId} mode="current" />
+            </Suspense>
+          }
+        />
         <Route
           path="study/new"
           element={
@@ -137,18 +152,26 @@ function AppContent({ client }: { client: ApiClient }) {
           }
         />
         <Route
-          path="study/:setId"
+          path="study/result"
           element={
             <Suspense key={userId} fallback={<StudyFallback />}>
-              <StudyRoute client={client} userId={userId} mode="active" />
+              <StudyRoute client={client} userId={userId} mode="result" />
+            </Suspense>
+          }
+        />
+        <Route
+          path="study/:setId"
+          element={
+            <Suspense fallback={<StudyFallback />}>
+              <LegacyStudyRedirect client={client} />
             </Suspense>
           }
         />
         <Route
           path="study/:setId/result"
           element={
-            <Suspense key={userId} fallback={<StudyFallback />}>
-              <StudyRoute client={client} userId={userId} mode="result" />
+            <Suspense fallback={<StudyFallback />}>
+              <LegacyStudyRedirect client={client} />
             </Suspense>
           }
         />

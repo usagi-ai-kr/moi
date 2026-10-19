@@ -3,6 +3,7 @@ import { HTTPError } from 'ky';
 import {
   abandonStudySet,
   answerStudyItem,
+  getCurrentStudySet,
   getStudyCorrections,
   getStudySet,
   listStudyHistory,
@@ -20,6 +21,24 @@ export const STUDY_HISTORY_KEY = ['study', 'history'] as const;
 
 export function setQueryKey(id: string): readonly [string, string, string] {
   return ['study', 'set', id];
+}
+
+// 진행 중 세트 복원(#148) — userId를 key에 포함해 계정 간 캐시가 섞이지 않게 한다.
+export function currentStudySetQueryKey(examId: string, userId: string) {
+  return ['study', 'current', examId, userId] as const;
+}
+
+export function useCurrentStudySet(client: ApiClient, examId: string, userId: string, enabled = true) {
+  return useQuery({
+    queryKey: currentStudySetQueryKey(examId, userId),
+    queryFn: () => getCurrentStudySet(client, examId),
+    enabled,
+    retry: false,
+    staleTime: 0,
+    // 풀이 중 탭 전환·재연결로 /study 화면이 다시 로딩되지 않게 한다.
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 }
 
 export function useStudySet(client: ApiClient, id: string | null) {
