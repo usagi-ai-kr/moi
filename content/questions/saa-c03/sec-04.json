@@ -20,7 +20,7 @@
       "questionId": "saa-sec-0077",
       "domainCode": "security",
       "stem": "한 서브넷의 NACL에 규칙 100(10.0.0.0/16 허용), 규칙 200(10.0.1.5/32 거부)이 있다. 10.0.1.5에서 들어오는 인바운드 트래픽의 처리 결과는?",
-      "explanation": "NACL은 규칙 번호가 낮은 것부터 순서대로 평가하고 처음 일치한 규칙에서 결정한다. 특정 IP를 차단하려면 허용 규칙보다 낮은 번호에 거부 규칙을 둬야 한다.",
+      "explanation": "**핵심:** NACL은 **낮은 번호부터 평가하고 첫 일치에서 결정**한다.\n\n```mermaid\nflowchart TD\n  T[10.0.1.5 인바운드] --> R100{규칙 100: 10.0.0.0/16 Allow}\n  R100 -->|일치| A[허용]\n  R100 -->|불일치| R200{규칙 200: 10.0.1.5/32 Deny}\n  R200 -->|일치| D[거부]\n```\n\n규칙 100이 먼저 일치하므로 200번 거부 규칙은 평가되지 않는다.",
       "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"],
       "answerOptionKeys": ["B"],
       "options": [
@@ -90,7 +90,7 @@
       "questionId": "saa-sec-0082",
       "domainCode": "security",
       "stem": "프라이빗 서브넷의 인스턴스에서 외부 API로 443 아웃바운드를 허용했지만 응답이 돌아오지 않는다. NACL 설정에서 우선 확인할 항목은?",
-      "explanation": "NACL은 상태 비저장이므로 요청을 허용해도 응답용 임시 포트의 인바운드 규칙이 없으면 응답이 차단된다. 일반적으로 1024-65535 범위를 인바운드로 허용한다.",
+      "explanation": "**핵심:** NACL은 **상태 비저장**이라 응답 트래픽도 별도 규칙으로 허용해야 한다.\n\n- 아웃바운드: 대상 443 허용\n- 인바운드: 응답이 돌아오는 **임시 포트 범위(1024–65535)** 허용\n\n인바운드 임시 포트가 막혀 있으면 응답이 유실된다.",
       "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"],
       "answerOptionKeys": ["B"],
       "options": [
@@ -152,7 +152,7 @@
       "questionId": "saa-sec-0086",
       "domainCode": "security",
       "stem": "SaaS 제공자가 고객 VPC에 인터넷 노출 없이 자사 서비스를 제공하려 한다. 제공자가 구성해야 할 것은?",
-      "explanation": "AWS PrivateLink의 엔드포인트 서비스는 NLB 뒤의 서비스를 각 고객 VPC의 인터페이스 엔드포인트로 노출한다. 고객은 인터넷 게이트웨이나 피어링 없이 프라이빗 IP로 접근한다.",
+      "explanation": "**핵심:** 제공자는 **NLB 뒤 서비스를 엔드포인트 서비스로 게시**하고, 고객은 인터페이스 엔드포인트로 접근한다.\n\n```mermaid\nflowchart LR\n  C[고객 VPC] --> E[인터페이스 엔드포인트]\n  E --> S[엔드포인트 서비스]\n  S --> N[NLB]\n  N --> A[제공자 서비스]\n```\n\n트래픽은 프라이빗 IP로 전달되어 인터넷 게이트웨이나 피어링이 필요 없다.",
       "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html"],
       "answerOptionKeys": ["C"],
       "options": [
@@ -222,7 +222,7 @@
       "questionId": "saa-sec-0091",
       "domainCode": "security",
       "stem": "NAT Gateway가 없는 프라이빗 서브넷의 EC2에서 Session Manager 접속이 실패한다. SSM Agent가 설치되어 있고 IAM 권한도 올바르다면 추가로 확인할 것은?",
-      "explanation": "인터넷 경로가 없는 프라이빗 서브넷에서는 SSM 서비스로 나가는 아웃바운드 연결이 필요하다. 관련 인터페이스 엔드포인트와 해당 보안 그룹의 443 허용을 확인한다.",
+      "explanation": "**핵심:** NAT 없이 SSM Agent를 연결하려면 **인터페이스 엔드포인트**가 필요하다.\n\n- `com.amazonaws.region.ssm`\n- `com.amazonaws.region.ssmmessages`\n- `com.amazonaws.region.ec2messages`\n\n`region`은 사용하는 리전 코드로 바꾸며, 엔드포인트 보안 그룹은 인스턴스에서 오는 443 인바운드를 허용해야 한다.",
       "sourceUrls": ["https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-privatelink.html"],
       "answerOptionKeys": ["D"],
       "options": [
@@ -334,7 +334,7 @@
       "questionId": "saa-sec-0099",
       "domainCode": "security",
       "stem": "보안 그룹은 443 인바운드를 허용하는데 일부 클라이언트만 연결에 실패한다. 실제로 거부된 트래픽을 확인하는 가장 직접적인 방법은?",
-      "explanation": "VPC 흐름 로그는 보안 그룹과 NACL에 의해 거부된 트래픽을 REJECT로 기록한다. 소스·목적지·포트를 확인하면 어느 계층에서 차단되는지 좁힐 수 있다.",
+      "explanation": "**핵심:** **VPC Flow Logs**가 보안 그룹·NACL에서 거부된 트래픽을 `REJECT`로 기록한다.\n\n- 소스·목적지·포트를 확인해 차단 계층을 좁힌다.\n- 흐름 로그는 패킷 본문이 아니라 메타데이터를 기록한다.",
       "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"],
       "answerOptionKeys": ["D"],
       "options": [

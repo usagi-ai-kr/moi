@@ -70,7 +70,7 @@
       "questionId": "saa-perf-0080",
       "domainCode": "performance",
       "stem": "CloudFront의 주 오리진이 5xx 오류를 반환할 때 보조 오리진으로 자동 전환되게 하려면?",
-      "explanation": "오리진 그룹은 기본 오리진이 오류를 반환하거나 응답하지 않을 때 보조 오리진으로 전환한다. 캐시 동작에 오리진 그룹을 연결해 장애 조치를 활성화한다.",
+      "explanation": "**핵심:** **오리진 그룹**은 기본 오리진이 오류를 반환하거나 응답하지 않을 때 보조 오리진으로 전환한다. 캐시 동작에 오리진 그룹을 연결해 장애 조치를 활성화한다.\n```mermaid\nflowchart LR\n  C[CloudFront] --> O{오리진 그룹}\n  O -->|정상| P[주 오리진]\n  O -->|5xx·시간 초과| S[보조 오리진]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high-availability-loc-origin.html"
       ],
@@ -134,7 +134,7 @@
       "questionId": "saa-perf-0084",
       "domainCode": "performance",
       "stem": "여러 리전의 API 엔드포인트로 동적 요청을 캐싱 없이 전달하면서 지연 기반 선택과 빠른 장애 조치를 원한다. 가장 적합한 구성은?",
-      "explanation": "Global Accelerator는 캐싱 없이 TCP/UDP 트래픽을 가장 가까운 정상 엔드포인트로 전달한다. 리전별 엔드포인트 그룹과 상태 확인으로 지연 개선과 장애 조치를 함께 얻는다.",
+      "explanation": "**핵심:** **Global Accelerator**는 캐싱 없이 TCP/UDP 트래픽을 가장 가까운 정상 엔드포인트로 전달한다. 리전별 엔드포인트 그룹과 상태 확인으로 지연 개선과 장애 조치를 함께 얻는다.\n```mermaid\nflowchart LR\n  U[사용자] --> A[Global Accelerator]\n  A -->|지연 기반| G1[엔드포인트 그룹 ap-northeast-2]\n  A -->|지연 기반| G2[엔드포인트 그룹 us-east-1]\n  G1 --> E1[API 엔드포인트]\n  G2 --> E2[API 엔드포인트]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
       ],
@@ -246,7 +246,7 @@
       "questionId": "saa-perf-0091",
       "domainCode": "performance",
       "stem": "주 리전의 ALB가 비정상일 때만 보조 리전으로 DNS 응답을 전환하려면?",
-      "explanation": "페일오버 라우팅은 기본 레코드의 상태 확인이 실패하면 보조 레코드로 응답한다. 평상시에는 기본 리소스만 사용하고 장애 시에만 전환한다.",
+      "explanation": "**핵심:** **페일오버 라우팅**은 기본 레코드의 상태 확인이 실패하면 보조 레코드로 응답한다. 평상시에는 기본 리소스만 사용하고 장애 시에만 전환한다.\n```mermaid\nflowchart LR\n  U[사용자] --> R[Route 53 페일오버]\n  R -->|상태 정상| P[주 리전 ALB]\n  R -->|상태 확인 실패| S[보조 리전 ALB]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html"
       ],
@@ -310,7 +310,7 @@
       "questionId": "saa-perf-0095",
       "domainCode": "performance",
       "stem": "프라이빗 서브넷의 인스턴스가 S3에 접근할 때 NAT Gateway를 거치지 않아 지연과 데이터 처리 비용을 줄이려면?",
-      "explanation": "게이트웨이 엔드포인트는 프라이빗 서브넷에서 S3로 가는 트래픽을 AWS 네트워크 내부에서 처리한다. NAT Gateway를 경유하지 않아 홉과 데이터 처리 비용이 줄어든다.",
+      "explanation": "**핵심:** **게이트웨이 엔드포인트**는 프라이빗 서브넷에서 S3로 가는 트래픽을 AWS 네트워크 내부에서 처리한다. NAT Gateway를 경유하지 않아 홉과 데이터 처리 비용이 줄어든다.\n```mermaid\nflowchart LR\n  E[프라이빗 EC2] --> RT[라우팅 테이블]\n  RT -->|S3 prefix list| G[S3 게이트웨이 엔드포인트]\n  G --> S3[(S3)]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html"
       ],
@@ -390,7 +390,7 @@
       "questionId": "saa-perf-0100",
       "domainCode": "performance",
       "stem": "세션 상태를 로컬 메모리에 저장하는 레거시 앱을 ALB 뒤에 두었다. 같은 사용자의 요청이 같은 인스턴스로 가게 하려면?",
-      "explanation": "고정 세션은 ALB가 발급한 쿠키로 같은 클라이언트의 요청을 같은 대상에 연결한다. 세션 상태를 외부화할 수 없는 레거시 앱의 임시 대안이다.",
+      "explanation": "**핵심:** **고정 세션(sticky sessions)** 은 ALB가 발급한 쿠키로 같은 클라이언트의 요청을 같은 대상에 연결한다. 세션 상태를 외부화할 수 없는 레거시 앱의 임시 대안이다.\n```mermaid\nsequenceDiagram\n  participant U as 사용자\n  participant A as ALB\n  participant E as EC2\n  U->>A: 요청 1\n  A->>E: 쿠키 발급·전달\n  U->>A: 요청 2 (같은 쿠키)\n  A->>E: 같은 대상으로 전달\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html"
       ],

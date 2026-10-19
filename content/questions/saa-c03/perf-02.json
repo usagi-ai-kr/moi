@@ -88,7 +88,7 @@
       "questionId": "saa-perf-0031",
       "domainCode": "performance",
       "stem": "단일 EBS 볼륨의 최대 IOPS로는 요구 성능을 충족할 수 없다. 여러 볼륨을 묶어 읽기·쓰기 성능을 합산하려면 어떤 구성이 적절한가?",
-      "explanation": "RAID 0은 데이터를 여러 볼륨에 분산해 IOPS와 처리량을 합산한다. 대신 볼륨 하나가 실패하면 전체 배열이 손상되므로 내구성은 낮아진다.",
+      "explanation": "**핵심:** **RAID 0**은 데이터를 여러 볼륨에 스트라이프해 IOPS와 처리량을 합산한다. 대신 볼륨 하나가 실패하면 전체 배열이 손상되어 내구성이 낮아진다.\n```mermaid\nflowchart LR\n  A[애플리케이션] --> R[RAID 0]\n  R --> V1[EBS 볼륨 1]\n  R --> V2[EBS 볼륨 2]\n  R --> V3[EBS 볼륨 3]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/ebs/latest/userguide/raid-config.html"
       ],
@@ -104,7 +104,7 @@
       "questionId": "saa-perf-0032",
       "domainCode": "performance",
       "stem": "대용량 스냅샷에서 새 EBS 볼륨을 생성한 직후 첫 읽기에서 지연이 발생한다. 이 초기화 지연을 미리 제거하려면?",
-      "explanation": "Fast Snapshot Restore는 스냅샷 블록을 미리 초기화해 볼륨 생성 직후의 첫 읽기 지연을 없앤다. 스냅샷과 AZ 단위로 활성화한다.",
+      "explanation": "**핵심:** **Fast Snapshot Restore**는 스냅샷 블록을 미리 초기화해 볼륨 생성 직후의 첫 읽기 지연을 없앤다. 스냅샷과 AZ 단위로 활성화한다.\n```mermaid\nflowchart LR\n  S[스냅샷] --> F[Fast Snapshot Restore]\n  F --> V[새 EBS 볼륨]\n  V --> R[즉시 읽기 · 지연 없음]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html"
       ],
@@ -298,7 +298,7 @@
       "questionId": "saa-perf-0044",
       "domainCode": "performance",
       "stem": "6 GB 객체를 단일 PUT 요청으로 업로드했더니 S3가 요청을 거부했다. 가장 적절한 해결 방법은?",
-      "explanation": "단일 PUT으로 업로드할 수 있는 객체 크기는 최대 5 GB다. 5 GB를 넘는 객체는 multipart upload로 나누어 전송해야 한다.",
+      "explanation": "**핵심:** 단일 PUT으로 업로드할 수 있는 객체 크기는 **최대 5 GB**다. 5 GB를 넘는 객체는 **multipart upload**로 나누어 전송해야 한다.\n```mermaid\nflowchart LR\n  O[6 GB 객체] --> M[Multipart Upload]\n  M --> P1[파트 1]\n  M --> P2[파트 2]\n  M --> P3[파트 N]\n  P1 --> S3[S3]\n  P2 --> S3\n  P3 --> S3\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
       ],
@@ -314,7 +314,7 @@
       "questionId": "saa-perf-0045",
       "domainCode": "performance",
       "stem": "수천 개의 EC2 인스턴스가 EFS 파일 시스템에 동시에 접근하는 병렬 워크로드다. 집계 처리량을 높이기 위해 선택할 성능 모드는?",
-      "explanation": "Max I/O 성능 모드는 대규모 병렬 접근에서 더 높은 집계 처리량을 제공한다. 대신 작업당 지연이 General Purpose보다 조금 높다.",
+      "explanation": "**핵심:** **Max I/O** 성능 모드는 대규모 병렬 접근에서 더 높은 집계 처리량을 제공한다. 대신 작업당 지연이 General Purpose보다 조금 높다.\n```mermaid\nflowchart LR\n  subgraph C[수천 개 EC2]\n    E1[EC2]\n    E2[EC2]\n    E3[EC2]\n  end\n  C --> M[EFS Max I/O]\n  M --> D[(공유 데이터)]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
       ],
@@ -362,7 +362,7 @@
       "questionId": "saa-perf-0048",
       "domainCode": "performance",
       "stem": "여러 AZ에 배치한 EC2가 EFS 파일 시스템을 마운트하도록 구성하려 한다. 각 AZ에서 필요한 것은?",
-      "explanation": "EFS 마운트 대상은 AZ별로 생성되며 NFS 접근을 제공한다. 각 AZ의 인스턴스는 같은 AZ의 마운트 대상을 통해 파일 시스템에 접근한다.",
+      "explanation": "**핵심:** EFS **마운트 대상**은 AZ별로 생성되며 NFS 접근을 제공한다. 각 AZ의 인스턴스는 같은 AZ의 마운트 대상을 통해 파일 시스템에 접근한다.\n```mermaid\nflowchart TB\n  F[(EFS 파일 시스템)]\n  F --- M1[마운트 대상 AZ-a]\n  F --- M2[마운트 대상 AZ-c]\n  M1 --- E1[EC2 AZ-a]\n  M2 --- E2[EC2 AZ-c]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
       ],

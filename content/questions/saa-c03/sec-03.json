@@ -23,7 +23,7 @@
       "questionId": "saa-sec-0052",
       "domainCode": "security",
       "stem": "대용량 파일을 애플리케이션에서 암호화할 때 KMS 호출 부담을 줄이는 방식은?",
-      "explanation": "봉투 암호화에서는 데이터 키로 본문을 암호화하고 암호화된 데이터 키만 저장한다. KMS는 소량의 키 작업만 처리하므로 대용량 데이터에 적합하다.",
+      "explanation": "**핵심:** 봉투 암호화는 **데이터 키로 본문을 암호화**하고, 데이터 키만 KMS로 보호한다.\n\n```mermaid\nflowchart LR\n  K[KMS] -->|GenerateDataKey| D[평문 데이터 키]\n  D --> E[대용량 데이터 암호화]\n  D --> W[암호화된 데이터 키 저장]\n  E --> S[암호문 저장]\n```\n\nKMS는 소량의 키 작업만 처리하므로 대용량 파일에 적합하다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html"
       ],
@@ -136,7 +136,7 @@
       "questionId": "saa-sec-0059",
       "domainCode": "security",
       "stem": "이미 사용 중인 암호화되지 않은 EBS 볼륨을 암호화하려면 어떻게 해야 하는가?",
-      "explanation": "기존 EBS 볼륨은 직접 암호화할 수 없으므로 스냅샷 복사 단계에서 암호화를 적용한다. 새 볼륨은 암호화된 스냅샷에서 만들어야 한다.",
+      "explanation": "**핵심:** 기존 볼륨은 직접 암호화할 수 없어 **스냅샷 복사 단계에서 암호화**한다.\n\n```mermaid\nflowchart LR\n  V[미암호화 EBS 볼륨] --> S[스냅샷 생성]\n  S --> C[암호화 옵션으로 스냅샷 복사]\n  C --> N[암호화된 새 볼륨 생성]\n```\n\n새 볼륨을 인스턴스에 연결한 뒤 기존 볼륨을 정리한다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-encryption.html"
       ],
@@ -152,7 +152,7 @@
       "questionId": "saa-sec-0060",
       "domainCode": "security",
       "stem": "암호화되지 않은 RDS DB 인스턴스를 암호화해야 한다. 가장 적절한 방법은?",
-      "explanation": "RDS 암호화는 DB 인스턴스를 만들 때만 설정할 수 있다. 기존 DB는 암호화된 스냅샷으로 복사한 뒤 복원해야 한다.",
+      "explanation": "**핵심:** RDS 암호화는 **DB 생성 시에만** 설정할 수 있다. 기존 DB는 스냅샷을 암호화 옵션으로 복사한 뒤 그 스냅샷에서 복원하고, 복원한 인스턴스로 엔드포인트를 전환한다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"
       ],
@@ -266,7 +266,7 @@
       "questionId": "saa-sec-0067",
       "domainCode": "security",
       "stem": "RDS 자격 증명을 안전하게 보관하고 정기적으로 교체하는 가장 관리 부담이 적은 방법은?",
-      "explanation": "Secrets Manager는 RDS와 통합된 자동 회전을 제공한다. 회전 Lambda가 암호를 바꾸고 애플리케이션은 API로 최신 값을 읽는다.",
+      "explanation": "**핵심:** Secrets Manager는 **회전 Lambda**가 DB 암호와 비밀 값을 함께 갱신한다.\n\n```mermaid\nsequenceDiagram\n  participant SM as Secrets Manager\n  participant L as 회전 Lambda\n  participant DB as RDS\n  SM->>L: 회전 트리거\n  L->>DB: 새 암호로 변경\n  L->>SM: 비밀 값 갱신\n```\n\n애플리케이션은 API로 최신 값을 읽으므로 암호를 저장할 필요가 없다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html"
       ],

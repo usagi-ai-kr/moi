@@ -38,7 +38,7 @@
       "questionId": "saa-res-0028",
       "domainCode": "resilience",
       "stem": "동일한 워크로드에서 RTO와 RPO를 더 짧게 설정할 때 일반적으로 나타나는 결과는?",
-      "explanation": "RTO와 RPO를 줄이려면 데이터 복제, 상시 대기 용량, 자동 페일오버가 필요하므로 비용과 운영 복잡성이 함께 증가한다. 네 가지 전략은 이 비용과 복구 목표의 균형으로 선택한다.",
+      "explanation": "RTO와 RPO를 줄이려면 **데이터 복제**, **상시 대기 용량**, **자동 페일오버**가 필요하므로 비용과 운영 복잡성이 함께 증가한다. 네 가지 전략은 이 비용과 복구 목표의 균형으로 선택한다.\n\n| 목표 | 필요 요소 | 영향 |\n| --- | --- | --- |\n| RTO 단축 | 상시 대기 환경, 자동 전환 | 비용·복잡성 증가 |\n| RPO 단축 | 지속 복제, 짧은 백업 주기 | 비용·복잡성 증가 |",
       "sourceUrls": [
         "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
       ],
@@ -87,7 +87,7 @@
       "questionId": "saa-res-0031",
       "domainCode": "resilience",
       "stem": "pilot light 전략의 특징으로 옳은 것은?",
-      "explanation": "pilot light는 데이터 복제와 핵심 인프라만 유지하고 애플리케이션 계층은 필요할 때 켜는 방식이다. 복구 시 서버를 활성화하고 확장해야 하므로 warm standby보다 RTO가 길다.",
+      "explanation": "pilot light는 **데이터 복제**와 핵심 인프라만 유지하고 애플리케이션 계층은 필요할 때 켜는 방식이다. 복구 시 서버를 활성화하고 확장해야 하므로 warm standby보다 RTO가 길다.\n\n```mermaid\nflowchart LR\n  P[주 리전] -->|데이터 복제| D[(DR 데이터)]\n  D --> C[핵심 인프라 유지]\n  C -->|페일오버| A[앱 계층 기동·확장]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
       ],
@@ -119,7 +119,7 @@
       "questionId": "saa-res-0033",
       "domainCode": "resilience",
       "stem": "warm standby 전략에 대한 설명으로 가장 정확한 것은?",
-      "explanation": "warm standby는 복구 리전에 축소된 운영 환경을 항상 실행해 두므로 페일오버 시 확장만 하면 된다. pilot light보다 RTO가 짧지만 상시 비용이 더 든다.",
+      "explanation": "warm standby는 복구 리전에 **축소된 운영 환경**을 항상 실행해 두므로 페일오버 시 확장만 하면 된다. pilot light보다 RTO가 짧지만 상시 비용이 더 든다.\n\n| 전략 | 상시 상태 | 페일오버 작업 |\n| --- | --- | --- |\n| pilot light | 데이터·핵심 인프라 | 앱 계층 기동·확장 |\n| warm standby | 축소된 전체 환경 | 용량 확장 |",
       "sourceUrls": [
         "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
       ],
@@ -284,7 +284,7 @@
       "questionId": "saa-res-0043",
       "domainCode": "resilience",
       "stem": "수동으로 시작하되 제어 평면 장애에도 동작하는 신뢰성 높은 리전 페일오버 스위치가 필요하다. 가장 적절한 방법은?",
-      "explanation": "Application Recovery Controller의 라우팅 제어는 데이터 평면 API로 동작해 제어 평면 장애 중에도 페일오버를 실행할 수 있다. 가중치 변경 같은 제어 평면 작업은 복구 경로로 사용하지 않는 것이 좋다.",
+      "explanation": "Application Recovery Controller의 **라우팅 제어**는 데이터 평면 API로 동작해 제어 평면 장애 중에도 페일오버를 실행할 수 있다. 가중치 변경 같은 제어 평면 작업은 복구 경로로 사용하지 않는 것이 좋다.\n\n```mermaid\nflowchart LR\n  O[운영자] -->|데이터 평면 API| RC[Routing Control]\n  RC --> R[Route 53 레코드]\n  R --> P[주 리전]\n  R --> S[보조 리전]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html",
         "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html"
@@ -318,7 +318,7 @@
       "questionId": "saa-res-0045",
       "domainCode": "resilience",
       "stem": "각 요청 단위로 기본 오리진이 실패하면 보조 오리진으로 자동 전환되는 구성은?",
-      "explanation": "CloudFront 오리진 그룹에 기본과 보조 오리진을 지정하면 요청 실패 시 해당 요청만 보조 오리진으로 재시도한다. 이후 요청은 다시 기본 오리진으로 전송된다.",
+      "explanation": "CloudFront **오리진 그룹**에 기본과 보조 오리진을 지정하면 요청 실패 시 해당 요청만 보조 오리진으로 재시도한다. 이후 요청은 다시 기본 오리진으로 전송된다.\n\n```mermaid\nflowchart LR\n  C[Client] --> CF[CloudFront]\n  CF --> P[기본 오리진]\n  P -->|요청 실패| S[보조 오리진]\n  CF -->|다음 요청| P\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/disaster-recovery-options-in-the-cloud.html"
       ],

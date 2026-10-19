@@ -70,7 +70,7 @@
       "questionId": "saa-perf-0005",
       "domainCode": "performance",
       "stem": "HPC 작업이 노드 간에 매우 낮은 네트워크 지연과 높은 처리량을 요구한다. 가장 적합한 배치 전략은?",
-      "explanation": "클러스터 배치 그룹은 인스턴스를 단일 AZ의 가까운 랙에 모아 짧은 지연과 높은 네트워크 처리량을 제공한다. HPC와 긴밀히 결합된 워크로드에 적합하다.",
+      "explanation": "**핵심:** 클러스터 배치 그룹은 인스턴스를 **단일 AZ의 가까운 랙**에 모아 짧은 지연과 높은 네트워크 처리량을 제공한다. HPC·긴밀 결합 워크로드에 적합하다.\n```mermaid\nflowchart LR\n  subgraph AZ[\"단일 AZ·근접 랙\"]\n    N1[노드 1] --- N2[노드 2]\n    N2 --- N3[노드 3]\n  end\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
       ],
@@ -86,7 +86,7 @@
       "questionId": "saa-perf-0006",
       "domainCode": "performance",
       "stem": "소수의 중요 인스턴스가 서로 다른 하드웨어에 배치되어 동시 장애 영향을 최소화해야 한다. 가장 적합한 배치 전략은?",
-      "explanation": "스프레드 배치 그룹은 인스턴스를 서로 다른 랙에 배치해 동시 장애 위험을 줄인다. AZ별로 최대 7개의 인스턴스를 둘 수 있다.",
+      "explanation": "**핵심:** 스프레드 배치 그룹은 인스턴스를 **서로 다른 랙**에 배치해 동시 장애 위험을 줄인다. AZ별로 최대 7개의 인스턴스를 둘 수 있다.\n```mermaid\nflowchart TB\n  subgraph A[AZ-a]\n    R1[랙 1 · 인스턴스]\n    R2[랙 2 · 인스턴스]\n  end\n  subgraph B[AZ-c]\n    R3[랙 3 · 인스턴스]\n  end\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
       ],
@@ -102,7 +102,7 @@
       "questionId": "saa-perf-0007",
       "domainCode": "performance",
       "stem": "수백 개의 노드로 구성된 분산 데이터 처리 클러스터를 파티션 단위로 장애 격리하려 한다. 가장 적합한 배치 전략은?",
-      "explanation": "파티션 배치 그룹은 인스턴스를 논리 파티션으로 나누고 파티션 간 랙을 공유하지 않는다. HDFS와 Kafka처럼 대규모 분산 시스템의 장애 격리에 적합하다.",
+      "explanation": "**핵심:** 파티션 배치 그룹은 인스턴스를 **논리 파티션**으로 나누고 파티션 간 랙을 공유하지 않는다. HDFS·Kafka 같은 대규모 분산 시스템의 장애 격리에 적합하다.\n```mermaid\nflowchart TB\n  subgraph P1[파티션 1]\n    A1[노드]\n    A2[노드]\n  end\n  subgraph P2[파티션 2]\n    B1[노드]\n  end\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
       ],
@@ -182,7 +182,7 @@
       "questionId": "saa-perf-0012",
       "domainCode": "performance",
       "stem": "지연에 민감한 API가 Lambda 콜드 스타트로 응답 시간이 튀는 문제를 겪는다. 가장 직접적인 해결 방법은?",
-      "explanation": "프로비저닝된 동시성은 실행 환경을 미리 초기화해 콜드 스타트를 줄인다. 지연에 민감한 함수의 기준 동시성을 확보하는 데 적합하다.",
+      "explanation": "**핵심:** **프로비저닝된 동시성**은 실행 환경을 미리 초기화해 콜드 스타트를 줄인다. 지연에 민감한 함수의 기준 동시성을 확보하는 데 적합하다.\n```mermaid\nflowchart LR\n  R[요청] --> P{프로비저닝된 동시성}\n  P -->|예| W[웜 환경 즉시 실행]\n  P -->|아니오| C[콜드 스타트]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
       ],
@@ -310,7 +310,7 @@
       "questionId": "saa-perf-0020",
       "domainCode": "performance",
       "stem": "ECS on EC2 클러스터에서 태스크 증가에 맞춰 Auto Scaling 그룹 용량을 자동으로 확장하려 한다. 가장 적절한 구성은?",
-      "explanation": "용량 공급자는 클러스터 Auto Scaling과 연동해 태스크 수요에 따라 Auto Scaling 그룹 용량을 조정한다. 관리형 종료 보호로 실행 중인 태스크가 있는 인스턴스의 축소를 지연할 수 있다.",
+      "explanation": "**핵심:** **용량 공급자**는 클러스터 Auto Scaling과 연동해 태스크 수요에 따라 Auto Scaling 그룹 용량을 조정한다. 관리형 종료 보호로 실행 중인 태스크가 있는 인스턴스의 축소를 지연할 수 있다.\n```mermaid\nflowchart LR\n  T[태스크 수요 증가] --> C[클러스터 Auto Scaling]\n  C --> P[용량 공급자]\n  P --> A[ASG 용량 확장]\n  A --> E[EC2 인스턴스 추가]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
       ],

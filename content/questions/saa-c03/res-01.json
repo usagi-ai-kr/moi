@@ -6,7 +6,7 @@
       "questionId": "saa-res-0001",
       "domainCode": "resilience",
       "stem": "한 회사가 RDS for MySQL을 Multi-AZ 배포로 운영한다. 이 구성이 제공하는 이점으로 가장 정확한 것은?",
-      "explanation": "RDS Multi-AZ는 동기 복제된 대기 인스턴스를 다른 AZ에 두고 장애 시 자동으로 전환한다. 대기 인스턴스는 읽기 트래픽을 처리하지 않으므로 읽기 확장에는 읽기 복제본을 사용한다.",
+      "explanation": "RDS Multi-AZ는 **동기 복제**된 대기 인스턴스를 다른 AZ에 두고 장애 시 자동으로 전환한다. 대기 인스턴스는 읽기 트래픽을 처리하지 않으므로 **읽기 확장**에는 읽기 복제본을 사용한다.\n\n- 대기 인스턴스: 장애 조치 전용, 읽기 불가\n- 읽기 확장: 읽기 복제본 사용\n\n```mermaid\nflowchart LR\n  A[App] --> P[(Primary AZ-a)]\n  P -. 동기 복제 .-> S[(Standby AZ-c)]\n  P -->|AZ 장애| S\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
       ],
@@ -22,7 +22,7 @@
       "questionId": "saa-res-0002",
       "domainCode": "resilience",
       "stem": "RDS Multi-AZ 장애 조치가 완료된 뒤 애플리케이션 연결에 대한 설명으로 옳은 것은?",
-      "explanation": "장애 조치 시 RDS는 인스턴스 엔드포인트의 DNS 레코드를 새 기본 인스턴스로 변경한다. 따라서 애플리케이션은 IP를 고정하지 말고 엔드포인트로 재연결해야 한다.",
+      "explanation": "장애 조치 시 RDS는 **인스턴스 엔드포인트**의 DNS 레코드를 새 기본 인스턴스로 변경한다. 애플리케이션은 고정 IP를 캐시하지 말고 같은 호스트명으로 재연결해야 한다.",
       "sourceUrls": [
         "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html"
       ],
@@ -54,7 +54,7 @@
       "questionId": "saa-res-0004",
       "domainCode": "resilience",
       "stem": "ALB 대상 그룹의 헬스 체크가 정상적으로 동작하도록 하려는 설정으로 옳은 것은?",
-      "explanation": "ALB는 설정한 경로와 일치하는 응답 코드를 받아야 대상을 정상으로 판단한다. 애플리케이션 상태를 반영하는 경량 경로를 사용하는 것이 좋다.",
+      "explanation": "ALB는 설정한 **경로**와 일치하는 응답 코드를 받아야 대상을 정상으로 판단한다. 애플리케이션 상태를 반영하는 **경량 경로**를 사용하는 것이 좋다.\n\n```mermaid\nflowchart LR\n  H[ALB 헬스 체크] --> P[GET /health]\n  P --> C{성공 코드?}\n  C -->|예| OK[정상 대상]\n  C -->|아니오| NG[비정상: 트래픽 제외]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html"
       ],
@@ -310,7 +310,7 @@
       "questionId": "saa-res-0020",
       "domainCode": "resilience",
       "stem": "프라이빗 서브넷의 EC2 인스턴스 상태를 Route 53 상태 확인으로 반영하려면?",
-      "explanation": "Route 53 상태 확인자는 인터넷에서 대상에 접근하므로 프라이빗 주소를 직접 확인할 수 없다. CloudWatch 경보 상태를 모니터링하는 상태 확인을 사용하면 프라이빗 리소스의 장애를 우회적으로 감지할 수 있다.",
+      "explanation": "Route 53 상태 확인자는 인터넷에서 대상에 접근하므로 **프라이빗 주소**를 직접 확인할 수 없다. **CloudWatch 경보 상태**를 모니터링하는 상태 확인을 사용하면 프라이빗 리소스의 장애를 우회적으로 감지할 수 있다.\n\n```mermaid\nflowchart LR\n  R[프라이빗 EC2] --> M[CloudWatch 지표·경보]\n  M --> H[Route 53 상태 확인]\n  H --> D[퍼블릭 DNS 레코드]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/health-checks-types.html"
       ],
@@ -342,7 +342,7 @@
       "questionId": "saa-res-0022",
       "domainCode": "resilience",
       "stem": "프라이빗 서브넷의 인스턴스가 인터넷에 접근해야 하며 NAT 계층의 AZ 장애에도 견디게 하려면?",
-      "explanation": "NAT Gateway는 단일 AZ에 배치되므로 AZ별로 하나씩 두고 같은 AZ의 라우팅 테이블에서 사용해야 한다. 한 AZ의 NAT Gateway가 장애여도 다른 AZ의 경로가 유지된다.",
+      "explanation": "NAT Gateway는 **단일 AZ**에 배치되므로 AZ별로 하나씩 두고 같은 AZ의 라우팅 테이블에서 사용해야 한다. 한 AZ의 NAT Gateway가 장애여도 다른 AZ의 경로가 유지된다.\n\n```mermaid\nflowchart LR\n  A1[AZ-a 프라이빗 서브넷] --> N1[NAT Gateway AZ-a]\n  A2[AZ-c 프라이빗 서브넷] --> N2[NAT Gateway AZ-c]\n  N1 --> I[인터넷]\n  N2 --> I\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
       ],
