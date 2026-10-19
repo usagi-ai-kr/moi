@@ -1,7 +1,7 @@
 ---
 id: ADR-0030
 title: 0.2 수업 실사용·디자인과 0.3 이관
-status: Accepted
+status: Superseded by ADR-0033
 date: 2026-10-19
 related: ["#58", "#70", "#127", "#131", "#132", "#134", "ADR-0017", "ADR-0019", "ADR-0020", "ADR-0021"]
 ---

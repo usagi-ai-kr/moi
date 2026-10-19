@@ -43,7 +43,8 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0025 | study_attempts attempt/firstAttempt D1 집계 저장 계약 | Proposed | 2026-10-18 | [0025-study-attempt-aggregation.md](./0025-study-attempt-aggregation.md) |
 | ADR-0026 | lockfile 기반 제삼자 라이선스 고지 생성 | Proposed | 2026-10-19 | [0026-third-party-notices.md](./0026-third-party-notices.md) |
 | ADR-0027 | 복습 회차 D1 스냅샷 영속화 | Proposed | 2026-10-19 | [0027-review-session-persistence.md](./0027-review-session-persistence.md) |
-| ADR-0030 | 0.2 수업 실사용·디자인과 0.3 이관 | Accepted | 2026-10-19 | [0030-classroom-scope-and-design.md](./0030-classroom-scope-and-design.md) |
+| ADR-0030 | 0.2 수업 실사용·디자인과 0.3 이관 | Superseded by ADR-0033 | 2026-10-19 | [0030-classroom-scope-and-design.md](./0030-classroom-scope-and-design.md) |
 | ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Proposed | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
 | ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
+| ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
 <!-- ADR_INDEX:END -->
