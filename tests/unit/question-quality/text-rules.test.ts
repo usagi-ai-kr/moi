@@ -84,6 +84,21 @@ describe('checkExplanationFormat (규칙 6: 해설 길이·형식)', () => {
     ).toEqual([]);
   });
 
+  it('양성: Mermaid 펜스·인라인 코드 내부의 마침표는 문장 수에 포함하지 않는다', () => {
+    const explanation = [
+      '프라이빗 서브넷은 VPC 엔드포인트로 S3에 접근한다.',
+      '',
+      '```mermaid',
+      'flowchart LR',
+      '  A[EC2. 요청.] --> B[엔드포인트. 응답.]',
+      '  B --> C[S3. 버킷.]',
+      '```',
+      '',
+      '`A. B. C.` 같은 인라인 코드도 문장으로 세지 않는다.',
+    ].join('\n');
+    expect(checkExplanationFormat(makeDraft({ explanation }))).toEqual([]);
+  });
+
   it('음성: 4문장 이상 과길이', () => {
     const findings = checkExplanationFormat(
       makeDraft({ explanation: '첫째다. 둘째다. 셋째다. 넷째다. 다섯째다.' }),

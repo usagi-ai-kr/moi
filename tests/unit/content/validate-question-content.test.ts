@@ -90,6 +90,54 @@ describe('Given 작성 계약 / When 검증기 호출 / Then AC 충족', () => {
     ).toBe(true);
   });
 
+  it('해설 8000자 초과는 거부한다', () => {
+    const pack = validPack({ items: [validItem({ explanation: '가'.repeat(8001) })] });
+    expect(
+      validatePack(pack, 'long.json').some((e: { message: string }) => e.message.includes('8000')),
+    ).toBe(true);
+  });
+
+  it('닫히지 않은 펜스 블록(```mermaid 포함)은 거부한다', () => {
+    const pack = validPack({
+      items: [
+        validItem({
+          explanation: '엔드포인트 경로를 설명한다.\n```mermaid\nflowchart LR\n  A --> B',
+        }),
+      ],
+    });
+    expect(
+      validatePack(pack, 'fence.json').some((e: { message: string }) => e.message.includes('code fence')),
+    ).toBe(true);
+  });
+
+  it('해설의 원시 HTML·스크립트와 stem의 javascript: 는 거부한다', () => {
+    const script = validPack({ items: [validItem({ explanation: '경로다. <script>alert(1)</script>' })] });
+    expect(
+      validatePack(script, 'script.json').some((e: { message: string }) => e.message.includes('<script')),
+    ).toBe(true);
+    const jsUrl = validPack({ items: [validItem({ stem: 'javascript:alert(1)' })] });
+    expect(
+      validatePack(jsUrl, 'js.json').some((e: { message: string }) => e.message.includes('javascript:')),
+    ).toBe(true);
+  });
+
+  it('균형 잡힌 Markdown·Mermaid 해설은 통과한다', () => {
+    const explanation = [
+      '**핵심**은 프라이빗 접근이다.',
+      '',
+      '| 항목 | 값 |',
+      '| --- | --- |',
+      '| 경로 | VPC 엔드포인트 |',
+      '',
+      '```mermaid',
+      'flowchart LR',
+      '  A[EC2] --> B[VPC Endpoint]',
+      '  B --> C[S3]',
+      '```',
+    ].join('\n');
+    expect(validatePack(validPack({ items: [validItem({ explanation })] }), 'md.json')).toEqual([]);
+  });
+
   it('실제 예시 팩 4문항을 읽어 검증기가 통과한다(CLI 포함)', () => {
     const parsed = JSON.parse(readFileSync(SAMPLE_PACK, 'utf8'));
     expect(parsed.items).toHaveLength(4);
