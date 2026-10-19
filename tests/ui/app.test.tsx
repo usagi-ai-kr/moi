@@ -68,12 +68,29 @@ describe('App (세션 상태 화면)', () => {
     expect(status).toHaveAttribute('aria-live', 'polite');
   });
 
+  it('로딩 중: 정적 제목/소개 보임, 계정/학습/로그인 CTA 없음 (#132)', async () => {
+    const client = {
+      get: vi.fn(() => ({ json: () => new Promise(() => {}) })),
+      post: vi.fn(),
+    } as unknown as ApiClient;
+    renderApp(client);
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('moi');
+    expect(screen.getAllByText('문제 중심 시험 대비 플랫폼').length).toBeGreaterThanOrEqual(1);
+    expect(document.querySelector('.moi-lead')).toHaveTextContent('문제 중심 시험 대비 플랫폼');
+    expect(screen.getByText(/20문제 풀이.*저장.*결과.*AWS SAA/)).toBeInTheDocument();
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '카카오 로그인' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '20문제 학습' })).not.toBeInTheDocument();
+    expect(screen.queryByText('내 계정')).not.toBeInTheDocument();
+  });
+
   it('비로그인(401): 홈 + 카카오 로그인 버튼, 오류 아님', async () => {
     const client = fakeClient({ meStatus: 401, meBody: { error: 'unauthorized' } });
     renderApp(client);
-    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('moi');
-    const link = screen.getByRole('link', { name: '카카오 로그인' });
+    const link = await screen.findByRole('link', { name: '카카오 로그인' });
     expect(link).toHaveAttribute('href', '/auth/kakao');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('moi');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
