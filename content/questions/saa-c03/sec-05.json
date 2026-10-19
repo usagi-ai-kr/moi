@@ -1,0 +1,356 @@
+{
+  "packId": "sec-05",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-sec-0101",
+      "domainCode": "security",
+      "stem": "신규 S3 버킷이 실수로 퍼블릭으로 생성되는 사고를 계정 전체에서 원천 차단하려 한다. 가장 적절한 방법은?",
+      "explanation": "S3 Block Public Access를 계정 수준에서 활성화하면 새 버킷과 기존 버킷의 퍼블릭 공개를 일괄 차단할 수 있다. 계정 수준 설정은 개별 버킷 설정을 덮어쓰므로 휴먼 에러를 예방한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "계정 수준에서 S3 Block Public Access를 활성화한다." },
+        { "optionKey": "B", "text": "각 버킷에 퍼블릭 읽기용 버킷 정책을 추가한다." },
+        { "optionKey": "C", "text": "모든 객체에 ACL 퍼블릭 읽기를 부여한다." },
+        { "optionKey": "D", "text": "버킷 버전 관리를 비활성화하여 공개를 막는다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0102",
+      "domainCode": "security",
+      "stem": "특정 S3 버킷에 대해 특정 IAM 역할만 읽기 접근을 허용하려 한다. 가장 적절한 방법은?",
+      "explanation": "S3 버킷 정책에 허용 대상 역할의 ARN과 읽기 액션을 명시하면 버킷 단위 접근 통제가 가능하다. IAM 정책과 함께 사용하면 최소 권한 원칙을 만족한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "버킷의 Block Public Access를 비활성화하고 전체 공개한다." },
+        { "optionKey": "B", "text": "특정 역할 ARN을 허용하는 S3 버킷 정책을 작성한다." },
+        { "optionKey": "C", "text": "모든 IAM 사용자에게 관리자 권한을 부여한다." },
+        { "optionKey": "D", "text": "버킷의 기본 암호화를 비활성화하여 접근을 연다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0103",
+      "domainCode": "security",
+      "stem": "외부 협력사에 S3의 특정 객체를 일주일간 임시로 다운로드하게 하려 한다. IAM 사용자를 만들지 않는 가장 적절한 방법은?",
+      "explanation": "S3 presigned URL은 만료 시간이 있는 임시 URL로 특정 객체에 대한 제한된 접근을 제공한다. 별도 IAM 사용자 없이도 안전하게 공유할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "버킷 전체를 퍼블릭으로 전환하여 URL을 공유한다." },
+        { "optionKey": "B", "text": "루트 계정의 액세스 키를 협력사에 전달한다." },
+        { "optionKey": "C", "text": "만료 시간이 있는 S3 presigned URL을 발급한다." },
+        { "optionKey": "D", "text": "버킷의 모든 객체 ACL을 퍼블릭으로 변경한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0104",
+      "domainCode": "security",
+      "stem": "금융 규제 준수를 위해 S3 객체를 일정 기간 삭제와 덮어쓰기가 불가능하게 보관하려 한다. 가장 적절한 방법은?",
+      "explanation": "S3 Object Lock을 Compliance 모드로 설정하면 지정된 보존 기간 동안 누구도 객체를 삭제할 수 없다. 규제 대응을 위한 WORM 보관이 가능하다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "버킷 버전 관리를 끄고 객체를 덮어쓰기한다." },
+        { "optionKey": "B", "text": "객체 ACL만 조정하여 삭제를 유도한다." },
+        { "optionKey": "C", "text": "버킷 정책을 삭제하여 접근을 차단한다." },
+        { "optionKey": "D", "text": "Object Lock을 Compliance 모드로 설정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0105",
+      "domainCode": "security",
+      "stem": "하나의 S3 버킷을 여러 팀이 사용하며 팀별로 다른 접두사와 접근 권한이 필요하다. 관리 부담을 줄이는 가장 적절한 방법은?",
+      "explanation": "S3 액세스 포인트는 버킷당 여러 개의 별도 접근 진입점을 제공하여 팀별 정책을 분리할 수 있다. 하나의 버킷 정책이 비대해지는 문제를 방지한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-points.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "팀별로 S3 액세스 포인트를 만들어 정책을 분리한다." },
+        { "optionKey": "B", "text": "팀마다 별도 루트 계정을 생성하여 공유한다." },
+        { "optionKey": "C", "text": "모든 팀에 동일한 전체 접근 권한을 부여한다." },
+        { "optionKey": "D", "text": "버킷을 퍼블릭으로 열어 팀 접근을 단순화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0106",
+      "domainCode": "security",
+      "stem": "S3에 저장되는 모든 신규 객체를 규제 대응을 위해 KMS 키로 자동 암호화하려 한다. 가장 적절한 방법은?",
+      "explanation": "S3 기본 암호화를 SSE-KMS로 설정하면 버킷에 업로드되는 모든 신규 객체가 자동 암호화된다. 키 단위 감사와 권한 분리가 가능하다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "클라이언트가 암호화 없이 평문으로 업로드하게 한다." },
+        { "optionKey": "B", "text": "버킷 기본 암호화를 SSE-KMS로 설정한다." },
+        { "optionKey": "C", "text": "버킷 정책을 삭제하고 암호화를 우회한다." },
+        { "optionKey": "D", "text": "버킷 버전 관리를 비활성화하여 암호화를 대체한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0107",
+      "domainCode": "security",
+      "stem": "S3 버킷에 대한 모든 요청이 암호화된 전송만을 사용하도록 강제하려 한다. 가장 적절한 방법은?",
+      "explanation": "버킷 정책에 암호화되지 않은 전송 요청을 거부하는 조건을 추가하면 비보안 접근을 차단할 수 있다. 전송 중 데이터 보호를 강제하는 대표적 방법이다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "버킷을 퍼블릭으로 열어 전송 방식을 무시한다." },
+        { "optionKey": "B", "text": "모든 사용자에게 장기 액세스 키를 배포한다." },
+        { "optionKey": "C", "text": "비보안 전송을 거부하는 S3 버킷 정책을 적용한다." },
+        { "optionKey": "D", "text": "객체 버전 관리를 끄고 전송을 허용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0108",
+      "domainCode": "security",
+      "stem": "S3에서 ACL 기반의 예외적 공개를 없애고 버킷 정책 중심으로 접근을 관리하려 한다. 가장 적절한 방법은?",
+      "explanation": "S3 Object Ownership을 버킷 소유자 강제 설정으로 두면 ACL이 비활성화되고 정책 중심 관리가 가능하다. 예기치 않은 ACL 공개를 예방할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "모든 객체에 퍼블릭 ACL을 유지하여 관리한다." },
+        { "optionKey": "B", "text": "버킷 정책을 삭제하고 ACL만 사용한다." },
+        { "optionKey": "C", "text": "버킷을 삭제하고 매번 새로 생성한다." },
+        { "optionKey": "D", "text": "Object Ownership을 버킷 소유자 강제로 설정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0109",
+      "domainCode": "security",
+      "stem": "여러 S3 버킷에 주민등록번호와 카드번호 같은 민감 데이터가 있는지 자동으로 식별하려 한다. 가장 적절한 서비스는?",
+      "explanation": "Amazon Macie는 머신러닝으로 S3의 개인식별정보와 민감 데이터를 자동 탐지한다. 대규모 버킷의 데이터 보안 현황을 파악할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Amazon Macie로 S3 민감 데이터를 탐지한다." },
+        { "optionKey": "B", "text": "수동으로 모든 객체를 내려받아 육안 검사한다." },
+        { "optionKey": "C", "text": "버킷을 퍼블릭으로 열어 외부 검사를 요청한다." },
+        { "optionKey": "D", "text": "객체 암호화를 해제하고 평문으로 보관한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0110",
+      "domainCode": "security",
+      "stem": "Macie가 S3에서 민감 데이터를 발견하면 자동으로 관리자에게 알림을 보내려 한다. 가장 적절한 구성은?",
+      "explanation": "Macie 발견 결과를 EventBridge로 전달하면 알림과 후속 자동화를 구성할 수 있다. 탐지와 대응을 분리하여 운영 부담을 줄인다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/macie/latest/user/monitoring-events.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "Macie 탐지 기능을 비활성화하고 수동 점검한다." },
+        { "optionKey": "B", "text": "Macie 결과를 EventBridge로 전달해 알림을 보낸다." },
+        { "optionKey": "C", "text": "민감 데이터 버킷을 전체 공개로 전환한다." },
+        { "optionKey": "D", "text": "모든 탐지 결과를 무시하고 보관만 유지한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0111",
+      "domainCode": "security",
+      "stem": "의도치 않게 퍼블릭이 된 S3 버킷을 조직 전체에서 자동으로 찾아내려 한다. 가장 적절한 방법은?",
+      "explanation": "IAM Access Analyzer의 S3 검사를 사용하면 외부 공유되는 버킷 정책을 중앙에서 식별할 수 있다. 계정 전반의 공개 노출을 지속적으로 점검한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "모든 버킷을 퍼블릭으로 열어 목록을 수집한다." },
+        { "optionKey": "B", "text": "각 개발자에게 버킷 점검을 구두로 요청한다." },
+        { "optionKey": "C", "text": "Access Analyzer로 외부 공유 버킷을 식별한다." },
+        { "optionKey": "D", "text": "버킷 로깅을 끄고 점검 기록을 남기지 않는다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0112",
+      "domainCode": "security",
+      "stem": "S3에 보관된 중요 문서가 랜섬웨어로 삭제되거나 덮어쓰기되는 위험을 줄이려 한다. 가장 적절한 조합은?",
+      "explanation": "S3 버전 관리와 MFA Delete를 함께 사용하면 삭제와 버전 제거에 추가 인증이 필요하다. 우발적 삭제와 악의적 삭제를 모두 완화한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "버전 관리를 끄고 단일 사본만 유지한다." },
+        { "optionKey": "B", "text": "버킷 정책을 삭제하고 누구나 삭제하게 한다." },
+        { "optionKey": "C", "text": "암호화를 해제하고 평문 객체만 보관한다." },
+        { "optionKey": "D", "text": "버전 관리와 MFA Delete를 함께 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0113",
+      "domainCode": "security",
+      "stem": "다른 계정의 애플리케이션이 자사 S3 버킷의 특정 접두사에만 접근해야 한다. 가장 적절한 방법은?",
+      "explanation": "버킷 정책에 외부 계정의 역할을 허용 대상으로 지정하면 교차 계정 접근이 가능하다. 접두사 조건으로 접근 범위를 최소화할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-walkthroughs-managing-access-example2.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "외부 계정 역할을 허용하는 버킷 정책을 작성한다." },
+        { "optionKey": "B", "text": "자사 루트 계정 키를 외부 계정에 공유한다." },
+        { "optionKey": "C", "text": "버킷 전체를 퍼블릭으로 열어 외부 접근을 허용한다." },
+        { "optionKey": "D", "text": "버킷 암호화를 해제하여 접근 장벽을 제거한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0114",
+      "domainCode": "security",
+      "stem": "모바일 앱 사용자가 S3에 사진을 직접 업로드하며 서버 부하를 줄이려 한다. 자격 증명 노출 없이 구현하는 방법은?",
+      "explanation": "서버가 짧은 유효기간의 presigned URL을 발급하면 앱은 그 URL로 직접 업로드할 수 있다. 장기 자격 증명을 앱에 내장하지 않아도 된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "IAM 사용자 비밀 키를 앱 코드에 내장한다." },
+        { "optionKey": "B", "text": "서버가 발급한 presigned URL로 직접 업로드한다." },
+        { "optionKey": "C", "text": "버킷을 퍼블릭 쓰기로 열어 업로드한다." },
+        { "optionKey": "D", "text": "루트 액세스 키를 앱 설정 파일에 포함한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0115",
+      "domainCode": "security",
+      "stem": "S3에 KMS 암호화를 사용하면서 요청당 KMS 호출 비용을 낮추려 한다. 가장 적절한 방법은?",
+      "explanation": "S3 Bucket Keys를 활성화하면 버킷 단위 데이터 키를 재사용하여 KMS 호출을 줄일 수 있다. 암호화 수준을 유지하면서 비용을 절감한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-key.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "암호화를 비활성화하고 평문 객체를 저장한다." },
+        { "optionKey": "B", "text": "버킷을 퍼블릭으로 열어 암호화 검사를 우회한다." },
+        { "optionKey": "C", "text": "S3 Bucket Keys를 활성화해 KMS 호출을 줄인다." },
+        { "optionKey": "D", "text": "모든 객체 ACL을 퍼블릭으로 변경해 비용을 줄인다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0116",
+      "domainCode": "security",
+      "stem": "RDS 데이터베이스의 저장 데이터가 물리적 매체 탈취 시에도 읽히지 않게 하려 한다. 가장 적절한 방법은?",
+      "explanation": "RDS 저장 데이터 암호화를 활성화하면 KMS 키로 스토리지와 스냅샷이 암호화된다. 물리적 접근만으로는 데이터를 복원할 수 없다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "DB를 퍼블릭 서브넷에 두어 접근을 단순화한다." },
+        { "optionKey": "B", "text": "DB 암호를 소스 코드에 하드코딩하여 관리한다." },
+        { "optionKey": "C", "text": "보안 그룹을 전체 개방으로 설정해 운영한다." },
+        { "optionKey": "D", "text": "RDS 저장 데이터 암호화를 KMS로 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0117",
+      "domainCode": "security",
+      "stem": "EC2 애플리케이션이 RDS MySQL에 비밀번호 없이 단기 자격 증명으로 접속하게 하려 한다. 가장 적절한 방법은?",
+      "explanation": "RDS IAM 데이터베이스 인증을 사용하면 짧은 수명의 인증 토큰으로 접속할 수 있다. 비밀번호 저장과 순환 부담을 제거할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "RDS IAM 데이터베이스 인증을 사용해 접속한다." },
+        { "optionKey": "B", "text": "DB 관리자 비밀번호를 코드에 직접 저장한다." },
+        { "optionKey": "C", "text": "DB 포트를 인터넷 전체에 개방하여 접속한다." },
+        { "optionKey": "D", "text": "모든 사용자에게 동일한 장기 비밀번호를 공유한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0118",
+      "domainCode": "security",
+      "stem": "애플리케이션과 RDS 간 통신이 도청되더라도 내용이 노출되지 않게 하려 한다. 가장 적절한 방법은?",
+      "explanation": "RDS에 SSL 연결을 강제하면 전송 중 데이터가 암호화되어 도청 위험이 줄어든다. 인증서 검증을 함께 사용하면 중간자 공격도 방지한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "평문 연결을 허용하고 포트를 공개한다." },
+        { "optionKey": "B", "text": "RDS에 SSL 연결을 강제해 전송 구간을 보호한다." },
+        { "optionKey": "C", "text": "DB 자격 증명을 URL 파라미터로 평문 전송한다." },
+        { "optionKey": "D", "text": "보안 그룹을 제거하고 직접 접속을 허용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0119",
+      "domainCode": "security",
+      "stem": "DynamoDB 테이블의 저장 데이터를 규제 대응을 위해 고객 관리형 키로 암호화하려 한다. 가장 적절한 방법은?",
+      "explanation": "DynamoDB 저장 데이터 암호화에서 KMS 고객 관리형 키를 선택하면 키 수명 주기를 직접 통제할 수 있다. 키 사용 이력 감사도 가능하다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/EncryptionAtRest.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "테이블을 삭제하고 평문 파일로 보관한다." },
+        { "optionKey": "B", "text": "모든 항목을 퍼블릭으로 공유해 검사를 받는다." },
+        { "optionKey": "C", "text": "DynamoDB 암호화에 KMS 고객 관리형 키를 지정한다." },
+        { "optionKey": "D", "text": "테이블 접근 정책을 삭제하고 개방한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0120",
+      "domainCode": "security",
+      "stem": "모바일 게임 사용자들이 DynamoDB에서 본인의 항목만 조회하게 하려 한다. 가장 적절한 방법은?",
+      "explanation": "DynamoDB 세분화된 액세스 제어에서 사용자 식별자와 파티션 키를 조건으로 비교하면 행 단위 격리가 가능하다. 웹 자격 증명 연합과 함께 자주 사용된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/specifying-conditions.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "모든 사용자에게 전체 테이블 스캔 권한을 준다." },
+        { "optionKey": "B", "text": "테이블을 퍼블릭으로 열어 직접 조회하게 한다." },
+        { "optionKey": "C", "text": "단일 공용 IAM 사용자를 모든 앱에 내장한다." },
+        { "optionKey": "D", "text": "행 소유자 조건의 세분화된 액세스 제어를 적용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0121",
+      "domainCode": "security",
+      "stem": "S3에 보관된 계약서의 보존 기간을 소송 대응을 위해 일시적으로 연장하려 한다. 거버넌스 모드에서 적절한 방법은?",
+      "explanation": "S3 Object Lock 거버넌스 모드에서는 특별 권한이 있는 사용자가 보존 기간을 연장할 수 있다. 감사 추적을 남기면서 유연하게 대응할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "거버넌스 모드 보존 기간을 연장하고 감사를 남긴다." },
+        { "optionKey": "B", "text": "버킷의 모든 객체를 즉시 영구 삭제한다." },
+        { "optionKey": "C", "text": "버전 관리를 끄고 계약서를 덮어쓴다." },
+        { "optionKey": "D", "text": "버킷 정책을 삭제하고 공개 상태로 둔다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0122",
+      "domainCode": "security",
+      "stem": "신규 AWS 계정이 생성될 때마다 S3 퍼블릭 차단이 자동으로 적용되게 하려 한다. 가장 적절한 방법은?",
+      "explanation": "Organizations와 계정 생성 파이프라인에서 계정 수준 Block Public Access를 기본 적용하면 누락을 방지할 수 있다. 신규 계정도 동일한 기준을 상속한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "신규 계정의 모든 버킷을 퍼블릭으로 생성한다." },
+        { "optionKey": "B", "text": "계정 생성 시 계정 수준 퍼블릭 차단을 기본 적용한다." },
+        { "optionKey": "C", "text": "신규 계정에 루트 키를 공유해 수동 설정한다." },
+        { "optionKey": "D", "text": "신규 계정의 로깅을 비활성화하고 방치한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0123",
+      "domainCode": "security",
+      "stem": "암호화된 RDS 스냅샷을 재해 복구용으로 다른 계정과 안전하게 공유하려 한다. 가장 적절한 방법은?",
+      "explanation": "KMS 키 정책에 대상 계정을 허용하고 암호화된 스냅샷을 공유하면 계정 간 복원이 가능하다. 키 권한과 스냅샷 공유를 함께 설정해야 한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ShareSnapshot.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "스냅샷을 퍼블릭으로 공유해 누구나 복사하게 한다." },
+        { "optionKey": "B", "text": "KMS 키를 삭제한 채 스냅샷만 전달한다." },
+        { "optionKey": "C", "text": "KMS 키 권한 부여 후 암호화 스냅샷을 공유한다." },
+        { "optionKey": "D", "text": "스냅샷 대신 DB 비밀번호를 메일로 전달한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0124",
+      "domainCode": "security",
+      "stem": "VPC 내부의 애플리케이션이 인터넷을 거치지 않고 암호화된 경로로 DynamoDB에 접근하게 하려 한다. 가장 적절한 방법은?",
+      "explanation": "DynamoDB용 VPC 엔드포인트를 사용하면 트래픽이 AWS 내부망으로 전달되어 노출이 줄어든다. 엔드포인트 정책으로 접근 대상을 제한할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/vpc-endpoints-dynamodb.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "NAT 없이 DB를 인터넷에 직접 노출한다." },
+        { "optionKey": "B", "text": "모든 트래픽을 퍼블릭 인터넷으로 우회시킨다." },
+        { "optionKey": "C", "text": "장기 자격 증명을 코드에 저장해 직접 호출한다." },
+        { "optionKey": "D", "text": "DynamoDB용 VPC 엔드포인트와 정책을 적용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0125",
+      "domainCode": "security",
+      "stem": "외부 감사 대응을 위해 S3와 KMS의 데이터 보호 구성을 주기적으로 점검하려 한다. 가장 적절한 조합은?",
+      "explanation": "AWS Config 규칙으로 버킷 암호화와 퍼블릭 차단 상태를 지속 점검하면 규정 준수를 확인할 수 있다. 비준수 리소스는 자동으로 식별되어 대응할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/config/latest/developerguide/operational-best-practices-for-nist-800-53-rev-5.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "모든 점검을 중단하고 수기 대장으로 대체한다." },
+        { "optionKey": "B", "text": "버킷 암호화를 해제하고 점검 대상을 제거한다." },
+        { "optionKey": "C", "text": "Config 규칙으로 암호화와 공개 차단 상태를 점검한다." },
+        { "optionKey": "D", "text": "감사 기간에만 버킷을 삭제하여 숨긴다." }
+      ]
+    }
+  ]
+}

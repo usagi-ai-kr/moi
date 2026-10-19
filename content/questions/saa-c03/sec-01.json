@@ -1,0 +1,407 @@
+{
+  "packId": "sec-01",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-sec-0001",
+      "domainCode": "security",
+      "stem": "한 회사가 EC2 인스턴스에서 실행되는 애플리케이션이 S3 버킷에 객체를 쓰도록 구성하려 한다. 액세스 키를 인스턴스에 저장하지 않으면서 최소 권한을 적용하는 방법은?",
+      "explanation": "EC2 인스턴스 프로파일로 IAM 역할을 연결하면 임시 자격 증명이 자동으로 갱신되어 장기 키를 저장할 필요가 없다. 역할 정책에는 필요한 버킷과 작업만 허용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "루트 사용자의 액세스 키를 애플리케이션 설정 파일에 넣는다." },
+        { "optionKey": "B", "text": "모든 IAM 사용자에게 S3 전체 권한을 부여한다." },
+        { "optionKey": "C", "text": "인스턴스에 S3 쓰기 권한을 가진 IAM 역할을 연결한다." },
+        { "optionKey": "D", "text": "버킷을 퍼블릭 쓰기가 가능하도록 설정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0002",
+      "domainCode": "security",
+      "stem": "한 개발자가 그룹 정책으로 s3:GetObject 허용을 받았지만, 별도의 정책에 같은 리소스에 대한 명시적 Deny가 있다. 이 요청의 결과는?",
+      "explanation": "IAM 정책 평가에서 명시적 Deny는 어떤 Allow보다도 우선한다. 따라서 그룹 정책의 허용이 있어도 해당 요청은 거부된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "허용과 거부가 상충하므로 AWS가 임의로 선택한다." },
+        { "optionKey": "B", "text": "명시적 거부가 우선하므로 액세스가 거부된다." },
+        { "optionKey": "C", "text": "그룹 정책의 허용이 우선하므로 액세스가 허용된다." },
+        { "optionKey": "D", "text": "두 정책이 모두 무시되고 기본 허용이 적용된다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0003",
+      "domainCode": "security",
+      "stem": "권한 경계(permissions boundary)에 대한 설명으로 옳은 것은?",
+      "explanation": "권한 경계는 자격 증명이 가질 수 있는 최대 권한을 정하지만 그 자체로 권한을 부여하지는 않는다. 실제 권한은 경계와 자격 증명 기반 정책의 교집합이다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "경계에 허용된 권한을 자동으로 부여한다." },
+        { "optionKey": "B", "text": "자격 증명 기반 정책의 최대 권한을 제한한다." },
+        { "optionKey": "C", "text": "리소스 기반 정책을 대체하는 역할을 한다." },
+        { "optionKey": "D", "text": "계정의 모든 사용자에게 동일하게 적용된다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0004",
+      "domainCode": "security",
+      "stem": "계정 A의 S3 버킷을 계정 B의 IAM 사용자가 읽으려 한다. 교차 계정 액세스를 위해 필요한 구성 조합은?",
+      "explanation": "교차 계정 액세스는 리소스를 소유한 계정의 리소스 기반 정책과 요청 주체의 자격 증명 기반 정책이 모두 허용해야 성립한다. 한쪽만 허용하면 액세스가 거부된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "계정 A 버킷 정책의 허용과 계정 B 사용자의 자격 증명 정책 허용" },
+        { "optionKey": "B", "text": "계정 A 버킷 정책의 허용만으로 충분하다." },
+        { "optionKey": "C", "text": "계정 B 사용자의 자격 증명 정책 허용만으로 충분하다." },
+        { "optionKey": "D", "text": "두 계정의 루트 사용자 액세스 키를 공유한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0005",
+      "domainCode": "security",
+      "stem": "IAM 그룹의 특성으로 옳은 것은?",
+      "explanation": "IAM 그룹은 사용자의 집합이며 그룹 안에 다른 그룹을 중첩할 수 없다. 그룹에 연결한 정책은 모든 구성원에게 적용된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "그룹은 다른 그룹의 구성원이 될 수 있다." },
+        { "optionKey": "B", "text": "그룹에는 IAM 사용자와 역할을 함께 넣을 수 있다." },
+        { "optionKey": "C", "text": "그룹은 자체적으로 AWS API를 호출할 수 있다." },
+        { "optionKey": "D", "text": "그룹은 다른 그룹을 포함할 수 없으며 사용자만 포함한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0006",
+      "domainCode": "security",
+      "stem": "IAM 역할의 신뢰 정책(trust policy)이 결정하는 것은?",
+      "explanation": "신뢰 정책은 역할을 수임할 수 있는 계정·사용자·서비스와 조건을 정의한다. 역할에 연결된 권한 정책과 달리 신뢰 정책은 누가 역할을 사용할 수 있는지를 정한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_terms-and-concepts.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "역할이 수행할 수 있는 AWS API 작업 목록" },
+        { "optionKey": "B", "text": "역할을 수임할 수 있는 주체와 조건" },
+        { "optionKey": "C", "text": "역할이 액세스할 수 있는 리소스의 암호화 방식" },
+        { "optionKey": "D", "text": "역할 세션의 최대 길이와 갱신 주기" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0007",
+      "domainCode": "security",
+      "stem": "Lambda 함수에 실행 역할을 연결하려는 개발자에게 필요한 IAM 권한은?",
+      "explanation": "역할을 서비스에 전달하려면 iam:PassRole 권한이 필요하다. 이 권한은 전달할 수 있는 역할을 ARN으로 제한해 부여하는 것이 안전하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "iam:PassRole" },
+        { "optionKey": "B", "text": "iam:CreateUser" },
+        { "optionKey": "C", "text": "lambda:InvokeFunction" },
+        { "optionKey": "D", "text": "s3:PutBucketPolicy" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0008",
+      "domainCode": "security",
+      "stem": "특정 IAM 사용자가 MFA를 사용한 경우에만 위험한 API를 호출하도록 제한하려면 어떤 조건 키를 사용하는가?",
+      "explanation": "aws:MultiFactorAuthPresent 조건 키는 요청이 MFA로 인증된 세션에서 왔는지 확인한다. 이 값을 true로 요구하는 Deny 또는 Allow 조건을 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html",
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_mfa.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "aws:SecureTransport" },
+        { "optionKey": "B", "text": "aws:SourceIp" },
+        { "optionKey": "C", "text": "aws:MultiFactorAuthPresent" },
+        { "optionKey": "D", "text": "aws:RequestedRegion" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0009",
+      "domainCode": "security",
+      "stem": "50명의 개발자에게 동일한 권한을 부여하고 이후 한 번의 변경으로 모두에게 반영하려면?",
+      "explanation": "고객 관리형 정책은 여러 자격 증명에 재사용할 수 있고 정책을 수정하면 연결된 모든 대상에 반영된다. 그룹에 연결하면 구성원 관리도 함께 단순해진다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "각 개발자에게 인라인 정책을 복사해 붙인다." },
+        { "optionKey": "B", "text": "AWS 관리형 정책을 각자에게 직접 연결한다." },
+        { "optionKey": "C", "text": "개발자마다 액세스 키를 발급해 권한을 분리한다." },
+        { "optionKey": "D", "text": "고객 관리형 정책을 만들어 개발자 그룹에 연결한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0010",
+      "domainCode": "security",
+      "stem": "각 사용자가 자신의 이름과 같은 S3 접두사에만 접근하도록 하나의 정책으로 처리하려면?",
+      "explanation": "정책 변수 ${aws:username}은 요청 주체의 사용자 이름으로 치환되어 사용자별 리소스 경로를 하나의 정책으로 제한할 수 있다. 변수는 Resource와 Condition 요소에서 사용할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_variables.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "사용자마다 별도의 버킷 정책을 만들어 적용한다." },
+        { "optionKey": "B", "text": "정책 변수 ${aws:username}을 리소스 ARN에 사용한다." },
+        { "optionKey": "C", "text": "모든 사용자에게 s3:* 전체 권한을 부여한다." },
+        { "optionKey": "D", "text": "사용자 이름을 태그로 저장하고 버킷을 공개한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0011",
+      "domainCode": "security",
+      "stem": "S3 버킷으로의 모든 요청을 TLS로만 허용하도록 강제하는 정책은?",
+      "explanation": "aws:SecureTransport가 false인 요청을 명시적으로 거부하면 HTTP 요청이 차단되고 HTTPS만 허용된다. 이 조건은 버킷 정책의 Deny 문에 주로 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "aws:SecureTransport가 false일 때 Deny" },
+        { "optionKey": "B", "text": "s3:GetObject를 모두 Allow" },
+        { "optionKey": "C", "text": "aws:SourceIp를 0.0.0.0/0으로 Allow" },
+        { "optionKey": "D", "text": "버킷 ACL을 퍼블릭 읽기로 설정" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0012",
+      "domainCode": "security",
+      "stem": "IAM 정책의 Resource 요소가 지정하는 것은?",
+      "explanation": "Resource 요소는 정책 문이 적용되는 리소스를 ARN으로 지정하며 와일드카드를 사용할 수 있다. Action은 작업을, Principal은 주체를 지정한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "정책이 적용될 AWS API 작업" },
+        { "optionKey": "B", "text": "정책을 수임할 수 있는 주체" },
+        { "optionKey": "C", "text": "정책이 적용되는 특정 AWS 리소스" },
+        { "optionKey": "D", "text": "정책 언어의 버전" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0013",
+      "domainCode": "security",
+      "stem": "루트 사용자 보호를 위한 AWS 권장 사항으로 가장 적절한 것은?",
+      "explanation": "루트 사용자는 복구할 수 없는 권한을 가지므로 MFA를 활성화하고 액세스 키를 만들지 않는 것이 권장된다. 일상 작업은 최소 권한을 가진 IAM 자격 증명으로 수행한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "루트 액세스 키를 만들어 자동화에 사용한다." },
+        { "optionKey": "B", "text": "루트에 관리자 권한을 가진 IAM 사용자를 추가로 만든다." },
+        { "optionKey": "C", "text": "루트 자격 증명을 여러 팀에 나누어 공유한다." },
+        { "optionKey": "D", "text": "루트에 MFA를 설정하고 일상 작업에는 사용하지 않는다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0014",
+      "domainCode": "security",
+      "stem": "개발자에게 AdministratorAccess 정책을 붙였지만 권한 경계로 S3 읽기만 허용했다. 이 개발자가 실제로 할 수 있는 일은?",
+      "explanation": "유효 권한은 자격 증명 기반 정책과 권한 경계의 교집합이다. 광범위한 허용 정책이 있어도 경계를 넘는 작업은 수행할 수 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "모든 AWS 작업을 수행할 수 있다." },
+        { "optionKey": "B", "text": "아무 작업도 수행할 수 없다." },
+        { "optionKey": "C", "text": "S3 읽기만 수행할 수 있다." },
+        { "optionKey": "D", "text": "권한 경계를 무시하고 관리자 권한을 얻는다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0015",
+      "domainCode": "security",
+      "stem": "S3 버킷의 객체 목록을 조회하고 객체를 읽는 최소 권한 정책으로 옳은 것은?",
+      "explanation": "ListBucket은 버킷 수준 작업이므로 버킷 ARN에, GetObject는 객체 수준 작업이므로 객체 ARN에 허용해야 한다. 버킷 ARN만으로는 객체 읽기 권한이 부여되지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-language-overview.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "ListBucket은 버킷 ARN, GetObject는 객체 ARN에 허용한다." },
+        { "optionKey": "B", "text": "s3:ListBucket과 s3:GetObject를 모두 버킷 ARN에 허용한다." },
+        { "optionKey": "C", "text": "s3:* 전체 권한을 객체 ARN에만 허용한다." },
+        { "optionKey": "D", "text": "s3:GetObject 권한을 버킷 ARN에만 허용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0016",
+      "domainCode": "security",
+      "stem": "회사 네트워크 대역에서만 IAM API 호출을 허용하려면 어떤 조건 키를 사용하는가?",
+      "explanation": "aws:SourceIp 조건 키는 요청이 발생한 IP 주소를 검사한다. 허용 대역을 Condition에 지정하고 그 외 요청은 Deny하는 방식으로 적용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "aws:PrincipalOrgID" },
+        { "optionKey": "B", "text": "aws:UserAgent" },
+        { "optionKey": "C", "text": "aws:CurrentTime" },
+        { "optionKey": "D", "text": "aws:SourceIp" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0017",
+      "domainCode": "security",
+      "stem": "리소스 기반 정책의 Principal에 IAM 그룹을 지정하려 할 때 올바른 대응은?",
+      "explanation": "리소스 기반 정책의 Principal에는 계정, IAM 사용자, 역할, 페더레이션 사용자, AWS 서비스만 지정할 수 있다. 그룹은 Principal로 사용할 수 없으므로 그룹 구성원에 권한을 주려면 사용자나 역할을 나열해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "그룹 ARN을 Principal에 그대로 넣는다." },
+        { "optionKey": "B", "text": "그룹은 Principal이 될 수 없으므로 사용자나 역할을 지정한다." },
+        { "optionKey": "C", "text": "계정 루트 ARN을 넣으면 그룹 구성원에게만 적용된다." },
+        { "optionKey": "D", "text": "그룹 이름을 Principal에 문자열로 넣는다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0018",
+      "domainCode": "security",
+      "stem": "자격 증명에 직접 포함되며 해당 자격 증명을 삭제하면 함께 사라지는 정책 유형은?",
+      "explanation": "인라인 정책은 단일 사용자·그룹·역할에 직접 포함되며 재사용할 수 없다. 자격 증명을 삭제하면 인라인 정책도 함께 삭제된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "AWS 관리형 정책" },
+        { "optionKey": "B", "text": "고객 관리형 정책" },
+        { "optionKey": "C", "text": "인라인 정책" },
+        { "optionKey": "D", "text": "서비스 제어 정책" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0019",
+      "domainCode": "security",
+      "stem": "자격 증명 기반 정책(identity-based policy)에 Principal 요소를 포함하면 어떻게 되는가?",
+      "explanation": "자격 증명 기반 정책은 정책이 연결된 자격 증명 자체를 주체로 하므로 Principal 요소를 포함하지 않는다. Principal은 리소스 기반 정책이나 신뢰 정책에서 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "모든 주체에게 권한이 적용된다." },
+        { "optionKey": "B", "text": "정책이 유효하지 않으므로 사용할 수 없다." },
+        { "optionKey": "C", "text": "Principal이 자동으로 계정 루트로 변환된다." },
+        { "optionKey": "D", "text": "Deny 문에서만 Principal을 사용할 수 있다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0020",
+      "domainCode": "security",
+      "stem": "ABAC 방식으로 프로젝트 태그가 같은 리소스에만 접근하도록 하려면 어떤 조건을 사용하는가?",
+      "explanation": "aws:ResourceTag와 aws:PrincipalTag 조건 키를 같은 태그 키로 비교하면 주체와 리소스의 프로젝트 태그가 일치할 때만 허용할 수 있다. 태그 값이 바뀌면 정책 수정 없이 권한 범위가 조정된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction_attribute-based-access-control.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "aws:ResourceTag/Project와 aws:PrincipalTag/Project를 비교한다." },
+        { "optionKey": "B", "text": "aws:SourceIp와 aws:RequestedRegion을 비교한다." },
+        { "optionKey": "C", "text": "aws:username과 aws:PrincipalArn을 비교한다." },
+        { "optionKey": "D", "text": "aws:SecureTransport 값을 고정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0021",
+      "domainCode": "security",
+      "stem": "제3자 업체가 고객 계정의 역할을 수임할 때 혼동된 대리인 문제를 줄이는 데 사용하는 값은?",
+      "explanation": "ExternalId는 제3자가 역할을 수임할 때 함께 전달하는 고유 식별자로, 신뢰 정책의 Condition에서 값을 검증한다. 이를 통해 다른 고객의 역할이 잘못 수임되는 상황을 줄인다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "SessionToken" },
+        { "optionKey": "B", "text": "AccessKeyId" },
+        { "optionKey": "C", "text": "SourceIp" },
+        { "optionKey": "D", "text": "ExternalId" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0022",
+      "domainCode": "security",
+      "stem": "서비스 연결 역할(service-linked role)에 대한 설명으로 옳은 것은?",
+      "explanation": "서비스 연결 역할은 AWS 서비스가 미리 정의한 권한으로 생성되고 해당 서비스가 사용자를 대신해 작업할 때 사용한다. 연결된 서비스가 필요로 하므로 함부로 수정하거나 삭제하지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "사용자가 직접 권한을 수정해 서비스 동작을 바꿀 수 있다." },
+        { "optionKey": "B", "text": "서비스가 정의하며 사용자를 대신해 서비스가 사용한다." },
+        { "optionKey": "C", "text": "모든 AWS 계정에 동일한 이름으로 자동 생성된다." },
+        { "optionKey": "D", "text": "교차 계정 액세스에만 사용되는 특수한 역할이다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0023",
+      "domainCode": "security",
+      "stem": "같은 계정의 IAM 사용자가 자격 증명 정책에는 S3 권한이 없지만, 버킷 정책이 해당 사용자에게 s3:GetObject를 허용했다. 결과는?",
+      "explanation": "같은 계정에서는 자격 증명 기반 정책이나 리소스 기반 정책 중 하나가 허용하면 액세스가 성립한다. 다만 어느 정책에도 명시적 Deny가 없어야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_identity-vs-resource.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "자격 증명 정책이 없으므로 거부된다." },
+        { "optionKey": "B", "text": "두 정책이 모두 있어야만 허용된다." },
+        { "optionKey": "C", "text": "버킷 정책은 같은 계정 사용자에게 효력이 없다." },
+        { "optionKey": "D", "text": "버킷 정책의 허용으로 객체를 읽을 수 있다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0024",
+      "domainCode": "security",
+      "stem": "IAM 정책으로 eu-west-1 리전에서만 리소스를 생성하도록 제한하려면 어떤 조건 키를 사용하는가?",
+      "explanation": "aws:RequestedRegion 조건 키는 요청이 대상으로 하는 리전을 검사한다. Condition에서 허용 리전 목록을 지정하면 다른 리전의 리소스 생성 요청을 거부할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "aws:SourceRegion" },
+        { "optionKey": "B", "text": "aws:PrincipalOrgID" },
+        { "optionKey": "C", "text": "aws:RequestedRegion" },
+        { "optionKey": "D", "text": "aws:ResourceTag" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0025",
+      "domainCode": "security",
+      "stem": "계정 A의 사용자가 계정 B의 역할을 수임하려면 어떤 두 가지 허용이 필요한가?",
+      "explanation": "계정 B의 역할 신뢰 정책이 계정 A의 주체를 허용해야 하고, 계정 A의 주체는 sts:AssumeRole 권한을 가져야 한다. 두 조건이 모두 충족되어야 임시 자격 증명이 발급된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "계정 B 역할의 신뢰 정책과 계정 A 사용자의 sts:AssumeRole 권한" },
+        { "optionKey": "B", "text": "계정 A의 버킷 정책과 계정 B의 서비스 제어 정책 허용" },
+        { "optionKey": "C", "text": "계정 B 역할의 권한 정책만 있으면 충분하다." },
+        { "optionKey": "D", "text": "계정 A 루트 사용자의 액세스 키와 MFA를 함께 사용" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,406 @@
+{
+  "packId": "perf-04",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-perf-0076",
+      "domainCode": "performance",
+      "stem": "한 회사가 정적 웹사이트를 S3 버킷에 두고 CloudFront로 배포한다. 사용자가 CloudFront를 우회해 S3 객체에 직접 접근하지 못하게 하려면?",
+      "explanation": "OAC는 CloudFront가 S3에 서명된 요청을 보내도록 하며 버킷은 비공개로 유지할 수 있다. 버킷 정책은 해당 배포의 서비스 주체만 허용하도록 제한한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "S3 오리진 액세스 제어(OAC)를 구성하고 버킷 정책을 배포 전용으로 제한한다." },
+        { "optionKey": "B", "text": "버킷을 퍼블릭 읽기로 열고 CloudFront 서명 URL만 발급한다." },
+        { "optionKey": "C", "text": "S3 Transfer Acceleration을 켜고 버킷 정책을 비워 둔다." },
+        { "optionKey": "D", "text": "버킷 정책에서 모든 AWS 계정의 GetObject를 허용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0077",
+      "domainCode": "performance",
+      "stem": "쿼리 문자열이 다양한 API를 CloudFront로 배포했더니 캐시 적중률이 낮다. 적중률을 높이는 설정은?",
+      "explanation": "캐시 키가 작을수록 같은 객체를 더 많은 요청이 재사용할 수 있어 적중률이 높아진다. 응답을 바꾸지 않는 값은 캐시 키에서 제외한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "모든 쿼리 문자열과 요청 헤더를 캐시 키에 포함한다." },
+        { "optionKey": "B", "text": "응답에 영향을 주는 쿼리 문자열만 캐시 키에 포함한다." },
+        { "optionKey": "C", "text": "TTL을 0으로 설정해 요청마다 오리진에서 가져온다." },
+        { "optionKey": "D", "text": "모든 쿠키를 캐시 키에 포함해 사용자별로 캐시한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0078",
+      "domainCode": "performance",
+      "stem": "CloudFront 오리진이 Cache-Control이나 Expires 헤더를 보내지 않을 때 객체의 캐시 기간을 결정하는 설정은?",
+      "explanation": "오리진이 캐시 헤더를 보내지 않으면 Default TTL이 적용된다. 오리진이 max-age를 보내면 최소·최대 TTL 범위 안에서 그 값을 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "Minimum TTL" },
+        { "optionKey": "B", "text": "Maximum TTL" },
+        { "optionKey": "C", "text": "Default TTL" },
+        { "optionKey": "D", "text": "Origin Shield 유지 시간" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0079",
+      "domainCode": "performance",
+      "stem": "이미지가 하루에도 여러 번 바뀌는 사이트에서 전 세계 사용자에게 즉시 최신 이미지를 제공하려 한다. 무효화 비용과 운영 부담을 줄이는 방법은?",
+      "explanation": "객체 이름이 바뀌면 CloudFront는 새 객체로 보고 다음 요청에서 오리진에서 가져온다. 무효화 경로를 관리하지 않아도 되어 반복 배포에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "배포 전체에 와일드카드 무효화를 매번 실행한다." },
+        { "optionKey": "B", "text": "TTL을 365일로 늘려 오리진 요청을 없앤다." },
+        { "optionKey": "C", "text": "모든 요청을 오리진으로 전달하는 캐시 동작을 만든다." },
+        { "optionKey": "D", "text": "파일 이름에 버전 해시를 넣어 새 객체로 배포한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0080",
+      "domainCode": "performance",
+      "stem": "CloudFront의 주 오리진이 5xx 오류를 반환할 때 보조 오리진으로 자동 전환되게 하려면?",
+      "explanation": "오리진 그룹은 기본 오리진이 오류를 반환하거나 응답하지 않을 때 보조 오리진으로 전환한다. 캐시 동작에 오리진 그룹을 연결해 장애 조치를 활성화한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high-availability-loc-origin.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "두 오리진을 오리진 그룹으로 묶어 장애 조치 기준을 설정한다." },
+        { "optionKey": "B", "text": "두 오리진을 한 캐시 동작에 연결해 매 요청마다 번갈아 사용한다." },
+        { "optionKey": "C", "text": "Route 53 가중치 레코드만으로 CloudFront 오리진을 전환한다." },
+        { "optionKey": "D", "text": "Lambda@Edge에서 보조 오리진을 수동으로 호출한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0081",
+      "domainCode": "performance",
+      "stem": "수백 개의 비디오 파일을 구독자만 볼 수 있게 하면서 재생 목록이 자주 바뀐다. 파일마다 서명 URL을 만들지 않으려면?",
+      "explanation": "서명 쿠키는 하나의 서명으로 여러 객체에 접근할 수 있어 URL을 파일마다 다시 만들 필요가 없다. 재생 목록이 자주 바뀌는 미디어 배포에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-signed-cookies.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "파일마다 서명 URL을 생성해 재생 목록에 넣는다." },
+        { "optionKey": "B", "text": "CloudFront 서명 쿠키로 여러 객체 접근을 한 번에 허용한다." },
+        { "optionKey": "C", "text": "S3 버킷을 퍼블릭 읽기로 전환해 접근을 단순화한다." },
+        { "optionKey": "D", "text": "OAC를 비활성화해 서명 검증 과정을 생략한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0082",
+      "domainCode": "performance",
+      "stem": "텍스트 기반 웹 자산의 전송 크기를 줄여 사용자 체감 지연을 개선하려면 CloudFront에서 무엇을 활성화해야 하는가?",
+      "explanation": "CloudFront의 자동 압축은 지원되는 콘텐츠를 gzip 또는 Brotli로 압축해 전송한다. 텍스트 자산의 전송 바이트가 줄어 로딩 시간이 개선된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "오리진 응답 버퍼링" },
+        { "optionKey": "B", "text": "필드 수준 암호화" },
+        { "optionKey": "C", "text": "자동 압축" },
+        { "optionKey": "D", "text": "가격 등급 확대" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0083",
+      "domainCode": "performance",
+      "stem": "전 세계 사용자에게 UDP 기반 게임 서버를 제공하며 서버 IP를 방화벽 허용 목록에 고정해야 한다. 가장 적합한 서비스는?",
+      "explanation": "Global Accelerator는 고정 애니캐스트 IP로 TCP/UDP 트래픽을 AWS 백본을 통해 전달한다. CloudFront는 HTTP/HTTPS 콘텐츠 캐싱에 초점이 있어 UDP 게임 트래픽에 적합하지 않다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "Amazon CloudFront" },
+        { "optionKey": "B", "text": "Route 53 지연 기반 라우팅" },
+        { "optionKey": "C", "text": "Application Load Balancer" },
+        { "optionKey": "D", "text": "AWS Global Accelerator" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0084",
+      "domainCode": "performance",
+      "stem": "여러 리전의 API 엔드포인트로 동적 요청을 캐싱 없이 전달하면서 지연 기반 선택과 빠른 장애 조치를 원한다. 가장 적합한 구성은?",
+      "explanation": "Global Accelerator는 캐싱 없이 TCP/UDP 트래픽을 가장 가까운 정상 엔드포인트로 전달한다. 리전별 엔드포인트 그룹과 상태 확인으로 지연 개선과 장애 조치를 함께 얻는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction-how-it-works.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Global Accelerator에 리전별 엔드포인트 그룹과 상태 확인을 구성한다." },
+        { "optionKey": "B", "text": "CloudFront에 API 경로를 캐시하고 TTL을 0으로 설정한다." },
+        { "optionKey": "C", "text": "Route 53 지오로케이션 레코드로 단일 리전에 고정한다." },
+        { "optionKey": "D", "text": "하나의 ALB를 여러 리전에 걸쳐 배포한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0085",
+      "domainCode": "performance",
+      "stem": "Global Accelerator에서 한 리전 엔드포인트 그룹으로 가는 트래픽 비중을 줄여 다른 리전으로 점진적으로 이동하려면?",
+      "explanation": "트래픽 다이얼은 엔드포인트 그룹으로 보내는 트래픽 비율을 조정한다. 값을 낮추면 해당 리전의 비중이 줄고 다른 정상 그룹으로 분산된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/global-accelerator/latest/dg/about-endpoint-groups-traffic-dial.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "리스너의 포트 범위를 변경한다." },
+        { "optionKey": "B", "text": "엔드포인트 그룹의 트래픽 다이얼을 낮춘다." },
+        { "optionKey": "C", "text": "엔드포인트 상태 확인을 비활성화한다." },
+        { "optionKey": "D", "text": "클라이언트 선호도 설정을 해제한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0086",
+      "domainCode": "performance",
+      "stem": "미국과 유럽에 각각 배포된 웹 서비스가 사용자에게 네트워크 지연이 가장 낮은 리전으로 연결되게 하려면?",
+      "explanation": "지연 기반 라우팅은 사용자와 각 리전 간의 측정된 지연을 비교해 가장 빠른 리전을 선택한다. 지리적 위치가 아니라 실제 네트워크 지연이 기준이다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "가중치 기반 라우팅" },
+        { "optionKey": "B", "text": "지오로케이션 라우팅" },
+        { "optionKey": "C", "text": "지연 기반 라우팅" },
+        { "optionKey": "D", "text": "단순 라우팅" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0087",
+      "domainCode": "performance",
+      "stem": "새 버전의 웹 애플리케이션에 전체 트래픽의 10%만 보내 안정성을 확인하려면 Route 53에서 어떤 라우팅을 사용하는가?",
+      "explanation": "가중치 기반 라우팅은 레코드별 가중치로 트래픽 비율을 정한다. 새 버전에 낮은 가중치를 주면 소규모 카나리 배포가 가능하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "페일오버 라우팅" },
+        { "optionKey": "B", "text": "멀티밸류 응답 라우팅" },
+        { "optionKey": "C", "text": "지오프록시미티 라우팅" },
+        { "optionKey": "D", "text": "가중치 기반 라우팅" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0088",
+      "domainCode": "performance",
+      "stem": "특정 국가의 사용자에게만 현지 언어 콘텐츠를 제공하고 나머지 국가는 기본 사이트로 보내려면?",
+      "explanation": "지오로케이션 라우팅은 사용자의 DNS 위치를 기준으로 레코드를 선택한다. 국가별 콘텐츠를 제공하고 기본 레코드로 나머지 지역을 처리할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geolocation.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "지오로케이션 라우팅" },
+        { "optionKey": "B", "text": "지연 기반 라우팅" },
+        { "optionKey": "C", "text": "가중치 기반 라우팅" },
+        { "optionKey": "D", "text": "멀티밸류 응답 라우팅" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0089",
+      "domainCode": "performance",
+      "stem": "example.com 같은 존 apex에서 ALB로 트래픽을 보내려 한다. Route 53에서 적절한 레코드 유형은?",
+      "explanation": "CNAME은 존 apex에 만들 수 없지만 Alias 레코드는 apex에서도 AWS 리소스를 가리킬 수 있다. Alias는 AWS 리소스 대상 쿼리에 비용이 들지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "CNAME 레코드" },
+        { "optionKey": "B", "text": "Alias 레코드" },
+        { "optionKey": "C", "text": "MX 레코드" },
+        { "optionKey": "D", "text": "TXT 레코드" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0090",
+      "domainCode": "performance",
+      "stem": "여러 웹 서버의 IP를 DNS 응답에 포함해 간단히 분산하고 비정상 서버는 응답에서 제외하려면?",
+      "explanation": "멀티밸류 응답 라우팅은 최대 8개의 정상 레코드를 무작위로 반환해 간단한 부하 분산을 제공한다. 레코드에 상태 확인을 연결하면 비정상 엔드포인트가 제외된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "단순 라우팅" },
+        { "optionKey": "B", "text": "페일오버 라우팅" },
+        { "optionKey": "C", "text": "멀티밸류 응답 라우팅" },
+        { "optionKey": "D", "text": "지오프록시미티 라우팅" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0091",
+      "domainCode": "performance",
+      "stem": "주 리전의 ALB가 비정상일 때만 보조 리전으로 DNS 응답을 전환하려면?",
+      "explanation": "페일오버 라우팅은 기본 레코드의 상태 확인이 실패하면 보조 레코드로 응답한다. 평상시에는 기본 리소스만 사용하고 장애 시에만 전환한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "지연 기반 라우팅과 TTL 300초" },
+        { "optionKey": "B", "text": "가중치 50/50 라우팅" },
+        { "optionKey": "C", "text": "멀티밸류 응답 라우팅" },
+        { "optionKey": "D", "text": "페일오버 라우팅과 상태 확인" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0092",
+      "domainCode": "performance",
+      "stem": "여러 VPC와 온프레미스 네트워크를 허브 앤 스포크로 연결하고 라우팅을 중앙에서 관리하려면?",
+      "explanation": "Transit Gateway는 VPC와 온프레미스 네트워크를 하나의 허브에 연결해 라우팅을 중앙에서 관리한다. VPC 피어링은 전이적이지 않아 연결이 늘수록 관리가 복잡해진다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Transit Gateway로 연결을 집중한다." },
+        { "optionKey": "B", "text": "모든 VPC를 서로 VPC 피어링으로 연결한다." },
+        { "optionKey": "C", "text": "각 VPC에 인터넷 게이트웨이를 두고 공인 IP로 통신한다." },
+        { "optionKey": "D", "text": "VPC마다 NAT Gateway를 두고 상호 라우팅한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0093",
+      "domainCode": "performance",
+      "stem": "VPC 라우팅 테이블에 10.0.0.0/16과 10.0.1.0/24 경로가 함께 있을 때 10.0.1.5로 가는 트래픽은 어느 경로를 사용하는가?",
+      "explanation": "라우팅 테이블은 목적지와 가장 길게 일치하는 접두사를 선택한다. /24가 /16보다 구체적이므로 해당 경로가 우선한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/RouteTables.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "항상 /16 경로를 사용한다." },
+        { "optionKey": "B", "text": "더 구체적인 /24 경로를 사용한다." },
+        { "optionKey": "C", "text": "두 경로로 절반씩 분산한다." },
+        { "optionKey": "D", "text": "라우팅 테이블의 생성 순서를 따른다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0094",
+      "domainCode": "performance",
+      "stem": "프라이빗 서브넷의 대량 아웃바운드 트래픽이 단일 NAT 인스턴스에서 병목이 된다. 가장 적절한 조치는?",
+      "explanation": "NAT Gateway는 관리형으로 대역폭을 자동 확장하며 AZ별 배포로 가용성과 처리량을 확보한다. 단일 NAT 인스턴스는 인스턴스 크기에 처리량이 제한된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "NAT 인스턴스의 보안 그룹을 모든 트래픽 허용으로 바꾼다." },
+        { "optionKey": "B", "text": "프라이빗 서브넷의 인스턴스에 퍼블릭 IP를 직접 부여한다." },
+        { "optionKey": "C", "text": "AZ별로 NAT Gateway를 배포하고 서브넷 라우팅을 분산한다." },
+        { "optionKey": "D", "text": "인터넷 게이트웨이를 프라이빗 서브넷에 연결한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0095",
+      "domainCode": "performance",
+      "stem": "프라이빗 서브넷의 인스턴스가 S3에 접근할 때 NAT Gateway를 거치지 않아 지연과 데이터 처리 비용을 줄이려면?",
+      "explanation": "게이트웨이 엔드포인트는 프라이빗 서브넷에서 S3로 가는 트래픽을 AWS 네트워크 내부에서 처리한다. NAT Gateway를 경유하지 않아 홉과 데이터 처리 비용이 줄어든다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "S3 Transfer Acceleration을 활성화한다." },
+        { "optionKey": "B", "text": "인스턴스에 Elastic IP를 연결한다." },
+        { "optionKey": "C", "text": "VPC 피어링으로 S3 리전에 연결한다." },
+        { "optionKey": "D", "text": "S3용 게이트웨이 엔드포인트를 라우팅 테이블에 연결한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0096",
+      "domainCode": "performance",
+      "stem": "하나의 도메인에서 /api 요청은 API 서버로, /images 요청은 이미지 서버로 보내려면 ALB에서 무엇을 구성하는가?",
+      "explanation": "ALB 리스너 규칙은 호스트와 경로 조건으로 서로 다른 대상 그룹에 트래픽을 보낼 수 있다. L7 정보를 사용하므로 경로 기반 분기에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "리스너 규칙의 경로 조건으로 대상 그룹을 분기한다." },
+        { "optionKey": "B", "text": "NLB에서 TCP 포트만으로 대상을 구분한다." },
+        { "optionKey": "C", "text": "Route 53 가중치 레코드로 경로를 구분한다." },
+        { "optionKey": "D", "text": "CLB의 단일 대상 그룹에 두 서버를 등록한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0097",
+      "domainCode": "performance",
+      "stem": "초당 수백만 건의 TCP 요청을 처리하면서 AZ별 고정 IP와 낮은 지연이 필요하다. 가장 적합한 로드 밸런서는?",
+      "explanation": "NLB는 초고성능 TCP/UDP 처리와 AZ별 고정 IP를 제공한다. HTTP 헤더 기반 라우팅이 필요 없다면 NLB가 지연과 처리량 면에서 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "Application Load Balancer" },
+        { "optionKey": "B", "text": "Network Load Balancer" },
+        { "optionKey": "C", "text": "Gateway Load Balancer" },
+        { "optionKey": "D", "text": "Classic Load Balancer" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0098",
+      "domainCode": "performance",
+      "stem": "방화벽 가상 어플라이언스 플릿을 투명하게 삽입해 모든 트래픽을 검사하려면 어떤 로드 밸런서를 사용하는가?",
+      "explanation": "Gateway Load Balancer는 GENEVE 프로토콜로 트래픽을 가상 어플라이언스 플릿에 분산한다. 보안 어플라이언스를 네트워크 경로에 투명하게 삽입할 때 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/introduction.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "Application Load Balancer에 리스너 규칙을 추가한다." },
+        { "optionKey": "B", "text": "Network Load Balancer에 TLS 리스너를 구성한다." },
+        { "optionKey": "C", "text": "Gateway Load Balancer를 배포한다." },
+        { "optionKey": "D", "text": "Classic Load Balancer에 프록시 프로토콜을 설정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0099",
+      "domainCode": "performance",
+      "stem": "ALB 대상 그룹에서 별도 설정 없이 기본으로 사용하는 라우팅 알고리즘은?",
+      "explanation": "대상 그룹 속성의 기본값은 라운드 로빈이다. 미처리 요청 수나 가중치 기반 무작위 방식으로 변경할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "소스 IP 해시" },
+        { "optionKey": "B", "text": "미처리 요청 수 기반 선택" },
+        { "optionKey": "C", "text": "가중치 기반 무작위 선택" },
+        { "optionKey": "D", "text": "라운드 로빈" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0100",
+      "domainCode": "performance",
+      "stem": "세션 상태를 로컬 메모리에 저장하는 레거시 앱을 ALB 뒤에 두었다. 같은 사용자의 요청이 같은 인스턴스로 가게 하려면?",
+      "explanation": "고정 세션은 ALB가 발급한 쿠키로 같은 클라이언트의 요청을 같은 대상에 연결한다. 세션 상태를 외부화할 수 없는 레거시 앱의 임시 대안이다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "교차 영역 로드 밸런싱을 비활성화한다." },
+        { "optionKey": "B", "text": "대상 그룹의 등록 취소 지연을 0으로 설정한다." },
+        { "optionKey": "C", "text": "대상 그룹에서 고정 세션을 활성화한다." },
+        { "optionKey": "D", "text": "상태 확인 경로를 /login으로 변경한다." }
+      ]
+    }
+  ]
+}
