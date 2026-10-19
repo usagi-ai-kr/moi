@@ -324,7 +324,7 @@ When('학습 이력 버튼을 누르면', async ({ page }) => {
 });
 
 When('학습 현황 버튼을 누르면', async ({ page }) => {
-  await page.getByRole('button', { name: '학습 현황' }).click();
+  await page.getByRole('link', { name: '학습 현황/이력' }).click();
 });
 
 Then('학습 범위 선택이 보인다', async ({ page }) => {

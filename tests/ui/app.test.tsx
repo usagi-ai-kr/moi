@@ -97,11 +97,14 @@ describe('App (세션 상태 화면)', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('로그인 홈: 계정 카드를 상시 노출하지 않고 원본 id를 렌더하지 않는다', async () => {
+  it('로그인 홈: 계정/로그아웃을 상시 노출하지 않고 원본 id를 렌더하지 않는다', async () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
     renderApp(client, '/');
-    expect(await screen.findByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '학습 시작' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
     expect(screen.queryByTestId('masked-id')).not.toBeInTheDocument();
     expect(document.body.textContent).not.toContain(id);
     expect(document.body.textContent).not.toContain('123e');
@@ -154,8 +157,8 @@ describe('App (세션 상태 화면)', () => {
           }),
       ),
     } as unknown as ApiClient;
-    const { queryClient } = renderApp(client);
-    const removeSpy = vi.spyOn(queryClient, 'removeQueries');
+    const { queryClient } = renderApp(client, '/account');
+    const resetSpy = vi.spyOn(queryClient, 'resetQueries');
     const button = await screen.findByRole('button', { name: '로그아웃' });
     fireEvent.click(button);
     const pending = await screen.findByRole('button', { name: /로그아웃하고 있습니다/ });
@@ -166,7 +169,7 @@ describe('App (세션 상태 화면)', () => {
       expect(screen.getByRole('link', { name: '카카오 로그인' })).toBeInTheDocument();
     });
     // stale 로그인 id가 남지 않고 서버 최신(null)으로 갱신된다
-    expect(removeSpy).toHaveBeenCalledWith({ queryKey: ME_QUERY_KEY });
+    expect(resetSpy).toHaveBeenCalledWith({ queryKey: ME_QUERY_KEY });
     expect(queryClient.getQueryData(ME_QUERY_KEY)).toBeNull();
   });
 
@@ -186,7 +189,7 @@ describe('App (세션 상태 화면)', () => {
     expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
     });
     expect(calls).toBe(2);
   });
@@ -199,7 +202,7 @@ describe('App (세션 상태 화면)', () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
     renderApp(client);
-    await screen.findByRole('button', { name: '로그아웃' });
+    await screen.findByRole('button', { name: '20문제 학습' });
     expect(getItem).not.toHaveBeenCalled();
     expect(setItem).not.toHaveBeenCalled();
     expect(sessGet).not.toHaveBeenCalled();

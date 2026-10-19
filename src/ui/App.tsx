@@ -1,10 +1,8 @@
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy } from 'react';
 import { MemoryRouter, Route, Routes, useInRouterContext, useNavigate } from 'react-router';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
-import { STUDY_EXAM_ID } from './study/types';
-import { StatsPanel } from './stats/StatsPanel';
 import { AppShell } from './AppShell';
 import { AccountPage } from './pages/AccountPage';
 import { HistoryPage } from './pages/HistoryPage';
@@ -61,19 +59,10 @@ function LoggedOutView({
   );
 }
 
-// 로그인 홈 — 계정 카드는 노출하지 않는다. CTA는 라우터로 이동해 뒤로가기/새로고침을 유지한다.
-function Home({
-  client,
-  doLogout,
-  showAuthError,
-}: {
-  client: ApiClient;
-  doLogout: () => Promise<void>;
-  showAuthError: boolean;
-}) {
+// 로그인 홈 — 계정·통계·로그아웃은 각자의 화면/메뉴로 이동한다.
+// CTA는 라우터로 이동해 뒤로가기/새로고침/직접 URL을 유지한다.
+function Home({ showAuthError }: { showAuthError: boolean }) {
   const navigate = useNavigate();
-  const logoutPending = useUiStore((s) => s.logoutPending);
-  const [statsOpen, setStatsOpen] = useState(false);
   return (
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
@@ -85,25 +74,7 @@ function Home({
         <button type="button" className="moi-study-link" onClick={() => void navigate('/history')}>
           {copy.study.historyLink}
         </button>
-        <button
-          type="button"
-          className="moi-study-link"
-          aria-expanded={statsOpen}
-          onClick={() => setStatsOpen((v) => !v)}
-        >
-          {copy.stats.toggle}
-        </button>
-        <button
-          type="button"
-          className="moi-study-link"
-          disabled={logoutPending}
-          aria-busy={logoutPending}
-          onClick={() => void doLogout()}
-        >
-          {logoutPending ? copy.session.loggingOut : copy.session.logout}
-        </button>
       </div>
-      {statsOpen && <StatsPanel client={client} examId={STUDY_EXAM_ID} />}
     </div>
   );
 }
@@ -122,6 +93,7 @@ function NotFound() {
 function AppContent({ client }: { client: ApiClient }) {
   const { status, userId, retry } = useSessionId(client);
   const doLogout = useLogout(client, userId);
+  const logoutPending = useUiStore((s) => s.logoutPending);
   const authFailed = useAuthCallback('error');
   useAuthCallback('success');
   const bannerDismissed = useUiStore((s) => s.authBannerDismissed);
@@ -132,7 +104,7 @@ function AppContent({ client }: { client: ApiClient }) {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Home client={client} doLogout={doLogout} showAuthError={showAuthError} />} />
+        <Route index element={<Home showAuthError={showAuthError} />} />
         <Route
           path="study"
           element={
@@ -149,7 +121,7 @@ function AppContent({ client }: { client: ApiClient }) {
           }
         />
         <Route path="history" element={<HistoryPage client={client} />} />
-        <Route path="account" element={<AccountPage client={client} />} />
+        <Route path="account" element={<AccountPage pending={logoutPending} onLogout={doLogout} />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

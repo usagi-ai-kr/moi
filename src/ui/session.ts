@@ -73,8 +73,9 @@ export function useLogout(client: ApiClient, userId: string | null): () => Promi
     },
     onSettled: () => {
       setLogoutPending(false);
-      void queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
-      queryClient.removeQueries({ queryKey: ME_QUERY_KEY });
+      // 활성 /api/me observer를 초기 상태로 되돌리고 즉시 재조회한다.
+      // invalidate→remove 순서는 재조회를 취소해 로그인 화면이 갱신되지 않을 수 있다.
+      void queryClient.resetQueries({ queryKey: ME_QUERY_KEY });
     },
   });
   return async () => {
