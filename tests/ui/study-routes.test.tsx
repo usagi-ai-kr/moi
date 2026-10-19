@@ -1,13 +1,16 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider, focusManager } from '@tanstack/react-query';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { HTTPError } from 'ky';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import type { ApiClient, StudyActiveSet } from '../../src/ui/api/client';
 import { HistoryDetailPage } from '../../src/ui/pages/HistoryDetailPage';
+import { LegacyStudyRedirect } from '../../src/ui/pages/LegacyStudyRedirect';
 import { StudyRoute } from '../../src/ui/pages/StudyRoute';
 import { useStudyUiStore } from '../../src/ui/study/store';
+
+const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
 
 function httpError(status: number, body: unknown, url = 'http://localhost/x'): HTTPError {
   return new HTTPError(new Response(JSON.stringify(body), { status }), new Request(url), {} as never);
@@ -64,12 +67,27 @@ function submittedSet(): StudyActiveSet {
   } as StudyActiveSet;
 }
 
-function fakeStudyClient(o: { start?: StudyActiveSet; get?: StudyActiveSet } = {}): ApiClient {
+interface FakeOpts {
+  start?: StudyActiveSet;
+  startError?: number;
+  get?: StudyActiveSet;
+  current?: StudyActiveSet | null;
+  currentError?: number;
+}
+
+function fakeStudyClient(o: FakeOpts = {}): ApiClient {
   return {
     get: vi.fn((path: string) => ({
       json: async () => {
-        if (String(path).startsWith('api/study/sets/')) {
+        const p = String(path);
+        if (p.startsWith('api/study/sets/current')) {
+          if (o.currentError) throw httpError(o.currentError, { error: 'internal' });
+          if (o.current) return o.current;
+          throw httpError(404, { error: 'no_active_set' });
+        }
+        if (p.startsWith('api/study/sets/')) {
           if (o.get) return o.get;
+          if (o.current) return o.current;
           throw httpError(404, { error: 'not_found' });
         }
         throw httpError(404, { error: 'not_found' });
@@ -77,7 +95,10 @@ function fakeStudyClient(o: { start?: StudyActiveSet; get?: StudyActiveSet } = {
     })),
     post: vi.fn((path: string) => ({
       json: async () => {
-        if (String(path) === 'api/study/sets') return o.start ?? makeSet();
+        if (String(path) === 'api/study/sets') {
+          if (o.startError) throw httpError(o.startError, { error: 'active_set_exists' });
+          return o.start ?? makeSet();
+        }
         if (String(path).endsWith('/submit')) return submittedSet();
         if (String(path).endsWith('/abandon')) return makeSet({ status: 'abandoned' });
         throw httpError(404, { error: 'not_found' });
@@ -106,7 +127,7 @@ function LocationProbe() {
   return <p data-testid="location">{loc.pathname + loc.search}</p>;
 }
 
-function renderStudyRoutes(client: ApiClient, initial: string) {
+function renderStudyRoutes(client: ApiClient, initial: string | { pathname: string; state: unknown }) {
   resetStore();
   window.history.replaceState(null, '', '/');
   window.localStorage.clear();
@@ -116,12 +137,12 @@ function renderStudyRoutes(client: ApiClient, initial: string) {
     <MemoryRouter initialEntries={[initial]}>
       <QueryClientProvider client={queryClient}>
         <Routes>
+          <Route path="/study" element={<StudyRoute client={client} userId="user-1" mode="current" />} />
           <Route path="/study/new" element={<StudyRoute client={client} userId="user-1" mode="start" />} />
-          <Route path="/study/:setId" element={<StudyRoute client={client} userId="user-1" mode="active" />} />
-          <Route
-            path="/study/:setId/result"
-            element={<StudyRoute client={client} userId="user-1" mode="result" />}
-          />
+          <Route path="/study/result" element={<StudyRoute client={client} userId="user-1" mode="result" />} />
+          <Route path="/study/:setId" element={<LegacyStudyRedirect client={client} />} />
+          <Route path="/study/:setId/result" element={<LegacyStudyRedirect client={client} />} />
+          <Route path="/history" element={<p>history-list</p>} />
         </Routes>
         <LocationProbe />
       </QueryClientProvider>
@@ -148,6 +169,12 @@ function renderHistoryDetail(client: ApiClient, initial: string) {
   );
 }
 
+function expectNoSetIdInUrl() {
+  const location = screen.getByTestId('location').textContent ?? '';
+  expect(location).not.toMatch(UUID_RE);
+  expect(location).not.toContain('set-1');
+}
+
 beforeEach(() => {
   window.history.replaceState(null, '', '/');
   window.localStorage.clear();
@@ -156,24 +183,138 @@ beforeEach(() => {
 });
 
 describe('학습 라우트 분리 (#148)', () => {
-  it('/study/new 렌더 + 시작 성공 시 /study/:id로 이동한다', async () => {
-    renderStudyRoutes(fakeStudyClient({ start: makeSet() }), '/study/new');
+  it('/study는 current 200이면 풀이 화면을 보이고 URL에 UUID가 없다', async () => {
+    renderStudyRoutes(fakeStudyClient({ current: makeSet() }), '/study');
+    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(screen.getByTestId('location')).toHaveTextContent('/study');
+    expectNoSetIdInUrl();
+  });
+
+  it('/study 풀이 중 창 포커스가 돌아와도 풀이 화면을 다시 로딩하지 않는다', async () => {
+    const client = fakeStudyClient({ current: makeSet() });
+    const currentCalls = () =>
+      vi.mocked(client.get).mock.calls.filter(([p]) => String(p).startsWith('api/study/sets/current')).length;
+    renderStudyRoutes(client, '/study');
+    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(currentCalls()).toBe(1);
+    act(() => {
+      focusManager.setFocused(false);
+      focusManager.setFocused(true);
+    });
+    await new Promise((r) => setTimeout(r, 20));
+    expect(currentCalls()).toBe(1);
+    expect(screen.getByText(/1\/20/)).toBeInTheDocument();
+    focusManager.setFocused(undefined);
+  });
+
+  it('/study는 진행 중 세트가 없으면 /study/new로 이동한다', async () => {
+    renderStudyRoutes(fakeStudyClient({ current: null }), '/study');
+    expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
+    expect(screen.getByTestId('location')).toHaveTextContent('/study/new');
+  });
+
+  it('/study current 오류는 재시도 버튼을 보인다', async () => {
+    renderStudyRoutes(fakeStudyClient({ currentError: 500 }), '/study');
+    expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument();
+  });
+
+  it('/study/new 시작 성공 시 /study로 이동한다', async () => {
+    renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: makeSet() }), '/study/new');
     expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
     expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/study/set-1'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
+    expectNoSetIdInUrl();
   });
 
-  it('/study/:id 직접 진입 + submitted면 /result로 replace한다', async () => {
-    renderStudyRoutes(fakeStudyClient({ get: submittedSet() }), '/study/set-1');
+  it('409면 이어풀기 버튼으로 /study에 복원한다', async () => {
+    renderStudyRoutes(
+      fakeStudyClient({ startError: 409, current: makeSet() }),
+      '/study/new',
+    );
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    expect(await screen.findByText(/이미 진행 중인 세트/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '이어풀기' }));
+    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
+  });
+
+  it('제출 성공 시 /study/result로 이동하고 URL에 UUID가 없다', async () => {
+    renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: makeSet() }), '/study/new');
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/20/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/study/set-1/result'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/study/result'));
+    expectNoSetIdInUrl();
   });
 
-  it('/study/:id/result 직접 진입 시 결과를 보인다', async () => {
+  it('/study/result state가 없으면 /history로 이동한다', async () => {
+    renderStudyRoutes(fakeStudyClient(), '/study/result');
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history'));
+    expect(await screen.findByText('history-list')).toBeInTheDocument();
+  });
+
+  it('/study/result state로 제출 세트를 복원한다', async () => {
+    renderStudyRoutes(
+      fakeStudyClient({ get: submittedSet() }),
+      { pathname: '/study/result', state: { setId: 'set-1' } },
+    );
+    expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    expect(screen.getByTestId('location')).toHaveTextContent('/study/result');
+    expectNoSetIdInUrl();
+  });
+
+  it('레거시 /study/:id active는 /study로 replace한다', async () => {
+    renderStudyRoutes(fakeStudyClient({ get: makeSet(), current: makeSet() }), '/study/set-1');
+    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
+  });
+
+  it('레거시 /study/:id/result submitted는 /study/result로 replace한다', async () => {
     renderStudyRoutes(fakeStudyClient({ get: submittedSet() }), '/study/set-1/result');
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
-    expect(screen.getByTestId('location')).toHaveTextContent('/study/set-1/result');
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/study/result'));
+    expectNoSetIdInUrl();
+  });
+
+  it('레거시 세트가 없으면 UUID 없이 안내와 복구 링크를 보인다', async () => {
+    renderStudyRoutes(fakeStudyClient(), '/study/set-1');
+    expect(await screen.findByText('학습 세트를 찾을 수 없습니다.')).toBeInTheDocument();
+    expect(screen.getByRole('alert').textContent).not.toContain('set-1');
+    expect(screen.getByRole('link', { name: '새 세트 시작' })).toHaveAttribute('href', '/study/new');
+    expect(screen.getByRole('link', { name: '학습 이력' })).toHaveAttribute('href', '/history');
+  });
+
+  it('legacy /?study=id는 서버 확인 후 /study로 replace한다', async () => {
+    const meId = 'user-1';
+    const client = {
+      get: vi.fn((path: string) => ({
+        json: async () => {
+          if (String(path).startsWith('api/study/sets/current')) return makeSet();
+          if (String(path).startsWith('api/study/sets/')) return makeSet();
+          if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
+          return { user: { id: meId } };
+        },
+      })),
+      post: vi.fn(),
+      patch: vi.fn(),
+    } as unknown as ApiClient;
+    resetStore();
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <MemoryRouter initialEntries={['/?study=set-1']}>
+        <QueryClientProvider client={queryClient}>
+          <App client={client} />
+        </QueryClientProvider>
+      </MemoryRouter>,
+    );
+    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(document.body.textContent).not.toContain('set-1');
   });
 
   it('/history/:id 로딩 상태를 보인다', async () => {
@@ -207,33 +348,5 @@ describe('학습 라우트 분리 (#148)', () => {
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history'));
-  });
-
-  it('legacy /?study=id는 /study/:id로 redirect한다', async () => {
-    const meId = 'user-1';
-    const client = {
-      get: vi.fn((path: string) => ({
-        json: async () => {
-          if (String(path).startsWith('api/study/sets/')) return makeSet();
-          if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
-          if (String(path).startsWith('api/me')) return { user: { id: meId } };
-          return { user: { id: meId } };
-        },
-      })),
-      post: vi.fn(),
-      patch: vi.fn(),
-    } as unknown as ApiClient;
-    resetStore();
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    render(
-      <MemoryRouter initialEntries={['/?study=set-1']}>
-        <QueryClientProvider client={queryClient}>
-          <App client={client} />
-        </QueryClientProvider>
-      </MemoryRouter>,
-    );
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
   });
 });

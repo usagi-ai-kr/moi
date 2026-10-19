@@ -47,14 +47,15 @@ export function StudyScreen({
   client: ApiClient;
   userId: string;
   initialSetId?: string | null;
-  onNavigate?: (to: string, opts?: { replace?: boolean }) => void;
+  onNavigate?: (to: string, opts?: { replace?: boolean; state?: unknown }) => void;
 }) {
   const f = useStudyFlow(client, userId, {
     ...(initialSetId !== undefined ? { initialSetId } : {}),
     ...(onNavigate
       ? {
-          onSetStarted: (id) => onNavigate(`/study/${id}`),
-          onSubmitted: (id) => onNavigate(`/study/${id}/result`),
+          // 주소창에 세트 UUID를 남기지 않는다 — /study가 current API로 복원한다 (#148).
+          onSetStarted: () => onNavigate('/study'),
+          onSubmitted: (id) => onNavigate('/study/result', { state: { setId: id } }),
           onAbandoned: () => onNavigate('/study/new'),
         }
       : {}),
@@ -66,8 +67,11 @@ export function StudyScreen({
   // 라우트가 우선: active에서 submitted를 렌더하면 result로, result에서 active면 풀이로 replace.
   useEffect(() => {
     if (!onNavigate || !set) return;
-    if (isSubmittedSet(set) && s.view === 'active') onNavigate(`/study/${set.id}/result`, { replace: true });
-    else if (!isSubmittedSet(set) && s.view === 'result' && f.setId) onNavigate(`/study/${f.setId}`, { replace: true });
+    if (isSubmittedSet(set) && s.view === 'active') {
+      onNavigate('/study/result', { replace: true, state: { setId: set.id } });
+    } else if (!isSubmittedSet(set) && s.view === 'result' && f.setId) {
+      onNavigate('/study', { replace: true });
+    }
   }, [onNavigate, set, s.view, f.setId]);
 
   if (s.view === 'history') {
@@ -180,9 +184,13 @@ export function StudyScreen({
         onDomain={s.setDomainId}
         onStart={f.handleStart}
         onResume={() => {
+          // 409(이미 진행 중)는 setId를 모르므로 /study의 current 복원으로 이동한다 (#148).
+          if (onNavigate) {
+            onNavigate('/study');
+            return;
+          }
           if (!f.setId) return;
-          if (onNavigate) onNavigate(`/study/${f.setId}`);
-          else s.setView('active');
+          s.setView('active');
         }}
       />
       {onNavigate && (

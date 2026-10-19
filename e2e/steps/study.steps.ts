@@ -157,6 +157,15 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
       await route.fulfill({ status: 200, json: STATS_DTO });
       return;
     }
+    // 진행 중 세트 복원(#148) — generic /sets/:id보다 먼저 처리한다.
+    if (method === 'GET' && path === '/api/study/sets/current') {
+      if (!active || active.status !== 'active') {
+        await route.fulfill({ status: 404, json: { error: 'no_active_set' } });
+        return;
+      }
+      await route.fulfill({ status: 200, json: toActiveDto(active) });
+      return;
+    }
     if (method === 'POST' && path === '/api/study/sets') {
       if (active && active.status === 'active') {
         await route.fulfill({ status: 409, json: { error: 'active_set_exists' } });
@@ -333,6 +342,12 @@ Then('학습 범위 선택이 보인다', async ({ page }) => {
 
 Then('문제 화면이 보인다', async ({ page }) => {
   await expect(page.getByText(/1\/20/)).toBeVisible();
+});
+
+Then('주소창에 내부 세트 ID가 없다', async ({ page }) => {
+  const url = page.url();
+  expect(url).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  expect(new URL(url).pathname).toMatch(/^\/study(\/new|\/result)?$/);
 });
 
 Then('문제 본문과 보기가 보인다', async ({ page }) => {
