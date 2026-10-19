@@ -1,28 +1,8 @@
-import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import '@fontsource-variable/inter/index.css';
-import '@/ui/styles.css';
-import '@/ui/widgets.css';
-import { applyTokens, typography } from '@/ui/tokens';
-import { App } from '@/ui/App';
-import { createApiClient } from '@/ui/api/client';
+import { Root } from './routes'; // StrictMode·라우트 경계는 Root(routes.tsx)에만 둔다 (이슈 #121)
+import { typography } from '@/ui/tokens';
 
-// 토큰 → CSS 변수 주입 후 렌더 (ADR-0012: 스타일 값의 단일 소스)
-applyTokens();
-
-// BrowserRouter는 Route가 생길 때 추가한다 — 현재 라우팅이 없어 초기 번들에서 제외한다 (perf).
-function Root() {
-  const [queryClient] = useState(() => new QueryClient());
-  const [apiClient] = useState(() => createApiClient());
-  return (
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <App client={apiClient} />
-      </QueryClientProvider>
-    </StrictMode>
-  );
-}
+// BrowserRouter는 /licenses 공개 고지 페이지(Root 내 경계)에서 최소한으로만 사용한다 (이슈 #121).
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root 엘리먼트가 없습니다');

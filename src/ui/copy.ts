@@ -103,4 +103,23 @@ export const copy = {
     weakTitle: '취약 추천',
     weakEmpty: '추천할 취약 영역이 없습니다',
   },
+  licenses: {
+    footerLink: '오픈소스 라이선스',
+    loading: '라이선스 고지를 불러오고 있습니다',
+    title: '제삼자 라이선스 고지',
+    heading: '제삼자 라이선스 고지 목록',
+    totalLabel: '라이선스 고지 개수',
+    totalCount: (n: number) => `production 의존성 ${n}개`,
+    unverifiedCount: (n: number) => `저작권 미확인 ${n}개(원문 표기)`,
+    unverifiedNote: "저작권이 '확인 필요'로 표기된 항목은 원문 그대로 미확인 상태이며, 최종 법률 승인이나 모든 고지 완료를 의미하지 않습니다.",
+    loadError: '라이선스 고지를 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.',
+    retry: '다시 시도',
+    download: '원문 고지(Markdown) 다운로드',
+    backHome: '홈으로 돌아가기',
+    columns: {
+      license: '라이선스',
+      copyright: '저작권',
+      url: '출처 URL',
+    },
+  },
 } as const;
