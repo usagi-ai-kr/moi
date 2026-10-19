@@ -48,12 +48,35 @@
 
 - 500문제 배분: `security` 150 / `resilience` 130 / `performance` 120 /
   `cost-optimization` 100 (합계 500).
-- `stem`·`explanation`: 앞뒤 공백 제거 후 비어 있지 않아야 한다.
-  정규화(연속 공백 축소·소문자) stem 중복 금지(팩 내부·전체 팩 간).
+- `stem`: 앞뒤 공백 제거 후 비어 있지 않아야 한다. 최대 4000자, 일반 텍스트만
+  허용한다(원시 HTML·스크립트 금지). 정규화(연속 공백 축소·소문자) stem 중복
+  금지(팩 내부·전체 팩 간).
+- `explanation`: 앞뒤 공백 제거 후 비어 있지 않아야 한다. 최대 8000자.
+  Markdown(GFM)과 Mermaid 다이어그램을 허용한다(아래 계약 참조).
 - `options`: 2~20개. `optionKey`는 문항 내 유일, `text`는 비어 있지 않다.
 - `answerOptionKeys`: 1개 이상, 중복 없음, 반드시 `options`의 부분집합.
 - `sourceUrls`: 1개 이상, 모두 `https://docs.aws.amazon.com/`로 시작.
   AWS 공식 문서 URL만 사용한다. 덤프·기출 복제 금지.
+
+## 해설 Markdown·Mermaid 계약
+
+- 해설은 GFM Markdown을 허용한다: 강조, 목록, 표, 인라인 코드(`` `...` ``).
+- ` ```mermaid ` 펜스 블록으로 다이어그램을 넣을 수 있다. 펜스는 반드시
+  닫아야 하며(열림/닫힘 균형), 다이어그램은 **이해에 꼭 필요한 적절한 경우에만**
+  사용한다. 글로 충분히 설명되는 내용은 다이어그램 없이 쓴다.
+- 원시 HTML·스크립트는 금지한다. `stem`·`explanation`에 `<script` 또는
+  `javascript:`가 포함되면 검증기가 오류로 처리한다.
+- 다이어그램·Markdown 문법도 8000자 상한에 포함한다. 코드 블록·인라인 코드는
+  품질 게이트의 문장 수 계산에서 제외된다(Mermaid 문법을 산문으로 오판하지 않음).
+- 예시:
+
+  ````
+  ```mermaid
+  flowchart LR
+    A[Client] --> B[VPC Endpoint]
+    B --> C[S3]
+  ```
+  ````
 
 ## 정답 원본 보관
 
@@ -73,3 +96,5 @@ node scripts/validate-question-content.mjs content/questions --emit /tmp/bulk.js
   SHA-256 hex로 계산한다.
 - bulk 항목 필드: `examCode`, `domainCode`, `stem`, `explanation`,
   `sourceUrls`, `answerOptionKeys`, `optionSetHash`, `options`.
+- 검증기는 `stem`/`explanation`의 원시 스크립트, 해설 8000자 초과, 닫히지 않은
+  펜스 블록도 함께 거부한다.

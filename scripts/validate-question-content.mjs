@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 export const ALLOWED_SOURCE_PREFIX = 'https://docs.aws.amazon.com/';
 export const SAA_DOMAIN_CODES = ['security', 'resilience', 'performance', 'cost-optimization'];
 export const ALLOWED_EXAM_CODES = ['saa-c03'];
+export const MAX_EXPLANATION_LENGTH = 8000;
 export const BULK_FIELDS = [
   'examCode',
   'domainCode',
@@ -40,6 +41,33 @@ function isNonEmptyString(v) {
   return typeof v === 'string' && v.trim().length > 0;
 }
 
+/** 원시 HTML·스크립트 금지(#134 계약): `<script` 또는 `javascript:`가 있으면 오류 메시지. */
+export function unsafeMarkupError(value) {
+  const lower = String(value).toLowerCase();
+  if (lower.includes('<script')) return 'raw HTML/script is not allowed (<script)';
+  if (lower.includes('javascript:')) return 'raw HTML/script is not allowed (javascript:)';
+  return null;
+}
+
+/**
+ * 펜스 코드 블록 균형 검사(#134). 열린 ```가 끝까지 닫히지 않으면 오류 메시지.
+ * ` ```mermaid ` 블록도 같은 규칙으로 닫힘이 필수다.
+ */
+export function fenceBalanceError(value) {
+  let openMarker = null;
+  for (const line of String(value).split('\n')) {
+    const match = /^\s{0,3}(`{3,})[^`]*$/.exec(line);
+    if (!match) continue;
+    const marker = match[1];
+    if (openMarker === null) {
+      openMarker = marker;
+    } else if (marker.length >= openMarker.length) {
+      openMarker = null;
+    }
+  }
+  return openMarker === null ? null : 'unbalanced code fence: ``` block must be closed';
+}
+
 // 단일 팩 검증. seen은 팩 간 중복 추적용(호출자가 유지).
 export function validatePack(pack, file, seen = { ids: new Map(), stems: new Map() }) {
   const errors = [];
@@ -67,7 +95,20 @@ export function validatePack(pack, file, seen = { ids: new Map(), stems: new Map
       fail(errors, file, qid, `${where}.unknown domainCode ${item.domainCode}`);
     }
     if (!isNonEmptyString(item?.stem)) fail(errors, file, qid, `${where}.stem must not be empty`);
+    else {
+      const unsafe = unsafeMarkupError(item.stem);
+      if (unsafe) fail(errors, file, qid, `${where}.stem: ${unsafe}`);
+    }
     if (!isNonEmptyString(item?.explanation)) fail(errors, file, qid, `${where}.explanation must not be empty`);
+    else {
+      if (item.explanation.length > MAX_EXPLANATION_LENGTH) {
+        fail(errors, file, qid, `${where}.explanation must be at most ${MAX_EXPLANATION_LENGTH} characters`);
+      }
+      const unsafe = unsafeMarkupError(item.explanation);
+      if (unsafe) fail(errors, file, qid, `${where}.explanation: ${unsafe}`);
+      const fence = fenceBalanceError(item.explanation);
+      if (fence) fail(errors, file, qid, `${where}.explanation: ${fence}`);
+    }
     if (!Array.isArray(item?.sourceUrls) || item.sourceUrls.length === 0) {
       fail(errors, file, qid, `${where}.sourceUrls must have at least 1 url`);
     } else {

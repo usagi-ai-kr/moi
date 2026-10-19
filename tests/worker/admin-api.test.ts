@@ -217,6 +217,39 @@ describe('bulk 등록·멱등·원자성', () => {
     expect(await tableCount('audit_logs')).toBe(0);
   });
 
+  it('3000자 Markdown+Mermaid 해설도 201로 저장·조회된다', async () => {
+    const explanation = [
+      '## 해설',
+      '',
+      '- **핵심**: 프라이빗 서브넷에서 VPC 엔드포인트로 S3에 접근한다.',
+      '',
+      '| 항목 | 값 |',
+      '| --- | --- |',
+      '| 경로 | S3 Gateway Endpoint |',
+      '',
+      '```mermaid',
+      'flowchart LR',
+      '  A[EC2] --> B[VPC Endpoint]',
+      '  B --> C[S3]',
+      '```',
+      '',
+      '가'.repeat(2900),
+    ].join('\n');
+    expect(explanation.length).toBeGreaterThan(3000);
+    const res = await adminRequest('/api/admin/questions/bulk', {
+      method: 'POST',
+      token: WRITE_TOKEN,
+      key: 'k-markdown',
+      body: { items: [{ ...bulkItem('security', '마크다운 문1'), explanation }] },
+    });
+    expect(res.status).toBe(201);
+    const body = await res.json<{ created: Array<{ questionId: string }> }>();
+    const got = await adminRequest(`/api/admin/questions/${body.created[0]?.questionId}`, { token: WRITE_TOKEN });
+    expect(got.status).toBe(200);
+    const detail = await got.json<{ version: { explanation: string } }>();
+    expect(detail.version.explanation).toBe(explanation);
+  });
+
   it('Idempotency-Key 없으면 422', async () => {
     const res = await adminRequest('/api/admin/questions/bulk', {
       method: 'POST',

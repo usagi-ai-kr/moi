@@ -17,7 +17,7 @@ export const bulkItemSchema = z.object({
   examCode: z.string().min(1).max(64),
   domainCode: z.string().min(1).max(64),
   stem: z.string().min(1).max(4000),
-  explanation: z.string().min(1).max(2000),
+  explanation: z.string().min(1).max(8000),
   sourceUrls: sourceUrlsSchema,
   answerOptionKeys: z.array(z.string().min(1).max(64)).min(1).max(20),
   optionSetHash: z.string().min(1).max(128),
@@ -33,7 +33,7 @@ export const singleBodySchema = bulkItemSchema;
 export const patchBodySchema = z
   .object({
     stem: z.string().min(1).max(4000).optional(),
-    explanation: z.string().min(1).max(2000).optional(),
+    explanation: z.string().min(1).max(8000).optional(),
     sourceUrls: z.array(z.string().url().max(2048)).max(10).optional(),
     answerOptionKeys: z.array(z.string().min(1).max(64)).min(1).max(20).optional(),
     optionSetHash: z.string().min(1).max(128).optional(),
