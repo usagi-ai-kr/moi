@@ -6,6 +6,7 @@ import { STUDY_EXAM_ID } from './study/types';
 import { StatsPanel } from './stats/StatsPanel';
 import { useStudyUiStore } from './study/store';
 import { AuthErrorAlert, LoadErrorAlert, LoggedInCard } from './widgets';
+import './licenses/licenses.css'; // 푸터 링크 스타일 — 고지 텍스트 데이터는 lazy 청크에만 있다 (이슈 #121)
 
 // 학습 화면은 lazy 청크로 분리 — 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50).
 const StudyScreen = lazy(() =>
@@ -108,6 +109,13 @@ export function App({ client }: { client: ApiClient }) {
           )}
         </div>
       </main>
+      <footer className="moi-footer">
+        <div className="moi-container">
+          <a href="/licenses" className="moi-footer-link">
+            {copy.licenses.footerLink}
+          </a>
+        </div>
+      </footer>
     </>
   );
 }
