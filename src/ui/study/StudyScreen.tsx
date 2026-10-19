@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { copy } from '../copy';
 import { isSubmittedSet, type ApiClient } from '../api/client';
 import { ConflictPanel } from './ConflictPanel';
@@ -35,11 +36,39 @@ function ConfirmDialog({
 
 // 학습 화면 — React.lazy 청크로 홈 초기 번들에서 분리. 라우터 없이 로컬 view 상태.
 // userId로 계정별 초안·탭 상태를 격리한다(App이 key={userId}로 remount — 이슈 #52).
-export function StudyScreen({ client, userId }: { client: ApiClient; userId: string }) {
-  const f = useStudyFlow(client, userId);
+// 라우트 분리(#148): initialSetId/onNavigate가 있으면 route param·router 이동을 사용하고,
+// 없으면 기존 ?study legacy·store view로 동작한다 (직접 렌더 테스트 호환).
+export function StudyScreen({
+  client,
+  userId,
+  initialSetId,
+  onNavigate,
+}: {
+  client: ApiClient;
+  userId: string;
+  initialSetId?: string | null;
+  onNavigate?: (to: string, opts?: { replace?: boolean }) => void;
+}) {
+  const f = useStudyFlow(client, userId, {
+    ...(initialSetId !== undefined ? { initialSetId } : {}),
+    ...(onNavigate
+      ? {
+          onSetStarted: (id) => onNavigate(`/study/${id}`),
+          onSubmitted: (id) => onNavigate(`/study/${id}/result`),
+          onAbandoned: () => onNavigate('/study/new'),
+        }
+      : {}),
+  });
   const { s, set, unanswered, setQuery, historyQuery } = f;
   // 제출 세트일 때만 정정 이력을 조회한다 — useStudyFlow는 수정하지 않는다 (#53).
   const correctionsQuery = useStudyCorrections(client, set && isSubmittedSet(set) ? set.id : null);
+
+  // 라우트가 우선: active에서 submitted를 렌더하면 result로, result에서 active면 풀이로 replace.
+  useEffect(() => {
+    if (!onNavigate || !set) return;
+    if (isSubmittedSet(set) && s.view === 'active') onNavigate(`/study/${set.id}/result`, { replace: true });
+    else if (!isSubmittedSet(set) && s.view === 'result' && f.setId) onNavigate(`/study/${f.setId}`, { replace: true });
+  }, [onNavigate, set, s.view, f.setId]);
 
   if (s.view === 'history') {
     return (
@@ -77,7 +106,7 @@ export function StudyScreen({ client, userId }: { client: ApiClient; userId: str
         client={client}
         set={set}
         onRestart={f.restart}
-        onHistory={() => s.setView('history')}
+        onHistory={onNavigate ? () => onNavigate('/history') : () => s.setView('history')}
         corrections={correctionsQuery.data}
       />
     );
@@ -138,17 +167,28 @@ export function StudyScreen({ client, userId }: { client: ApiClient; userId: str
   }
 
   return (
-    <StartView
-      scope={s.scope}
-      domainId={s.domainId}
-      pending={f.startMut.isPending}
-      conflict={f.conflict}
-      unauthorized={f.unauth || setQuery.isError}
-      startError={f.startError ?? (setQuery.isError ? copy.session.loadError : null)}
-      onScope={s.setScope}
-      onDomain={s.setDomainId}
-      onStart={f.handleStart}
-      onResume={() => f.setId && s.setView('active')}
-    />
+    <div>
+      <StartView
+        scope={s.scope}
+        domainId={s.domainId}
+        pending={f.startMut.isPending}
+        conflict={f.conflict}
+        unauthorized={f.unauth || setQuery.isError}
+        startError={f.startError ?? (setQuery.isError ? copy.session.loadError : null)}
+        onScope={s.setScope}
+        onDomain={s.setDomainId}
+        onStart={f.handleStart}
+        onResume={() => {
+          if (!f.setId) return;
+          if (onNavigate) onNavigate(`/study/${f.setId}`);
+          else s.setView('active');
+        }}
+      />
+      {onNavigate && (
+        <button type="button" className="moi-study-link" onClick={() => onNavigate('/history')}>
+          {copy.study.historyLink}
+        </button>
+      )}
+    </div>
   );
 }

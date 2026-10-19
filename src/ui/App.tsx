@@ -1,5 +1,13 @@
 import { Suspense, lazy } from 'react';
-import { MemoryRouter, Route, Routes, useInRouterContext, useNavigate } from 'react-router';
+import {
+  MemoryRouter,
+  Navigate,
+  Route,
+  Routes,
+  useInRouterContext,
+  useNavigate,
+  useSearchParams,
+} from 'react-router';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
@@ -8,10 +16,19 @@ import { AccountPage } from './pages/AccountPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
-// 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50).
-const StudyScreen = lazy(() =>
-  import('./study/StudyScreen').then((m) => ({ default: m.StudyScreen })),
+// 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
+const StudyRoute = lazy(() => import('./pages/StudyRoute').then((m) => ({ default: m.StudyRoute })));
+const HistoryDetailPage = lazy(() =>
+  import('./pages/HistoryDetailPage').then((m) => ({ default: m.HistoryDetailPage })),
 );
+
+function StudyFallback() {
+  return (
+    <p className="moi-note" role="status" aria-live="polite">
+      {copy.session.checking}
+    </p>
+  );
+}
 
 function CheckingView() {
   return (
@@ -63,12 +80,16 @@ function LoggedOutView({
 // CTA는 라우터로 이동해 뒤로가기/새로고침/직접 URL을 유지한다.
 function Home({ showAuthError }: { showAuthError: boolean }) {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const legacyStudy = params.get('study');
+  // legacy: 기존 /?study=<UUID> 북마크는 /study/<UUID>로 replace (#148).
+  if (legacyStudy) return <Navigate to={`/study/${legacyStudy}`} replace />;
   return (
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
       <p className="moi-lead">{copy.session.welcome}</p>
       <div className="moi-cta moi-study-cta-row">
-        <button type="button" className="moi-study-open" onClick={() => void navigate('/study')}>
+        <button type="button" className="moi-study-open" onClick={() => void navigate('/study/new')}>
           {copy.study.cta}
         </button>
         <button type="button" className="moi-study-link" onClick={() => void navigate('/history')}>
@@ -105,22 +126,40 @@ function AppContent({ client }: { client: ApiClient }) {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<Home showAuthError={showAuthError} />} />
+        <Route path="study" element={<Navigate to="/study/new" replace />} />
         <Route
-          path="study"
+          path="study/new"
           element={
-            <Suspense
-              key={userId}
-              fallback={
-                <p className="moi-note" role="status" aria-live="polite">
-                  {copy.session.checking}
-                </p>
-              }
-            >
-              <StudyScreen client={client} userId={userId} />
+            <Suspense key={userId} fallback={<StudyFallback />}>
+              <StudyRoute client={client} userId={userId} mode="start" />
+            </Suspense>
+          }
+        />
+        <Route
+          path="study/:setId"
+          element={
+            <Suspense key={userId} fallback={<StudyFallback />}>
+              <StudyRoute client={client} userId={userId} mode="active" />
+            </Suspense>
+          }
+        />
+        <Route
+          path="study/:setId/result"
+          element={
+            <Suspense key={userId} fallback={<StudyFallback />}>
+              <StudyRoute client={client} userId={userId} mode="result" />
             </Suspense>
           }
         />
         <Route path="history" element={<HistoryPage client={client} />} />
+        <Route
+          path="history/:setId"
+          element={
+            <Suspense fallback={<StudyFallback />}>
+              <HistoryDetailPage client={client} />
+            </Suspense>
+          }
+        />
         <Route path="account" element={<AccountPage pending={logoutPending} onLogout={doLogout} />} />
         <Route path="*" element={<NotFound />} />
       </Route>
