@@ -11,9 +11,6 @@ import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
 import { AppShell } from './AppShell';
-import { AccountPage } from './pages/AccountPage';
-import { HistoryPage } from './pages/HistoryPage';
-import { ReviewScreen } from './review/ReviewScreen';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
 // 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
@@ -23,6 +20,16 @@ const LegacyStudyRedirect = lazy(() =>
 );
 const HistoryDetailPage = lazy(() =>
   import('./pages/HistoryDetailPage').then((m) => ({ default: m.HistoryDetailPage })),
+);
+// markdown·통계 번들이 로그아웃/로그인 홈 초기 번들에 포함되지 않도록 분리한다 (이슈 #132).
+const ReviewScreen = lazy(() =>
+  import('./review/ReviewScreen').then((m) => ({ default: m.ReviewScreen })),
+);
+const HistoryPage = lazy(() =>
+  import('./pages/HistoryPage').then((m) => ({ default: m.HistoryPage })),
+);
+const AccountPage = lazy(() =>
+  import('./pages/AccountPage').then((m) => ({ default: m.AccountPage })),
 );
 
 function StudyFallback() {
@@ -175,7 +182,14 @@ function AppContent({ client }: { client: ApiClient }) {
             </Suspense>
           }
         />
-        <Route path="history" element={<HistoryPage client={client} />} />
+        <Route
+          path="history"
+          element={
+            <Suspense fallback={<StudyFallback />}>
+              <HistoryPage client={client} />
+            </Suspense>
+          }
+        />
         <Route
           path="history/:setId"
           element={
@@ -184,8 +198,22 @@ function AppContent({ client }: { client: ApiClient }) {
             </Suspense>
           }
         />
-        <Route path="review" element={<ReviewScreen client={client} />} />
-        <Route path="account" element={<AccountPage pending={logoutPending} onLogout={doLogout} />} />
+        <Route
+          path="review"
+          element={
+            <Suspense fallback={<StudyFallback />}>
+              <ReviewScreen client={client} />
+            </Suspense>
+          }
+        />
+        <Route
+          path="account"
+          element={
+            <Suspense fallback={<StudyFallback />}>
+              <AccountPage pending={logoutPending} onLogout={doLogout} />
+            </Suspense>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
