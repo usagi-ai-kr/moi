@@ -1,0 +1,127 @@
+{
+  "environment": "로컬 Chromium / 가짜 인증·이력·통계 API / 실계정 아님",
+  "beforeCommit": "62c51763c0aa37ad74d57576d8dfeda9ccd9ff15",
+  "afterCodeCommit": "175e32e",
+  "viewports": [
+    {
+      "phase": "before",
+      "width": 320,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "",
+      "nextTarget": {
+        "width": 39.0625,
+        "height": 22
+      },
+      "screenshot": "before-320.png"
+    },
+    {
+      "phase": "before",
+      "width": 375,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "",
+      "nextTarget": {
+        "width": 39.0625,
+        "height": 22
+      },
+      "screenshot": "before-375.png"
+    },
+    {
+      "phase": "before",
+      "width": 768,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "",
+      "nextTarget": {
+        "width": 39.0625,
+        "height": 22
+      },
+      "screenshot": "before-768.png"
+    },
+    {
+      "phase": "before",
+      "width": 1024,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "",
+      "nextTarget": {
+        "width": 39.0625,
+        "height": 22
+      },
+      "screenshot": "before-1024.png"
+    },
+    {
+      "phase": "before",
+      "width": 1280,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "",
+      "nextTarget": {
+        "width": 39.0625,
+        "height": 22
+      },
+      "screenshot": "before-1280.png"
+    },
+    {
+      "phase": "after",
+      "width": 320,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "?page=2",
+      "nextTarget": {
+        "width": 50.234375,
+        "height": 44
+      },
+      "screenshot": "after-320.png"
+    },
+    {
+      "phase": "after",
+      "width": 375,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "?page=2",
+      "nextTarget": {
+        "width": 50.234375,
+        "height": 44
+      },
+      "screenshot": "after-375.png"
+    },
+    {
+      "phase": "after",
+      "width": 768,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "?page=2",
+      "nextTarget": {
+        "width": 50.234375,
+        "height": 44
+      },
+      "screenshot": "after-768.png"
+    },
+    {
+      "phase": "after",
+      "width": 1024,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "?page=2",
+      "nextTarget": {
+        "width": 50.234375,
+        "height": 44
+      },
+      "screenshot": "after-1024.png"
+    },
+    {
+      "phase": "after",
+      "width": 1280,
+      "overflow": false,
+      "actualPage2": true,
+      "search": "?page=2",
+      "nextTarget": {
+        "width": 50.234375,
+        "height": 44
+      },
+      "screenshot": "after-1280.png"
+    }
+  ]
+}
