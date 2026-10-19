@@ -48,4 +48,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
 | ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
 | ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Accepted | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
+| ADR-0035 | 학습 UI shadcn/ui·Tailwind 전환과 디자인 계약 | Proposed | 2026-10-19 | [0035-design-shadcn-tailwind.md](./0035-design-shadcn-tailwind.md) |
 <!-- ADR_INDEX:END -->

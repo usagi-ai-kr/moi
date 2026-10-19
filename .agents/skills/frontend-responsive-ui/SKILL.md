@@ -1,14 +1,20 @@
 ---
 name: frontend-responsive-ui
-description: React SPA + Ant Design 6 반응형 UI 구현 규칙(AWS 팔레트·KoddiUD 온고딕/Inter·Lighthouse). 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
+description: React SPA 디자인 계약·shadcn/ui/Tailwind 전환·반응형 UI 검토 규칙(AWS 팔레트·KoddiUD 온고딕/Inter·Lighthouse). 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
 compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDependency (scripts/check-viewport-overflow.mjs).
 ---
 
-# 반응형 프론트엔드 — React + Ant Design 6
+# 반응형 프론트엔드 — 제품 디자인 계약 및 단계적 UI 전환
 
 출처: 이슈 #1(반응형 품질 기준, 라이브러리 책임), #4(화면·상태 설계). 관련: `architecture-boundaries`, `tdd-bdd-testing`.
 
+## 최우선 디자인 계약
+- **루트 `DESIGN.md`를 먼저 읽고** #148의 화면·메뉴 분리, UUID 비노출, 폰트·버튼, 결과 상세/이력 페이지네이션, Skeleton·pending·empty·error, GitHub Primer급 아이콘 시인성을 수용 기준으로 사용한다.
+- 목표 UI 스택은 **shadcn/ui + Tailwind CSS**. 현행 AntD 규칙은 **마이그레이션 전 기존 코드 설명**이지 새 화면의 최종 가이드가 아니다. 확정 ADR 및 AGENTS·스킬 동기화 후 기존 AntD를 제거한다.
+- Lighthouse ≥90·viewport overflow 통과만으로 UI 승인 금지. 실제 before/after 스크린샷·키보드·타이포·시각적 위계·사용자 확인 필수.
+
 ## 스크립트 (우선 실행 — repo root에서 실행)
+- `node .agents/skills/frontend-responsive-ui/scripts/audit-design-contract.mjs` — DESIGN.md의 필수 계약/벤치마크 3개 이상 및 스킬 연결을 정적으로 검사한다. **구현의 시각 품질 판정을 대체하지 않는다.**
 - `node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs <base-url> [route ...]` — 320/375/768/1024/1280px에서 **가로 오버플로만** 검사(playwright 필요, 0.1.0 scaffold 이후). 겹침·클릭 가능·포커스·가시성은 Playwright 시나리오가 검증(#12). 위반 시 exit 1, 항목별 한 줄 요약.
 - `node .agents/skills/frontend-responsive-ui/scripts/run-lighthouse.mjs [url] [--desktop] [--runs N] [--min 90]` — Lighthouse 4개 카테고리 측정·판정(ADR-0014). URL 생략 시 빌드+preview 자동 기동, 미달 시 exit 1.
 
