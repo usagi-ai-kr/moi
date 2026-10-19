@@ -13,11 +13,13 @@ interface Props {
   onPage: (p: number) => void;
   onDetail: (id: string | null) => void;
   onRetry: () => void;
+  hidePagerWhenEmpty?: boolean;
 }
 
 // 이력 — 완료 세트 목록(날짜·모드/영역·정답률·페이지네이션)과 요약 상세.
 export function HistoryView(p: Props) {
   const totalPages = Math.max(1, Math.ceil(p.total / p.pageSize));
+  const hidePager = Boolean(p.hidePagerWhenEmpty && p.total === 0);
   return (
     <section className="moi-study" aria-label={copy.study.historyTitle}>
       <h2 className="moi-study-title">{copy.study.historyTitle}</h2>
@@ -54,6 +56,7 @@ export function HistoryView(p: Props) {
           </li>
         ))}
       </ul>
+      {!hidePager && (
       <div className="moi-study-nav" aria-label="페이지 이동">
         <button
           type="button"
@@ -75,6 +78,7 @@ export function HistoryView(p: Props) {
           {copy.study.next}
         </button>
       </div>
+      )}
     </section>
   );
 }
