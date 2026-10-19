@@ -8,6 +8,17 @@ export const copy = {
   home: {
     note: '카카오 로그인 → 20문제 풀이 → 저장·결과 확인. 현재 첫 학습 범위는 AWS SAA입니다.',
   },
+  nav: {
+    study: '학습 시작',
+    history: '학습 현황/이력',
+    account: '계정',
+    label: '주요 메뉴',
+  },
+  account: {
+    title: '계정',
+    loggedIn: '카카오 계정으로 로그인되어 있습니다',
+    logoutError: '로그아웃하지 못했습니다. 다시 시도해 주세요.',
+  },
   session: {
     checking: '로그인 상태를 확인하고 있습니다',
     welcome: '학습을 시작할 준비가 되었습니다',

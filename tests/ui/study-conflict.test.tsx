@@ -267,7 +267,7 @@ describe('로그아웃·계정 격리 (#52)', () => {
   it('로그아웃(204) 성공 시 로그인 계정(A) 초안만 제거하고 다른 계정(B) 초안은 보존한다', async () => {
     saveDraft(window.localStorage, idA, 'set-a', 'q-0', C, B);
     saveDraft(window.localStorage, idB, 'set-b', 'q-0', C, B);
-    window.history.replaceState(null, '', '/');
+    window.history.replaceState(null, '', '/account');
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={queryClient}>
@@ -275,6 +275,7 @@ describe('로그아웃·계정 격리 (#52)', () => {
       </QueryClientProvider>,
     );
 
+    fireEvent.click(await screen.findByRole('link', { name: '계정' }));
     fireEvent.click(await screen.findByRole('button', { name: '로그아웃' }));
     expect(await screen.findByRole('link', { name: '카카오 로그인' })).toBeInTheDocument();
     await waitFor(() => expect(window.localStorage.getItem(draftKey(idA, 'set-a', 'q-0'))).toBeNull());

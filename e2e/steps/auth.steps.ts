@@ -50,6 +50,11 @@ When('로그아웃 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: '로그아웃' }).click();
 });
 
+When('계정 메뉴로 이동한다', async ({ page }) => {
+  await page.getByRole('link', { name: '계정' }).click();
+  await expect(page).toHaveURL(/\/account$/);
+});
+
 Then('카카오 로그인 버튼이 보인다', async ({ page }) => {
   await expect(page.getByRole('link', { name: '카카오 로그인' })).toBeVisible();
 });
@@ -58,14 +63,20 @@ Then('오류 안내가 보이지 않는다', async ({ page }) => {
   await expect(page.getByRole('alert')).toHaveCount(0);
 });
 
-Then('내 계정 카드가 보인다', async ({ page }) => {
-  await expect(page.getByText('내 계정')).toBeVisible();
-  await expect(page.getByRole('button', { name: '로그아웃' })).toBeVisible();
+Then('학습 시작 화면과 상단 메뉴가 보인다', async ({ page }) => {
+  await expect(page.getByRole('link', { name: '학습 시작' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '학습 현황/이력' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '계정' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '20문제 학습' })).toBeVisible();
 });
 
 Then('원본 사용자 id가 노출되지 않는다', async ({ page }) => {
-  await expect(page.getByTestId('masked-id')).toContainText('e2e-');
+  await expect(page.getByTestId('masked-id')).toHaveCount(0);
   await expect(page.locator('body')).not.toContainText(meUserId);
+  const ariaLabels = await page.locator('[aria-label]').evaluateAll((els) =>
+    els.map((el) => el.getAttribute('aria-label') ?? ''),
+  );
+  expect(ariaLabels.join(' ')).not.toContain(meUserId);
 });
 
 Then('로그인 오류 안내가 보인다', async ({ page }) => {

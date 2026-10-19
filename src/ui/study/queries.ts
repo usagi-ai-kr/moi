@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import {
   abandonStudySet,
@@ -39,6 +39,7 @@ export function useStudyHistory(client: ApiClient, page: number, pageSize: numbe
     enabled,
     retry: false,
     staleTime: 30_000,
+    placeholderData: keepPreviousData,
   });
 }
 

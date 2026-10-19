@@ -1,5 +1,5 @@
 import { copy } from './copy';
-import { maskUserId, useUiStore } from './session';
+import { useUiStore } from './session';
 
 // 토큰 기반 시맨틱 위젯 — AntD 런타임을 초기·상호작용 경로 모두에서 제외한다 (perf).
 // antd-less: 접근성은 네이티브 요소 + role/aria로 동등 보장한다.
@@ -38,11 +38,10 @@ export function LoadErrorAlert({ onRetry }: { onRetry: () => void }) {
 }
 
 export function LoggedInCard({
-  userId,
   pending,
   onLogout,
 }: {
-  userId: string;
+  userId?: string;
   pending: boolean;
   onLogout: () => void;
 }) {
@@ -50,9 +49,6 @@ export function LoggedInCard({
     <section className="moi-card" aria-label={copy.session.account}>
       <h2 className="moi-card-title">{copy.session.account}</h2>
       <p className="moi-lead">{copy.session.welcome}</p>
-      <p className="moi-note" data-testid="masked-id">
-        {maskUserId(userId)}
-      </p>
       <button
         type="button"
         className="moi-action"

@@ -3,6 +3,9 @@ import type { StudyMode } from '../api/client';
 // SAA-C03 고정 — 시험 선택 UI 없음 (이슈 #50).
 export const STUDY_EXAM_ID = 'saa-c03';
 
+// 이력 페이지 기본 크기 단일 상수 (이슈 #148)
+export const HISTORY_PAGE_SIZE = 20;
+
 // SAA 4영역 — id는 문제은행 시드(dom-*)와 동일, 라벨은 한글.
 export const STUDY_DOMAINS: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'dom-security', label: '보안' },
