@@ -56,7 +56,7 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 
 ## 확정 기술 스택
 - TypeScript strict + pnpm
-- 프론트엔드: React SPA, Vite, React Router, Ant Design 6
+- 프론트엔드: React SPA, Vite, React Router, shadcn/ui + Tailwind CSS (ADR-0035, AntD는 과도기)
 - 백엔드: Hono, Cloudflare Workers (동일 오리진에서 정적 자산 + API 서빙)
 - DB: Cloudflare D1 + Drizzle ORM (마이그레이션 파일 버전 관리)
 - 테스트: Vitest(도메인·앱), React Testing Library(UI), @cloudflare/vitest-plugin(Worker/D1), Playwright + playwright-bdd(브라우저)
@@ -108,4 +108,4 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 | `agent-orchestration` | 컨텍스트·산출물 검증·리뷰 |
 | `harness-budget` | 모듈 길이 예산 검사·해소, 하네스 비대화 방지 |
 
-> 이 규칙과 스킬은 GitHub 이슈 #1–#13 및 사용자 확정 사항(브랜치·PR 플로우, 하네스·문서 관리, 스킬 스크립트 정책, 2026-10-18)에서 추출했습니다. 초기 결정은 `docs/adr/` ADR-0001–0010으로 백필합니다(이슈 #1 첫 PR·#9 추적). 이슈 내용과 충돌하면 이슈의 최신 합의를 우선하고, 합의된 변경을 문서에 반영합니다.
+> 이 규칙과 스킬은 GitHub 이슈 #1–#13 및 사용자 확정 사항(2026-10-18)에서 추출했습니다. 초기 결정은 `docs/adr/` ADR-0001–0010으로 백필합니다(이슈 #1 첫 PR·#9 추적). 이슈 내용과 충돌하면 이슈의 최신 합의를 우선하고, 합의된 변경을 문서에 반영합니다.

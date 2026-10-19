@@ -1,7 +1,7 @@
 ---
 id: ADR-0035
 title: 학습 UI shadcn/ui·Tailwind 전환과 디자인 계약
-status: Proposed
+status: Accepted
 date: 2026-10-19
 related: ["#148", "#132", "#50", "#52", "#65", "ADR-0012", "ADR-0014", "ADR-0018"]
 ---
@@ -17,6 +17,7 @@ related: ["#148", "#132", "#50", "#52", "#65", "ADR-0012", "ADR-0014", "ADR-0018
 - 신설/교체 UI 컴포넌트는 **shadcn/ui + Tailwind CSS**로 전환. React SPA/Vite/Router/Hono/D1/Cloudflare 및 기존 세션·도메인 계약은 유지한다.
 - 시각 조작 아이콘은 GitHub Primer처럼 크기·선 굵기·대비·의미를 일관되게 구성하되 GitHub 브랜드/로고를 복제하지 않는다. 브랜드 favicon과 시스템 아이콘은 분리.
 - 기존 `tokens.ts` → CSS 변수 → Tailwind/shadcn 단일 매핑을 유지하고, 과도기 AntD 혼용은 임시로 한정한다.
+- preflight는 단계적 도입(이번 단위 제외), AntD는 과도기로 한정하고 신규 화면은 shadcn 패턴을 사용한다.
 - 이전 ADR-0012·0014·0018의 색·폰트·보안·성능 등 비충돌 규칙은 유지한다. AntD를 확정 라이브러리로 지정한 **해당 조항만** 구현 PR에서 supersede/조정한다. 병합 시 AGENTS·스킬 동기화.
 - 디자인 완료는 실제 화면 before/after, 5 viewport, keyboard/a11y, spinner/empty/error, 사용자의 시각적 확인, CI로 판단한다. Lighthouse 단독 합격 불가.
 

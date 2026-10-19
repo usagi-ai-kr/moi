@@ -1,3 +1,10 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* shadcn 의미 변수 → --moi-* 단일 매핑 (DESIGN.md·ADR-0035). preflight는 단계적 도입으로 미포함. */
+:root { --background: var(--moi-color-white); --foreground: var(--moi-color-ink); --primary: var(--moi-color-orange); --primary-foreground: var(--moi-color-white); --muted: var(--moi-color-surface); --muted-foreground: var(--moi-color-muted); --border: var(--moi-color-border); --destructive: var(--moi-color-danger); --ring: var(--moi-color-ink); --radius: var(--moi-radius-md); }
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --color-destructive: var(--destructive); --color-ring: var(--ring); --radius-sm: var(--moi-radius-sm); --radius-md: var(--radius); --radius-lg: var(--moi-radius-lg); }
+
 /* 기본 스타일 — 값은 src/ui/tokens.ts(단일 소스)가 주입하는 CSS 변수만 사용한다 (ADR-0012).
    디스플레이 폰트(@font-face)는 tokens.ts 값으로 첫 페인트 이후 지연 주입된다 (ADR-0014). */
 
