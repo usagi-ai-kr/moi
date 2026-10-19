@@ -49,4 +49,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
 | ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Accepted | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
 | ADR-0035 | 학습 UI shadcn/ui·Tailwind 전환과 디자인 계약 | Accepted | 2026-10-19 | [0035-design-shadcn-tailwind.md](./0035-design-shadcn-tailwind.md) |
+| ADR-0036 | 이력 페이지 URL 상태와 비동기 조회 UX | Accepted | 2026-10-19 | [0036-history-pagination-url-state.md](./0036-history-pagination-url-state.md) |
 <!-- ADR_INDEX:END -->

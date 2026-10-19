@@ -87,9 +87,9 @@ describe('학습 이력', () => {
 
   it('페이지네이션으로 다음 페이지를 보인다', async () => {
     renderHistory(fakeHistoryClient({ total: 25 }));
-    expect(await screen.findByText(/전체 25/)).toBeInTheDocument();
+    expect(await screen.findByText('총 25건')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다음' }));
-    await waitFor(() => expect(screen.getByText(/2\/2/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText('현재 2 / 전체 2')).toBeInTheDocument());
   });
 
   it('상세 보기는 요약 상세를 열고 닫는다', async () => {

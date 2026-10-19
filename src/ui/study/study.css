@@ -131,6 +131,8 @@
   padding: 0;
 }
 .moi-study-history-item {
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-body);
   min-height: var(--moi-space-8);
   width: 100%;
   text-align: left;

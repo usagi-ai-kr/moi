@@ -101,6 +101,7 @@ export const cssVars: Record<string, string> = {
   '--moi-enter-shift': px(layout.enterShift),
   '--moi-font-display': typography.fontDisplay,
   '--moi-font-ui': typography.fontUi,
+  '--moi-size-body': px(typography.baseSize),
   ...Object.fromEntries(Object.entries(typography.sizes).map(([k, v]) => [`--moi-size-${k}`, v])),
   '--moi-kakao-container': kakao.container,
   '--moi-kakao-symbol': kakao.symbol,
