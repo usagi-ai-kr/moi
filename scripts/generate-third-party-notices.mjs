@@ -9,6 +9,7 @@ import {
   NEEDS_REVIEW,
   checkLockfileConsistency,
   expandEntryVersions,
+  extractCopyrightHit,
   findMissingInLockfile,
   findPureDevOnly,
   sortNotices,
@@ -30,15 +31,23 @@ function parseArgs(argv) {
 }
 
 function readLicenseHit(dir) {
-  const names = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENCE', 'LICENCE.md'];
-  for (const n of names) {
+  const licenseNames = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENCE', 'LICENCE.md'];
+  for (const n of licenseNames) {
     const p = resolve(dir, n);
     if (!existsSync(p)) continue;
-    const lines = readFileSync(p, 'utf8').split('\n').slice(0, 15);
-    const hit = lines.find(
-      (l) => /copyright/i.test(l) && !/above copyright notice|permission notice/i.test(l),
-    );
-    if (hit?.trim()) return hit.trim().replace(/\s+/g, ' ');
+    try {
+      const hit = extractCopyrightHit(readFileSync(p, 'utf8'));
+      if (hit) return hit;
+    } catch { continue; }
+  }
+  const noticeNames = ['NOTICE', 'NOTICE.md', 'NOTICE.txt'];
+  for (const n of noticeNames) {
+    const p = resolve(dir, n);
+    if (!existsSync(p)) continue;
+    try {
+      const hit = extractCopyrightHit(readFileSync(p, 'utf8'));
+      if (hit) return hit;
+    } catch { continue; }
   }
   return '';
 }

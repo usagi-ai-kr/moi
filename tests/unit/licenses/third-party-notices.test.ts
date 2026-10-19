@@ -4,6 +4,7 @@ import {
   NEEDS_REVIEW,
   checkLockfileConsistency,
   expandEntryVersions,
+  extractCopyrightHit,
   extractSourceUrl,
   findPureDevOnly,
   matchPathForVersion,
@@ -85,5 +86,23 @@ describe('Given OSS 고지 생성 규칙 / When lib 함수 호출 / Then AC 충�
 
   it('devDependencies만인 패키지(탐침: vitest·eslint)가 결과에 없다', () => {
     expect(findPureDevOnly(['react', 'vitest'], ['vitest', 'eslint'])).toEqual(['vitest']);
+  });
+
+  it('Apache 정의문·예문은 저작권이 아니라 확인 필요로 떨어진다(D1 반례)', () => {
+    expect(extractCopyrightHit('"Licensor" shall mean the copyright owner or entity authorized by')).toBe('');
+    expect(extractCopyrightHit('Copyright [yyyy] [name of copyright owner]')).toBe('');
+    expect(extractCopyrightHit('The above copyright notice and this permission notice shall be included')).toBe('');
+    expect(resolveCopyright(extractCopyrightHit('"Licensor" shall mean the copyright owner'))).toBe(NEEDS_REVIEW);
+  });
+
+  it('실제 MIT·OFL 저작권 행은 그대로 확정한다(연도 없어도 (c) 있으면 인정)', () => {
+    expect(extractCopyrightHit('Copyright (c) 2018-present Ant UED, https://xtech.antfin.com/')).toContain('Ant UED');
+    expect(extractCopyrightHit('Copyright (c) Emotion team and other contributors')).toContain('Emotion');
+    expect(extractCopyrightHit('The MIT License (MIT) Copyright (c) 2016 React Components')).toContain('React Components');
+    expect(extractCopyrightHit('Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)')).toContain('Inter Project');
+  });
+
+  it('버전 미매칭 경로는 최초 경로로 폴백하지 않고 빈 문자열을 낸다(D3 안전 폴백)', () => {
+    expect(matchPathForVersion(['/r/a@1.0.0/x', '/r/a@2.0.0/x'], 'a', '9.9.9')).toBe('');
   });
 });

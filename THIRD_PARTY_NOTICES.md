@@ -20,7 +20,7 @@
 | @emotion/hash | 0.8.0 | MIT | Copyright (c) Emotion team and other contributors | https://github.com/emotion-js/emotion/tree/master/packages/hash |
 | @emotion/unitless | 0.7.5 | MIT | Copyright (c) Emotion team and other contributors | https://github.com/emotion-js/emotion/tree/master/packages/unitless |
 | @fontsource-variable/inter | 5.3.0 | OFL-1.1 | Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) Inter-Italic[opsz,wght].ttf: Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) | https://github.com/fontsource/font-files.git |
-| @opentelemetry/api | 1.9.1 | Apache-2.0 | "Licensor" shall mean the copyright owner or entity authorized by | https://github.com/open-telemetry/opentelemetry-js |
+| @opentelemetry/api | 1.9.1 | Apache-2.0 | 확인 필요 | https://github.com/open-telemetry/opentelemetry-js |
 | @rc-component/async-validator | 6.0.0 | MIT | Copyright (c) 2014-present yiminghe | https://github.com/react-component/async-validator.git |
 | @rc-component/cascader | 1.22.0 | MIT | Copyright (c) 2019-present react-component | https://github.com/react-component/cascader.git |
 | @rc-component/checkbox | 2.0.0 | MIT | The MIT License (MIT) Copyright (c) 2016 React Components | https://github.com/react-component/checkbox.git |

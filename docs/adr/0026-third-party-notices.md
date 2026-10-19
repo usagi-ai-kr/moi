@@ -14,7 +14,7 @@ related: ["#121"]
 
 ## 결정
 - `scripts/generate-third-party-notices.mjs`가 `pnpm licenses list --prod --json`(prod 직접·전이 94개)을 읽고 설치된 `package.json`/`LICENSE*`와 `pnpm-lock.yaml`을 교차 확인해 `THIRD_PARTY_NOTICES.md`를 생성한다.
-- 저작권 확정은 설치된 `LICENSE*`의 Copyright 행에서만 한다. author만 있는 경우 저작권은 '확인 필요'로 표시한다(author와 저작권 혼동 금지).
+- 저작권 확정은 설치된 `LICENSE*`의 Copyright 행에서만 한다. author만 있는 경우 저작권은 '확인 필요'로 표시한다(author와 저작권 혼동 금지). 정의문·예문·고지 의무 보일러플레이트(`shall mean`·`[yyyy]` 등)는 저작권이 아니며, `(c)`/`©`·연도가 없는 행은 인정하지 않는다. `LICENSE*`에 없으면 `NOTICE*`를 같은 기준으로 확인하고, 그래도 없으면 '확인 필요'로 둔다.
 - 여러 버전이 공존하면(예: `@babel/runtime` 2종) 버전별 설치 경로의 LICENSE를 각각 읽어 행을 분리한다(동일 메타데이터 묶음 금지).
 - `package.json` importers specifier와 lockfile 기록이 다르면 exit 1로 실패한다. 출력은 정렬 고정·타임스탬프 없음.
 - devDependencies만인 패키지는 `--prod` 범위로 제외한다(양쪽 등록된 `@types/react`는 prod 경유이므로 포함).

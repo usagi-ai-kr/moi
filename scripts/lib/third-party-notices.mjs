@@ -17,6 +17,26 @@ export function resolveCopyright(licenseHit) {
   return NEEDS_REVIEW;
 }
 
+// D1: 실제 저작권 행만 인정한다. Apache 정의문("shall mean the copyright owner…")·
+// 부록 예문("Copyright [yyyy] [name of copyright owner]")·고지 의무 보일러플레이트는
+// 'copyright' 단어를 포함해도 저작권 데이터가 아니므로 제외한다.
+// 실제 행의 증거로 (c)/© 또는 4자리 연도를 요구한다(연도 없는 "(c) 팀" 표기도 인정,
+// 행 중간 포함("The MIT License (MIT) Copyright (c) …")도 인정).
+const COPYRIGHT_BOILERPLATE = /shall mean|above copyright notice|permission notice|\[yyyy\]|\[name of copyright owner\]/i;
+const COPYRIGHT_EVIDENCE = /\(c\)|©|\b\d{4}\b/;
+
+export function isCopyrightHit(line) {
+  if (typeof line !== 'string' || !/copyright/i.test(line)) return false;
+  if (COPYRIGHT_BOILERPLATE.test(line)) return false;
+  return COPYRIGHT_EVIDENCE.test(line);
+}
+
+export function extractCopyrightHit(text) {
+  if (typeof text !== 'string' || !text) return '';
+  const hit = text.split('\n').find((l) => isCopyrightHit(l));
+  return hit?.trim().replace(/\s+/g, ' ') || '';
+}
+
 export function extractSourceUrl(pkg, fallbackHomepage) {
   const repo = pkg?.repository;
   const raw = typeof repo === 'string' ? repo : repo?.url;
@@ -35,7 +55,7 @@ export function matchPathForVersion(paths, name, version) {
   const escaped = String(name).replace('/', '+');
   const found = (paths || []).find((p) => String(p).includes(`${escaped}@${version}`));
   if (found) return found;
-  return (paths || [])[0] || '';
+  return '';
 }
 
 export function expandEntryVersions(entry) {

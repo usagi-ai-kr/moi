@@ -33,6 +33,8 @@ export interface NoticeEntry {
 }
 export function normalizeLicense(entryLicense: unknown, pkg: InstalledPackage): string;
 export function resolveCopyright(licenseHit: string): string;
+export function isCopyrightHit(line: string): boolean;
+export function extractCopyrightHit(text: string): string;
 export function extractSourceUrl(pkg: InstalledPackage, fallbackHomepage: string): string;
 export function matchPathForVersion(paths: string[] | undefined, name: string, version: string): string;
 export function expandEntryVersions(entry: RawLicenseEntry): VersionedEntry[];
