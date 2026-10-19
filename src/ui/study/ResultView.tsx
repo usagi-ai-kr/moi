@@ -1,5 +1,6 @@
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
+import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
 import { scopeLabel } from './types';
 
@@ -80,7 +81,10 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
               )}
               {content && (
                 <>
-                  <p className="moi-note">{copy.study.explanation}: {content.explanation || '—'}</p>
+                  <div className="moi-note">
+                    <span>{copy.study.explanation}: </span>
+                    <Explanation markdown={content.explanation || '—'} />
+                  </div>
                   {content.sourceUrls && content.sourceUrls.length > 0 && (
                     <p className="moi-note">
                       {copy.study.sources}:{' '}
