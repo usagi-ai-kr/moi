@@ -1,4 +1,3 @@
-import type { AttemptRecord } from '@/app/stats/attempt-ports';
 import { assertSessionOwned } from '@/domain/review/invariants';
 import { buildReviewSession, endSession, gradeCurrent, isExhausted, summarize } from '@/domain/review/session';
 import { REVIEW_MIN_CANDIDATES } from '@/domain/review/thresholds';
@@ -17,7 +16,7 @@ import type { ReviewCandidateInput, ReviewDeps } from './ports';
  * - 한 문제씩 즉시 채점, 문제 수·시간 제한 없음, 사용자가 직접 종료(미채점은 오답 아님).
  * - 대상 소진 후 다음 회차는 소스의 최신 목록을 다시 섞는다.
  * - 다른 사용자/시험 세션 접근 금지(소유권 가드).
- * - 채점 성공 시 study_attempts에 시도 1건 기록(이슈 #54, source='review').
+ * - 채점은 원자 Port로 회차+attempt를 함께 저장한다(#54, 필수주입·fallback 금지).
  */
 
 export type StartReviewResult =
@@ -31,11 +30,14 @@ export type AnswerReviewResult =
       readonly attempt: ReviewAttempt;
       readonly session: ReviewSession;
     }
-  | { readonly outcome: 'rejected'; readonly reason: 'not_found' | 'not_current' | 'already_graded' | 'unknown_option' };
+  | {
+      readonly outcome: 'rejected';
+      readonly reason: 'not_found' | 'not_current' | 'already_graded' | 'unknown_option' | 'conflict';
+    };
 
 export type EndReviewResult =
   | { readonly outcome: 'ended'; readonly session: ReviewSession; readonly summary: ReturnType<typeof summarize> }
-  | { readonly outcome: 'rejected'; readonly reason: 'not_found' };
+  | { readonly outcome: 'rejected'; readonly reason: 'not_found' | 'conflict' };
 
 export type ResumeReviewResult =
   | { readonly outcome: 'resumed'; readonly session: ReviewSession }
@@ -84,42 +86,40 @@ export async function startReviewSession(
   return { outcome: 'started', session };
 }
 
-/** 한 문제 즉시 채점 — 현재 커서 문제만, 채점된 시도는 즉시 이력으로 보존된다. */
+/** 한 문제 즉시 채점 — 현재 커서 문제만, 회차+attempt 원자 저장 성공 시만 answered다. */
 export async function answerReviewItem(
   deps: ReviewDeps,
-  input: { userId: string; examId: string; mode: ReviewMode; questionId: string; response: ReviewResponse },
+  input: { userId: string; examId: string; mode: ReviewMode; questionId: string; response: ReviewResponse; expectedCursor?: number },
 ): Promise<AnswerReviewResult> {
   const active = await deps.repository.findActive(input);
-  if (active === null || !assertSessionOwned(active, input)) return { outcome: 'rejected', reason: 'not_found' };
+  if (active === null) {
+    return { outcome: 'rejected', reason: input.expectedCursor === undefined ? 'not_found' : 'conflict' };
+  }
+  if (!assertSessionOwned(active, input)) return { outcome: 'rejected', reason: 'not_found' };
+  if (input.expectedCursor !== undefined && (!Number.isInteger(input.expectedCursor) || active.cursor !== input.expectedCursor)) {
+    return { outcome: 'rejected', reason: 'conflict' };
+  }
   const graded = gradeCurrent(active, { questionId: input.questionId, response: input.response, now: deps.clock.now() });
   if ('outcome' in graded) {
     // 이미 활성 세션을 확인했으므로 not_active는 소멸 상태 경합으로 보고 not_found로 통일한다.
     return { outcome: 'rejected', reason: graded.reason === 'not_active' ? 'not_found' : graded.reason };
   }
-  await deps.repository.save({ session: graded.session });
-  if (deps.attempts !== undefined) {
-    const prior = await deps.attempts.listByUserExam({ userId: input.userId, examId: input.examId });
-    const priorGraded = new Set(
-      prior.filter((a) => (a.outcome === 'correct' || a.outcome === 'wrong') && a.excludedAt === null).map((a) => a.questionId),
-    );
-    const occurredAt = deps.clock.now() * 1000;
-    const outcome = graded.attempt.response.kind === 'pass' ? 'pass' : graded.correct ? 'correct' : 'wrong';
-    const attempt: AttemptRecord = {
+  const outcome = graded.attempt.response.kind === 'pass' ? 'pass' : graded.correct ? 'correct' : 'wrong';
+  const committed = await deps.grading.commit({
+    session: graded.session,
+    expectedCursor: active.cursor,
+    attempt: {
       attemptId: `${graded.session.id}:${input.questionId}`,
       userId: input.userId,
       examId: input.examId,
       questionId: input.questionId,
       questionVersionId: graded.attempt.questionVersionId,
       outcome,
-      occurredAt,
-      source: 'review',
-      sourceId: graded.session.id,
-      excludedAt: null,
-      firstAttempt: (outcome === 'correct' || outcome === 'wrong') && !priorGraded.has(input.questionId),
-    };
-    // 멱등 기록 — 채점 자체는 이미 세션에 저장됐고, attempt 기록 실패는 산출물 검증 단계에서 드러난다(트랜잭션 한계).
-    await deps.attempts.recordBatch({ attempts: [attempt] });
-  }
+      occurredAt: deps.clock.now() * 1000,
+    },
+  });
+  // CAS 실패·batch 0행·롤백은 409 경합으로 알리고 쓰기 없음을 보장한다(성공 위장 금지).
+  if (!committed) return { outcome: 'rejected', reason: 'conflict' };
   return { outcome: 'answered', correct: graded.correct, attempt: graded.attempt, session: graded.session };
 }
 
@@ -132,7 +132,8 @@ export async function endReviewSession(
   if (active === null || !assertSessionOwned(active, input)) return { outcome: 'rejected', reason: 'not_found' };
   const ended = endSession(active, { now: deps.clock.now() });
   if ('outcome' in ended) return { outcome: 'rejected', reason: 'not_found' };
-  await deps.repository.save({ session: ended.session });
+  const saved = await deps.repository.end({ session: ended.session, expectedCursor: active.cursor });
+  if (!saved) return { outcome: 'rejected', reason: 'conflict' };
   return { outcome: 'ended', session: ended.session, summary: summarize(ended.session) };
 }
 
@@ -160,4 +161,12 @@ export async function toggleBookmark(
   input: { userId: string; questionId: string },
 ): Promise<{ bookmarked: boolean }> {
   return deps.source.toggleBookmark(input);
+}
+
+/** 북마크 명시 상태 SET 멱등 — HTTP PATCH용. 토글 모사 금지, 시험격리·없는문제 거부는 소스가 강제한다. */
+export async function setReviewBookmark(
+  deps: ReviewDeps,
+  input: { userId: string; examId: string; questionId: string; bookmarked: boolean },
+): Promise<{ bookmarked: boolean }> {
+  return deps.source.setBookmark(input);
 }

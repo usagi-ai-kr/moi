@@ -7,18 +7,20 @@ import {
   startReviewSession,
   toggleBookmark,
 } from '@/app/review';
-import type { AttemptRecord } from '@/app/stats/attempt-ports';
 import type { ReviewSession } from '@/domain/review/types';
-import { fakeAttemptRepository, fakeRepository, fakeSource, fakeTimeRng, makeCandidate, makeCandidates } from './fixtures';
+import type { ReviewGradingRepository } from '@/app/review/grading-ports';
+import { fakeGradingRepository, fakeRepository, fakeSource, fakeTimeRng, makeCandidate, makeCandidates } from './fixtures';
 
 // 이슈 #51 use case — Start/Answer/End/Resume/ToggleBookmark fake port 단위 테스트.
+// 채점은 원자 Port 필수주입(#54) — 순차 save+recordBatch fallback 금지.
 
 function fakes(input?: { wrong?: ReturnType<typeof makeCandidates>; bookmarked?: ReturnType<typeof makeCandidates>; seed?: number }) {
   const src = fakeSource({ wrong: input?.wrong, bookmarked: input?.bookmarked });
   const repo = fakeRepository();
+  const grading = fakeGradingRepository(repo.sessions);
   const { clock, rng } = fakeTimeRng(input?.seed ?? 123);
-  const deps = { source: src.source, repository: repo.repository, clock, rng };
-  return { deps, src, repo };
+  const deps = { source: src.source, repository: repo.repository, grading: grading.repository, clock, rng };
+  return { deps, src, repo, grading };
 }
 
 function current(session: ReviewSession): string {
@@ -258,88 +260,104 @@ describe('대상 증감·소진 (다음 회차부터 반영)', () => {
   });
 });
 
-describe('AnswerReviewItem → study_attempts 기록 (이슈 #54)', () => {
-  async function startedWithAttempts() {
+describe('AnswerReviewItem → 원자 저장 (이슈 #54, 필수주입)', () => {
+  async function startedWithGrading(seed: readonly { userId: string; examId: string; questionId: string; questionVersionId: string; outcome: 'correct' | 'wrong' | 'pass'; occurredAt: number; attemptId: string }[] = []) {
     const src = fakeSource({ wrong: makeCandidates(3, { 0: 2 }) });
     const repo = fakeRepository();
-    const attempts = fakeAttemptRepository();
+    const grading = fakeGradingRepository(repo.sessions, seed);
     const { clock, rng } = fakeTimeRng(123);
-    const deps = { source: src.source, repository: repo.repository, clock, rng, attempts: attempts.repository };
+    const deps = { source: src.source, repository: repo.repository, grading: grading.repository, clock, rng };
     const result = await startReviewSession(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
-    return { deps, attempts, session: (result as { session: ReviewSession }).session };
+    return { deps, grading, repo, session: (result as { session: ReviewSession }).session };
   }
 
-  it('Given 이력 없음 When 정답 채점 Then attempt 1건·outcome correct·firstAttempt true·source review', async () => {
-    const { deps, attempts, session } = await startedWithAttempts();
+  it('Given 이력 없음 When 정답 채점 Then 원자 commit 1건·cursor+1·firstAttempt true', async () => {
+    const { deps, grading, session } = await startedWithGrading();
     const item = session.items[session.cursor];
     const qid = item?.questionId ?? '';
     const ok = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: ['b'] } });
     expect(ok.outcome).toBe('answered');
-    expect(attempts.records.size).toBe(1);
-    const record = [...attempts.records.values()][0];
+    expect(grading.calls.commit).toBe(1);
+    const record = grading.attempts.get(`${session.id}:${qid}`);
     expect(record).toMatchObject({
-      attemptId: `${session.id}:${qid}`,
       userId: 'u1',
       examId: 'saa-c03',
       questionId: qid,
       questionVersionId: item?.questionVersionId,
       outcome: 'correct',
       occurredAt: 1700000000000,
-      source: 'review',
-      sourceId: session.id,
-      excludedAt: null,
       firstAttempt: true,
     });
-    expect(attempts.calls.recordBatch).toBe(1);
+    if (ok.outcome === 'answered') expect(ok.session.cursor).toBe(1);
   });
 
-  it('Pass 채점은 outcome pass·firstAttempt false로 남기고, 오답 채점은 outcome wrong', async () => {
-    const { deps, attempts, session } = await startedWithAttempts();
+  it('Pass는 outcome pass·firstAttempt false, 오답은 outcome wrong·firstAttempt true', async () => {
+    const { deps, grading, session } = await startedWithGrading();
     const first = session.items[session.cursor]?.questionId ?? '';
     await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: first, response: { kind: 'pass' } });
-    const second = session.items[session.cursor + 1]?.questionId ?? '';
+    const resumed = await deps.repository.findActive({ userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const second = resumed?.items[resumed.cursor]?.questionId ?? '';
     await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: second, response: { kind: 'answered', optionIds: ['a'] } });
-    const records = [...attempts.records.values()];
-    expect(records).toHaveLength(2);
-    expect(records[0]).toMatchObject({ questionId: first, outcome: 'pass', firstAttempt: false });
-    expect(records[1]).toMatchObject({ questionId: second, outcome: 'wrong', firstAttempt: true });
+    expect(grading.attempts.size).toBe(2);
+    expect([...grading.attempts.values()][0]).toMatchObject({ questionId: first, outcome: 'pass', firstAttempt: false });
+    expect([...grading.attempts.values()][1]).toMatchObject({ questionId: second, outcome: 'wrong', firstAttempt: true });
   });
 
-  it('Given 이전 correct 시도가 있으면 firstAttempt false (prior graded Set 반영)', async () => {
-    const { deps, session } = await startedWithAttempts();
-    const qid = session.items[session.cursor]?.questionId ?? '';
-    const versionId = session.items[session.cursor]?.questionVersionId ?? '';
-    const prior: AttemptRecord = {
-      attemptId: 'set-1:prior',
-      userId: 'u1',
-      examId: 'saa-c03',
-      questionId: 'rq-other',
-      questionVersionId: 'rqv-other-v1',
-      outcome: 'correct',
-      occurredAt: 1600000000000,
-      source: 'set',
-      sourceId: 'set-1',
-      excludedAt: null,
-      firstAttempt: true,
-    };
-    const seeded = fakeAttemptRepository([
-      prior,
-      { ...prior, attemptId: 'set-1:target', questionId: qid, questionVersionId: versionId, outcome: 'wrong' },
-    ]);
-    deps.attempts = seeded.repository;
-    const result = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: ['b'] } });
-    expect(result.outcome).toBe('answered');
-    expect(seeded.records.get(`review:${session.id}:${qid}`)).toMatchObject({ firstAttempt: false });
-  });
-
-  it('주입하지 않으면 채점만 하고 attempt 기록 없음 (기존 동작 유지)', async () => {
-    const src = fakeSource({ wrong: makeCandidates(3) });
+  it('Given 이전 wrong 시도 When 정답 채점 Then firstAttempt false', async () => {
+    const src = fakeSource({ wrong: makeCandidates(3, { 0: 2 }) });
     const repo = fakeRepository();
     const { clock, rng } = fakeTimeRng(123);
-    const deps = { source: src.source, repository: repo.repository, clock, rng };
-    const started = await startReviewSession(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const bootstrap = fakeGradingRepository(repo.sessions);
+    const bootDeps = { source: src.source, repository: repo.repository, grading: bootstrap.repository, clock, rng };
+    const started = await startReviewSession(bootDeps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
     const session = (started as { session: ReviewSession }).session;
-    const ok = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: session.items[0]?.questionId ?? '', response: { kind: 'answered', optionIds: ['b'] } });
-    expect(ok).toMatchObject({ outcome: 'answered', correct: true });
+    const qid = session.items[session.cursor]?.questionId ?? '';
+    const versionId = session.items[session.cursor]?.questionVersionId ?? '';
+    const withPrior = fakeGradingRepository(repo.sessions, [
+      { userId: 'u1', examId: 'saa-c03', questionId: qid, questionVersionId: versionId, outcome: 'wrong', occurredAt: 1600000000000, attemptId: 'seed:target' },
+    ]);
+    // 세션은 repo.sessions에 이미 저장돼 있으므로 새 grading과 공유된다
+    const deps2 = { source: src.source, repository: repo.repository, grading: withPrior.repository, clock, rng };
+    const result = await answerReviewItem(deps2, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: ['b'] } });
+    expect(result.outcome).toBe('answered');
+    expect(withPrior.attempts.get(`${session.id}:${qid}`)).toMatchObject({ firstAttempt: false });
+  });
+
+  it('commit false면 conflict·쓰기 없음(롤백) — cursor 유지·attempt 0건', async () => {
+    const src = fakeSource({ wrong: makeCandidates(2) });
+    const repo = fakeRepository();
+    const { clock, rng } = fakeTimeRng(123);
+    const started = await startReviewSession(
+      { source: src.source, repository: repo.repository, grading: fakeGradingRepository(repo.sessions).repository, clock, rng },
+      { userId: 'u1', examId: 'saa-c03', mode: 'wrong' },
+    );
+    const session = (started as { session: ReviewSession }).session;
+    const failing: ReviewGradingRepository = {
+      async commit() {
+        return false;
+      },
+    };
+    const deps = {
+      source: src.source,
+      repository: repo.repository,
+      grading: failing,
+      clock,
+      rng,
+    };
+    const qid = session.items[session.cursor]?.questionId ?? '';
+    const result = await answerReviewItem(deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: ['b'] } });
+    expect(result).toMatchObject({ outcome: 'rejected', reason: 'conflict' });
+    const stored = await repo.repository.findActive({ userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    expect(stored?.cursor).toBe(0);
+    expect(stored?.items[0]?.state.kind).toBe('pending');
+  });
+
+  it('동일 cursor 동시 채점 경합은 1건만 answered·나머지 conflict', async () => {
+    const { deps, session } = await startedWithGrading();
+    const qid = session.items[session.cursor]?.questionId ?? '';
+    const input = { userId: 'u1', examId: 'saa-c03', mode: 'wrong' as const, questionId: qid, response: { kind: 'pass' as const } };
+    const [a, b] = await Promise.all([answerReviewItem(deps, input), answerReviewItem(deps, input)]);
+    expect([a.outcome, b.outcome].filter((o) => o === 'answered')).toHaveLength(1);
+    expect([a, b].filter((r) => r.outcome === 'rejected')).toHaveLength(1);
   });
 });

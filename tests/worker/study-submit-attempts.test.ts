@@ -123,7 +123,7 @@ beforeEach(async () => {
 });
 
 describe('submit+attempt 원자 저장 (#54)', () => {
-  it('제출 성공 시 attempt 2행 저장·세트 submitted', async () => {
+  it('제출 성공 시 attempt 2행 저장·세트 submitted, firstAttempt는 D1에서 판정한다', async () => {
     await seedActiveSet('set-1');
     const repo = createD1StudySetRepository(db);
     const ok = await repo.submit({
@@ -141,7 +141,7 @@ describe('submit+attempt 원자 저장 (#54)', () => {
       .all<{ attempt_id: string; source: string; source_id: string; question_id: string; first_attempt: number; outcome: string }>();
     expect(rows.results).toMatchObject([
       { attempt_id: 'a-1', source: 'set', source_id: 'set-1', question_id: 'q-1', first_attempt: 1, outcome: 'correct' },
-      { attempt_id: 'a-2', source: 'set', source_id: 'set-1', question_id: 'q-2', first_attempt: 0, outcome: 'wrong' },
+      { attempt_id: 'a-2', source: 'set', source_id: 'set-1', question_id: 'q-2', first_attempt: 1, outcome: 'wrong' },
     ]);
   });
 

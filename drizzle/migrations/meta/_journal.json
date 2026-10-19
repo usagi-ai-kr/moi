@@ -85,6 +85,13 @@
       "when": 1792372322822,
       "tag": "0011_add-review-sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1792400755365,
+      "tag": "0012_add-review-bookmarks",
+      "breakpoints": true
     }
   ]
 }

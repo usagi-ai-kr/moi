@@ -1,11 +1,6 @@
-import type { AttemptRecord, StudyAttemptRepository } from '@/app/stats/attempt-ports';
 import type { ReviewCandidate, ReviewSession } from '@/domain/review/types';
-import type {
-  ReviewClock,
-  ReviewRng,
-  ReviewSessionRepository,
-  ReviewSourcePort,
-} from '@/app/review/ports';
+import type { ReviewClock, ReviewRng, ReviewSessionRepository, ReviewSourcePort } from '@/app/review/ports';
+import type { ReviewGradingAttempt, ReviewGradingRepository } from '@/app/review/grading-ports';
 
 /**
  * 결정적 RNG·후보 fixture (이슈 #51) — 실제 AI/DB/네트워크 미사용.
@@ -80,6 +75,16 @@ export function fakeSource(input: {
       state.bookmarked.push(makeCandidate({ questionId, validWrongCount: 2 }));
       return { bookmarked: true };
     },
+    async setBookmark({ questionId, bookmarked }) {
+      calls.toggled += 1;
+      const index = state.bookmarked.findIndex((candidate) => candidate.questionId === questionId);
+      if (bookmarked) {
+        if (index < 0) state.bookmarked.push(makeCandidate({ questionId, validWrongCount: 2 }));
+        return { bookmarked: true };
+      }
+      if (index >= 0) state.bookmarked.splice(index, 1);
+      return { bookmarked: false };
+    },
   };
   return { source, state, calls };
 }
@@ -101,6 +106,13 @@ export function fakeRepository() {
       }
       sessions.set(key(session.userId, session.examId, session.mode), session);
     },
+    async end({ session, expectedCursor }) {
+      const stored = sessions.get(key(session.userId, session.examId, session.mode));
+      if (!stored || stored.id !== session.id || stored.status !== 'active' || session.status !== 'ended') return false;
+      if (stored.cursor !== expectedCursor || session.cursor !== expectedCursor) return false;
+      sessions.set(key(session.userId, session.examId, session.mode), session);
+      return true;
+    },
   };
   return { repository, sessions };
 }
@@ -110,37 +122,47 @@ export function fakeTimeRng(seed = 123, now = 1700000000): { clock: ReviewClock;
   return { clock: { now: () => now }, rng: { next: seededRng(seed) } };
 }
 
-/** 가짜 study_attempts 저장소 — (source, sourceId, questionId) 멱등 기록과 prior 이력을 메모리로 유지한다. */
-export function fakeAttemptRepository(seed: readonly AttemptRecord[] = []) {
-  const records = new Map<string, AttemptRecord>();
-  for (const record of seed) records.set(`${record.source}:${record.sourceId}:${record.questionId}`, record);
-  const calls = { recordBatch: 0, listByUserExam: 0 };
-  const repository: StudyAttemptRepository = {
-    async recordBatch({ attempts }) {
-      calls.recordBatch += 1;
-      for (const attempt of attempts) {
-        records.set(`${attempt.source}:${attempt.sourceId}:${attempt.questionId}`, attempt);
-      }
-    },
-    async hasGradedAttempt({ userId, examId, questionId }) {
-      return [...records.values()].some(
-        (a) =>
-          a.userId === userId &&
-          a.examId === examId &&
-          a.questionId === questionId &&
-          (a.outcome === 'correct' || a.outcome === 'wrong') &&
-          a.excludedAt === null,
-      );
-    },
-    async listByUserExam({ userId, examId }) {
-      calls.listByUserExam += 1;
-      return [...records.values()]
-        .filter((a) => a.userId === userId && a.examId === examId)
-        .sort((a, b) => a.occurredAt - b.occurredAt || a.attemptId.localeCompare(b.attemptId));
-    },
-    async excludeSetVersion() {
-      return 0;
+/**
+ * 가짜 원자 채점 저장소 — CAS로 회차+attempt를 함께 저장한다(#54, 필수주입).
+ * - stored 세션의 cursor가 expected와 다르면 false·쓰기 0건(경합은 1명만 true).
+ * - firstAttempt는 SQL 규칙 모사: 같은 user/exam/question의 유효 correct/wrong 최초만 true, pass false.
+ */
+export function fakeGradingRepository(
+  sessions: Map<string, ReviewSession>,
+  seed: readonly ReviewGradingAttempt[] = [],
+) {
+  const attempts = new Map<string, ReviewGradingAttempt & { firstAttempt: boolean }>();
+  const priorKeys = new Set<string>();
+  for (const s of seed) {
+    const key = `${s.userId}|${s.examId}|${s.questionId}`;
+    if (s.outcome === 'correct' || s.outcome === 'wrong') priorKeys.add(key);
+  }
+  const calls = { commit: 0 };
+  const keyOf = (userId: string, examId: string, mode: string) => `${userId}|${examId}|${mode}`;
+  const repository: ReviewGradingRepository = {
+    async commit({ session, expectedCursor, attempt }) {
+      calls.commit += 1;
+      const stored = sessions.get(keyOf(session.userId, session.examId, session.mode)) ?? null;
+      if (stored === null || stored.id !== session.id) return false;
+      if (stored.status !== 'active' || session.status !== 'active') return false;
+      if (stored.cursor !== expectedCursor || session.cursor !== expectedCursor + 1) return false;
+      if (expectedCursor < 0 || expectedCursor >= stored.items.length) return false;
+      const storedItem = stored.items[expectedCursor];
+      const nextItem = session.items[expectedCursor];
+      if (!storedItem || !nextItem) return false;
+      if (storedItem.questionId !== attempt.questionId || nextItem.questionId !== attempt.questionId) return false;
+      if (storedItem.questionVersionId !== attempt.questionVersionId) return false;
+      if (nextItem.state.kind !== 'graded') return false;
+      if (session.userId !== attempt.userId || session.examId !== attempt.examId) return false;
+      if (stored.userId !== attempt.userId || stored.examId !== attempt.examId) return false;
+      const priorKey = `${attempt.userId}|${attempt.examId}|${attempt.questionId}`;
+      const firstAttempt =
+        (attempt.outcome === 'correct' || attempt.outcome === 'wrong') && !priorKeys.has(priorKey);
+      if (firstAttempt) priorKeys.add(priorKey);
+      sessions.set(keyOf(session.userId, session.examId, session.mode), session);
+      attempts.set(attempt.attemptId, { ...attempt, firstAttempt });
+      return true;
     },
   };
-  return { repository, records, calls };
+  return { repository, attempts, calls };
 }
