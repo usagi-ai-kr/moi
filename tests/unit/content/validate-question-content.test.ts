@@ -16,7 +16,6 @@ const VALIDATOR = fileURLToPath(new URL('../../../scripts/validate-question-cont
 const SAMPLE_PACK = fileURLToPath(
   new URL('../../../content/questions/saa-c03/sample-pack.json', import.meta.url),
 );
-const QUESTIONS_ROOT = fileURLToPath(new URL('../../../content/questions', import.meta.url));
 
 function validItem(overrides = {}) {
   return {
@@ -96,11 +95,11 @@ describe('Given 작성 계약 / When 검증기 호출 / Then AC 충족', () => {
     expect(parsed.items).toHaveLength(4);
     expect(new Set(parsed.items.map((i: { domainCode: string }) => i.domainCode)).size).toBe(4);
     expect(validatePack(parsed, SAMPLE_PACK)).toEqual([]);
-    const out = execFileSync('node', [VALIDATOR, QUESTIONS_ROOT], { encoding: 'utf8' });
-    expect(out).toMatch(/packs=1 questions=4/);
     const { dir } = writeTempPack(parsed);
+    const out = execFileSync('node', [VALIDATOR, dir], { encoding: 'utf8' });
+    expect(out).toMatch(/packs=1 questions=4/);
     const emitPath = join(dir, 'bulk.json');
-    execFileSync('node', [VALIDATOR, QUESTIONS_ROOT, '--emit', emitPath], { encoding: 'utf8' });
+    execFileSync('node', [VALIDATOR, dir, '--emit', emitPath], { encoding: 'utf8' });
     const emitted = JSON.parse(readFileSync(emitPath, 'utf8'));
     expect(Object.keys(emitted.items[0]).sort()).toEqual([...BULK_FIELDS].sort());
   });
