@@ -14,7 +14,7 @@ const rules = [
   ['화면 검증', /before\/after/],
   ['모바일 해상도', /320[\s\S]*375[\s\S]*768[\s\S]*1024[\s\S]*1280/],
 ];
-const missing = rules.filter(([name, regex]) => !regex.test(design)).map(([name]) => name);
+const missing = rules.filter(([, regex]) => !regex.test(design)).map(([name]) => name);
 const cases = ['GitHub Primer', 'Khan Academy', 'Anki', 'shadcn/ui'];
 if (cases.filter(name => design.includes('**' + name + '**')).length < 3) missing.push('벤치마크 3개');
 if (!skill.includes('DESIGN.md') || !skill.includes('audit-design-contract.mjs')) missing.push('스킬 연결');
