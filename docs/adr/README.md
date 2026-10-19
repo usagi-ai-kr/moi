@@ -47,4 +47,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Proposed | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
 | ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
 | ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
+| ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Accepted | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
 <!-- ADR_INDEX:END -->

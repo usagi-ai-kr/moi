@@ -215,3 +215,19 @@
   outline: 2px solid var(--moi-color-ink);
   outline-offset: 2px;
 }
+/* 해설 Markdown·Mermaid — moi-note와 별도, 320px 가로 스크롤/줄바꿈 (#134). */
+.moi-explanation {
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-ink);
+  overflow-wrap: anywhere;
+}
+.moi-explanation p, .moi-explanation ul, .moi-explanation ol { margin: var(--moi-space-2) 0; }
+.moi-explanation ul, .moi-explanation ol { padding-left: var(--moi-space-5); }
+.moi-explanation table { display: block; width: 100%; overflow-x: auto; border-collapse: collapse; }
+.moi-explanation th, .moi-explanation td { border: 1px solid var(--moi-color-border); padding: var(--moi-space-2); text-align: left; }
+.moi-explanation code { background: var(--moi-color-white); border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-sm); padding: 0 4px; overflow-wrap: anywhere; }
+.moi-explanation pre { overflow-x: auto; border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); padding: var(--moi-space-2); background: var(--moi-color-white); }
+.moi-explanation pre code { border: 0; padding: 0; }
+.moi-explanation a { color: var(--moi-color-ink); }
+.moi-mermaid { overflow-x: auto; border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); padding: var(--moi-space-2); background: var(--moi-color-white); }
+.moi-mermaid svg { max-width: 100%; height: auto; }
