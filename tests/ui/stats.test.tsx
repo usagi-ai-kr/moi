@@ -136,12 +136,11 @@ describe('학습 현황 패널', () => {
     expect(await screen.findByText(/아직 풀이 기록이 없습니다/)).toBeInTheDocument();
   });
 
-  it('App 학습 현황 토글로 열린다', async () => {
+  it('App 학습 현황/이력 메뉴로 통계 패널이 열린다', async () => {
     renderApp(clientWith(STATS));
-    await screen.findByRole('button', { name: '로그아웃' });
-    fireEvent.click(screen.getByRole('button', { name: '학습 현황' }));
+    await screen.findByRole('link', { name: '학습 현황/이력' });
+    fireEvent.click(screen.getByRole('link', { name: '학습 현황/이력' }));
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '학습 이력' })).toBeInTheDocument();
+    expect(screen.getByText('완료한 학습')).toBeInTheDocument();
   });
 });

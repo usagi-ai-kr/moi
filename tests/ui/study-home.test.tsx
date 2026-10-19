@@ -44,9 +44,10 @@ beforeEach(() => {
 describe('홈 학습 진입', () => {
   it('로그인 시 20문제 학습 CTA와 이력 링크가 보인다', async () => {
     renderApp(loggedInClient());
-    expect(await screen.findByRole('button', { name: '로그아웃' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '학습 이력' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
   });
 
   it('CTA를 누르면 학습 범위 화면이 열린다(지연 청크)', async () => {
