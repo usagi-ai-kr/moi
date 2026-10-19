@@ -1,7 +1,8 @@
 import { copy } from '../copy';
 import type { StudySummary } from '../api/client';
 import { Pagination } from '../components/ui/pagination';
-import { formatDateTime, scopeLabel } from './types';
+import { domainLabel } from '../stats/StatsPanel';
+import { formatDateTime, scopeLabel, STUDY_EXAM_LABEL } from './types';
 import './study.css';
 
 interface Props {
@@ -47,8 +48,8 @@ export function HistoryView(p: Props) {
             {!p.loadError && p.detailId === s.id && (
               <div className="moi-study-detail" role="dialog" aria-label={`${formatDateTime(s.submittedAt)} 학습 상세`}>
                 <p className="moi-note">
-                  {s.examId} · {scopeLabel(s.mode)}
-                  {s.domainId ? ` · ${s.domainId}` : ''} · {formatDateTime(s.submittedAt)}
+                  {STUDY_EXAM_LABEL} · {scopeLabel(s.mode)}
+                  {s.domainId ? ` · ${domainLabel(s.domainId)}` : ''} · {formatDateTime(s.submittedAt)}
                 </p>
                 <button type="button" className="moi-study-ghost" onClick={() => p.onDetail(null)}>
                   {copy.study.close}

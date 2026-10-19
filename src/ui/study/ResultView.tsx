@@ -1,9 +1,9 @@
 import { copy } from '../copy';
-import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
+import type { ApiClient, StudyCorrections, StudySubmittedItem, StudySubmittedSet } from '../api/client';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
-import { scopeLabel } from './types';
+import { scopeLabel, STUDY_EXAM_LABEL } from './types';
 
 interface Props {
   client: ApiClient;
@@ -11,6 +11,17 @@ interface Props {
   onRestart: () => void;
   onHistory: () => void;
   corrections?: StudyCorrections;
+}
+
+// 응답 원시 kind → 화면 라벨 (#148).
+const RESPONSE_KIND_LABEL: Record<string, string> = { answered: '응답', pass: 'Pass', unanswered: '미응답' };
+
+// optionId → 해당 문항 optionOrder 기준 보기 번호. 매칭 실패 시 id 대신 '?' (#148).
+function optionNumbers(item: StudySubmittedItem | undefined, ids: string[]): string {
+  return ids.map((id) => {
+    const index = item?.optionOrder.indexOf(id) ?? -1;
+    return index >= 0 ? String(index + 1) : '?';
+  }).join(', ');
 }
 
 // 신고 사유 라벨 — copy.report.reason* 재사용, 미정의 사유는 원문 노출.
@@ -44,7 +55,7 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
     <section className="moi-study" aria-label={copy.study.resultTitle}>
       <h2 className="moi-study-title">{copy.study.resultTitle}</h2>
       <p className="moi-note">
-        {scopeLabel(set.mode)} · {set.examId} · 정답률 {r.accuracyPercent}%
+        {scopeLabel(set.mode)} · {STUDY_EXAM_LABEL} · 정답률 {r.accuracyPercent}%
       </p>
       <dl className="moi-study-result">
         <div>
@@ -70,9 +81,9 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
           return (
             <li key={it.questionId} data-testid={`peritem-${it.questionId}`}>
               <span>{it.correct ? '정답' : '오답'} · </span>
-              <span>{it.responseKind} · </span>
-              <span>선택: {it.selectedOptionIds.length ? it.selectedOptionIds.join(', ') : '없음'} · </span>
-              <span>정답: {it.correctOptionIds ? it.correctOptionIds.join(', ') : '비공개'}</span>
+              <span>{RESPONSE_KIND_LABEL[it.responseKind] ?? '—'} · </span>
+              <span>선택: {it.selectedOptionIds.length ? optionNumbers(content, it.selectedOptionIds) : '없음'} · </span>
+              <span>정답: {it.correctOptionIds ? optionNumbers(content, it.correctOptionIds) : '비공개'}</span>
               {content && (
                 <>
                   <BookmarkButton client={client} examId={set.examId} questionId={it.questionId} />
