@@ -2,6 +2,8 @@ import type { StudyMode } from '../api/client';
 
 // SAA-C03 고정 — 시험 선택 UI 없음 (이슈 #50).
 export const STUDY_EXAM_ID = 'saa-c03';
+// 화면 표시명 — 내부 examId 대신 사용자에게 보여준다 (#148).
+export const STUDY_EXAM_LABEL = 'AWS SAA-C03';
 
 // 이력 페이지 기본 크기 단일 상수 (이슈 #148)
 export const HISTORY_PAGE_SIZE = 20;

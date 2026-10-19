@@ -1,5 +1,5 @@
 import { copy } from '../copy';
-import { STUDY_DOMAINS, STUDY_EXAM_ID } from './types';
+import { STUDY_DOMAINS, STUDY_EXAM_LABEL } from './types';
 import type { StudyScope } from './types';
 
 interface Props {
@@ -21,7 +21,7 @@ export function StartView(p: Props) {
     <section className="moi-study" aria-label={copy.study.startTitle}>
       <h2 className="moi-study-title">{copy.study.startTitle}</h2>
       <p className="moi-note">
-        {STUDY_EXAM_ID} · 20문제
+        {STUDY_EXAM_LABEL} · 20문제
       </p>
       <fieldset className="moi-study-field">
         <legend className="moi-study-legend">범위</legend>

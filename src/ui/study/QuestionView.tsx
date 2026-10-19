@@ -68,7 +68,6 @@ export function QuestionView(p: Props) {
       </div>
       <h2 className="moi-study-title">{item.stem}</h2>
       <p className="moi-note">
-        {item.questionId} · v{item.versionNo}
         <BookmarkButton client={p.client} examId={p.examId ?? STUDY_EXAM_ID} questionId={item.questionId} />
         <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
       </p>
