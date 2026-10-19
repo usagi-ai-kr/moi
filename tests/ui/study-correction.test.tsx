@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../../src/ui/api/client';
@@ -5,7 +6,25 @@ import { copy } from '../../src/ui/copy';
 import { ResultView } from '../../src/ui/study/ResultView';
 
 function fakeClient(): ApiClient {
-  return { get: vi.fn(), patch: vi.fn(), post: vi.fn() } as unknown as ApiClient;
+  return {
+    get: vi.fn((path: string) => ({
+      json: async () => {
+        if (String(path).includes('api/review/bookmarks')) {
+          return { examId: 'saa-c03', total: 0, items: [] };
+        }
+        return {};
+      },
+    })),
+    patch: vi.fn(() => ({
+      json: async () => ({ questionId: 'q', bookmarked: true }),
+    })),
+    post: vi.fn(),
+  } as unknown as ApiClient;
+}
+
+function renderWithQuery(ui: React.ReactElement) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 }
 
 // 2문제 제출 세트 — 최초 정답률 50% (q-0 정답, q-1 오답).
@@ -108,7 +127,7 @@ function correctionsFixture(): StudyCorrections {
 
 describe('정정 결과 UI (#53)', () => {
   it('정정 1건이면 정정 반영·최초/정정 정답률·유효/제외·사유를 보인다', () => {
-    render(
+    renderWithQuery(
       <ResultView
         client={fakeClient()}
         set={submittedSet()}
@@ -124,7 +143,7 @@ describe('정정 결과 UI (#53)', () => {
   });
 
   it('정정 0건이면 정정 반영을 보이지 않는다', () => {
-    render(
+    renderWithQuery(
       <ResultView
         client={fakeClient()}
         set={submittedSet()}
@@ -175,7 +194,7 @@ describe('정정 결과 UI (#53)', () => {
         perItem: [],
       },
     };
-    render(
+    renderWithQuery(
       <ResultView
         client={fakeClient()}
         set={submittedSet()}

@@ -1,10 +1,12 @@
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
+import { BookmarkButton } from '../review/BookmarkButton';
 import { ReportButton } from './ReportButton';
-import type { SaveState } from './types';
+import { STUDY_EXAM_ID, type SaveState } from './types';
 
 interface Props {
   client: ApiClient;
+  examId?: string;
   items: StudyActiveItem[];
   index: number;
   save: SaveState;
@@ -67,6 +69,7 @@ export function QuestionView(p: Props) {
       <h2 className="moi-study-title">{item.stem}</h2>
       <p className="moi-note">
         {item.questionId} · v{item.versionNo}
+        <BookmarkButton client={p.client} examId={p.examId ?? STUDY_EXAM_ID} questionId={item.questionId} />
         <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
       </p>
       <fieldset className="moi-study-field">

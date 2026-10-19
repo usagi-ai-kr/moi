@@ -1,5 +1,6 @@
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
+import { BookmarkButton } from '../review/BookmarkButton';
 import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
 import { scopeLabel } from './types';
@@ -73,11 +74,14 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
               <span>선택: {it.selectedOptionIds.length ? it.selectedOptionIds.join(', ') : '없음'} · </span>
               <span>정답: {it.correctOptionIds ? it.correctOptionIds.join(', ') : '비공개'}</span>
               {content && (
-                <ReportButton
-                  client={client}
-                  questionId={content.questionId}
-                  questionVersionId={content.questionVersionId}
-                />
+                <>
+                  <BookmarkButton client={client} examId={set.examId} questionId={it.questionId} />
+                  <ReportButton
+                    client={client}
+                    questionId={content.questionId}
+                    questionVersionId={content.questionVersionId}
+                  />
+                </>
               )}
               {content && (
                 <>
@@ -128,6 +132,9 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
         <button type="button" className="moi-study-secondary" onClick={onHistory}>
           {copy.study.historyLink}
         </button>
+        <a href="/review?mode=wrong" className="moi-study-ghost">
+          {copy.review.goToWrongReview}
+        </a>
       </div>
     </section>
   );
