@@ -61,14 +61,30 @@ beforeEach(() => {
 });
 
 describe('라우터·AppShell 내비게이션 (#148)', () => {
-  it('로그인 시 상단 nav 3개와 aria-current를 보인다', async () => {
+  it('로그인 시 상단 nav 4개와 aria-current를 보인다', async () => {
     renderAt(loggedInClientWithHistory(0), '/');
     const nav = await screen.findByRole('navigation');
     expect(nav).toHaveAttribute('aria-label', '주요 메뉴');
     expect(screen.getByRole('link', { name: '학습 시작' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '학습 현황/이력' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '복습' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '학습 시작' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('AppShell 헤더는 320px 모바일에서도 브랜드와 4개 nav를 모두 노출하고 moi-shell-header를 갖는다', async () => {
+    renderAt(loggedInClientWithHistory(0), '/review');
+    const nav = await screen.findByRole('navigation');
+    const header = nav.closest('header');
+    expect(header).toHaveClass('moi-shell-header');
+    expect(screen.getByRole('link', { name: 'moi' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '복습' })).toHaveAttribute('aria-current', 'page');
+
+    const navLinks = screen.getAllByRole('link', { name: /학습 시작|학습 현황\/이력|복습|계정/ });
+    expect(navLinks).toHaveLength(4);
+    for (const link of navLinks) {
+      expect(link).toHaveClass('moi-nav-link');
+    }
   });
 
   it('/account 직접 진입: 계정 화면에 UUID/masked-id 없이 로그아웃만 있다', async () => {

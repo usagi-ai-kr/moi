@@ -1,0 +1,96 @@
+/* AppShell — 헤더/네비/메인 셸 레이아웃 (ADR-0012, DESIGN.md) */
+.moi-shell-header {
+  position: sticky;
+  top: 0;
+  inset: auto;
+  z-index: 10;
+  min-height: var(--moi-header-h);
+  height: auto;
+  display: flex;
+  align-items: center;
+  padding-block: var(--moi-space-2);
+  background: var(--moi-color-white);
+  border-bottom: 1px solid var(--moi-color-border);
+}
+
+.moi-shell-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--moi-space-2);
+  width: 100%;
+}
+
+.moi-brand-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.moi-brand-link:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+.moi-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moi-space-1);
+}
+
+.moi-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding-inline: var(--moi-space-2);
+  border-radius: var(--moi-radius-sm);
+  color: var(--moi-color-muted);
+  text-decoration: none;
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.moi-nav-link:hover {
+  color: var(--moi-color-ink);
+}
+
+.moi-nav-link:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+.moi-nav-link[aria-current="page"] {
+  color: var(--moi-color-ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.moi-shell-main {
+  min-height: calc(100vh - var(--moi-header-h));
+  padding-top: var(--moi-space-4);
+  padding-bottom: var(--moi-space-7);
+  display: flex;
+}
+
+@media (max-width: 360px) {
+  .moi-shell-head {
+    gap: var(--moi-space-1);
+  }
+  .moi-nav-link {
+    padding-inline: var(--moi-space-1);
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .moi-nav {
+    gap: var(--moi-space-2);
+  }
+}

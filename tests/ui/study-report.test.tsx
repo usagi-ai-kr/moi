@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -21,8 +22,17 @@ interface PostOpts {
 // 신고 전용 최소 fake client — POST /api/study/reports만 동작시킨다 (#53).
 function fakeReportClient(o: PostOpts = {}): ApiClient {
   return {
-    get: vi.fn(),
-    patch: vi.fn(),
+    get: vi.fn((path: string) => ({
+      json: async () => {
+        if (String(path).includes('api/review/bookmarks')) {
+          return { examId: 'saa-c03', total: 0, items: [] };
+        }
+        return {};
+      },
+    })),
+    patch: vi.fn(() => ({
+      json: async () => ({ questionId: 'q', bookmarked: true }),
+    })),
     post: vi.fn((path: string, opts?: { json?: unknown }) => ({
       json: async () => {
         o.calls?.push({ path: String(path), json: opts?.json });
@@ -31,6 +41,11 @@ function fakeReportClient(o: PostOpts = {}): ApiClient {
       },
     })),
   } as unknown as ApiClient;
+}
+
+function renderWithQuery(ui: React.ReactElement) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
 }
 
 function submittedSet(): StudySubmittedSet {
@@ -109,7 +124,7 @@ describe('신고 UI (#53)', () => {
   });
 
   it('결과 화면에서도 문항별 신고 버튼이 보인다', () => {
-    render(
+    renderWithQuery(
       <ResultView
         client={fakeReportClient()}
         set={submittedSet()}
@@ -141,7 +156,7 @@ describe('신고 UI (#53)', () => {
       ],
     };
     const { QuestionView } = await import('../../src/ui/study/QuestionView');
-    render(
+    renderWithQuery(
       <QuestionView
         client={fakeReportClient()}
         items={set.items}

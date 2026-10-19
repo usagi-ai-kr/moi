@@ -81,6 +81,9 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
           if (o.get) return o.get;
           throw httpError(404, { error: 'not_found' });
         }
+        if (String(path).includes('api/review/bookmarks')) {
+          return { examId: 'saa-c03', total: 0, items: [] };
+        }
         throw httpError(404, { error: 'not_found' });
       },
     })),

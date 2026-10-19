@@ -14,6 +14,7 @@ import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } 
 import { AppShell } from './AppShell';
 import { AccountPage } from './pages/AccountPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { ReviewScreen } from './review/ReviewScreen';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
 // 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
@@ -160,6 +161,7 @@ function AppContent({ client }: { client: ApiClient }) {
             </Suspense>
           }
         />
+        <Route path="review" element={<ReviewScreen client={client} />} />
         <Route path="account" element={<AccountPage pending={logoutPending} onLogout={doLogout} />} />
         <Route path="*" element={<NotFound />} />
       </Route>
