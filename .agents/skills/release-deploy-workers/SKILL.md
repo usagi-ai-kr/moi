@@ -35,6 +35,7 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 
 ## 마이너 버전 최종 patch 산출물 (필수)
 - 각 minor의 최종 patch 시점에 4종을 모두 남긴다. 넷 중 하나라도 없으면 릴리스 완료로 보지 않는다.
+- 수업 실사용 확인(#127/#131: 실제 URL 로그인→풀이→저장/이어풀기→제출/결과·화면/favicon)은 일반공개 준비를 요구하지 않으며 정식완료 주장 시에만 아래 4종을 요구한다.
 - **wiki**: `https://github.com/usagi-ai-kr/moi/wiki/<minor>` — 범위·릴리스 노트·마이그레이션/호환성·검증 증거·알려진 문제.
 - **tag**: main의 릴리스 commit에 annotated tag `v<minor>.<patch>` (예: `v0.1.4`).
 - **release**: tag 기반 GitHub Release, 한국어 노트, Milestone/이슈 링크, 배포 URL·commit SHA, migration/rollback·smoke 증거.

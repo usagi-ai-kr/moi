@@ -1,7 +1,7 @@
 ---
 id: ADR-0019
 title: 0.2.0 문제은행·품질·관리 API
-status: Accepted
+status: Superseded by ADR-0030
 date: 2026-10-18
 related: ["#35", "#46", "#47", "#48", "#55", "ADR-0017"]
 ---

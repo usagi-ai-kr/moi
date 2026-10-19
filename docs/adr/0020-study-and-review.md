@@ -1,7 +1,7 @@
 ---
 id: ADR-0020
 title: 0.2.0 20문제 풀이·오답/북마크 복습
-status: Accepted
+status: Superseded by ADR-0030
 date: 2026-10-18
 related: ["#35", "#49", "#50", "#51", "ADR-0017"]
 ---

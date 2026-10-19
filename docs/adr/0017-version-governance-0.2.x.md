@@ -1,7 +1,7 @@
 ---
 id: ADR-0017
 title: 0.2.x 버전·거버넌스·출시 게이트
-status: Accepted
+status: Superseded by ADR-0030
 date: 2026-10-18
 related: ["#35", "ADR-0008", "ADR-0019", "ADR-0020", "ADR-0021"]
 ---
