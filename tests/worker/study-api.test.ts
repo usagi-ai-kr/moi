@@ -380,6 +380,58 @@ describe('멱등성 (#52)', () => {
   });
 });
 
+describe('현재 활성 세트 조회 (#148)', () => {
+  it('current는 본인 활성 세트를 200으로 복원하고 정답·해설은 노출하지 않는다', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000e1');
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    expect(started.status).toBe(201);
+    const created = (await started.json()) as { id: string };
+    const current = await studyRequest(`/api/study/sets/current?examId=${EXAM}`, { token });
+    expect(current.status).toBe(200);
+    expect(current.headers.get('cache-control')).toBe('no-store');
+    const body = (await current.json()) as {
+      id: string;
+      items: Array<{ stem?: unknown; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }>;
+    };
+    // `current`가 `:id`로 잡히면 id가 'current'인 세트가 없어 404가 된다.
+    expect(body.id).toBe(created.id);
+    expect(body.items).toHaveLength(20);
+    for (const item of body.items) {
+      expect(typeof item.stem).toBe('string');
+      expect(item.answerOptionIds).toBeUndefined();
+      expect(item.explanation).toBeUndefined();
+      expect(item.sourceUrls).toBeUndefined();
+    }
+  });
+
+  it('활성 세트가 없거나 제출 완료만 있으면 404 no_active_set', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000e2');
+    const none = await studyRequest(`/api/study/sets/current?examId=${EXAM}`, { token });
+    expect(none.status).toBe(404);
+    expect(await none.json()).toMatchObject({ error: 'no_active_set' });
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    const set = (await started.json()) as { id: string };
+    await studyRequest(`/api/study/sets/${set.id}/submit`, { method: 'POST', token, body: { confirmUnanswered: true } });
+    const done = await studyRequest(`/api/study/sets/current?examId=${EXAM}`, { token });
+    expect(done.status).toBe(404);
+    expect(await done.json()).toMatchObject({ error: 'no_active_set' });
+  });
+
+  it('다른 사용자의 활성 세트는 404, 미인증 401, examId 누락·빈 값 422', async () => {
+    const owner = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000e3');
+    const other = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000e4');
+    expect((await studyRequest('/api/study/sets', { method: 'POST', token: owner, body: { examId: EXAM, mode: 'all' } })).status).toBe(201);
+    const theirs = await studyRequest(`/api/study/sets/current?examId=${EXAM}`, { token: other });
+    expect(theirs.status).toBe(404);
+    expect(await theirs.json()).toMatchObject({ error: 'no_active_set' });
+    expect((await studyRequest(`/api/study/sets/current?examId=${EXAM}`)).status).toBe(401);
+    expect((await studyRequest('/api/study/sets/current', { token: owner })).status).toBe(422);
+    const empty = await studyRequest('/api/study/sets/current?examId=', { token: owner });
+    expect(empty.status).toBe(422);
+    expect(await empty.json()).toMatchObject({ error: 'validation_failed' });
+  });
+});
+
 describe('제출→attempt 저장 (#54)', () => {
   it('제출 후 study_attempts 20행·source·firstAttempt·stats 반영', async () => {
     const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000d1');

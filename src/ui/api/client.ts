@@ -121,6 +121,17 @@ export async function getStudySet(client: ApiClient, id: string): Promise<StudyA
   return client.get(`api/study/sets/${id}`).json<StudyActiveSet>();
 }
 
+// GET /api/study/sets/current?examId=… — 이어풀기 복원(#148). 404는 활성 세트 없음(null).
+export async function getCurrentStudySet(client: ApiClient, examId: string): Promise<StudyActiveSet | null> {
+  try {
+    const search = new URLSearchParams({ examId });
+    return await client.get(`api/study/sets/current?${search}`).json<StudyActiveSet>();
+  } catch (err) {
+    if (err instanceof HTTPError && err.response.status === 404) return null;
+    throw err;
+  }
+}
+
 export async function answerStudyItem(
   client: ApiClient,
   setId: string,

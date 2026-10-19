@@ -37,5 +37,10 @@ export const historyQuerySchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(100).default(20),
 });
 
+/** 현재 활성 세트 조회 — 빈 값·누락 모두 422로 거부한다(#148). */
+export const currentSetQuerySchema = z.object({
+  examId: z.string().min(1).max(128),
+});
+
 export type StartSetBody = z.infer<typeof startSetBodySchema>;
 export type AnswerBody = z.infer<typeof answerBodySchema>;

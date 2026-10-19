@@ -12,7 +12,7 @@ import { authenticateSession } from '@/app/session/authenticate-session';
 import { createSessionRuntime, type SessionRuntime } from '@/infra/auth/session/runtime';
 import { parseSessionCookieValue } from '@/infra/http/session/cookie';
 import { createStudyRuntime, type StudyRuntime } from './runtime';
-import { abandonBodySchema, answerBodySchema, historyQuerySchema, startSetBodySchema, submitBodySchema } from './schemas';
+import { abandonBodySchema, answerBodySchema, currentSetQuerySchema, historyQuerySchema, startSetBodySchema, submitBodySchema } from './schemas';
 
 /**
  * 20문제 세트 HTTP API (이슈 #49 후속, ADR-0020).
@@ -117,6 +117,22 @@ export function registerStudyRoutes(app: Hono<{ Bindings: Env }>, options?: Stud
         }
         throw err;
       }
+    }),
+  );
+
+  // #148 — 주소창의 세트 UUID 없이 이어풀기 복원. `:id`보다 먼저 등록한다.
+  app.get(
+    '/api/study/sets/current',
+    authed(createRuntime, createSession, async (c, runtime, userId) => {
+      const parsed = currentSetQuerySchema.safeParse(c.req.query());
+      if (!parsed.success) {
+        return c.json({ error: 'validation_failed', issues: safeIssues(parsed.error) }, 422);
+      }
+      const { examId } = parsed.data;
+      const deps = runtime.createDeps({ examId, db: c.env.DB });
+      const set = await deps.repository.findActive({ userId, examId });
+      if (!set) return c.json({ error: 'no_active_set' }, 404);
+      return c.json(toActiveDto(set), 200);
     }),
   );
 
