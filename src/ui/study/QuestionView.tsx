@@ -138,7 +138,7 @@ export function QuestionView(p: Props) {
           {copy.study.submit}
           {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
         </Button>
-        <Button type="button" variant="outline" className="moi-study-outline text-destructive" onClick={p.onAbandonRequest}>
+        <Button type="button" variant="outline" className="text-destructive" onClick={p.onAbandonRequest}>
           {copy.study.abandon}
         </Button>
       </div>

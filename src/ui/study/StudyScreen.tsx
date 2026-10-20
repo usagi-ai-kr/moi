@@ -30,7 +30,7 @@ function ConfirmDialog({
       <Button
         type="button"
         variant={destructive ? 'outline' : 'primary'}
-        className={destructive ? 'moi-study-outline text-destructive' : undefined}
+        className={destructive ? 'text-destructive' : undefined}
         onClick={onConfirm}
         disabled={pending}
         pending={pending}
