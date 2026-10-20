@@ -302,10 +302,11 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
   it('시험 code/id 입력은 같은 D1 복습 회차와 attempt 축을 사용한다', async () => {
     await db.prepare('DELETE FROM study_attempts').run();
     const token = await mintSession(U1);
+    // 학습 세트·복습 모두 공개 code 축을 쓴다(#51 버그픽스, ADR-0058).
     const setStart = await req('/api/study/sets', {
       method: 'POST',
       token,
-      body: { examId: 'e-1', mode: 'all' },
+      body: { examId: EXAM_CODE, mode: 'all' },
     });
     expect(setStart.status).toBe(201);
     const set = (await setStart.json()) as {
@@ -342,9 +343,9 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       .prepare("SELECT question_id, outcome, exam_id FROM study_attempts WHERE source = 'set'")
       .all<{ question_id: string; outcome: string; exam_id: string }>();
     const setByQuestion = new Map(setRows.results.map((row) => [row.question_id, row]));
-    expect(setByQuestion.get(wrongQuestionId)).toMatchObject({ outcome: 'wrong', exam_id: 'e-1' });
-    expect(setByQuestion.get(passQuestionId)).toMatchObject({ outcome: 'pass', exam_id: 'e-1' });
-    expect(setByQuestion.get(unansweredQuestionId)).toMatchObject({ outcome: 'unanswered', exam_id: 'e-1' });
+    expect(setByQuestion.get(wrongQuestionId)).toMatchObject({ outcome: 'wrong', exam_id: EXAM_CODE });
+    expect(setByQuestion.get(passQuestionId)).toMatchObject({ outcome: 'pass', exam_id: EXAM_CODE });
+    expect(setByQuestion.get(unansweredQuestionId)).toMatchObject({ outcome: 'unanswered', exam_id: EXAM_CODE });
 
     const start = await req('/api/review/sessions', {
       method: 'POST',
@@ -363,7 +364,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       .prepare("SELECT exam_id, cursor FROM review_sessions WHERE user_id = ?1 AND status = 'active'")
       .bind(U1)
       .first<{ exam_id: string; cursor: number }>();
-    expect(storedSession).toEqual({ exam_id: 'e-1', cursor: 0 });
+    expect(storedSession).toEqual({ exam_id: EXAM_CODE, cursor: 0 });
 
     const duplicateById = await req('/api/review/sessions', {
       method: 'POST',
@@ -406,9 +407,9 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       .prepare("SELECT question_id, outcome, exam_id, first_attempt FROM study_attempts WHERE source = 'review'")
       .all<{ question_id: string; outcome: string; exam_id: string; first_attempt: number }>();
     const reviewByQuestion = new Map(reviewRows.results.map((row) => [row.question_id, row]));
-    expect(reviewByQuestion.get(wrongQuestionId)).toMatchObject({ outcome: 'correct', exam_id: 'e-1', first_attempt: 0 });
-    expect(reviewByQuestion.get(passQuestionId)).toMatchObject({ outcome: 'pass', exam_id: 'e-1', first_attempt: 0 });
-    expect(reviewByQuestion.get(unansweredQuestionId)).toMatchObject({ outcome: 'wrong', exam_id: 'e-1', first_attempt: 1 });
+    expect(reviewByQuestion.get(wrongQuestionId)).toMatchObject({ outcome: 'correct', exam_id: EXAM_CODE, first_attempt: 0 });
+    expect(reviewByQuestion.get(passQuestionId)).toMatchObject({ outcome: 'pass', exam_id: EXAM_CODE, first_attempt: 0 });
+    expect(reviewByQuestion.get(unansweredQuestionId)).toMatchObject({ outcome: 'wrong', exam_id: EXAM_CODE, first_attempt: 1 });
 
     const refreshed = await req('/api/review/candidates?examId=' + EXAM_CODE + '&mode=wrong', { token });
     expect(refreshed.status).toBe(200);
@@ -597,7 +598,7 @@ describe('복습 종료·답안 실효 경합 (ADR-0041)', () => {
     const raced = createRaceApp(async (deps, stale) => {
       const item = stale.items[stale.cursor];
       if (!item) throw new Error('review fixture missing current item');
-      const result = await answerReviewItem(deps, { userId: U1, examId: 'e-1', mode: 'wrong', questionId: item.questionId, response: { kind: 'pass' } });
+      const result = await answerReviewItem(deps, { userId: U1, examId: EXAM_CODE, mode: 'wrong', questionId: item.questionId, response: { kind: 'pass' } });
       if (result.outcome !== 'answered') throw new Error('controlled concurrent answer did not commit');
     });
     const response = await req('/api/review/sessions/current/answers', {
@@ -619,7 +620,7 @@ describe('복습 종료·답안 실효 경합 (ADR-0041)', () => {
     const raced = createRaceApp(async (deps, stale) => {
       const item = stale.items[stale.cursor];
       if (!item) throw new Error('review fixture missing current item');
-      const result = await answerReviewItem(deps, { userId: U1, examId: 'e-1', mode: 'wrong', questionId: item.questionId, response: { kind: 'pass' } });
+      const result = await answerReviewItem(deps, { userId: U1, examId: EXAM_CODE, mode: 'wrong', questionId: item.questionId, response: { kind: 'pass' } });
       if (result.outcome !== 'answered') throw new Error('controlled concurrent answer did not commit');
     });
     const endInput = { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } };
@@ -645,7 +646,7 @@ describe('복습 종료·답안 실효 경합 (ADR-0041)', () => {
     const started = (await start.json()) as { current: { questionId: string } };
     const questionId = started.current.questionId;
     const raced = createRaceApp(async (deps) => {
-      const result = await endReviewSession(deps, { userId: U1, examId: 'e-1', mode: 'wrong' });
+      const result = await endReviewSession(deps, { userId: U1, examId: EXAM_CODE, mode: 'wrong' });
       if (result.outcome !== 'ended') throw new Error('controlled concurrent end did not commit');
     });
     const answer = await req('/api/review/sessions/current/answers', {

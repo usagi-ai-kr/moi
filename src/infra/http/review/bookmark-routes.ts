@@ -22,7 +22,7 @@ export function registerReviewBookmarkRoutes(app: Hono<{ Bindings: Env }>, optio
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const result = await setReviewBookmark(deps, { userId: auth.userId, examId: exam.id, questionId: parsed.data.questionId, bookmarked: parsed.data.bookmarked });
+      const result = await setReviewBookmark(deps, { userId: auth.userId, examId: exam.code, questionId: parsed.data.questionId, bookmarked: parsed.data.bookmarked });
       return c.json({ questionId: parsed.data.questionId, bookmarked: result.bookmarked }, 200);
     } catch (err) {
       if (err instanceof InvalidReviewQuestionError) return c.json({ error: 'invalid_question' }, 422);
@@ -46,7 +46,7 @@ export function registerReviewBookmarkRoutes(app: Hono<{ Bindings: Env }>, optio
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const rows = await deps.source.listBookmarkCandidates({ userId: auth.userId, examId: exam.id });
+      const rows = await deps.source.listBookmarkCandidates({ userId: auth.userId, examId: exam.code });
       const contents = await loadVersionContents(c.env.DB, rows.map((row) => row.version.questionVersionId));
       const items = [];
       for (const row of rows) {

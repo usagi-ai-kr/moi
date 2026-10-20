@@ -54,7 +54,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0037 | 0.2.4 복습 소스·북마크 영속 및 원자 채점 필수 연결 | Accepted | 2026-10-19 | [0037-review-source-bookmark-persist.md](./0037-review-source-bookmark-persist.md) |
 | ADR-0038 | 복습 원자 채점 0행 보상과 세트·복습 firstAttempt 경합 | Accepted | 2026-10-19 | [0038-review-grade-first-attempt-zero-row.md](./0038-review-grade-first-attempt-zero-row.md) |
 | ADR-0039 | 복습 HTTP API와 Worker·D1 통합 계약 | Accepted | 2026-10-19 | [0039-review-http-api-worker.md](./0039-review-http-api-worker.md) |
-| ADR-0040 | 복습 API 시험 식별자 내부 ID 정규화 | Accepted | 2026-10-19 | [0040-exam-identifier-canonicalization.md](./0040-exam-identifier-canonicalization.md) |
+| ADR-0040 | 복습 API 시험 식별자 내부 ID 정규화 | Superseded by ADR-0058 | 2026-10-19 | [0040-exam-identifier-canonicalization.md](./0040-exam-identifier-canonicalization.md) |
 | ADR-0041 | 복습 회차 종료 cursor CAS와 stale 답안 경합 | Accepted | 2026-10-19 | [0041-review-session-end-cursor-cas.md](./0041-review-session-end-cursor-cas.md) |
 | ADR-0042 | 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션 | Accepted | 2026-10-20 | [0042-reviewer-callback-orchestration.md](./0042-reviewer-callback-orchestration.md) |
 | ADR-0043 | CI에 THIRD_PARTY_NOTICES --check 게이트 추가 | Accepted | 2026-10-20 | [0043-ci-notices-check-gate.md](./0043-ci-notices-check-gate.md) |
@@ -72,4 +72,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0055 | 영역 ID canonical 정합과 원시 ID 차단 | Accepted | 2026-10-20 | [0055-domain-id-canonicalization.md](./0055-domain-id-canonicalization.md) |
 | ADR-0056 | 학습 타임스탬프 표시 규약과 단일 시험 상수 | Accepted | 2026-10-20 | [0056-study-timestamp-and-single-exam.md](./0056-study-timestamp-and-single-exam.md) |
 | ADR-0057 | 모바일 햄버거·우측 Drawer 구현과 반응형 breakpoint 정책 | Accepted | 2026-10-20 | [0057-mobile-drawer-native-dialog.md](./0057-mobile-drawer-native-dialog.md) |
+| ADR-0058 | 복습 시험 식별자 공개 코드 정규화와 내부 ID 읽기 호환 | Accepted | 2026-10-21 | [0058-review-exam-id-code.md](./0058-review-exam-id-code.md) |
 <!-- ADR_INDEX:END -->

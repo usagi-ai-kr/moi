@@ -21,7 +21,7 @@ export function registerReviewSessionRoutes(app: Hono<{ Bindings: Env }>, option
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const resumed = await resumeReviewSession(deps, { userId: auth.userId, examId: exam.id, mode: parsed.data.mode });
+      const resumed = await resumeReviewSession(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode });
       if (resumed.outcome === 'none') return c.json({ error: 'not_found' }, 404);
       const contents = await loadVersionContents(c.env.DB, resumed.session.items.map((item) => item.questionVersionId));
       if (!matchesSnapshot(resumed.session.items, contents)) return c.json({ error: 'not_found' }, 404);
@@ -48,7 +48,7 @@ export function registerReviewSessionRoutes(app: Hono<{ Bindings: Env }>, option
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const result = await endReviewSession(deps, { userId: auth.userId, examId: exam.id, mode: parsed.data.mode });
+      const result = await endReviewSession(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode });
       if (result.outcome === 'rejected') {
         if (result.reason === 'not_found') return c.json({ error: 'not_found' }, 404);
         return c.json({ error: 'conflict' }, 409);
