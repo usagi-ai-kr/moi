@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Suspense, lazy } from 'react';
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { copy } from '../../src/ui/copy';
 import { RouteErrorBoundary } from '../../src/ui/RouteErrorBoundary';
 import { ConflictPanel } from '../../src/ui/study/ConflictPanel';
@@ -10,10 +10,15 @@ import { App } from '../../src/ui/App';
 import type { ApiClient, StudyActiveItem } from '../../src/ui/api/client';
 
 describe('RouteErrorBoundary (#148)', () => {
-  const originalReload = window.location.reload;
+  // window.location을 교체한 테스트가 다른 테스트에 새지 않도록 원래 descriptor를 복원한다.
+  const originalLocation = Object.getOwnPropertyDescriptor(window, 'location');
 
   beforeEach(() => {
     vi.restoreAllMocks();
+  });
+
+  afterEach(() => {
+    if (originalLocation) Object.defineProperty(window, 'location', originalLocation);
   });
 
   it('lazy import가 reject되면 경계 안내·새로고침 버튼이 보이고 오류 메시지 원문은 보이지 않는다', async () => {
@@ -68,10 +73,6 @@ describe('RouteErrorBoundary (#148)', () => {
     expect(reloadMock).toHaveBeenCalledTimes(1);
 
     consoleSpy.mockRestore();
-    Object.defineProperty(window, 'location', {
-      configurable: true,
-      value: { ...window.location, reload: originalReload },
-    });
   });
 
   it('경계 발생 후 다른 경로로 이동하면 정상 화면이 보인다', async () => {
