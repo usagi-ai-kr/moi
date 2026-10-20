@@ -1,7 +1,7 @@
 {
-  "commit": "6796436debc4df0dcf359a52af0821ebb331687a",
-  "commitShort": "6796436",
-  "generatedAt": "2026-10-20T04:51:09.126Z",
+  "commit": "f204a898ce808847e7b568b14371ecc5106b29e0",
+  "commitShort": "f204a89",
+  "generatedAt": "2026-10-20T05:16:27.670Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -149,7 +149,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "20문제 학습",
+                "text": "10문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -187,7 +187,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "20문제 학습",
+                "text": "10문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -225,7 +225,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "20문제 학습",
+                "text": "10문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -263,7 +263,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "20문제 학습",
+                "text": "10문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -301,7 +301,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "20문제 학습",
+                "text": "10문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
