@@ -55,7 +55,7 @@
       "questionId": "saa-res-0129",
       "domainCode": "resilience",
       "stem": "두 리전 ALB 뒤에서 서비스되는 글로벌 애플리케이션에 고정 진입 IP 세트를 제공하고, 한 리전 장애 시 빠르게 다른 리전으로 전환하려 한다. 가장 적절한 솔루션은?",
-      "explanation": "**Global Accelerator**는 고정 anycast IP 세트를 클라이언트에 제공하고 두 리전 ALB를 엔드포인트로 등록해 장애 감지 시 리전 간 트래픽을 빠르게 전환한다. DNS TTL 대기 없이 전환된다.\n\n```mermaid\nflowchart LR\n  C[Client] --> G[Global Accelerator (고정 IP)]\n  G -->|정상| A[ALB 리전 A]\n  G -->|리전 A 장애 시| B[ALB 리전 B]\n```",
+      "explanation": "**Global Accelerator**는 고정 anycast IP 세트를 클라이언트에 제공하고 두 리전 ALB를 엔드포인트로 등록해 장애 감지 시 리전 간 트래픽을 빠르게 전환한다. DNS TTL 대기 없이 전환된다.\n\n```mermaid\nflowchart LR\n  C[Client] --> G[\"Global Accelerator (고정 IP)\"]\n  G -->|정상| A[ALB 리전 A]\n  G -->|리전 A 장애 시| B[ALB 리전 B]\n```",
       "sourceUrls": [
         "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
         "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction.html"
