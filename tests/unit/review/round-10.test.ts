@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { answerReviewItem, endReviewSession, getReviewCandidatesView, resumeReviewSession, startReviewSession } from '@/app/review';
+import { buildReviewSession } from '@/domain/review/session';
 import type { ReviewSession } from '@/domain/review/types';
 import { REVIEW_ROUND_SIZE } from '@/domain/review/thresholds';
 import { fakeGradingRepository, fakeRepository, fakeSource, fakeTimeRng, makeCandidates } from './fixtures';
@@ -113,5 +114,63 @@ describe('review 10문항 회차 queue (app fake)', () => {
     expect(await resumeReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark' })).toEqual({ outcome: 'none' });
     const bm = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark' });
     expect(bm.outcome).toBe('started');
+  });
+
+  it('7) legacy active all-graded end는 queue를 비워 다음 plan이 current-items를 탄다', async () => {
+    const f = fakes(5, 51);
+    const subset = f.src.state.wrong.slice(0, 3);
+    const legacy = buildReviewSession({
+      id: 'legacy-all',
+      userId: 'u1',
+      examId: 'saa-c03',
+      mode: 'wrong',
+      candidates: subset,
+      createdAt: 1700000000,
+      rng: () => f.deps.rng.next(),
+    });
+    expect(legacy.remainingQuestionIds ?? null).toBeNull();
+    await f.repo.repository.save({ session: legacy });
+    await gradeAll(f.deps, legacy, 3);
+    const ended = await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    expect(ended.outcome).toBe('ended');
+    if (ended.outcome !== 'ended') throw new Error('legacy end failed');
+    expect(ended.session.remainingQuestionIds ?? null).toBeNull();
+    expect(ended.session.cycleQuestionIds ?? null).toBeNull();
+    const view = await getReviewCandidatesView(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    expect(view.total).toBe(2);
+    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    if (next.outcome !== 'started') throw new Error('next failed');
+    expect(next.session.items).toHaveLength(2);
+  });
+
+  it('8) legacy active early-end pending은 pending+rest로 다음 plan에 잡힌다', async () => {
+    const f = fakes(5, 52);
+    const subset = f.src.state.wrong.slice(0, 3);
+    const legacy = buildReviewSession({
+      id: 'legacy-early',
+      userId: 'u1',
+      examId: 'saa-c03',
+      mode: 'wrong',
+      candidates: subset,
+      createdAt: 1700000000,
+      rng: () => f.deps.rng.next(),
+    });
+    await f.repo.repository.save({ session: legacy });
+    const stored = await f.repo.repository.findActive({ userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    if (!stored) throw new Error('legacy active missing');
+    await gradeAll(f.deps, stored, 1);
+    const ended = await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    expect(ended.outcome).toBe('ended');
+    if (ended.outcome !== 'ended') throw new Error('legacy early end failed');
+    expect(ended.summary).toMatchObject({ total: 3, graded: 1, pending: 2 });
+    expect(ended.session.remainingQuestionIds).toHaveLength(2);
+    expect(ended.session.cycleQuestionIds).toHaveLength(3);
+    const view = await getReviewCandidatesView(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    expect(view.total).toBe(4);
+    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    if (next.outcome !== 'started') throw new Error('next failed');
+    expect(next.session.items).toHaveLength(4);
+    const pendingIds = ended.session.items.filter((i) => i.state.kind === 'pending').map((i) => i.questionId);
+    for (const pid of pendingIds) expect(next.session.items.map((i) => i.questionId)).toContain(pid);
   });
 });

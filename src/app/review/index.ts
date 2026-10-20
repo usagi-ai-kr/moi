@@ -128,13 +128,26 @@ export async function endReviewSession(deps: ReviewDeps, input: { userId: string
   const ended = endSession(active, { now: deps.clock.now() });
   if ('outcome' in ended) return { outcome: 'rejected', reason: 'not_found' };
   const pending = ended.session.items.filter((i) => i.state.kind === 'pending').map((i) => i.questionId);
-  const baseRemaining = active.remainingQuestionIds ?? [];
-  const baseCycle = active.cycleQuestionIds ?? active.items.map((i) => i.questionId);
-  const withQueue: ReviewSession = {
-    ...ended.session,
-    remainingQuestionIds: rejoinPending(baseRemaining, pending),
-    cycleQuestionIds: baseCycle,
-  };
+  const isLegacy = active.remainingQuestionIds == null || active.cycleQuestionIds == null;
+  let withQueue: ReviewSession;
+  if (isLegacy) {
+    if (pending.length === 0) withQueue = ended.session;
+    else {
+      withQueue = {
+        ...ended.session,
+        remainingQuestionIds: [...pending],
+        cycleQuestionIds: active.items.map((i) => i.questionId),
+      };
+    }
+  } else {
+    const baseRemaining = active.remainingQuestionIds ?? [];
+    const baseCycle = active.cycleQuestionIds ?? active.items.map((i) => i.questionId);
+    withQueue = {
+      ...ended.session,
+      remainingQuestionIds: rejoinPending(baseRemaining, pending),
+      cycleQuestionIds: baseCycle,
+    };
+  }
   const saved = await deps.repository.end({ session: withQueue, expectedCursor: active.cursor });
   if (!saved) return { outcome: 'rejected', reason: 'conflict' };
   return { outcome: 'ended', session: withQueue, summary: summarize(withQueue) };
