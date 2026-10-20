@@ -98,3 +98,29 @@ node scripts/validate-question-content.mjs content/questions --emit /tmp/bulk.js
   `sourceUrls`, `answerOptionKeys`, `optionSetHash`, `options`.
 - 검증기는 `stem`/`explanation`의 원시 스크립트, 해설 8000자 초과, 닫히지 않은
   펜스 블록도 함께 거부한다.
+
+## 이미 등록된 문항 수정
+
+이미 등록된 문항을 고칠 때는 **bulk 재실행 금지** — bulk 페이로드는
+`questionId`를 제거하고 서버가 항목마다 새 UUID를 생성하므로, 1바이트
+교정에도 청크 전량이 중복 등록된다. 기존 문항은
+`PATCH /api/admin/questions/:id`로 바뀐 필드만 새 개정을 만들고(#146의
+`saa-res-0129` 1행 교정이 표준 사례), 신규 문항만 bulk로 추가한다.
+원격 실행은 #127 승인 범위(사전 time-travel 백업·export, 토큰 원문
+이슈·로그 기록 금지)이며 토큰은 `MOI_ADMIN_TOKEN` 환경변수로만 전달한다.
+
+```sh
+# 현재 버전 확인(읽기 권한)
+curl -H "Authorization: Bearer $MOI_ADMIN_TOKEN" \
+  <baseUrl>/api/admin/questions/<questionId>
+
+# 행 교정: 바뀐 필드만 PATCH(새 개정 저장, 기존 행 보존)
+curl -X PATCH -H "Authorization: Bearer $MOI_ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"explanation":"수정된 해설 …"}' \
+  <baseUrl>/api/admin/questions/<questionId>
+
+# 신규 문항만 bulk 추가(100개 이하 청크, Idempotency-Key 자동 부여)
+MOI_ADMIN_TOKEN="$MOI_ADMIN_TOKEN" node scripts/register-content.mjs \
+  --url <baseUrl> --dir content/questions/<examCode>
+```
