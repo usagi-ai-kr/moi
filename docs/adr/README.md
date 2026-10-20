@@ -62,7 +62,8 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0045 | 해설 Mermaid 렌더러 Pele 전환 | Superseded by ADR-0047 | 2026-10-20 | [0045-pele-mermaid-renderer.md](./0045-pele-mermaid-renderer.md) |
 | ADR-0046 | 학습 세트 10문제 조정 | Accepted | 2026-10-20 | [0046-ten-question-study-set.md](./0046-ten-question-study-set.md) |
 | ADR-0047 | Pele 전환 0.2.4 구현 시점과 전환·복구 계약 | Accepted | 2026-10-20 | [0047-pele-0.2.4-implementation-timing.md](./0047-pele-0.2.4-implementation-timing.md) |
-| ADR-0048 | 작업 정지 절차와 브리프·보고서 절대 경로 | Accepted | 2026-10-20 | [0048-orchestration-stop-protocol.md](./0048-orchestration-stop-protocol.md) |
+| ADR-0048 | 작업 정지 절차와 브리프·보고서 절대 경로 | Superseded by ADR-0051 | 2026-10-20 | [0048-orchestration-stop-protocol.md](./0048-orchestration-stop-protocol.md) |
 | ADR-0049 | 제출 전 정답 개수 안내 | Accepted | 2026-10-20 | [0049-answer-count-disclosure.md](./0049-answer-count-disclosure.md) |
 | ADR-0050 | 하이브리드 기기 터치 타깃 44px | Accepted | 2026-10-20 | [0050-any-pointer-touch-target.md](./0050-any-pointer-touch-target.md) |
+| ADR-0051 | 저장소 tmp/ 작업 디렉터리와 이슈 기반 인수인계 | Accepted | 2026-10-20 | [0051-tmp-workdir-handover.md](./0051-tmp-workdir-handover.md) |
 <!-- ADR_INDEX:END -->
