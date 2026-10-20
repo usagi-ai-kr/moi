@@ -63,6 +63,13 @@
   flex-wrap: wrap;
   gap: var(--moi-space-2);
 }
+/* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). */
+.moi-study-confirm { flex-wrap: wrap; }
+/* shadcn Button은 preflight 미도입 상태라 UA 기본 버튼 border(2px outset)·buttonface 배경이 남는다.
+   variant가 지정한 것만 유지한다 — outline=1px 토큰 테두리, ghost=투명 배경(위계 구분 유지). */
+.moi-study [data-slot='button'], .moi-study-confirm [data-slot='button'] { border: 0; }
+.moi-study [data-slot='button'].moi-study-outline,
+.moi-study-confirm [data-slot='button'].moi-study-outline { border: 1px solid var(--moi-color-border); }
 .moi-study-primary {
   min-height: var(--moi-space-8);
   padding-inline: var(--moi-space-4);
