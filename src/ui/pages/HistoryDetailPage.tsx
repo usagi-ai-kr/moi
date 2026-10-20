@@ -26,7 +26,7 @@ export function HistoryDetailPage({ client }: { client: ApiClient }) {
   if (query.isPending) {
     return (
       <p className="moi-note" role="status" aria-live="polite">
-        {copy.session.checking}
+        {copy.common.loading}
       </p>
     );
   }

@@ -99,7 +99,7 @@ export function StartView(p: Props) {
           aria-busy={p.pending}
           onClick={p.onStart}
         >
-          {p.pending ? copy.session.checking : copy.study.startAction}
+          {p.pending ? copy.study.starting : copy.study.startAction}
         </button>
       </div>
     </section>

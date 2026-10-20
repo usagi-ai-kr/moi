@@ -109,7 +109,7 @@ export function StudyScreen({
   if (setQuery.isPending && f.setId) {
     return (
       <p className="moi-note" role="status" aria-live="polite">
-        {copy.session.checking}
+        {copy.common.loading}
       </p>
     );
   }

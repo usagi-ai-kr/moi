@@ -11,7 +11,7 @@ import { LoadErrorAlert } from '../widgets';
 function StudyLoading() {
   return (
     <p className="moi-note" role="status" aria-live="polite">
-      {copy.session.checking}
+      {copy.common.loading}
     </p>
   );
 }

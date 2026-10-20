@@ -15,7 +15,7 @@ export function LegacyStudyRedirect({ client, setId }: { client: ApiClient; setI
   if (query.isPending) {
     return (
       <p className="moi-note" role="status" aria-live="polite">
-        {copy.session.checking}
+        {copy.common.loading}
       </p>
     );
   }
