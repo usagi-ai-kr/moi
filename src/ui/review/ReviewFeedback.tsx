@@ -49,7 +49,7 @@ export function ReviewFeedback({
               {copy.review.passBadge}
             </span>
           ) : graded.correct ? (
-            <span className="rounded bg-success/15 px-2.5 py-1 text-sm font-semibold text-success">
+            <span className="rounded border border-primary/40 bg-primary/10 px-2.5 py-1 text-sm font-semibold text-foreground">
               {copy.review.correctBadge}
             </span>
           ) : (
@@ -87,15 +87,15 @@ export function ReviewFeedback({
                   key={opt.optionId}
                   className={`flex min-h-[44px] items-center justify-between rounded-md border p-3 text-base ${
                     isCorrectOption
-                      ? 'border-success/50 bg-success/10 font-semibold text-success-foreground'
-                      : 'border-border bg-card text-card-foreground'
+                      ? 'border-primary bg-primary/10 font-semibold text-foreground'
+                      : 'border-border bg-background text-foreground'
                   }`}
                 >
                   <span>
                     {idx + 1}. {opt.text}
                   </span>
                   {isCorrectOption && (
-                    <span className="text-xs font-bold text-success">✓ 정답</span>
+                    <span className="text-sm font-bold text-foreground">✓ 정답</span>
                   )}
                 </li>
               );
@@ -111,7 +111,7 @@ export function ReviewFeedback({
 
           {graded.sourceUrls && graded.sourceUrls.length > 0 && (
             <div className="flex flex-col gap-1 border-t border-border pt-3">
-              <h4 className="text-xs font-semibold text-muted-foreground">{copy.review.sources}</h4>
+              <h4 className="text-sm font-semibold text-muted-foreground">{copy.review.sources}</h4>
               <SourceLinks urls={graded.sourceUrls} />
             </div>
           )}

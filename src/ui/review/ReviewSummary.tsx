@@ -25,19 +25,19 @@ export function ReviewSummary({ summary, onBackToCandidates }: ReviewSummaryProp
           </p>
           <dl className="grid grid-cols-2 gap-4 rounded-lg bg-muted/40 p-4 sm:grid-cols-4">
             <div className="flex flex-col">
-              <dt className="text-xs text-muted-foreground">전체 문항</dt>
+              <dt className="text-sm text-muted-foreground">전체 문항</dt>
               <dd className="text-lg font-bold">{summary.total}개</dd>
             </div>
             <div className="flex flex-col">
-              <dt className="text-xs text-muted-foreground">풀이 완료</dt>
+              <dt className="text-sm text-muted-foreground">풀이 완료</dt>
               <dd className="text-lg font-bold text-primary">{summary.graded}개</dd>
             </div>
             <div className="flex flex-col">
-              <dt className="text-xs text-muted-foreground">정답</dt>
-              <dd className="text-lg font-bold text-success">{summary.correct}개</dd>
+              <dt className="text-sm text-muted-foreground">정답</dt>
+              <dd className="text-lg font-bold text-foreground">{summary.correct}개</dd>
             </div>
             <div className="flex flex-col">
-              <dt className="text-xs text-muted-foreground">미풀이</dt>
+              <dt className="text-sm text-muted-foreground">미풀이</dt>
               <dd className="text-lg font-bold text-muted-foreground">{summary.pending}개</dd>
             </div>
           </dl>

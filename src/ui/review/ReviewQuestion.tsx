@@ -70,7 +70,7 @@ export function ReviewQuestion({
           <CardTitle className="text-base font-semibold leading-relaxed md:text-lg">
             {item.stem}
           </CardTitle>
-          <p className="text-xs text-muted-foreground">{copy.review.multiChoiceHint}</p>
+          <p className="text-sm text-muted-foreground">{copy.review.multiChoiceHint}</p>
         </CardHeader>
         <CardContent>
           <fieldset className="flex flex-col gap-2">
@@ -83,7 +83,7 @@ export function ReviewQuestion({
                   className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md border p-3 text-base transition-colors ${
                     checked
                       ? 'border-primary bg-primary/5 font-medium text-foreground'
-                      : 'border-border bg-card text-card-foreground hover:bg-muted/50'
+                      : 'border-border bg-background text-foreground hover:bg-muted/50'
                   }`}
                 >
                   <input
