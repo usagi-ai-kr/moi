@@ -1,7 +1,7 @@
 ---
 id: ADR-0034
 title: 해설 마크다운·Mermaid 렌더링
-status: Accepted
+status: Superseded by ADR-0045
 date: 2026-10-19
 related: ["#134", "ADR-0011", "ADR-0012", "ADR-0014"]
 ---

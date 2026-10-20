@@ -48,7 +48,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Proposed | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
 | ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
 | ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
-| ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Accepted | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
+| ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Superseded by ADR-0045 | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
 | ADR-0035 | 학습 UI shadcn/ui·Tailwind 전환과 디자인 계약 | Accepted | 2026-10-19 | [0035-design-shadcn-tailwind.md](./0035-design-shadcn-tailwind.md) |
 | ADR-0036 | 이력 페이지 URL 상태와 비동기 조회 UX | Accepted | 2026-10-19 | [0036-history-pagination-url-state.md](./0036-history-pagination-url-state.md) |
 | ADR-0037 | 0.2.4 복습 소스·북마크 영속 및 원자 채점 필수 연결 | Accepted | 2026-10-19 | [0037-review-source-bookmark-persist.md](./0037-review-source-bookmark-persist.md) |
@@ -59,4 +59,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0042 | 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션 | Accepted | 2026-10-20 | [0042-reviewer-callback-orchestration.md](./0042-reviewer-callback-orchestration.md) |
 | ADR-0043 | CI에 THIRD_PARTY_NOTICES --check 게이트 추가 | Accepted | 2026-10-20 | [0043-ci-notices-check-gate.md](./0043-ci-notices-check-gate.md) |
 | ADR-0044 | 해설 Mermaid 노드 라벨 인용 규칙 | Accepted | 2026-10-20 | [0044-mermaid-label-quote.md](./0044-mermaid-label-quote.md) |
+| ADR-0045 | 해설 Mermaid 렌더러 Pele 전환 | Accepted | 2026-10-20 | [0045-pele-mermaid-renderer.md](./0045-pele-mermaid-renderer.md) |
 <!-- ADR_INDEX:END -->
