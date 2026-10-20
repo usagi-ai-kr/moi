@@ -2,6 +2,12 @@
 export const copy = {
   brand: 'moi',
   tagline: '문제 중심 시험 대비 플랫폼',
+  common: {
+    loading: '불러오고 있습니다',
+    routeError: '화면을 불러오지 못했습니다',
+    reload: '새로고침',
+    home: '처음으로',
+  },
   login: {
     kakao: '카카오 로그인',
   },
