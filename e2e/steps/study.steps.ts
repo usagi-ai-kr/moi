@@ -445,8 +445,19 @@ When('결과 이전 문항 버튼을 누르면', async ({ page }) => {
 
 When('결과 다음 문항 버튼에 포커스를 두고 오른쪽 방향키를 누르면', async ({ page }) => {
   const button = page.getByRole('button', { name: copy.study.nextItem });
-  await button.focus();
-  await page.keyboard.press('ArrowRight');
+  await expect(button).toBeEnabled();
+  // locator.press가 focus+key를 원자적으로 수행 — 제출 후 재렌더 사이 focus 유실 flake 방지.
+  // pager가 2로 바뀔 때까지 동일 단언을 유지한 채 짧은 재시도(최대 3회, 각 1s).
+  const status = resultPager(page).locator('.moi-study-pager-status');
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await button.press('ArrowRight');
+    try {
+      await expect(status).toHaveText(new RegExp(`2/\\d+`), { timeout: 1000 });
+      return;
+    } catch {
+      if (attempt === 2) throw new Error('결과 진행 표시가 2번째 문항으로 바뀌지 않았다 (ArrowRight 3회 재시도 실패)');
+    }
+  }
 });
 
 Then('결과 해설 카드는 1개만 보인다', async ({ page }) => {
