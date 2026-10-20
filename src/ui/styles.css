@@ -232,6 +232,8 @@ pre,
   background: var(--moi-color-white);
   border: 1px solid var(--moi-color-border);
   border-radius: var(--moi-radius-sm);
+  color: var(--moi-color-ink);
+  text-decoration: none;
 }
 .moi-study-open:focus-visible,
 .moi-study-link:focus-visible {

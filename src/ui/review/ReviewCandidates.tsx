@@ -68,10 +68,10 @@ export function ReviewCandidates({
             {copy.review.startAction}
           </Button>
         </div>
-        <ul className="flex flex-col gap-2">
+        <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {data.items.map((item, idx) => (
             <li key={item.questionId} className="rounded-lg border border-border bg-card p-4 text-card-foreground">
-              <p className="text-sm font-medium">
+              <p className="text-base font-medium">
                 {idx + 1}. {item.stem}
               </p>
             </li>
