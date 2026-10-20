@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../../src/ui/api/client';
 import { copy } from '../../src/ui/copy';
@@ -29,7 +30,7 @@ function submittedSet(): StudySubmittedSet {
       { optionId: `q-${i}-a`, text: '보기 A' },
       { optionId: `q-${i}-b`, text: '보기 B' },
     ],
-    answerCount: 1,
+    answerOptionIds: [`q-${i}-a`],
     response: { kind: 'answered' as const, optionIds: [`q-${i}-a`] },
     explanation: `문제 ${i} 해설`,
     sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
@@ -109,13 +110,15 @@ function renderResult(corrections?: StudyCorrections) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <ResultView
-        client={fakeClient()}
-        set={submittedSet()}
-        onRestart={vi.fn()}
-        onHistory={vi.fn()}
-        corrections={corrections}
-      />
+      <MemoryRouter>
+        <ResultView
+          client={fakeClient()}
+          set={submittedSet()}
+          onRestart={vi.fn()}
+          onHistory={vi.fn()}
+          corrections={corrections}
+        />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }

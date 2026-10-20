@@ -135,7 +135,19 @@ function submittedDto(s: NonNullable<typeof activeStudySet>) {
     status: 'submitted',
     createdAt: 1700000000000,
     submittedAt: 1700000001000,
-    items: s.items,
+    // 서버 제출 계약 그대로 — answerOptionIds 있음·answerCount 없음(#176).
+    items: s.items.map((it) => ({
+      questionId: it.questionId,
+      questionVersionId: it.questionVersionId,
+      versionNo: it.versionNo,
+      optionOrder: it.optionOrder,
+      stem: it.stem,
+      options: it.options,
+      answerOptionIds: [`${it.questionId}-a`],
+      explanation: it.explanation,
+      sourceUrls: it.sourceUrls,
+      response: it.response,
+    })),
     result,
   };
 }
@@ -354,7 +366,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
             questionId: itemsToReview[0].questionId,
             stem: itemsToReview[0].stem,
             options: itemsToReview[0].options,
-            answerCount: itemsToReview[0].answerCount ?? 1,
+            answerCount: itemsToReview[0].answerCount,
             response: null,
           }
         : null;
@@ -390,7 +402,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
             questionId: curItem.questionId,
             stem: curItem.stem,
             options: curItem.options,
-            answerCount: curItem.answerCount ?? 1,
+            answerCount: curItem.answerCount,
             response: null,
           }
         : null;
@@ -468,7 +480,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
                 questionId: nextItem.questionId,
                 stem: nextItem.stem,
                 options: nextItem.options,
-                answerCount: nextItem.answerCount ?? 1,
+                answerCount: nextItem.answerCount,
               }
             : null,
         },

@@ -56,10 +56,18 @@ export interface StudyActiveItem {
   answerCount: number;
   response: ItemResponse;
 }
-/** 제출 후 문항 — 해설·근거가 추가된다(#50). */
-export interface StudySubmittedItem extends StudyActiveItem {
+/** 제출 후 문항 — 서버 제출 DTO 그대로(answerOptionIds·해설·근거, answerCount 없음, #176). */
+export interface StudySubmittedItem {
+  questionId: string;
+  questionVersionId: string;
+  versionNo: number;
+  optionOrder: string[];
+  stem: string;
+  options: StudyOption[];
+  answerOptionIds: string[];
   explanation: string;
   sourceUrls: string[];
+  response: ItemResponse;
 }
 export interface StudyActiveSet {
   id: string;
@@ -107,7 +115,7 @@ export interface StudyHistoryPage {
   total: number;
 }
 
-export function isSubmittedSet(s: StudyActiveSet): s is StudySubmittedSet {
+export function isSubmittedSet(s: StudyActiveSet | StudySubmittedSet): s is StudySubmittedSet {
   return s.status === 'submitted' && 'result' in s;
 }
 

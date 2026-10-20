@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyActiveSet, StudySubmittedSet } from '../../src/ui/api/client';
@@ -45,7 +46,11 @@ function fakeReportClient(o: PostOpts = {}): ApiClient {
 
 function renderWithQuery(ui: React.ReactElement) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
+  );
 }
 
 function submittedSet(): StudySubmittedSet {
@@ -59,7 +64,7 @@ function submittedSet(): StudySubmittedSet {
       { optionId: `q-${i}-a`, text: '보기 A' },
       { optionId: `q-${i}-b`, text: '보기 B' },
     ],
-    answerCount: 1,
+    answerOptionIds: [`q-${i}-a`],
     response: { kind: 'unanswered' as const },
     explanation: `문제 ${i} 해설`,
     sourceUrls: [],

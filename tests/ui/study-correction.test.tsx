@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../../src/ui/api/client';
 import { copy } from '../../src/ui/copy';
@@ -24,7 +25,11 @@ function fakeClient(): ApiClient {
 
 function renderWithQuery(ui: React.ReactElement) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
+  );
 }
 
 // 2문제 제출 세트 — 최초 정답률 50% (q-0 정답, q-1 오답).
@@ -39,7 +44,7 @@ function submittedSet(): StudySubmittedSet {
       { optionId: `q-${i}-a`, text: '보기 A' },
       { optionId: `q-${i}-b`, text: '보기 B' },
     ],
-    answerCount: 1,
+    answerOptionIds: [i === 1 ? `q-${i}-b` : `q-${i}-a`],
     response: { kind: 'answered' as const, optionIds: [`q-${i}-a`] },
     explanation: `문제 ${i} 해설`,
     sourceUrls: [],

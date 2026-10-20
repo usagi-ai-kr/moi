@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyActiveSet } from '../../src/ui/api/client';
@@ -39,7 +40,7 @@ function submittedSet(): StudyActiveSet {
     ...base,
     status: 'submitted',
     submittedAt: 1700000001000,
-    items: base.items.map((it, i) => ({ ...it, explanation: `해설 ${i}`, sourceUrls: [] })),
+    items: base.items.map((it, i) => ({ ...it, answerOptionIds: [`${it.questionId}-a`], explanation: `해설 ${i}`, sourceUrls: [] })),
     result: {
       answeredCount: 1,
       correctCount: 1,
@@ -95,7 +96,9 @@ function renderStudy(client: ApiClient) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <StudyScreen client={client} userId="user-1" />
+      <MemoryRouter>
+        <StudyScreen client={client} userId="user-1" />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }
