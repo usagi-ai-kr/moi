@@ -4,6 +4,7 @@ import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { copy } from '../copy';
+import { SourceLinks } from '../SourceLinks';
 import { Explanation } from '../study/Explanation';
 import { BookmarkButton } from './BookmarkButton';
 
@@ -111,20 +112,7 @@ export function ReviewFeedback({
           {graded.sourceUrls && graded.sourceUrls.length > 0 && (
             <div className="flex flex-col gap-1 border-t border-border pt-3">
               <h4 className="text-xs font-semibold text-muted-foreground">{copy.review.sources}</h4>
-              <ul className="flex flex-col gap-1">
-                {graded.sourceUrls.map((url) => (
-                  <li key={url}>
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="break-all text-xs text-primary underline hover:text-primary/80"
-                    >
-                      {url}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              <SourceLinks urls={graded.sourceUrls} />
             </div>
           )}
         </CardContent>

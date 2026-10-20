@@ -630,6 +630,11 @@ Then('즉시 채점 결과와 해설과 공식 근거가 보인다', async ({ pa
   await expect(page.getByText(copy.review.correctBadge, { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: copy.study.explanation })).toBeVisible();
   await expect(page.getByRole('heading', { name: copy.review.sources })).toBeVisible();
+  const source = page.locator('.moi-source-links a').first();
+  await expect(source).toBeVisible();
+  expect(await source.innerText()).not.toMatch(/^https?:\/\//);
+  await expect(source).toHaveAttribute('href', /^https:\/\/docs\.aws\.amazon\.com\//);
+  await expect(source).toHaveAttribute('title', /^https:\/\/docs\.aws\.amazon\.com\//);
 });
 
 Then('북마크 상태가 해제로 바뀐다', async ({ page }) => {

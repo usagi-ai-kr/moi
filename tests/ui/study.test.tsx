@@ -270,7 +270,10 @@ describe('제출·결과·포기', () => {
     const item = screen.getByTestId('peritem-q-0');
     expect(within(item).getAllByText(/정답/).length).toBeGreaterThanOrEqual(1);
     expect(within(item).getByText(/문제 0 해설: 정답은 q-0-a이다/)).toBeInTheDocument();
-    expect(within(item).getByRole('link')).toHaveAttribute('href', 'https://docs.aws.amazon.com/q-0');
+    const link = within(item).getByRole('link', { name: 'Q 0' });
+    expect(link).toHaveAttribute('href', 'https://docs.aws.amazon.com/q-0');
+    expect(link).toHaveAttribute('title', 'https://docs.aws.amazon.com/q-0');
+    expect(link).not.toHaveTextContent(/https?:\/\//);
     expect(screen.queryByText(/해설·근거·북마크는 후속/)).not.toBeInTheDocument();
   });
 

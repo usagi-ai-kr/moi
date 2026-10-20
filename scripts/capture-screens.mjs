@@ -253,6 +253,7 @@ async function installMocks(page, config = {}) {
     studySet: config.studySet ? JSON.parse(JSON.stringify(config.studySet)) : null,
     history: config.history ? JSON.parse(JSON.stringify(config.history)) : [],
     reviewWrong: Boolean(config.reviewWrong),
+    reviewSession: null,
   };
 
   if (config.loggedOut) {
@@ -337,7 +338,41 @@ async function installMocks(page, config = {}) {
       });
     }
     if (path === '/api/review/sessions/current') {
-      return fulfillJson(route, 404, { error: 'not_found' });
+      if (!state.reviewSession) return fulfillJson(route, 404, { error: 'not_found' });
+      return fulfillJson(route, 200, state.reviewSession);
+    }
+    if (path === '/api/review/sessions' && method === 'POST') {
+      const first = REVIEW_WRONG_ITEMS[0];
+      state.reviewSession = {
+        examId: 'saa-c03',
+        mode: 'wrong',
+        status: 'active',
+        cursor: 0,
+        total: REVIEW_WRONG_ITEMS.length,
+        current: {
+          questionId: first.questionId,
+          stem: first.stem,
+          options: first.options,
+          response: null,
+        },
+      };
+      return fulfillJson(route, 201, state.reviewSession);
+    }
+    if (path === '/api/review/sessions/current/answers' && method === 'POST') {
+      const first = REVIEW_WRONG_ITEMS[0];
+      return fulfillJson(route, 200, {
+        correct: true,
+        graded: {
+          questionId: first.questionId,
+          response: req.postDataJSON(),
+          correct: true,
+          explanation: 'VPC 피어링은 CIDR 블록이 중복되면 연결할 수 없으며, 리전 간 피어링도 지원됩니다.',
+          sourceUrls: ['https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html'],
+          correctOptionIds: ['opt-w1-a'],
+        },
+        session: { examId: 'saa-c03', mode: 'wrong', status: 'active', cursor: 1, total: 2 },
+        next: null,
+      });
     }
     if (path === '/api/review/bookmarks') {
       if (method === 'GET') {
@@ -466,7 +501,24 @@ const SCREENS = [
     path: '/review',
     entryPath: '/review',
     mock: { reviewWrong: true },
-    waitFor: (page) => page.getByRole('heading', { name: /복습 대기 2문제/ }).waitFor(),
+    prepare: async (page) => {
+      await page.getByRole('heading', { name: /복습 대기 2문제/ }).waitFor();
+      await Promise.all([
+        page.waitForResponse(
+          (r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/review/sessions',
+        ),
+        page.getByRole('button', { name: '복습 시작하기', exact: true }).click(),
+      ]);
+      await page.locator('section[aria-label^="복습 문항"]').waitFor();
+      await page.getByRole('checkbox').first().click();
+      await Promise.all([
+        page.waitForResponse(
+          (r) => r.request().method() === 'POST' && r.url().endsWith('/answers'),
+        ),
+        page.getByRole('button', { name: '답안 제출', exact: true }).click(),
+      ]);
+    },
+    waitFor: (page) => page.getByRole('heading', { name: '공식 근거' }).waitFor(),
   },
   {
     id: 'account',

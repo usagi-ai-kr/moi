@@ -1,0 +1,40 @@
+/* 근거 링크 — 문서명만 보이고 전체 URL은 href/title에만 둔다 (#188). 토큰 CSS 변수만 사용. */
+.moi-source-links {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+}
+
+.moi-source-links > li {
+  min-width: 0;
+}
+
+/* 링크 행 자체를 44px 터치 타깃으로 만들고, 긴 문서명은 어절 안에서도 끊는다. */
+.moi-source-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--moi-touch-min);
+  padding: var(--moi-space-1) 0;
+  color: var(--moi-color-ink);
+  font-size: var(--moi-size-small);
+  line-height: var(--moi-lh-normal);
+  text-decoration: underline;
+  text-decoration-color: var(--moi-color-orange);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  border-radius: var(--moi-radius-sm);
+}
+
+.moi-source-links a:hover {
+  background: var(--moi-color-surface);
+}
+
+.moi-source-links a:focus-visible {
+  outline: 2px solid var(--moi-color-orange);
+  outline-offset: 2px;
+}

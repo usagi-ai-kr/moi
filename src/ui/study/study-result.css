@@ -36,6 +36,8 @@
   padding: var(--moi-space-2) var(--moi-space-3);
   cursor: pointer;
 }
+.moi-study-sources { margin-top: var(--moi-space-2); font-size: var(--moi-size-small); }
+.moi-study-sources-label { color: var(--moi-color-muted); }
 .moi-study-detail {
   border: 1px solid var(--moi-color-border);
   border-radius: var(--moi-radius-md);
