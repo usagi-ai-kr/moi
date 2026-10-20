@@ -164,6 +164,31 @@ describe('학습 화면 버튼 위계', () => {
     expect(screen.getByRole('button', { name: '이전' })).not.toBeDisabled();
   });
 
+  it('Pass 클릭 시 즉시 다음 문제로 이동한다(#185)', async () => {
+    renderStudy(fakeStudyClient());
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pass' }));
+
+    expect(await screen.findByText(/2\/3/)).toBeInTheDocument();
+    expect(screen.getByText('문제 1 본문')).toBeInTheDocument();
+  });
+
+  it('마지막 문제에서 Pass → 화면을 유지하고 응답만 Pass로 남는다(#185)', async () => {
+    renderStudy(fakeStudyClient());
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+    fireEvent.click(screen.getByRole('button', { name: '다음' }));
+    fireEvent.click(screen.getByRole('button', { name: '다음' }));
+    await screen.findByText(/3\/3/);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pass' }));
+
+    await waitFor(() => expect(screen.getByText(/3\/3 · Pass/)).toBeInTheDocument());
+    expect(screen.getByText('문제 2 본문')).toBeInTheDocument();
+  });
+
   it('결과 화면: 새 세트 시작=primary·학습 이력·오답 복습=secondary(같은 크기)', async () => {
     renderStudy(fakeStudyClient());
     fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));

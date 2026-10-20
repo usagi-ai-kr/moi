@@ -170,7 +170,11 @@ export function StudyScreen({
           submitError={f.submitError}
           onIndex={s.setIndex}
           onAnswer={(qid, res, prev) => f.handleAnswer(qid, res, prev)}
-          onPass={(qid, prev) => f.handleAnswer(qid, { kind: 'pass' }, prev)}
+          // Pass → 즉시 다음 문제로 이동(마지막 문제는 머문다 — 자동 제출 금지) (#185).
+          onPass={(qid, prev) => {
+            f.handleAnswer(qid, { kind: 'pass' }, prev);
+            if (s.index < set.items.length - 1) s.setIndex(s.index + 1);
+          }}
           onClear={(qid, prev) => f.handleAnswer(qid, { kind: 'unanswered' }, prev)}
           onRetry={() => f.handleRetry()}
           onSubmitRequest={f.handleSubmitRequest}
