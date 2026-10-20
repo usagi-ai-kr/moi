@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
@@ -95,6 +95,29 @@ beforeEach(() => {
 });
 
 describe('학습 현황 패널', () => {
+  it('초기 로딩 중에는 스켈레톤을 표시하고 시각 로딩 텍스트를 남기지 않는다', async () => {
+    let release: (value: unknown) => void = () => {};
+    const pending = new Promise((resolve) => {
+      release = resolve;
+    });
+    const client = {
+      get: vi.fn(() => ({ json: () => pending })),
+    } as unknown as ApiClient;
+    renderPanel(client);
+
+    const section = screen.getByRole('region', { name: '학습 현황' });
+    expect(section).toHaveAttribute('aria-busy', 'true');
+    expect(section.querySelector('[data-slot="skeleton"]')).not.toBeNull();
+    expect(screen.getByText('학습 현황을 불러오고 있습니다')).toHaveClass('moi-sr-only');
+
+    await act(async () => {
+      release(STATS);
+    });
+
+    expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
+    expect(section.querySelector('[data-slot="skeleton"]')).toBeNull();
+  });
+
   it('성공: 진도/정답률/영역/취약을 표시한다', async () => {
     renderPanel(clientWith(STATS));
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();

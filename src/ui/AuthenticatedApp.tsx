@@ -14,7 +14,9 @@ import { copy } from './copy';
 import { useLogout, useUiStore, type ApiClient } from './session';
 import './authenticated.css';
 import { AppShell } from './AppShell';
+import { importAccount, importHistory, importReview } from './lazy-routes';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
+import { RouteFallback } from './RouteFallback';
 import { AuthErrorAlert } from './widgets';
 
 // 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
@@ -29,23 +31,10 @@ const HistoryDetailPage = lazy(() =>
   import('./pages/HistoryDetailPage').then((m) => ({ default: m.HistoryDetailPage })),
 );
 // markdown·통계 번들이 로그아웃/로그인 홈 초기 번들에 포함되지 않도록 분리한다 (이슈 #132).
-const ReviewScreen = lazy(() =>
-  import('./review/ReviewScreen').then((m) => ({ default: m.ReviewScreen })),
-);
-const HistoryPage = lazy(() =>
-  import('./pages/HistoryPage').then((m) => ({ default: m.HistoryPage })),
-);
-const AccountPage = lazy(() =>
-  import('./pages/AccountPage').then((m) => ({ default: m.AccountPage })),
-);
-
-function RouteFallback() {
-  return (
-    <p className="moi-note" role="status" aria-live="polite">
-      {copy.common.loading}
-    </p>
-  );
-}
+// importer는 lazy-routes가 소유해 hover/focus prefetch와 같은 청크를 공유한다 (#184).
+const ReviewScreen = lazy(importReview);
+const HistoryPage = lazy(importHistory);
+const AccountPage = lazy(importAccount);
 
 function RouteBoundaryLayout() {
   const location = useLocation();
@@ -124,15 +113,15 @@ function AuthenticatedRoutes({
           <Route index element={<Home showAuthError={showAuthError} client={client} />} />
           <Route
             path="study"
-            element={<Suspense key={userId} fallback={<RouteFallback />}><StudyRoute client={client} userId={userId} mode="current" /></Suspense>}
+            element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="current" /></Suspense>}
           />
           <Route
             path="study/new"
-            element={<Suspense key={userId} fallback={<RouteFallback />}><StudyRoute client={client} userId={userId} mode="start" /></Suspense>}
+            element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="start" /></Suspense>}
           />
           <Route
             path="study/result"
-            element={<Suspense key={userId} fallback={<RouteFallback />}><StudyRoute client={client} userId={userId} mode="result" /></Suspense>}
+            element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="result" /></Suspense>}
           />
           <Route
             path="study/:setId"
@@ -148,7 +137,7 @@ function AuthenticatedRoutes({
           />
           <Route
             path="history/detail"
-            element={<Suspense fallback={<RouteFallback />}><HistoryDetailPage client={client} /></Suspense>}
+            element={<Suspense fallback={<RouteFallback variant="detail" />}><HistoryDetailPage client={client} /></Suspense>}
           />
           <Route
             path="history/:setId"

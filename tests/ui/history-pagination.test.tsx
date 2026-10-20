@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { HTTPError } from 'ky';
 import { useEffect } from 'react';
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router';
@@ -195,14 +195,17 @@ describe('이력 페이지네이션 핵심 동작 (AC 1, AC 4)', () => {
 });
 
 describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
-  it('초기 로딩 시 nav를 숨기고 로딩 안내를 표시한다', async () => {
+  it('초기 로딩 시 nav를 숨기고 스켈레톤과 sr-only 로딩 문구를 표시한다', async () => {
     const { client } = makeMockClient({ total: 45, delayMs: 150 });
     renderHistoryPage(client, '/history');
 
-    expect(screen.getByText(copy.common.loading)).toBeInTheDocument();
+    const history = screen.getByRole('region', { name: copy.study.historyTitle });
+    expect(within(history).getByText(copy.common.loading)).toHaveClass('moi-sr-only');
+    expect(history.querySelector('[data-slot="skeleton"]')).not.toBeNull();
     expect(screen.queryByRole('navigation', { name: '페이지네이션' })).not.toBeInTheDocument();
 
     expect(await screen.findByText('총 45건')).toBeInTheDocument();
+    expect(history.querySelector('[data-slot="skeleton"]')).toBeNull();
     expect(screen.getByRole('navigation', { name: '페이지네이션' })).toBeInTheDocument();
   });
 
@@ -247,9 +250,15 @@ describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
     expect(nav).toHaveAttribute('aria-busy', 'true');
     expect(screen.getByRole('button', { name: '이전' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '다음' })).toBeDisabled();
+    // background refetch는 기존 목록을 유지하고 스켈레톤으로 되돌리지 않는다 (#184).
+    const history = screen.getByRole('region', { name: copy.study.historyTitle });
+    expect(history).toHaveAttribute('aria-busy', 'true');
+    expect(history.querySelector('[data-slot="skeleton"]')).toBeNull();
+    expect(screen.getByText('총 45건')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(nav).not.toHaveAttribute('aria-busy');
+      expect(history).not.toHaveAttribute('aria-busy');
       expect(screen.getByText('현재 2 / 전체 3')).toBeInTheDocument();
     });
   });

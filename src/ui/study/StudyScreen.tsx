@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { copy } from '../copy';
 import { isSubmittedSet, type ApiClient } from '../api/client';
 import { Button } from '../components/ui/button';
+import { RouteFallback } from '../RouteFallback';
 import { ConflictPanel } from './ConflictPanel';
 import { HistoryView } from './HistoryView';
 import { QuestionView } from './QuestionView';
@@ -107,11 +108,7 @@ export function StudyScreen({
   }
 
   if (setQuery.isPending && f.setId) {
-    return (
-      <p className="moi-note" role="status" aria-live="polite">
-        {copy.common.loading}
-      </p>
-    );
+    return <RouteFallback variant="form" />;
   }
 
   if (set && isSubmittedSet(set)) {
