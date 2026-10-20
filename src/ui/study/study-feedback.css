@@ -83,5 +83,5 @@
 .moi-explanation pre { overflow-x: auto; border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); padding: var(--moi-space-2); background: var(--moi-color-white); }
 .moi-explanation pre code { border: 0; padding: 0; }
 .moi-explanation a { color: var(--moi-color-ink); }
-.moi-mermaid { overflow-x: auto; border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); padding: var(--moi-space-2); background: var(--moi-color-white); }
+.moi-mermaid { overflow-x: auto; border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); padding: var(--moi-space-2); background: var(--moi-color-white); --pele-bg: var(--moi-color-white); --pele-fg: var(--moi-color-ink); --pele-muted: var(--moi-color-muted); --pele-line: var(--moi-color-ink); --pele-surface: var(--moi-color-surface); --pele-surface-alt: var(--moi-color-surface); --pele-border: var(--moi-color-border); --pele-accent: var(--moi-color-orange); --pele-font: var(--moi-font-ui); --pele-font-mono: var(--moi-font-ui); --pele-radius: var(--moi-radius-md); }
 .moi-mermaid svg { max-width: 100%; height: auto; }

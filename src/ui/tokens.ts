@@ -89,6 +89,12 @@ export const breakpoints = {
   desktop: 1200,
 } as const;
 
+// 해설 다이어그램(Pele) — 중앙값만 사용, 컴포넌트에 리터럴 금지 (ADR-0012).
+export const diagram = {
+  renderTimeoutMs: 8000,
+  directionBreakpoint: 640,
+} as const;
+
 const px = (n: number) => `${n}px`;
 
 /** CSS 변수 매핑 — styles.css는 이 이름들만 사용한다 */

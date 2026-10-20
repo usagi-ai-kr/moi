@@ -1,0 +1,858 @@
+{
+  "generatedFrom": "content/questions",
+  "total": 71,
+  "questions": [
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0001",
+      "explanation": "**핵심:** 예측이 어렵고 3개월만 운영하며 중단이 불가한 워크로드에는 약정 없는 **On-Demand**가 적합하다. 장기 약정은 유휴 기간에도 비용이 발생하고 Spot은 회수될 수 있다.\n\n```mermaid\nflowchart LR\n  W[3개월·중단 불가] --> O[On-Demand]\n  W -.->|약정 낭비| R[RI/Savings Plans]\n  W -.->|회수 위험| S[Spot]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  W[3개월·중단 불가] --> O[On-Demand]\n  W -.->|약정 낭비| R[RI/Savings Plans]\n  W -.->|회수 위험| S[Spot]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0003",
+      "explanation": "**핵심:** 중단·재시작을 허용하는 배치는 **Spot Instances**로 온디맨드보다 크게 절감할 수 있다. 작업을 작은 단위로 나누면 회수 시 손실을 줄인다.\n\n```mermaid\nflowchart LR\n  Q[렌더링 작업] --> S[Spot 용량]\n  S -->|완료| D[결과 저장]\n  S -->|2분 통지| C[체크포인트]\n  C --> Q\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  Q[렌더링 작업] --> S[Spot 용량]\n  S -->|완료| D[결과 저장]\n  S -->|2분 통지| C[체크포인트]\n  C --> Q"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0004",
+      "explanation": "**핵심:** Spot 회수 시 **2분 전**에 중단 통지가 제공되므로 그 시간에 체크포인트와 정리를 수행한다.\n\n```mermaid\nflowchart LR\n  N[회수 예정 통지] -->|2분| I[인스턴스 중단]\n  N --> C[체크포인트 저장]\n  C --> I\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  N[회수 예정 통지] -->|2분| I[인스턴스 중단]\n  N --> C[체크포인트 저장]\n  C --> I"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0005",
+      "explanation": "**핵심:** Spot은 여러 인스턴스 유형과 AZ의 용량 풀에 분산할수록 특정 풀 회수의 영향을 덜 받는다. **capacity-optimized**는 회수 위험이 낮은 풀을 우선 선택한다.\n\n```mermaid\nflowchart LR\n  R[Spot 요청] --> A[AZ-a·유형1]\n  R --> B[AZ-a·유형2]\n  R --> C[AZ-c·유형1]\n  A --> P[capacity-optimized]\n  B --> P\n  C --> P\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  R[Spot 요청] --> A[AZ-a·유형1]\n  R --> B[AZ-a·유형2]\n  R --> C[AZ-c·유형1]\n  A --> P[capacity-optimized]\n  B --> P\n  C --> P"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0007",
+      "explanation": "**핵심:** **Compute Savings Plans**는 인스턴스 패밀리·크기·리전·OS와 무관하게 EC2, Lambda, Fargate 사용량에 적용된다. 특정 패밀리·리전에 묶이는 EC2 Instance Savings Plans보다 유연하다.\n\n```mermaid\nflowchart LR\n  SP[Compute Savings Plan] --> E[EC2]\n  SP --> L[Lambda]\n  SP --> F[Fargate]\n  E --> R[리전·패밀리 무관]\n  L --> R\n  F --> R\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  SP[Compute Savings Plan] --> E[EC2]\n  SP --> L[Lambda]\n  SP --> F[Fargate]\n  E --> R[리전·패밀리 무관]\n  L --> R\n  F --> R"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0010",
+      "explanation": "**핵심:** 약정한 시간당 금액 **전체가 청구**되므로 사용량이 그보다 적으면 차액만큼 손실이 발생한다. 약정은 실제 사용 패턴을 기준으로 신중히 정해야 한다.\n\n```mermaid\nflowchart LR\n  C[약정 $10/시간] --> B[청구 $10]\n  U[사용 $6] --> B\n  B --> G[차액 $4 손실]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  C[약정 $10/시간] --> B[청구 $10]\n  U[사용 $6] --> B\n  B --> G[차액 $4 손실]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0011",
+      "explanation": "**핵심:** **Zonal Reserved Instance**는 특정 AZ의 용량을 예약하면서 해당 사용량에 할인을 제공한다. Regional RI와 Savings Plans는 AZ 유연성을 주지만 용량을 보장하지 않는다.\n\n```mermaid\nflowchart LR\n  Z[Zonal RI] --> C[특정 AZ 용량 보장]\n  Z --> D[할인]\n  R[Regional RI/SP] --> F[AZ 유연]\n  R --> N[용량 보장 없음]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  Z[Zonal RI] --> C[특정 AZ 용량 보장]\n  Z --> D[할인]\n  R[Regional RI/SP] --> F[AZ 유연]\n  R --> N[용량 보장 없음]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0012",
+      "explanation": "**핵심:** On-Demand Capacity Reservation은 예약 기간 동안 **인스턴스 실행 여부와 관계없이** 온디맨드 요금이 부과된다. 필요 없는 예약은 해제해야 불필요한 비용을 막을 수 있다.\n\n```mermaid\nflowchart LR\n  R[Capacity Reservation] --> B[기간 중 온디맨드 요금]\n  I[인스턴스 실행] --> B\n  N[인스턴스 미실행] --> B\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  R[Capacity Reservation] --> B[기간 중 온디맨드 요금]\n  I[인스턴스 실행] --> B\n  N[인스턴스 미실행] --> B"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0013",
+      "explanation": "**핵심:** Standard RI는 잔여 기간을 **Reserved Instance Marketplace**에서 제3자에게 판매할 수 있다. Convertible RI는 판매할 수 없고 환불도 지원되지 않는다.\n\n```mermaid\nflowchart LR\n  S[Standard RI] --> M[RI Marketplace]\n  M --> B[제3자 구매]\n  B --> C[잔여 기간 판매]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  S[Standard RI] --> M[RI Marketplace]\n  M --> B[제3자 구매]\n  B --> C[잔여 기간 판매]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0018",
+      "explanation": "**핵심:** Organizations 통합 결제에서는 사용하지 않는 RI 할인이 **다른 계정의 일치하는 사용량**에 자동으로 공유된다. 할인 공유 설정이 켜져 있는지도 확인해야 한다.\n\n```mermaid\nflowchart LR\n  A[A 계정 유휴 RI] --> S[통합 결제 할인 공유]\n  B[B 계정 동일 패밀리] --> S\n  S --> D[RI 할인 적용]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A[A 계정 유휴 RI] --> S[통합 결제 할인 공유]\n  B[B 계정 동일 패밀리] --> S\n  S --> D[RI 할인 적용]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0020",
+      "explanation": "**핵심:** 기준 부하는 **On-Demand**로 유지하고 변동 부하는 **Spot**으로 채우면 피크 대응과 비용 절감을 함께 얻는다. Auto Scaling의 혼합 인스턴스 정책으로 자동화할 수 있다.\n\n```mermaid\nflowchart LR\n  B[기준 20대] --> O[On-Demand]\n  P[피크 60대] --> S[Spot 증설]\n  O --> A[Auto Scaling 혼합 정책]\n  S --> A\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  B[기준 20대] --> O[On-Demand]\n  P[피크 60대] --> S[Spot 증설]\n  O --> A[Auto Scaling 혼합 정책]\n  S --> A"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0021",
+      "explanation": "**핵심:** **Fargate Spot**은 중단을 허용하는 컨테이너 작업에 온디맨드보다 최대 70% 낮은 요금을 제공한다. 재시작 가능한 배치 작업에 적합하다.\n\n```mermaid\nflowchart LR\n  J[컨테이너 배치] --> F[Fargate Spot]\n  F -->|완료| D[결과]\n  F -->|중단| R[작업 재시작]\n  R --> F\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  J[컨테이너 배치] --> F[Fargate Spot]\n  F -->|완료| D[결과]\n  F -->|중단| R[작업 재시작]\n  R --> F"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0024",
+      "explanation": "**핵심:** Savings Plans는 리소스에 별도로 연결하지 않아도 **적격 사용량에 자동 적용**된다. 약정 범위를 넘는 사용량은 온디맨드 요금으로 청구된다.\n\n```mermaid\nflowchart LR\n  U[적격 사용량] --> A[Savings Plans 자동 적용]\n  A --> C[약정 한도까지 할인]\n  C --> O[초과분 온디맨드]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  U[적격 사용량] --> A[Savings Plans 자동 적용]\n  A --> C[약정 한도까지 할인]\n  C --> O[초과분 온디맨드]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/cost-01.json",
+      "questionId": "saa-cost-0025",
+      "explanation": "**핵심:** RI는 약정 기간 동안 사용 여부와 관계없이 비용이 발생하므로 **6개월 후 폐기**할 워크로드에는 적합하지 않다. 수명이 짧은 시스템은 On-Demand로 운영해야 한다.\n\n```mermaid\nflowchart LR\n  W[6개월 후 폐기] --> D{약정 기간}\n  D -->|1년 RI| L[유휴 6개월 비용]\n  D -->|On-Demand| O[사용한 만큼 지불]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  W[6개월 후 폐기] --> D{약정 기간}\n  D -->|1년 RI| L[유휴 6개월 비용]\n  D -->|On-Demand| O[사용한 만큼 지불]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-01.json",
+      "questionId": "saa-perf-0005",
+      "explanation": "**핵심:** 클러스터 배치 그룹은 인스턴스를 **단일 AZ의 가까운 랙**에 모아 짧은 지연과 높은 네트워크 처리량을 제공한다. HPC·긴밀 결합 워크로드에 적합하다.\n```mermaid\nflowchart LR\n  subgraph AZ[\"단일 AZ·근접 랙\"]\n    N1[노드 1] --- N2[노드 2]\n    N2 --- N3[노드 3]\n  end\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  subgraph AZ[\"단일 AZ·근접 랙\"]\n    N1[노드 1] --- N2[노드 2]\n    N2 --- N3[노드 3]\n  end"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-01.json",
+      "questionId": "saa-perf-0006",
+      "explanation": "**핵심:** 스프레드 배치 그룹은 인스턴스를 **서로 다른 랙**에 배치해 동시 장애 위험을 줄인다. AZ별로 최대 7개의 인스턴스를 둘 수 있다.\n```mermaid\nflowchart TB\n  subgraph A[AZ-a]\n    R1[랙 1 · 인스턴스]\n    R2[랙 2 · 인스턴스]\n  end\n  subgraph B[AZ-c]\n    R3[랙 3 · 인스턴스]\n  end\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart TB\n  subgraph A[AZ-a]\n    R1[랙 1 · 인스턴스]\n    R2[랙 2 · 인스턴스]\n  end\n  subgraph B[AZ-c]\n    R3[랙 3 · 인스턴스]\n  end"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-01.json",
+      "questionId": "saa-perf-0007",
+      "explanation": "**핵심:** 파티션 배치 그룹은 인스턴스를 **논리 파티션**으로 나누고 파티션 간 랙을 공유하지 않는다. HDFS·Kafka 같은 대규모 분산 시스템의 장애 격리에 적합하다.\n```mermaid\nflowchart TB\n  subgraph P1[파티션 1]\n    A1[노드]\n    A2[노드]\n  end\n  subgraph P2[파티션 2]\n    B1[노드]\n  end\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart TB\n  subgraph P1[파티션 1]\n    A1[노드]\n    A2[노드]\n  end\n  subgraph P2[파티션 2]\n    B1[노드]\n  end"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-01.json",
+      "questionId": "saa-perf-0012",
+      "explanation": "**핵심:** **프로비저닝된 동시성**은 실행 환경을 미리 초기화해 콜드 스타트를 줄인다. 지연에 민감한 함수의 기준 동시성을 확보하는 데 적합하다.\n```mermaid\nflowchart LR\n  R[요청] --> P{프로비저닝된 동시성}\n  P -->|예| W[웜 환경 즉시 실행]\n  P -->|아니오| C[콜드 스타트]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  R[요청] --> P{프로비저닝된 동시성}\n  P -->|예| W[웜 환경 즉시 실행]\n  P -->|아니오| C[콜드 스타트]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-01.json",
+      "questionId": "saa-perf-0020",
+      "explanation": "**핵심:** **용량 공급자**는 클러스터 Auto Scaling과 연동해 태스크 수요에 따라 Auto Scaling 그룹 용량을 조정한다. 관리형 종료 보호로 실행 중인 태스크가 있는 인스턴스의 축소를 지연할 수 있다.\n```mermaid\nflowchart LR\n  T[태스크 수요 증가] --> C[클러스터 Auto Scaling]\n  C --> P[용량 공급자]\n  P --> A[ASG 용량 확장]\n  A --> E[EC2 인스턴스 추가]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  T[태스크 수요 증가] --> C[클러스터 Auto Scaling]\n  C --> P[용량 공급자]\n  P --> A[ASG 용량 확장]\n  A --> E[EC2 인스턴스 추가]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-02.json",
+      "questionId": "saa-perf-0031",
+      "explanation": "**핵심:** **RAID 0**은 데이터를 여러 볼륨에 스트라이프해 IOPS와 처리량을 합산한다. 대신 볼륨 하나가 실패하면 전체 배열이 손상되어 내구성이 낮아진다.\n```mermaid\nflowchart LR\n  A[애플리케이션] --> R[RAID 0]\n  R --> V1[EBS 볼륨 1]\n  R --> V2[EBS 볼륨 2]\n  R --> V3[EBS 볼륨 3]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A[애플리케이션] --> R[RAID 0]\n  R --> V1[EBS 볼륨 1]\n  R --> V2[EBS 볼륨 2]\n  R --> V3[EBS 볼륨 3]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-02.json",
+      "questionId": "saa-perf-0032",
+      "explanation": "**핵심:** **Fast Snapshot Restore**는 스냅샷 블록을 미리 초기화해 볼륨 생성 직후의 첫 읽기 지연을 없앤다. 스냅샷과 AZ 단위로 활성화한다.\n```mermaid\nflowchart LR\n  S[스냅샷] --> F[Fast Snapshot Restore]\n  F --> V[새 EBS 볼륨]\n  V --> R[즉시 읽기 · 지연 없음]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  S[스냅샷] --> F[Fast Snapshot Restore]\n  F --> V[새 EBS 볼륨]\n  V --> R[즉시 읽기 · 지연 없음]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-02.json",
+      "questionId": "saa-perf-0044",
+      "explanation": "**핵심:** 단일 PUT으로 업로드할 수 있는 객체 크기는 **최대 5 GB**다. 5 GB를 넘는 객체는 **multipart upload**로 나누어 전송해야 한다.\n```mermaid\nflowchart LR\n  O[6 GB 객체] --> M[Multipart Upload]\n  M --> P1[파트 1]\n  M --> P2[파트 2]\n  M --> P3[파트 N]\n  P1 --> S3[S3]\n  P2 --> S3\n  P3 --> S3\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  O[6 GB 객체] --> M[Multipart Upload]\n  M --> P1[파트 1]\n  M --> P2[파트 2]\n  M --> P3[파트 N]\n  P1 --> S3[S3]\n  P2 --> S3\n  P3 --> S3"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-02.json",
+      "questionId": "saa-perf-0045",
+      "explanation": "**핵심:** **Max I/O** 성능 모드는 대규모 병렬 접근에서 더 높은 집계 처리량을 제공한다. 대신 작업당 지연이 General Purpose보다 조금 높다.\n```mermaid\nflowchart LR\n  subgraph C[수천 개 EC2]\n    E1[EC2]\n    E2[EC2]\n    E3[EC2]\n  end\n  C --> M[EFS Max I/O]\n  M --> D[(공유 데이터)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  subgraph C[수천 개 EC2]\n    E1[EC2]\n    E2[EC2]\n    E3[EC2]\n  end\n  C --> M[EFS Max I/O]\n  M --> D[(공유 데이터)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-02.json",
+      "questionId": "saa-perf-0048",
+      "explanation": "**핵심:** EFS **마운트 대상**은 AZ별로 생성되며 NFS 접근을 제공한다. 각 AZ의 인스턴스는 같은 AZ의 마운트 대상을 통해 파일 시스템에 접근한다.\n```mermaid\nflowchart TB\n  F[(EFS 파일 시스템)]\n  F --- M1[마운트 대상 AZ-a]\n  F --- M2[마운트 대상 AZ-c]\n  M1 --- E1[EC2 AZ-a]\n  M2 --- E2[EC2 AZ-c]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart TB\n  F[(EFS 파일 시스템)]\n  F --- M1[마운트 대상 AZ-a]\n  F --- M2[마운트 대상 AZ-c]\n  M1 --- E1[EC2 AZ-a]\n  M2 --- E2[EC2 AZ-c]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-03.json",
+      "questionId": "saa-perf-0052",
+      "explanation": "**핵심:** Multi-AZ의 **대기 인스턴스는 동기 복제로 장애 조치를 준비할 뿐 읽기 요청을 처리하지 않는다**. 읽기 확장에는 **읽기 복제본**을 사용해야 한다.\n```mermaid\nflowchart LR\n  A[애플리케이션] -->|쓰기·읽기| P[기본 인스턴스]\n  P -->|동기 복제| S[대기 인스턴스]\n  A -->|읽기 전용| R1[읽기 복제본]\n  P -->|복제| R1\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A[애플리케이션] -->|쓰기·읽기| P[기본 인스턴스]\n  P -->|동기 복제| S[대기 인스턴스]\n  A -->|읽기 전용| R1[읽기 복제본]\n  P -->|복제| R1"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-03.json",
+      "questionId": "saa-perf-0054",
+      "explanation": "**핵심:** 읽기 복제본 **승격(promote)** 은 복제를 중단하고 독립 실행형 DB 인스턴스로 전환한다. 리전 장애 시 복구 시간을 줄이는 데 사용할 수 있다.\n```mermaid\nflowchart LR\n  P[기본 리전 DB] -->|비동기 복제| R[다른 리전 읽기 복제본]\n  P -->|재해 발생| X[기본 DB 손실]\n  R -->|승격| N[독립 실행형 DB]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[기본 리전 DB] -->|비동기 복제| R[다른 리전 읽기 복제본]\n  P -->|재해 발생| X[기본 DB 손실]\n  R -->|승격| N[독립 실행형 DB]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-03.json",
+      "questionId": "saa-perf-0057",
+      "explanation": "**핵심:** **RDS Proxy**는 애플리케이션 대신 DB 연결을 풀링하고 재사용한다. 연결이 짧게 반복되는 Lambda 워크로드에서 연결 고갈을 줄인다.\n```mermaid\nflowchart LR\n  L1[Lambda] --> P[RDS Proxy]\n  L2[Lambda] --> P\n  L3[Lambda] --> P\n  P -->|연결 풀 재사용| D[(RDS)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  L1[Lambda] --> P[RDS Proxy]\n  L2[Lambda] --> P\n  L3[Lambda] --> P\n  P -->|연결 풀 재사용| D[(RDS)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-03.json",
+      "questionId": "saa-perf-0058",
+      "explanation": "**핵심:** Aurora **리더 엔드포인트**는 연결 시점에 사용 가능한 Aurora Replica로 부하를 분산한다. 라이터 엔드포인트는 기본 인스턴스로 쓰기와 읽기를 보낸다.\n```mermaid\nflowchart LR\n  A[애플리케이션] -->|읽기| R[리더 엔드포인트]\n  A -->|쓰기| W[라이터 엔드포인트]\n  R --> R1[Aurora Replica 1]\n  R --> R2[Aurora Replica 2]\n  W --> P[기본 인스턴스]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A[애플리케이션] -->|읽기| R[리더 엔드포인트]\n  A -->|쓰기| W[라이터 엔드포인트]\n  R --> R1[Aurora Replica 1]\n  R --> R2[Aurora Replica 2]\n  W --> P[기본 인스턴스]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-03.json",
+      "questionId": "saa-perf-0059",
+      "explanation": "**핵심:** **Aurora Serverless v2**는 워크로드에 따라 **ACU** 단위로 세밀하게 확장하며 클러스터를 유지한 채 용량을 조정한다. 최소·최대 ACU로 기준 성능과 비용 상한을 정한다.\n```mermaid\nflowchart LR\n  L[낮은 트래픽] -->|최소 ACU| C[Aurora Serverless v2]\n  H[피크 트래픽] -->|최대 ACU까지 확장| C\n  C --> D[(공유 스토리지)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  L[낮은 트래픽] -->|최소 ACU| C[Aurora Serverless v2]\n  H[피크 트래픽] -->|최대 ACU까지 확장| C\n  C --> D[(공유 스토리지)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-04.json",
+      "questionId": "saa-perf-0080",
+      "explanation": "**핵심:** **오리진 그룹**은 기본 오리진이 오류를 반환하거나 응답하지 않을 때 보조 오리진으로 전환한다. 캐시 동작에 오리진 그룹을 연결해 장애 조치를 활성화한다.\n```mermaid\nflowchart LR\n  C[CloudFront] --> O{오리진 그룹}\n  O -->|정상| P[주 오리진]\n  O -->|5xx·시간 초과| S[보조 오리진]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  C[CloudFront] --> O{오리진 그룹}\n  O -->|정상| P[주 오리진]\n  O -->|5xx·시간 초과| S[보조 오리진]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-04.json",
+      "questionId": "saa-perf-0084",
+      "explanation": "**핵심:** **Global Accelerator**는 캐싱 없이 TCP/UDP 트래픽을 가장 가까운 정상 엔드포인트로 전달한다. 리전별 엔드포인트 그룹과 상태 확인으로 지연 개선과 장애 조치를 함께 얻는다.\n```mermaid\nflowchart LR\n  U[사용자] --> A[Global Accelerator]\n  A -->|지연 기반| G1[엔드포인트 그룹 ap-northeast-2]\n  A -->|지연 기반| G2[엔드포인트 그룹 us-east-1]\n  G1 --> E1[API 엔드포인트]\n  G2 --> E2[API 엔드포인트]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  U[사용자] --> A[Global Accelerator]\n  A -->|지연 기반| G1[엔드포인트 그룹 ap-northeast-2]\n  A -->|지연 기반| G2[엔드포인트 그룹 us-east-1]\n  G1 --> E1[API 엔드포인트]\n  G2 --> E2[API 엔드포인트]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-04.json",
+      "questionId": "saa-perf-0091",
+      "explanation": "**핵심:** **페일오버 라우팅**은 기본 레코드의 상태 확인이 실패하면 보조 레코드로 응답한다. 평상시에는 기본 리소스만 사용하고 장애 시에만 전환한다.\n```mermaid\nflowchart LR\n  U[사용자] --> R[Route 53 페일오버]\n  R -->|상태 정상| P[주 리전 ALB]\n  R -->|상태 확인 실패| S[보조 리전 ALB]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  U[사용자] --> R[Route 53 페일오버]\n  R -->|상태 정상| P[주 리전 ALB]\n  R -->|상태 확인 실패| S[보조 리전 ALB]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-04.json",
+      "questionId": "saa-perf-0095",
+      "explanation": "**핵심:** **게이트웨이 엔드포인트**는 프라이빗 서브넷에서 S3로 가는 트래픽을 AWS 네트워크 내부에서 처리한다. NAT Gateway를 경유하지 않아 홉과 데이터 처리 비용이 줄어든다.\n```mermaid\nflowchart LR\n  E[프라이빗 EC2] --> RT[라우팅 테이블]\n  RT -->|S3 prefix list| G[S3 게이트웨이 엔드포인트]\n  G --> S3[(S3)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  E[프라이빗 EC2] --> RT[라우팅 테이블]\n  RT -->|S3 prefix list| G[S3 게이트웨이 엔드포인트]\n  G --> S3[(S3)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-04.json",
+      "questionId": "saa-perf-0100",
+      "explanation": "**핵심:** **고정 세션(sticky sessions)** 은 ALB가 발급한 쿠키로 같은 클라이언트의 요청을 같은 대상에 연결한다. 세션 상태를 외부화할 수 없는 레거시 앱의 임시 대안이다.\n```mermaid\nsequenceDiagram\n  participant U as 사용자\n  participant A as ALB\n  participant E as EC2\n  U->>A: 요청 1\n  A->>E: 쿠키 발급·전달\n  U->>A: 요청 2 (같은 쿠키)\n  A->>E: 같은 대상으로 전달\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "sequenceDiagram",
+          "code": "sequenceDiagram\n  participant U as 사용자\n  participant A as ALB\n  participant E as EC2\n  U->>A: 요청 1\n  A->>E: 쿠키 발급·전달\n  U->>A: 요청 2 (같은 쿠키)\n  A->>E: 같은 대상으로 전달"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-05.json",
+      "questionId": "saa-perf-0102",
+      "explanation": "**핵심:** **Enhanced fan-out**은 컨슈머마다 전용 읽기 처리량을 제공하므로 여러 애플리케이션이 서로 영향을 주지 않고 읽을 수 있다. 공유 처리량으로 폴링하면 컨슈머가 늘어날수록 지연이 커진다.\n```mermaid\nflowchart LR\n  S[Kinesis Data Stream] -->|전용 2 MiB/s| C1[컨슈머 1]\n  S -->|전용 2 MiB/s| C2[컨슈머 2]\n  S -->|전용 2 MiB/s| C3[컨슈머 3]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  S[Kinesis Data Stream] -->|전용 2 MiB/s| C1[컨슈머 1]\n  S -->|전용 2 MiB/s| C2[컨슈머 2]\n  S -->|전용 2 MiB/s| C3[컨슈머 3]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-05.json",
+      "questionId": "saa-perf-0105",
+      "explanation": "**핵심:** Firehose의 **Lambda 변환**으로 **Parquet** 같은 컬럼 기반 압축 형식으로 적재하면 스캔량이 크게 줄어든다. Athena는 필요한 컬럼만 읽으므로 쿼리 속도와 비용이 함께 개선된다.\n```mermaid\nflowchart LR\n  J[JSON 로그] --> F[Firehose]\n  F --> L[Lambda 변환]\n  L -->|Parquet| S3[(S3)]\n  S3 --> A[Athena]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  J[JSON 로그] --> F[Firehose]\n  F --> L[Lambda 변환]\n  L -->|Parquet| S3[(S3)]\n  S3 --> A[Athena]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-05.json",
+      "questionId": "saa-perf-0110",
+      "explanation": "**핵심:** Glue **작업 북마크**는 이미 처리한 입력 상태를 추적해 다음 실행에서 신규 데이터만 읽도록 한다. 전체 재처리를 피하면 실행 시간과 비용이 모두 줄어든다.\n```mermaid\nflowchart LR\n  N[신규 S3 데이터] --> J[Glue 작업]\n  B[작업 북마크] -->|처리 상태 확인| J\n  J -->|신규분만 처리| O[(출력)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  N[신규 S3 데이터] --> J[Glue 작업]\n  B[작업 북마크] -->|처리 상태 확인| J\n  J -->|신규분만 처리| O[(출력)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-05.json",
+      "questionId": "saa-perf-0112",
+      "explanation": "**핵심:** **CTAS**로 자주 쓰는 집계 결과를 **Parquet 테이블**로 미리 만들면 반복 쿼리가 작은 결과 테이블만 읽는다. 원본 전체 스캔을 피하므로 속도와 비용이 모두 개선된다.\n```mermaid\nflowchart LR\n  R[원본 대용량 테이블] -->|1회 CTAS| T[(집계 결과 테이블)]\n  T -->|반복 조회| Q[Athena 쿼리]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  R[원본 대용량 테이블] -->|1회 CTAS| T[(집계 결과 테이블)]\n  T -->|반복 조회| Q[Athena 쿼리]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/perf-05.json",
+      "questionId": "saa-perf-0117",
+      "explanation": "**핵심:** 관리형 **Flink** 서비스는 스트림에 **윈도우 집계**를 적용해 실시간 평균 같은 상태 기반 계산을 효율적으로 수행한다. 건별 Lambda 호출보다 처리량과 비용 효율이 높다.\n```mermaid\nflowchart LR\n  S[스트리밍 이벤트] --> F[관리형 Flink]\n  F -->|5분 윈도우 집계| W[이동 평균]\n  W --> D[대시보드·출력]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  S[스트리밍 이벤트] --> F[관리형 Flink]\n  F -->|5분 윈도우 집계| W[이동 평균]\n  W --> D[대시보드·출력]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-01.json",
+      "questionId": "saa-res-0001",
+      "explanation": "RDS Multi-AZ는 **동기 복제**된 대기 인스턴스를 다른 AZ에 두고 장애 시 자동으로 전환한다. 대기 인스턴스는 읽기 트래픽을 처리하지 않으므로 **읽기 확장**에는 읽기 복제본을 사용한다.\n\n- 대기 인스턴스: 장애 조치 전용, 읽기 불가\n- 읽기 확장: 읽기 복제본 사용\n\n```mermaid\nflowchart LR\n  A[App] --> P[(Primary AZ-a)]\n  P -. 동기 복제 .-> S[(Standby AZ-c)]\n  P -->|AZ 장애| S\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A[App] --> P[(Primary AZ-a)]\n  P -. 동기 복제 .-> S[(Standby AZ-c)]\n  P -->|AZ 장애| S"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-01.json",
+      "questionId": "saa-res-0004",
+      "explanation": "ALB는 설정한 **경로**와 일치하는 응답 코드를 받아야 대상을 정상으로 판단한다. 애플리케이션 상태를 반영하는 **경량 경로**를 사용하는 것이 좋다.\n\n```mermaid\nflowchart LR\n  H[ALB 헬스 체크] --> P[GET /health]\n  P --> C{성공 코드?}\n  C -->|예| OK[정상 대상]\n  C -->|아니오| NG[비정상: 트래픽 제외]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  H[ALB 헬스 체크] --> P[GET /health]\n  P --> C{성공 코드?}\n  C -->|예| OK[정상 대상]\n  C -->|아니오| NG[비정상: 트래픽 제외]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-01.json",
+      "questionId": "saa-res-0020",
+      "explanation": "Route 53 상태 확인자는 인터넷에서 대상에 접근하므로 **프라이빗 주소**를 직접 확인할 수 없다. **CloudWatch 경보 상태**를 모니터링하는 상태 확인을 사용하면 프라이빗 리소스의 장애를 우회적으로 감지할 수 있다.\n\n```mermaid\nflowchart LR\n  R[프라이빗 EC2] --> M[CloudWatch 지표·경보]\n  M --> H[Route 53 상태 확인]\n  H --> D[퍼블릭 DNS 레코드]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  R[프라이빗 EC2] --> M[CloudWatch 지표·경보]\n  M --> H[Route 53 상태 확인]\n  H --> D[퍼블릭 DNS 레코드]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-01.json",
+      "questionId": "saa-res-0022",
+      "explanation": "NAT Gateway는 **단일 AZ**에 배치되므로 AZ별로 하나씩 두고 같은 AZ의 라우팅 테이블에서 사용해야 한다. 한 AZ의 NAT Gateway가 장애여도 다른 AZ의 경로가 유지된다.\n\n```mermaid\nflowchart LR\n  A1[AZ-a 프라이빗 서브넷] --> N1[NAT Gateway AZ-a]\n  A2[AZ-c 프라이빗 서브넷] --> N2[NAT Gateway AZ-c]\n  N1 --> I[인터넷]\n  N2 --> I\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A1[AZ-a 프라이빗 서브넷] --> N1[NAT Gateway AZ-a]\n  A2[AZ-c 프라이빗 서브넷] --> N2[NAT Gateway AZ-c]\n  N1 --> I[인터넷]\n  N2 --> I"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-02.json",
+      "questionId": "saa-res-0031",
+      "explanation": "pilot light는 **데이터 복제**와 핵심 인프라만 유지하고 애플리케이션 계층은 필요할 때 켜는 방식이다. 복구 시 서버를 활성화하고 확장해야 하므로 warm standby보다 RTO가 길다.\n\n```mermaid\nflowchart LR\n  P[주 리전] -->|데이터 복제| D[(DR 데이터)]\n  D --> C[핵심 인프라 유지]\n  C -->|페일오버| A[앱 계층 기동·확장]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[주 리전] -->|데이터 복제| D[(DR 데이터)]\n  D --> C[핵심 인프라 유지]\n  C -->|페일오버| A[앱 계층 기동·확장]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-02.json",
+      "questionId": "saa-res-0043",
+      "explanation": "Application Recovery Controller의 **라우팅 제어**는 데이터 평면 API로 동작해 제어 평면 장애 중에도 페일오버를 실행할 수 있다. 가중치 변경 같은 제어 평면 작업은 복구 경로로 사용하지 않는 것이 좋다.\n\n```mermaid\nflowchart LR\n  O[운영자] -->|데이터 평면 API| RC[Routing Control]\n  RC --> R[Route 53 레코드]\n  R --> P[주 리전]\n  R --> S[보조 리전]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  O[운영자] -->|데이터 평면 API| RC[Routing Control]\n  RC --> R[Route 53 레코드]\n  R --> P[주 리전]\n  R --> S[보조 리전]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-02.json",
+      "questionId": "saa-res-0045",
+      "explanation": "CloudFront **오리진 그룹**에 기본과 보조 오리진을 지정하면 요청 실패 시 해당 요청만 보조 오리진으로 재시도한다. 이후 요청은 다시 기본 오리진으로 전송된다.\n\n```mermaid\nflowchart LR\n  C[Client] --> CF[CloudFront]\n  CF --> P[기본 오리진]\n  P -->|요청 실패| S[보조 오리진]\n  CF -->|다음 요청| P\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  C[Client] --> CF[CloudFront]\n  CF --> P[기본 오리진]\n  P -->|요청 실패| S[보조 오리진]\n  CF -->|다음 요청| P"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-03.json",
+      "questionId": "saa-res-0057",
+      "explanation": "특정 시점 복구는 기존 인스턴스를 수정하지 않고 지정한 시점의 데이터를 가진 **새 DB 인스턴스**를 만든다. 애플리케이션은 새 인스턴스의 **엔드포인트**로 연결을 변경해야 한다.\n\n```mermaid\nflowchart LR\n  B[자동 백업 + 트랜잭션 로그] --> R[지정 시점 복구]\n  R --> N[(새 DB 인스턴스)]\n  N --> E[새 엔드포인트]\n  A[기존 앱] -->|연결 변경| E\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  B[자동 백업 + 트랜잭션 로그] --> R[지정 시점 복구]\n  R --> N[(새 DB 인스턴스)]\n  N --> E[새 엔드포인트]\n  A[기존 앱] -->|연결 변경| E"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-03.json",
+      "questionId": "saa-res-0059",
+      "explanation": "RDS 스냅샷은 **리전 간 복사**가 가능하며 대상 리전에서 새 DB 인스턴스로 복원할 수 있다. 리전 장애 시 복사본을 사용하면 복구 시간을 줄일 수 있다.\n\n```mermaid\nflowchart LR\n  S[(스냅샷: 리전 A)] -->|리전 간 복사| T[(스냅샷: 리전 B)]\n  T -->|복원| D[(DB 인스턴스: 리전 B)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  S[(스냅샷: 리전 A)] -->|리전 간 복사| T[(스냅샷: 리전 B)]\n  T -->|복원| D[(DB 인스턴스: 리전 B)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-04.json",
+      "questionId": "saa-res-0076",
+      "explanation": "SQS FIFO 큐는 **메시지 그룹 ID** 단위로 순서를 보장하고 **중복 제거 ID**로 중복 전달을 억제한다. 주문 ID를 메시지 그룹 ID로 사용하면 같은 주문의 이벤트가 순서대로 처리된다.\n\n```mermaid\nflowchart LR\n  P[주문 이벤트] --> Q[FIFO 큐]\n  Q -->|그룹 A: 주문 1| C1[소비자]\n  Q -->|그룹 B: 주문 2| C2[소비자]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[주문 이벤트] --> Q[FIFO 큐]\n  Q -->|그룹 A: 주문 1| C1[소비자]\n  Q -->|그룹 B: 주문 2| C2[소비자]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-04.json",
+      "questionId": "saa-res-0077",
+      "explanation": "가시성 제한 시간이 실제 처리 시간보다 짧으면 메시지가 다시 노출되어 **중복 처리**가 발생한다. 처리 시간을 반영해 제한 시간을 늘리거나 처리 중에 연장해야 한다.\n\n```mermaid\nsequenceDiagram\n  participant C as Consumer\n  participant Q as SQS\n  Q->>C: 메시지 수신 (가시성 30초)\n  Note over C: 처리 시간 5분 초과\n  Q-->>C: 30초 후 메시지 재노출\n  Note over C,Q: 중복 처리 발생\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "sequenceDiagram",
+          "code": "sequenceDiagram\n  participant C as Consumer\n  participant Q as SQS\n  Q->>C: 메시지 수신 (가시성 30초)\n  Note over C: 처리 시간 5분 초과\n  Q-->>C: 30초 후 메시지 재노출\n  Note over C,Q: 중복 처리 발생"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-04.json",
+      "questionId": "saa-res-0083",
+      "explanation": "**SNS 팬아웃**은 하나의 이벤트를 여러 SQS 큐로 복제해 각 소비자가 독립적으로 처리하게 한다. 한 소비자의 실패가 다른 소비자에게 영향을 주지 않는다.\n\n```mermaid\nflowchart LR\n  P[이벤트] --> T[SNS Topic]\n  T --> Q1[SQS: 재고]\n  T --> Q2[SQS: 알림]\n  T --> Q3[SQS: 분석]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[이벤트] --> T[SNS Topic]\n  T --> Q1[SQS: 재고]\n  T --> Q2[SQS: 알림]\n  T --> Q3[SQS: 분석]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-04.json",
+      "questionId": "saa-res-0096",
+      "explanation": "Step Functions **콜백 패턴**은 작업 토큰을 외부 시스템에 전달하고, 승인 완료 시 `SendTaskSuccess`로 워크플로를 재개한다. 폴링 없이 장시간 대기할 수 있다.\n\n```mermaid\nsequenceDiagram\n  participant SF as Step Functions\n  participant E as 외부 승인 시스템\n  SF->>E: 작업 토큰 전달\n  Note over SF: 대기 (폴링 없음)\n  E->>SF: SendTaskSuccess\n  SF->>SF: 다음 단계 진행\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "sequenceDiagram",
+          "code": "sequenceDiagram\n  participant SF as Step Functions\n  participant E as 외부 승인 시스템\n  SF->>E: 작업 토큰 전달\n  Note over SF: 대기 (폴링 없음)\n  E->>SF: SendTaskSuccess\n  SF->>SF: 다음 단계 진행"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-05.json",
+      "questionId": "saa-res-0112",
+      "explanation": "**Aurora 글로벌 데이터베이스**는 스토리지 기반 복제로 보조 리전을 1초 이내 지연으로 유지해 전 세계 읽기 지연을 낮춘다. 리전 장애 시 보조 리전으로 빠르게 전환할 수도 있다.\n\n```mermaid\nflowchart LR\n  P[(프라이머리 리전)] -->|스토리지 복제: 1초 이내| S[(보조 리전)]\n  P --> R1[리전 A 읽기]\n  S --> R2[리전 B 읽기]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[(프라이머리 리전)] -->|스토리지 복제: 1초 이내| S[(보조 리전)]\n  P --> R1[리전 A 읽기]\n  S --> R2[리전 B 읽기]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-05.json",
+      "questionId": "saa-res-0114",
+      "explanation": "**쓰기 전달**을 켜면 보조 리전의 읽기 복제본으로 온 쓰기가 프라이머리로 전달된다. 보조 리전 애플리케이션은 로컬 엔드포인트를 그대로 쓰면서 전역 쓰기를 처리할 수 있다.\n\n```mermaid\nflowchart LR\n  A[보조 리전 앱] --> R[(보조 읽기 복제본)]\n  R -->|쓰기 전달| P[(프라이머리)]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  A[보조 리전 앱] --> R[(보조 읽기 복제본)]\n  R -->|쓰기 전달| P[(프라이머리)]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-05.json",
+      "questionId": "saa-res-0122",
+      "explanation": "Kinesis Data Streams는 **보존 기간** 동안 레코드를 보관하므로 소비자가 장애에서 복구된 뒤 중단 지점부터 다시 읽을 수 있다. 큐처럼 삭제되지 않으므로 재생이 가능하다.\n\n```mermaid\nflowchart LR\n  P[Producer] --> S[Kinesis Stream]\n  S --> C[Consumer]\n  C -->|중단 후 복구| C2[중단 지점부터 재읽기]\n  C2 --> S\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[Producer] --> S[Kinesis Stream]\n  S --> C[Consumer]\n  C -->|중단 후 복구| C2[중단 지점부터 재읽기]\n  C2 --> S"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-06.json",
+      "questionId": "saa-res-0126",
+      "explanation": "비동기 호출은 최대 **2회 재시도**하며, 소진되면 함수에 구성된 **on-failure 대상**(예: SQS 대기열)으로 이벤트 레코드를 전달한다. 함수 코드는 그 시점에 실행되지 않으므로 애플리케이션 코드로 이 전달을 대신할 수 없다.\n\n```mermaid\nflowchart LR\n  E[이벤트] --> L[Lambda 비동기 호출]\n  L -->|실패| R[재시도 최대 2회]\n  R -->|소진| D[on-failure 대상: SQS]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  E[이벤트] --> L[Lambda 비동기 호출]\n  L -->|실패| R[재시도 최대 2회]\n  R -->|소진| D[on-failure 대상: SQS]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/res-06.json",
+      "questionId": "saa-res-0129",
+      "explanation": "**Global Accelerator**는 고정 anycast IP 세트를 클라이언트에 제공하고 두 리전 ALB를 엔드포인트로 등록해 장애 감지 시 리전 간 트래픽을 빠르게 전환한다. DNS TTL 대기 없이 전환된다.\n\n```mermaid\nflowchart LR\n  C[Client] --> G[\"Global Accelerator (고정 IP)\"]\n  G -->|정상| A[ALB 리전 A]\n  G -->|리전 A 장애 시| B[ALB 리전 B]\n```",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  C[Client] --> G[\"Global Accelerator (고정 IP)\"]\n  G -->|정상| A[ALB 리전 A]\n  G -->|리전 A 장애 시| B[ALB 리전 B]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-01.json",
+      "questionId": "saa-sec-0002",
+      "explanation": "**핵심:** IAM은 **명시적 Deny → Allow → 기본 거부** 순으로 평가한다.\n\n```mermaid\nflowchart TD\n  R[요청] --> D{명시적 Deny?}\n  D -->|예| X[거부]\n  D -->|아니오| A{Allow 존재?}\n  A -->|예| P[허용]\n  A -->|아니오| X\n```\n\n그룹 정책의 `s3:GetObject` 허용이 있어도 명시적 Deny가 우선하므로 요청은 거부된다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart TD\n  R[요청] --> D{명시적 Deny?}\n  D -->|예| X[거부]\n  D -->|아니오| A{Allow 존재?}\n  A -->|예| P[허용]\n  A -->|아니오| X"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-01.json",
+      "questionId": "saa-sec-0004",
+      "explanation": "**핵심:** 교차 계정 액세스는 **자격 증명 정책과 리소스 정책이 모두 허용**해야 성립한다.\n\n```mermaid\nflowchart LR\n  U[계정 B IAM 사용자] --> I{계정 B 자격 증명 정책}\n  I -->|Allow| R{계정 A 버킷 정책}\n  I -->|거부·미허용| N[액세스 거부]\n  R -->|Allow| OK[액세스 허용]\n  R -->|거부·미허용| N\n```\n\n한쪽만 허용하면 거부되며, 어느 정책에도 명시적 Deny가 없어야 한다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  U[계정 B IAM 사용자] --> I{계정 B 자격 증명 정책}\n  I -->|Allow| R{계정 A 버킷 정책}\n  I -->|거부·미허용| N[액세스 거부]\n  R -->|Allow| OK[액세스 허용]\n  R -->|거부·미허용| N"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-01.json",
+      "questionId": "saa-sec-0014",
+      "explanation": "**핵심:** 유효 권한은 **자격 증명 기반 정책과 권한 경계의 교집합**이다.\n\n```mermaid\nflowchart LR\n  P[AdministratorAccess 허용] --> I{교집합}\n  B[권한 경계: S3 읽기] --> I\n  I --> E[S3 읽기만 가능]\n```\n\n경계를 넘는 작업은 광범위한 Allow가 있어도 수행할 수 없다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[AdministratorAccess 허용] --> I{교집합}\n  B[권한 경계: S3 읽기] --> I\n  I --> E[S3 읽기만 가능]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-02.json",
+      "questionId": "saa-sec-0029",
+      "explanation": "**핵심:** SCP는 **루트 → OU → 계정**의 모든 수준에서 평가되며, 하나라도 거부하면 차단된다.\n\n```mermaid\nflowchart TD\n  O[Organizations 루트] --> U[운영 OU SCP]\n  U --> A[계정 SCP]\n  A --> E{모든 SCP 허용?}\n  E -->|예| Y[작업 허용]\n  E -->|아니오| N[작업 거부]\n```\n\n계정에 SCP를 추가해도 상위 OU의 거부를 우회할 수 없다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart TD\n  O[Organizations 루트] --> U[운영 OU SCP]\n  U --> A[계정 SCP]\n  A --> E{모든 SCP 허용?}\n  E -->|예| Y[작업 허용]\n  E -->|아니오| N[작업 거부]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-02.json",
+      "questionId": "saa-sec-0032",
+      "explanation": "**핵심:** Identity Center는 **permission set 정의 → 대상 계정에 그룹 할당** 순으로 구성한다.\n\n```mermaid\nflowchart LR\n  P[Permission set] --> A[계정에 그룹 할당]\n  G[개발자 그룹] --> A\n  A --> R[대상 계정에 IAM 역할 자동 생성]\n```\n\n할당이 완료되면 사용자는 SSO로 해당 역할을 사용한다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  P[Permission set] --> A[계정에 그룹 할당]\n  G[개발자 그룹] --> A\n  A --> R[대상 계정에 IAM 역할 자동 생성]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-02.json",
+      "questionId": "saa-sec-0041",
+      "explanation": "**핵심:** **조직 트레일**은 관리 계정에서 한 번 만들면 모든 멤버 계정과 리전을 자동 포함한다.\n\n```mermaid\nflowchart LR\n  M[관리 계정: 조직 트레일] --> O[Organizations 전체 계정]\n  O --> R[모든 리전 이벤트]\n  R --> S[중앙 감사 S3 버킷]\n```\n\n새 멤버 계정도 자동으로 수집 대상에 포함된다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  M[관리 계정: 조직 트레일] --> O[Organizations 전체 계정]\n  O --> R[모든 리전 이벤트]\n  R --> S[중앙 감사 S3 버킷]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-03.json",
+      "questionId": "saa-sec-0052",
+      "explanation": "**핵심:** 봉투 암호화는 **데이터 키로 본문을 암호화**하고, 데이터 키만 KMS로 보호한다.\n\n```mermaid\nflowchart LR\n  K[KMS] -->|GenerateDataKey| D[평문 데이터 키]\n  D --> E[대용량 데이터 암호화]\n  D --> W[암호화된 데이터 키 저장]\n  E --> S[암호문 저장]\n```\n\nKMS는 소량의 키 작업만 처리하므로 대용량 파일에 적합하다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  K[KMS] -->|GenerateDataKey| D[평문 데이터 키]\n  D --> E[대용량 데이터 암호화]\n  D --> W[암호화된 데이터 키 저장]\n  E --> S[암호문 저장]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-03.json",
+      "questionId": "saa-sec-0059",
+      "explanation": "**핵심:** 기존 볼륨은 직접 암호화할 수 없어 **스냅샷 복사 단계에서 암호화**한다.\n\n```mermaid\nflowchart LR\n  V[미암호화 EBS 볼륨] --> S[스냅샷 생성]\n  S --> C[암호화 옵션으로 스냅샷 복사]\n  C --> N[암호화된 새 볼륨 생성]\n```\n\n새 볼륨을 인스턴스에 연결한 뒤 기존 볼륨을 정리한다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  V[미암호화 EBS 볼륨] --> S[스냅샷 생성]\n  S --> C[암호화 옵션으로 스냅샷 복사]\n  C --> N[암호화된 새 볼륨 생성]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-03.json",
+      "questionId": "saa-sec-0067",
+      "explanation": "**핵심:** Secrets Manager는 **회전 Lambda**가 DB 암호와 비밀 값을 함께 갱신한다.\n\n```mermaid\nsequenceDiagram\n  participant SM as Secrets Manager\n  participant L as 회전 Lambda\n  participant DB as RDS\n  SM->>L: 회전 트리거\n  L->>DB: 새 암호로 변경\n  L->>SM: 비밀 값 갱신\n```\n\n애플리케이션은 API로 최신 값을 읽으므로 암호를 저장할 필요가 없다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "sequenceDiagram",
+          "code": "sequenceDiagram\n  participant SM as Secrets Manager\n  participant L as 회전 Lambda\n  participant DB as RDS\n  SM->>L: 회전 트리거\n  L->>DB: 새 암호로 변경\n  L->>SM: 비밀 값 갱신"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-04.json",
+      "questionId": "saa-sec-0077",
+      "explanation": "**핵심:** NACL은 **낮은 번호부터 평가하고 첫 일치에서 결정**한다.\n\n```mermaid\nflowchart TD\n  T[10.0.1.5 인바운드] --> R100{규칙 100: 10.0.0.0/16 Allow}\n  R100 -->|일치| A[허용]\n  R100 -->|불일치| R200{규칙 200: 10.0.1.5/32 Deny}\n  R200 -->|일치| D[거부]\n```\n\n규칙 100이 먼저 일치하므로 200번 거부 규칙은 평가되지 않는다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart TD\n  T[10.0.1.5 인바운드] --> R100{규칙 100: 10.0.0.0/16 Allow}\n  R100 -->|일치| A[허용]\n  R100 -->|불일치| R200{규칙 200: 10.0.1.5/32 Deny}\n  R200 -->|일치| D[거부]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-04.json",
+      "questionId": "saa-sec-0086",
+      "explanation": "**핵심:** 제공자는 **NLB 뒤 서비스를 엔드포인트 서비스로 게시**하고, 고객은 인터페이스 엔드포인트로 접근한다.\n\n```mermaid\nflowchart LR\n  C[고객 VPC] --> E[인터페이스 엔드포인트]\n  E --> S[엔드포인트 서비스]\n  S --> N[NLB]\n  N --> A[제공자 서비스]\n```\n\n트래픽은 프라이빗 IP로 전달되어 인터넷 게이트웨이나 피어링이 필요 없다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  C[고객 VPC] --> E[인터페이스 엔드포인트]\n  E --> S[엔드포인트 서비스]\n  S --> N[NLB]\n  N --> A[제공자 서비스]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-05.json",
+      "questionId": "saa-sec-0114",
+      "explanation": "**핵심:** 서버가 **짧은 유효기간의 presigned URL**을 발급하고 앱은 S3로 직접 업로드한다.\n\n```mermaid\nsequenceDiagram\n  participant App as 모바일 앱\n  participant API as 애플리케이션 서버\n  participant S3 as S3\n  App->>API: 업로드 URL 요청\n  API-->>App: presigned URL\n  App->>S3: PUT 업로드\n```\n\n장기 자격 증명을 앱에 내장하지 않아도 된다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "sequenceDiagram",
+          "code": "sequenceDiagram\n  participant App as 모바일 앱\n  participant API as 애플리케이션 서버\n  participant S3 as S3\n  App->>API: 업로드 URL 요청\n  API-->>App: presigned URL\n  App->>S3: PUT 업로드"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-06.json",
+      "questionId": "saa-sec-0126",
+      "explanation": "**핵심:** **조직 트레일 + 모든 리전** 설정이 계정별 개별 트레일 없이 감사 범위를 완성한다.\n\n```mermaid\nflowchart LR\n  M[관리 계정] --> T[조직 트레일]\n  T --> A[모든 멤버 계정]\n  A --> R[모든 리전]\n  R --> S[중앙 S3 버킷]\n```\n\n계정이 추가되어도 자동으로 감사 대상에 포함된다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  M[관리 계정] --> T[조직 트레일]\n  T --> A[모든 멤버 계정]\n  A --> R[모든 리전]\n  R --> S[중앙 S3 버킷]"
+        }
+      ]
+    },
+    {
+      "sourceFile": "content/questions/saa-c03/sec-06.json",
+      "questionId": "saa-sec-0134",
+      "explanation": "**핵심:** GuardDuty 발견 항목은 **EventBridge → SNS**로 라우팅해 온콜에 즉시 전달한다.\n\n```mermaid\nflowchart LR\n  G[GuardDuty 발견 항목] --> E[EventBridge 규칙]\n  E --> S[SNS 주제]\n  S --> O[온콜 엔지니어]\n```\n\n심각도 조건으로 규칙을 필터링하고 필요하면 Lambda 후속 자동화를 연결한다.",
+      "diagrams": [
+        {
+          "blockIndex": 0,
+          "diagramType": "flowchart",
+          "code": "flowchart LR\n  G[GuardDuty 발견 항목] --> E[EventBridge 규칙]\n  E --> S[SNS 주제]\n  S --> O[온콜 엔지니어]"
+        }
+      ]
+    }
+  ]
+}

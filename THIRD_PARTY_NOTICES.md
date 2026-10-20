@@ -2,7 +2,7 @@
 
 > 생성: `node scripts/generate-third-party-notices.mjs` (결정적 출력·타임스탬프 없음)
 > 출처: `pnpm licenses list --prod --json` + 설치된 package.json/LICENSE* + `pnpm-lock.yaml` 교차 확인
-> 범위: production 직접·전이 의존성 342개(버전별 행). devDependencies만인 패키지 제외.
+> 범위: production 직접·전이 의존성 228개(버전별 행). devDependencies만인 패키지 제외.
 > 저작권은 LICENSE*의 Copyright 행에서만 확정하고, author만 있는 경우 '확인 필요'로 표시한다(author와 저작권 혼동 금지).
 > '확인 필요' 항목은 지어내지 않은 미확인 값이며 완전 검증을 주장하지 않는다(최종 법률 승인 아님).
 
@@ -15,21 +15,11 @@
 | @ant-design/icons | 6.3.4 | MIT | Copyright (c) 2018-present Ant UED, https://xtech.antfin.com/ | https://github.com/ant-design/ant-design-icons/tree/master/packages/icons-react |
 | @ant-design/icons-svg | 4.6.0 | MIT | 확인 필요 | https://github.com/ant-design/ant-design-icons.git |
 | @ant-design/react-slick | 2.0.0 | MIT | Copyright (c) 2014 Kiran Abburi | https://github.com/ant-design/react-slick |
-| @antfu/install-pkg | 2.1.0 | MIT | Copyright (c) 2021 Anthony Fu <https://github.com/antfu> | https://github.com/antfu-collective/install-pkg.git |
 | @babel/runtime | 7.29.10 | MIT | Copyright (c) 2014-present Sebastian McKenzie and other contributors | https://github.com/babel/babel.git |
 | @babel/runtime | 8.0.7 | MIT | Copyright (c) 2014-present Sebastian McKenzie and other contributors | https://github.com/babel/babel.git |
-| @braintree/sanitize-url | 7.1.2 | MIT | Copyright (c) 2017 Braintree | https://github.com/braintree/sanitize-url.git |
-| @chevrotain/cst-dts-gen | 13.2.0 | Apache-2.0 | 확인 필요 | git://github.com/Chevrotain/chevrotain.git |
-| @chevrotain/gast | 13.2.0 | Apache-2.0 | 확인 필요 | git://github.com/Chevrotain/chevrotain.git |
-| @chevrotain/regexp-to-ast | 13.2.0 | Apache-2.0 | 확인 필요 | git://github.com/Chevrotain/chevrotain.git |
-| @chevrotain/types | 13.2.0 | Apache-2.0 | 확인 필요 | git://github.com/Chevrotain/chevrotain.git |
-| @chevrotain/utils | 13.2.0 | Apache-2.0 | 확인 필요 | git://github.com/Chevrotain/chevrotain.git |
 | @emotion/hash | 0.8.0 | MIT | Copyright (c) Emotion team and other contributors | https://github.com/emotion-js/emotion/tree/master/packages/hash |
 | @emotion/unitless | 0.7.5 | MIT | Copyright (c) Emotion team and other contributors | https://github.com/emotion-js/emotion/tree/master/packages/unitless |
 | @fontsource-variable/inter | 5.3.0 | OFL-1.1 | Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) Inter-Italic[opsz,wght].ttf: Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter) | https://github.com/fontsource/font-files.git |
-| @iconify/types | 2.0.0 | MIT | Copyright (c) 2021 - 2022 Vjacheslav Trushkin / Iconify OÜ | https://github.com/iconify/iconify.git |
-| @iconify/utils | 3.1.7 | MIT | Copyright (c) 2021-PRESENT Vjacheslav Trushkin | https://github.com/iconify/iconify.git |
-| @mermaid-js/parser | 2.0.1 | MIT | Copyright (c) 2023 Yokozuna59 | https://github.com/mermaid-js/mermaid.git |
 | @opentelemetry/api | 1.9.1 | Apache-2.0 | 확인 필요 | https://github.com/open-telemetry/opentelemetry-js |
 | @radix-ui/primitive | 1.2.0 | MIT | Copyright (c) 2022 WorkOS | https://github.com/radix-ui/primitives.git |
 | @radix-ui/react-alert-dialog | 1.2.1 | MIT | Copyright (c) 2022 WorkOS | https://github.com/radix-ui/primitives.git |
@@ -104,51 +94,17 @@
 | @stablelib/xchacha20 | 2.0.1 | MIT | Copyright (C) 2019 Kyle Den Hartog | https://github.com/StableLib/stablelib |
 | @tanstack/query-core | 5.104.3 | MIT | Copyright (c) 2021-present Tanner Linsley | https://github.com/TanStack/query.git |
 | @tanstack/react-query | 5.104.3 | MIT | Copyright (c) 2021-present Tanner Linsley | https://github.com/TanStack/query.git |
-| @types/d3 | 7.4.3 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-array | 3.2.2 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-axis | 3.0.6 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-brush | 3.0.6 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-chord | 3.0.6 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-color | 3.1.3 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-contour | 3.0.6 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-delaunay | 6.0.4 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-dispatch | 3.0.7 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-drag | 3.0.7 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-dsv | 3.0.7 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-ease | 3.0.2 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-fetch | 3.0.7 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-force | 3.0.10 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-format | 3.0.4 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-geo | 3.1.1 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-hierarchy | 3.1.7 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-interpolate | 3.0.4 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-path | 3.1.1 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-polygon | 3.0.2 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-quadtree | 3.0.6 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-random | 3.0.4 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-scale | 4.0.9 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-scale-chromatic | 3.1.0 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-selection | 3.0.12 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-shape | 3.2.0 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-time | 3.0.4 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-time-format | 4.0.3 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-timer | 3.0.2 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-transition | 3.0.9 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/d3-zoom | 3.0.9 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/debug | 4.1.13 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/estree | 1.0.9 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/estree-jsx | 1.0.5 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/geojson | 7946.0.16 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/hast | 3.0.5 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/mdast | 4.0.4 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/ms | 2.1.0 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/react | 19.3.0 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/react-dom | 19.3.0 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
-| @types/trusted-types | 2.0.7 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/unist | 2.0.11 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @types/unist | 3.0.3 | MIT | Copyright (c) Microsoft Corporation. | https://github.com/DefinitelyTyped/DefinitelyTyped.git |
 | @ungap/structured-clone | 1.4.0 | ISC | Copyright (c) 2021, Andrea Giammarchi, @WebReflection | https://github.com/ungap/structured-clone.git |
-| @upsetjs/venn.js | 2.0.0 | MIT | Copyright (c) 2013 Ben Frederickson | https://github.com/upsetjs/venn.js.git |
 | antd | 6.6.6 | MIT | Copyright (c) 2015-present Ant UED, https://xtech.antfin.com/ | https://github.com/ant-design/ant-design |
 | aria-hidden | 1.2.6 | MIT | Copyright (c) 2017 Anton Korzunov | https://github.com/theKashey/aria-hidden.git |
 | bail | 2.0.2 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/bail |
@@ -157,81 +113,28 @@
 | character-entities-html4 | 2.1.0 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/character-entities-html4 |
 | character-entities-legacy | 3.0.0 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/character-entities-legacy |
 | character-reference-invalid | 2.0.1 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/character-reference-invalid |
-| chevrotain | 13.2.0 | Apache-2.0 | 확인 필요 | git://github.com/Chevrotain/chevrotain.git |
 | class-variance-authority | 0.7.1 | Apache-2.0 | Copyright 2022 Joe Bell | https://github.com/joe-bell/cva.git |
 | clsx | 2.1.1 | MIT | Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com) | https://github.com/lukeed/clsx |
 | comma-separated-tokens | 2.0.3 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/comma-separated-tokens |
-| commander | 15.0.0 | MIT | Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca> | https://github.com/tj/commander.js.git |
-| commander | 7.2.0 | MIT | Copyright (c) 2011 TJ Holowaychuk <tj@vision-media.ca> | https://github.com/tj/commander.js.git |
 | compute-scroll-into-view | 3.1.1 | MIT | Copyright (c) 2025 Cody Olsen | https://github.com/scroll-into-view/compute-scroll-into-view.git |
 | cookie-es | 3.1.1 | MIT | Cookie-es copyright (c) Pooya Parsa <pooya@pi0.io> | https://github.com/unjs/cookie-es |
-| cose-base | 1.0.3 | MIT | Copyright (c) 2019 - present, iVis@Bilkent. | https://github.com/iVis-at-Bilkent/cose-base.git |
-| cose-base | 2.2.0 | MIT | Copyright (c) 2019 - present, iVis@Bilkent. | https://github.com/iVis-at-Bilkent/cose-base.git |
 | csstype | 3.2.3 | MIT | Copyright (c) 2017-2018 Fredrik Nicol | https://github.com/frenic/csstype |
-| cytoscape | 3.34.4 | MIT | Copyright (c) 2016-2026, The Cytoscape Consortium. | https://github.com/cytoscape/cytoscape.js.git |
-| cytoscape-cose-bilkent | 4.1.0 | MIT | Copyright (c) 2016-2018, The Cytoscape Consortium. | https://github.com/cytoscape/cytoscape.js-cose-bilkent.git |
-| cytoscape-fcose | 2.2.0 | MIT | Copyright (c) 2018 - present, iVis-at-Bilkent. | https://github.com/iVis-at-Bilkent/cytoscape.js-fcose.git |
-| d3 | 7.9.0 | ISC | Copyright 2010-2023 Mike Bostock | https://github.com/d3/d3.git |
-| d3-array | 2.12.1 | BSD-3-Clause | Copyright 2010-2020 Mike Bostock | https://github.com/d3/d3-array.git |
-| d3-array | 3.2.4 | ISC | Copyright 2010-2023 Mike Bostock | https://github.com/d3/d3-array.git |
-| d3-axis | 3.0.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-axis.git |
-| d3-brush | 3.0.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-brush.git |
-| d3-chord | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-chord.git |
-| d3-color | 3.1.0 | ISC | Copyright 2010-2022 Mike Bostock | https://github.com/d3/d3-color.git |
-| d3-contour | 4.0.2 | ISC | Copyright 2012-2023 Mike Bostock | https://github.com/d3/d3-contour.git |
-| d3-delaunay | 6.0.4 | ISC | Copyright 2018-2021 Observable, Inc. | https://github.com/d3/d3-delaunay.git |
-| d3-dispatch | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-dispatch.git |
-| d3-drag | 3.0.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-drag.git |
-| d3-dsv | 3.0.1 | ISC | Copyright 2013-2021 Mike Bostock | https://github.com/d3/d3-dsv.git |
-| d3-ease | 3.0.1 | BSD-3-Clause | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-ease.git |
-| d3-fetch | 3.0.1 | ISC | Copyright 2016-2021 Mike Bostock | https://github.com/d3/d3-fetch.git |
-| d3-force | 3.0.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-force.git |
-| d3-format | 3.1.2 | ISC | Copyright 2010-2026 Mike Bostock | https://github.com/d3/d3-format.git |
-| d3-geo | 3.1.1 | ISC | Copyright 2010-2024 Mike Bostock | https://github.com/d3/d3-geo.git |
-| d3-hierarchy | 3.1.2 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-hierarchy.git |
-| d3-interpolate | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-interpolate.git |
-| d3-path | 1.0.9 | BSD-3-Clause | Copyright 2015-2016 Mike Bostock | https://github.com/d3/d3-path.git |
-| d3-path | 3.1.0 | ISC | Copyright 2015-2022 Mike Bostock | https://github.com/d3/d3-path.git |
-| d3-polygon | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-polygon.git |
-| d3-quadtree | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-quadtree.git |
-| d3-random | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-random.git |
-| d3-sankey | 0.12.3 | BSD-3-Clause | Copyright 2015, Mike Bostock | https://github.com/d3/d3-sankey.git |
-| d3-scale | 4.0.2 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-scale.git |
-| d3-scale-chromatic | 3.1.0 | ISC | Copyright 2010-2024 Mike Bostock | https://github.com/d3/d3-scale-chromatic.git |
-| d3-selection | 3.0.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-selection.git |
-| d3-shape | 1.3.7 | BSD-3-Clause | Copyright 2010-2015 Mike Bostock | https://github.com/d3/d3-shape.git |
-| d3-shape | 3.2.0 | ISC | Copyright 2010-2022 Mike Bostock | https://github.com/d3/d3-shape.git |
-| d3-time | 3.1.0 | ISC | Copyright 2010-2022 Mike Bostock | https://github.com/d3/d3-time.git |
-| d3-time-format | 4.1.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-time-format.git |
-| d3-timer | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-timer.git |
-| d3-transition | 3.0.1 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-transition.git |
-| d3-zoom | 3.0.0 | ISC | Copyright 2010-2021 Mike Bostock | https://github.com/d3/d3-zoom.git |
-| dagre-d3-es | 7.0.14 | MIT | Original dagre-d3 copyright: Copyright (c) 2013 Chris Pettitt | https://github.com/tbo47/dagre-es.git |
 | dayjs | 1.11.23 | MIT | Copyright (c) 2018-present, iamkun | https://github.com/iamkun/dayjs.git |
 | debug | 4.4.3 | MIT | Copyright (c) 2014-2017 TJ Holowaychuk <tj@vision-media.ca> | git://github.com/debug-js/debug.git |
 | decode-named-character-reference | 1.3.0 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/decode-named-character-reference |
-| delaunator | 5.1.0 | ISC | Copyright (c) 2026, Mapbox | https://github.com/mapbox/delaunator.git |
 | dequal | 2.0.3 | MIT | Copyright (c) Luke Edwards <luke.edwards05@gmail.com> (lukeed.com) | https://github.com/lukeed/dequal |
 | detect-node-es | 1.1.0 | MIT | Copyright (c) 2017 Ilya Kantor | https://github.com/thekashey/detect-node |
 | devlop | 1.1.0 | MIT | Copyright (c) 2023 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/devlop |
-| dompurify | 3.4.17 | (MPL-2.0 OR Apache-2.0) | 확인 필요 | git://github.com/cure53/DOMPurify.git |
 | drizzle-orm | 0.45.4 | Apache-2.0 | 확인 필요 | https://github.com/drizzle-team/drizzle-orm.git |
-| elkjs | 0.9.3 | EPL-2.0 | 확인 필요 | https://github.com/kieler/elkjs.git |
-| es-toolkit | 1.52.0 | MIT | Copyright (c) 2024 Viva Republica, Inc. | https://github.com/toss/es-toolkit.git |
 | escape-string-regexp | 5.0.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | https://github.com/sindresorhus/escape-string-regexp |
 | estree-util-is-identifier-name | 3.0.0 | MIT | Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/estree-util-is-identifier-name |
 | extend | 3.0.2 | MIT | Copyright (c) 2014 Stefan Thomas | https://github.com/justmoon/node-extend.git |
 | get-nonce | 1.0.1 | MIT | Copyright (c) 2020 Anton Korzunov | https://github.com/theKashey/get-nonce.git |
-| hachure-fill | 0.5.2 | MIT | Copyright (c) 2023 Preet Shihn | https://github.com/pshihn/hachure-fill.git |
 | hast-util-to-jsx-runtime | 2.3.6 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/hast-util-to-jsx-runtime |
 | hast-util-whitespace | 3.0.0 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/hast-util-whitespace |
 | hono | 4.13.13 | MIT | Copyright (c) 2021 - present, Yusuke Wada and Hono contributors | https://github.com/honojs/hono.git |
 | html-url-attributes | 3.0.1 | MIT | Copyright (c) Titus Wormer | https://github.com/rehypejs/rehype-minify/tree/main/packages/html-url-attributes |
-| iconv-lite | 0.6.3 | MIT | Copyright (c) 2011 Alexander Shtuchkin | git://github.com/ashtuchkin/iconv-lite.git |
-| import-meta-resolve | 4.2.0 | MIT | Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com> | https://github.com/wooorm/import-meta-resolve |
 | inline-style-parser | 0.2.7 | MIT | Copyright (c) 2012 TJ Holowaychuk <tj@vision-media.ca> | https://github.com/remarkablemark/inline-style-parser.git |
-| internmap | 1.0.1 | ISC | Copyright 2021 Mike Bostock | https://github.com/mbostock/internmap.git |
-| internmap | 2.0.3 | ISC | Copyright 2021 Mike Bostock | https://github.com/mbostock/internmap.git |
 | is-alphabetical | 2.0.1 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/is-alphabetical |
 | is-alphanumerical | 2.0.1 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/is-alphanumerical |
 | is-decimal | 2.0.1 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/is-decimal |
@@ -240,17 +143,11 @@
 | is-plain-obj | 4.1.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | https://github.com/sindresorhus/is-plain-obj |
 | jose | 6.2.12 | MIT | Copyright (c) 2018 Filip Skokan | https://github.com/panva/jose |
 | json2mq | 0.2.0 | MIT | Copyright (c) 2014 Kiran Abburi | https://github.com/akiran/json2mq |
-| katex | 0.18.10 | MIT | Copyright (c) 2013-2020 Khan Academy and other contributors | https://github.com/KaTeX/KaTeX.git |
-| khroma | 2.1.0 | Unknown | Copyright (c) 2019-present Fabio Spampinato, Andrew Maney | github:fabiospampinato/khroma |
 | ky | 2.2.0 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | https://github.com/sindresorhus/ky |
-| layout-base | 1.0.2 | MIT | Copyright (c) 2019 iVis@Bilkent | https://github.com/iVis-at-Bilkent/layout-base.git |
-| layout-base | 2.0.1 | MIT | Copyright (c) 2019 iVis@Bilkent | https://github.com/iVis-at-Bilkent/layout-base.git |
-| lodash-es | 4.18.1 | MIT | 확인 필요 | https://github.com/lodash/lodash |
 | longest-streak | 3.1.0 | MIT | Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com> | https://github.com/wooorm/longest-streak |
 | lucide-react | 1.59.0 | ISC | Copyright (c) 2026 Lucide Icons and Contributors | https://github.com/lucide-icons/lucide.git |
 | luxon | 3.7.2 | MIT | Copyright 2019 JS Foundation and other contributors | https://github.com/moment/luxon |
 | markdown-table | 3.0.4 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/markdown-table |
-| marked | 16.4.2 | MIT | Copyright (c) 2018+, MarkedJS (https://github.com/markedjs/) | git://github.com/markedjs/marked.git |
 | mdast-util-find-and-replace | 3.0.3 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/mdast-util-find-and-replace |
 | mdast-util-from-markdown | 2.1.0 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/mdast-util-from-markdown |
 | mdast-util-gfm | 3.1.0 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/mdast-util-gfm |
@@ -266,7 +163,6 @@
 | mdast-util-to-hast | 13.2.1 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/mdast-util-to-hast |
 | mdast-util-to-markdown | 2.2.0 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/mdast-util-to-markdown |
 | mdast-util-to-string | 4.0.0 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/mdast-util-to-string |
-| mermaid | 12.2.0 | MIT | Copyright (c) 2014 - 2022 Knut Sveidqvist | https://github.com/mermaid-js/mermaid |
 | micromark | 4.0.3 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/micromark/micromark/tree/main/packages/micromark |
 | micromark-core-commonmark | 2.0.4 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/micromark/micromark/tree/main/packages/micromark-core-commonmark |
 | micromark-extension-gfm | 3.0.0 | MIT | Copyright (c) 2020 Titus Wormer <tituswormer@gmail.com> | https://github.com/micromark/micromark-extension-gfm |
@@ -297,12 +193,9 @@
 | micromark-util-symbol | 2.0.1 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/micromark/micromark/tree/main/packages/micromark-util-symbol |
 | micromark-util-types | 2.0.3 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/micromark/micromark/tree/main/packages/micromark-util-types |
 | ms | 2.1.3 | MIT | Copyright (c) 2020 Vercel, Inc. | https://github.com/vercel/ms |
-| package-manager-detector | 1.9.0 | MIT | Copyright (c) 2020-PRESENT Anthony Fu <https://github.com/antfu> | https://github.com/antfu-collective/package-manager-detector.git |
 | parse-entities | 4.0.2 | MIT | Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com> | https://github.com/wooorm/parse-entities |
 | paseto-ts | 2.0.7 | MIT | Copyright (c) 2023 Auth70 | github:auth70/paseto-ts |
-| path-data-parser | 0.1.0 | MIT | Copyright (c) 2020 Preet Shihn | https://github.com/pshihn/path-data-parser.git |
-| points-on-curve | 0.2.0 | MIT | Copyright (c) 2020 Preet Shihn | https://github.com/pshihn/bezier-points.git |
-| points-on-path | 0.2.1 | MIT | Copyright (c) 2020 Preet | https://github.com/pshihn/points-on-path.git |
+| pele | 1.7.0 | MIT | Copyright (c) 2026 kepano | https://github.com/obsidianmd/pele.git |
 | property-information | 7.2.0 | MIT | Copyright (c) Titus Wormer <mailto:tituswormer@gmail.com> | https://github.com/wooorm/property-information |
 | react | 19.3.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/react/react.git |
 | react-dom | 19.3.1 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/react/react.git |
@@ -316,10 +209,6 @@
 | remark-parse | 11.0.0 | MIT | Copyright (c) 2014 Titus Wormer <tituswormer@gmail.com> | https://github.com/remarkjs/remark/tree/main/packages/remark-parse |
 | remark-rehype | 11.1.2 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/remarkjs/remark-rehype |
 | remark-stringify | 11.0.0 | MIT | Copyright (c) 2014 Titus Wormer <tituswormer@gmail.com> | https://github.com/remarkjs/remark/tree/main/packages/remark-stringify |
-| robust-predicates | 3.0.3 | Unlicense | 확인 필요 | https://github.com/mourner/robust-predicates.git |
-| roughjs | 4.6.6 | MIT | Copyright (c) 2019 Preet Shihn | https://github.com/pshihn/rough.git |
-| rw | 1.3.3 | BSD-3-Clause | Copyright (c) 2014-2016, Michael Bostock | http://github.com/mbostock/rw.git |
-| safer-buffer | 2.1.2 | MIT | Copyright (c) 2018 Nikita Skovoroda <chalkerx@gmail.com> | https://github.com/ChALkeR/safer-buffer.git |
 | scheduler | 0.28.0 | MIT | Copyright (c) Meta Platforms, Inc. and affiliates. | https://github.com/react/react.git |
 | scroll-into-view-if-needed | 3.1.0 | MIT | Copyright (c) 2023 Cody Olsen | https://github.com/scroll-into-view/scroll-into-view-if-needed.git |
 | space-separated-tokens | 2.0.2 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/space-separated-tokens |
@@ -331,10 +220,8 @@
 | supports-color | 10.2.2 | MIT | Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com) | https://github.com/chalk/supports-color |
 | tailwind-merge | 3.7.0 | MIT | Copyright (c) 2021 Dany Castillo | https://github.com/dcastil/tailwind-merge.git |
 | throttle-debounce | 5.0.2 | MIT | Copyright (c) Ivan Nikolić <http://ivannikolic.com> | https://github.com/niksy/throttle-debounce.git |
-| tinyexec | 1.3.1 | MIT | Copyright (c) 2024 Tinylibs | https://github.com/tinylibs/tinyexec.git |
 | trim-lines | 3.0.1 | MIT | Copyright (c) 2015 Titus Wormer <mailto:tituswormer@gmail.com> | https://github.com/wooorm/trim-lines |
 | trough | 2.2.0 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/wooorm/trough |
-| ts-dedent | 2.3.0 | MIT | Copyright (c) 2018 Tamino Martinius | https://github.com/tamino-martinius/node-ts-dedent.git |
 | tslib | 2.8.1 | 0BSD | Copyright (c) Microsoft Corporation. | https://github.com/Microsoft/tslib.git |
 | unified | 11.0.5 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/unifiedjs/unified |
 | unist-util-is | 6.0.1 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/unist-util-is |
@@ -344,7 +231,6 @@
 | unist-util-visit-parents | 6.0.2 | MIT | Copyright (c) 2016 Titus Wormer <tituswormer@gmail.com> | https://github.com/syntax-tree/unist-util-visit-parents |
 | use-callback-ref | 1.3.3 | MIT | Copyright (c) 2017 Anton Korzunov | https://github.com/theKashey/use-callback-ref/ |
 | use-sidecar | 1.1.3 | MIT | Copyright (c) 2017 Anton Korzunov | https://github.com/theKashey/use-sidecar |
-| uuid | 14.0.3 | MIT | Copyright (c) 2010-2020 Robert Kieffer and other contributors | https://github.com/uuidjs/uuid.git |
 | vfile | 6.0.3 | MIT | Copyright (c) 2015 Titus Wormer <tituswormer@gmail.com> | https://github.com/vfile/vfile |
 | vfile-message | 4.0.3 | MIT | Copyright (c) Titus Wormer <tituswormer@gmail.com> | https://github.com/vfile/vfile-message |
 | zod | 4.6.7 | MIT | Copyright (c) 2025 Colin McDonnell | https://github.com/colinhacks/zod.git |
