@@ -29,6 +29,7 @@ export function StudyRoute({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const view = useStudyUiStore((s) => s.view);
   const setView = useStudyUiStore((s) => s.setView);
   const current = useCurrentStudySet(client, STUDY_EXAM_ID, userId, mode === 'current');
   const state = location.state as { setId?: unknown; startedSetId?: unknown } | null;
@@ -41,6 +42,12 @@ export function StudyRoute({
     else setView('active');
   }, [mode, setView]);
 
+  useEffect(() => {
+    if (mode === 'current' && view === 'active' && startedSetId && current.isFetchedAfterMount && current.data) {
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [mode, view, startedSetId, current.isFetchedAfterMount, current.data, navigate, location.pathname]);
+
   if (mode === 'result' && !resultSetId) return <Navigate to="/history" replace />;
 
   if (mode === 'current') {
@@ -51,7 +58,7 @@ export function StudyRoute({
     }
     if (current.isFetchedAfterMount) {
       if (current.isError) return <LoadErrorAlert onRetry={() => void current.refetch()} />;
-      if (!current.data) return <Navigate to="/study/new" replace />;
+      if (!current.data) return <Navigate to="/study/new" replace state={null} />;
     }
   }
 
