@@ -1,7 +1,7 @@
 {
-  "commit": "8a88d86979338deb48d05287daaee04266f1a2fd",
-  "commitShort": "8a88d86",
-  "generatedAt": "2026-10-20T06:46:29.113Z",
+  "commit": "14f331ec2b5df6df1354cf51ec40a1338171c872",
+  "commitShort": "14f331e",
+  "generatedAt": "2026-10-20T09:54:15.043Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -15,8 +15,16 @@
           "image": "home-logged-out-320.png",
           "finalPath": "/",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -41,8 +49,16 @@
           "image": "home-logged-out-375.png",
           "finalPath": "/",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -67,8 +83,16 @@
           "image": "home-logged-out-768.png",
           "finalPath": "/",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -93,8 +117,16 @@
           "image": "home-logged-out-1024.png",
           "finalPath": "/",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -119,8 +151,16 @@
           "image": "home-logged-out-1280.png",
           "finalPath": "/",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -153,8 +193,16 @@
           "image": "home-320.png",
           "finalPath": "/",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -179,8 +227,16 @@
           "image": "home-375.png",
           "finalPath": "/",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -205,8 +261,16 @@
           "image": "home-768.png",
           "finalPath": "/",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -231,8 +295,16 @@
           "image": "home-1024.png",
           "finalPath": "/",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 2,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -272,8 +344,16 @@
           "image": "home-1280.png",
           "finalPath": "/",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 2,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -321,8 +401,16 @@
           "image": "study-new-320.png",
           "finalPath": "/study/new",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -347,8 +435,16 @@
           "image": "study-new-375.png",
           "finalPath": "/study/new",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -373,8 +469,16 @@
           "image": "study-new-768.png",
           "finalPath": "/study/new",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -399,8 +503,16 @@
           "image": "study-new-1024.png",
           "finalPath": "/study/new",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 2,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -440,8 +552,16 @@
           "image": "study-new-1280.png",
           "finalPath": "/study/new",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 2,
+          "focusMetrics": {
+            "totalVisible": 2,
+            "focusable": 2,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -489,8 +609,16 @@
           "image": "study-active-320.png",
           "finalPath": "/study",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 8,
+            "focusable": 7,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -515,8 +643,16 @@
           "image": "study-active-375.png",
           "finalPath": "/study",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 8,
+            "focusable": 7,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -541,8 +677,16 @@
           "image": "study-active-768.png",
           "finalPath": "/study",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 8,
+            "focusable": 7,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -567,8 +711,16 @@
           "image": "study-active-1024.png",
           "finalPath": "/study",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 8,
+            "focusable": 7,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -593,8 +745,16 @@
           "image": "study-active-1280.png",
           "finalPath": "/study",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 8,
+            "focusable": 7,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -627,8 +787,16 @@
           "image": "study-result-320.png",
           "finalPath": "/study/result",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 18,
+            "focusable": 17,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -637,7 +805,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 8,
+            "totalButtons": 18,
             "minHeight": 44,
             "below44": []
           },
@@ -653,8 +821,16 @@
           "image": "study-result-375.png",
           "finalPath": "/study/result",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 18,
+            "focusable": 17,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -663,7 +839,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 8,
+            "totalButtons": 18,
             "minHeight": 44,
             "below44": []
           },
@@ -679,8 +855,16 @@
           "image": "study-result-768.png",
           "finalPath": "/study/result",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 18,
+            "focusable": 17,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -689,7 +873,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 8,
+            "totalButtons": 18,
             "minHeight": 44,
             "below44": []
           },
@@ -705,8 +889,16 @@
           "image": "study-result-1024.png",
           "finalPath": "/study/result",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 18,
+            "focusable": 17,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -715,7 +907,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 8,
+            "totalButtons": 18,
             "minHeight": 44,
             "below44": []
           },
@@ -731,8 +923,16 @@
           "image": "study-result-1280.png",
           "finalPath": "/study/result",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 18,
+            "focusable": 17,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -741,7 +941,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 8,
+            "totalButtons": 18,
             "minHeight": 44,
             "below44": []
           },
@@ -765,8 +965,16 @@
           "image": "history-empty-320.png",
           "finalPath": "/history",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 0,
+            "focusable": 0,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -791,8 +999,16 @@
           "image": "history-empty-375.png",
           "finalPath": "/history",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 0,
+            "focusable": 0,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -817,8 +1033,16 @@
           "image": "history-empty-768.png",
           "finalPath": "/history",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 0,
+            "focusable": 0,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -843,8 +1067,16 @@
           "image": "history-empty-1024.png",
           "finalPath": "/history",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 0,
+            "focusable": 0,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -869,8 +1101,16 @@
           "image": "history-empty-1280.png",
           "finalPath": "/history",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 0,
+            "focusable": 0,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -903,8 +1143,16 @@
           "image": "history-populated-320.png",
           "finalPath": "/history",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 4,
+            "focusable": 4,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -929,8 +1177,16 @@
           "image": "history-populated-375.png",
           "finalPath": "/history",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 4,
+            "focusable": 4,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -955,8 +1211,16 @@
           "image": "history-populated-768.png",
           "finalPath": "/history",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 4,
+            "focusable": 4,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -981,8 +1245,16 @@
           "image": "history-populated-1024.png",
           "finalPath": "/history",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 4,
+            "focusable": 4,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -1007,8 +1279,16 @@
           "image": "history-populated-1280.png",
           "finalPath": "/history",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 4,
+            "focusable": 4,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -1041,8 +1321,16 @@
           "image": "review-320.png",
           "finalPath": "/review",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 5,
+            "focusable": 5,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -1067,8 +1355,16 @@
           "image": "review-375.png",
           "finalPath": "/review",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 5,
+            "focusable": 5,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -1093,8 +1389,16 @@
           "image": "review-768.png",
           "finalPath": "/review",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 5,
+            "focusable": 5,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -1119,8 +1423,16 @@
           "image": "review-1024.png",
           "finalPath": "/review",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 5,
+            "focusable": 5,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -1145,8 +1457,16 @@
           "image": "review-1280.png",
           "finalPath": "/review",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 5,
+            "focusable": 5,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -1179,8 +1499,16 @@
           "image": "account-320.png",
           "finalPath": "/account",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -1205,8 +1533,16 @@
           "image": "account-375.png",
           "finalPath": "/account",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -1231,8 +1567,16 @@
           "image": "account-768.png",
           "finalPath": "/account",
           "touch": true,
+          "hasTouch": true,
           "pointerCoarse": true,
+          "anyPointerCoarse": true,
+          "maxTouchPoints": 1,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -1257,8 +1601,16 @@
           "image": "account-1024.png",
           "finalPath": "/account",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -1283,8 +1635,16 @@
           "image": "account-1280.png",
           "finalPath": "/account",
           "touch": false,
+          "hasTouch": false,
           "pointerCoarse": false,
+          "anyPointerCoarse": false,
+          "maxTouchPoints": 0,
           "below44Count": 0,
+          "focusMetrics": {
+            "totalVisible": 1,
+            "focusable": 1,
+            "unfocusable": []
+          },
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -1319,6 +1679,8 @@
     ],
     "overflowCount": 0,
     "below44Count": 8,
+    "below44AnyTouchCount": 0,
+    "below44TouchlessCount": 8,
     "rawValueScreenCount": 0,
     "screens": [
       {

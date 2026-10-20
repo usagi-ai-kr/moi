@@ -92,7 +92,7 @@ const STUDY_ITEMS = [
     ],
     explanation: '필요한 작업(Action)과 리소스(Resource)만 명시적으로 Allow 하고, 나머지는 기본 거부로 두는 것이 최소 권한 원칙입니다.',
     sourceUrls: ['https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html'],
-    correctOptionIds: ['opt-f'],
+    correctOptionIds: ['opt-f', 'opt-g'],
     response: { kind: 'unanswered' },
   },
   {
@@ -311,6 +311,9 @@ function toActiveDto(set) {
       optionOrder: [...item.optionOrder],
       stem: item.stem,
       options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+      // 제출 전 DTO 정합(ADR-0049·routes.ts:79): 정답 개수만 노출, 정답 ID 자체는 제거한다.
+      // correctOptionIds.length에서 실제값 도출 — 1 폴백·undefined 안내 금지, 단일·복수 모두 포함.
+      answerCount: item.correctOptionIds.length,
       response: item.response,
     })),
   };
@@ -348,6 +351,7 @@ function submittedDto(set) {
       optionOrder: [...item.optionOrder],
       stem: item.stem,
       options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+      answerCount: item.correctOptionIds.length,
       response: item.response,
       explanation: item.explanation,
       sourceUrls: [...item.sourceUrls],
@@ -472,6 +476,8 @@ async function installMocks(page, config = {}) {
           questionId: first.questionId,
           stem: first.stem,
           options: first.options,
+          // ADR-0049 정합: 채점 mock 단일 정답에서 실제값 1 도출(폴백 아님)
+          answerCount: 1,
           response: null,
         },
       };
@@ -815,6 +821,8 @@ async function main() {
       widths: WIDTHS,
       overflowCount: 0,
       below44Count: 0,
+      below44AnyTouchCount: 0,
+      below44TouchlessCount: 0,
       rawValueScreenCount: 0,
       screens: [],
     },
@@ -839,8 +847,10 @@ async function main() {
       };
 
       for (const width of WIDTHS) {
-        // 모바일 폭(320/375/768)은 터치 컨텍스트로 pointer:coarse를 매칭한다.
-        // 데스크톱 폭(1024/1280)은 fine 유지. 제품 CSS(pointer:coarse) 변경 없음.
+        // 현행 계약은 any-pointer:coarse(ADR-0050·DESIGN.md 5항). pointer:coarse는 비교용으로만 기록한다.
+        // 모바일 폭(320/375/768)은 터치 컨텍스트(hasTouch+isMobile)로 any-pointer:coarse를 매칭한다.
+        // 데스크톱 폭(1024/1280)은 터치 없음 유지. 과거 증거의 coarse=모바일 에뮬레이션이며 하이브리드(주 fine+any coarse) 실측이 아니다.
+        // 하이브리드 에뮬레이션은 본 스크립트에서 수행하지 않는다 — 에뮬레이션임을 명시, 실기기 성공으로 표시 금지.
         const isTouchWidth = width <= 768;
         const context = await browser.newContext({
           viewport: { width, height: 800 },
@@ -858,7 +868,7 @@ async function main() {
         await page.waitForTimeout(250);
 
         const imgFilename = `${screen.id}-${width}.png`;
-        // fullPage:true는 터치 컨텍스트에서 @media (pointer:coarse) 렌더링을
+        // fullPage:true는 터치 컨텍스트에서 @media (any-pointer:coarse) 렌더링을
         // 유실한다(DOM rect 44px인데 PNG 40px). 전체 높이로 뷰포트를 키워
         // viewport 캡처한다 — 같은 페이지·같은 실행 산출물이다.
         const fullHeight = await page.evaluate(() => document.documentElement.scrollHeight);
@@ -867,8 +877,29 @@ async function main() {
         await page.screenshot({ path: join(OUT_DIR, imgFilename) });
         await page.setViewportSize({ width, height: 800 });
 
-        // 터치 매칭 증거: coarse 매칭 여부 + below44 카운트(버튼 높이 <44).
-        const pointerCoarse = await page.evaluate(() => window.matchMedia('(pointer: coarse)').matches);
+        // 터치 매칭 증거(현행 any-pointer:coarse 계약): pointer+any-pointer 둘다·hasTouch 포함.
+        // touchless 데스크톱 40px 유지 vs any-touch 44px 구분. pointer:coarse는 과거 표기 비교용으로만 둔다.
+        const pointerMedia = await page.evaluate(() => ({
+          pointerCoarse: window.matchMedia('(pointer: coarse)').matches,
+          anyPointerCoarse: window.matchMedia('(any-pointer: coarse)').matches,
+          maxTouchPoints: navigator.maxTouchPoints ?? 0,
+        }));
+        const pointerCoarse = pointerMedia.pointerCoarse;
+        const anyPointerCoarse = pointerMedia.anyPointerCoarse;
+        const hasTouch = isTouchWidth;
+        // focus 증거: 보이는 버튼 중 키보드 도달 가능 수(탭 이동·focus-visible 전제). 터치 조작은 hasTouch+anyPointerCoarse로 구분한다.
+        const focusMetrics = await page.evaluate(() => {
+          const selector = 'button, [data-slot="button"], a[role="button"], input[type="button"], input[type="submit"], .moi-kakao-login';
+          const els = Array.from(new Set(document.querySelectorAll(selector))).filter((el) => {
+            const r = el.getBoundingClientRect();
+            const st = window.getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && st.display !== 'none' && st.visibility !== 'hidden';
+          });
+          const unfocusable = els.filter((el) => el.tabIndex < 0 && !el.hasAttribute('tabindex') ? false : el.tabIndex < 0).map((el) => (el.innerText || el.getAttribute('aria-label') || '').trim().slice(0,30));
+          // button/a/input 기본 포커스 가능: disabled·tabindex=-1 제외
+          const focusable = els.filter((el) => !(el.disabled === true) && el.getAttribute('tabindex') !== '-1').length;
+          return { totalVisible: els.length, focusable, unfocusable: unfocusable.slice(0,5) };
+        });
 
         const overflow = await page.evaluate(() => {
           const de = document.documentElement;
@@ -938,7 +969,11 @@ async function main() {
           results.summary.overflowCount += 1;
           screenSummary.overflowWidths.push(width);
         }
-        if (buttonMetrics.below44.length > 0) results.summary.below44Count += buttonMetrics.below44.length;
+        if (buttonMetrics.below44.length > 0) {
+          results.summary.below44Count += buttonMetrics.below44.length;
+          if (anyPointerCoarse) results.summary.below44AnyTouchCount += buttonMetrics.below44.length;
+          else results.summary.below44TouchlessCount += buttonMetrics.below44.length;
+        }
         if (screenSummary.minButtonHeight === null || (buttonMetrics.minHeight !== null && buttonMetrics.minHeight < screenSummary.minButtonHeight)) {
           screenSummary.minButtonHeight = buttonMetrics.minHeight;
         }
@@ -957,8 +992,12 @@ async function main() {
           image: imgFilename,
           finalPath: new URL(page.url()).pathname,
           touch: isTouchWidth,
+          hasTouch,
           pointerCoarse,
+          anyPointerCoarse,
+          maxTouchPoints: pointerMedia.maxTouchPoints,
           below44Count: buttonMetrics.below44.length,
+          focusMetrics,
           overflow,
           buttonMetrics,
           textFindings,
@@ -975,7 +1014,7 @@ async function main() {
     writeFileSync(join(OUT_DIR, 'results.json'), JSON.stringify(results, null, 2), 'utf8');
     console.log(`Wrote measurements to ${join(OUT_DIR, 'results.json')}`);
     console.log(
-      `Summary: screens=${results.summary.totalScreens}, overflow=${results.summary.overflowCount}, below44=${results.summary.below44Count}, rawValueScreens=${results.summary.rawValueScreenCount}`,
+      `Summary: screens=${results.summary.totalScreens}, overflow=${results.summary.overflowCount}, below44=${results.summary.below44Count} (anyTouch=${results.summary.below44AnyTouchCount}, touchless=${results.summary.below44TouchlessCount}), rawValueScreens=${results.summary.rawValueScreenCount}`,
     );
   } finally {
     await browser.close();
