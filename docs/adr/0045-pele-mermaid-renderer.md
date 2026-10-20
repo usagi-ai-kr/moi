@@ -1,7 +1,7 @@
 ---
 id: ADR-0045
 title: 해설 Mermaid 렌더러 Pele 전환
-status: Accepted
+status: Superseded by ADR-0047
 date: 2026-10-20
 related: ["#168", "#146", "#134", "ADR-0034"]
 ---
