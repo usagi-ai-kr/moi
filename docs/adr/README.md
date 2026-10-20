@@ -45,7 +45,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0027 | 복습 회차 D1 스냅샷 영속화 | Proposed | 2026-10-19 | [0027-review-session-persistence.md](./0027-review-session-persistence.md) |
 | ADR-0028 | 복습 회차 진행과 시도 기록 원자 저장 | Superseded by ADR-0038 | 2026-10-19 | [0028-review-grade-atomic.md](./0028-review-grade-atomic.md) |
 | ADR-0030 | 0.2 수업 실사용·디자인과 0.3 이관 | Superseded by ADR-0033 | 2026-10-19 | [0030-classroom-scope-and-design.md](./0030-classroom-scope-and-design.md) |
-| ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Proposed | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
+| ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Superseded by ADR-0054 | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
 | ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
 | ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
 | ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Superseded by ADR-0045 | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
@@ -68,4 +68,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0051 | 저장소 tmp/ 작업 디렉터리와 이슈 기반 인수인계 | Accepted | 2026-10-20 | [0051-tmp-workdir-handover.md](./0051-tmp-workdir-handover.md) |
 | ADR-0052 | 학습 결과 제출 계약 정합 | Accepted | 2026-10-20 | [0052-study-result-contract.md](./0052-study-result-contract.md) |
 | ADR-0053 | 도식 로딩·오류 안내 AT 노출 | Accepted | 2026-10-20 | [0053-diagram-announcement.md](./0053-diagram-announcement.md) |
+| ADR-0054 | 흰바탕 검정 크래커 파비콘 | Accepted | 2026-10-20 | [0054-monochrome-cracker-favicon.md](./0054-monochrome-cracker-favicon.md) |
 <!-- ADR_INDEX:END -->

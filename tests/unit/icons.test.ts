@@ -1,8 +1,9 @@
-// #70 favicon·OS 아이콘 자산 검증 — 파생 자산 존재·치수·컨테이너 구조·마스터 규칙.
-// 새로운 의존성 없이 Node Buffer로 PNG IHDR과 ICO 컨테이너를 직접 파싱한다.
+// #70 favicon·OS 아이콘 자산 검증 — 크래커(B안 확정) 마스터 계약.
+// 새로운 의존성 없이 Node Buffer+zlib으로 PNG IHDR·픽셀과 ICO 컨테이너를 직접 파싱한다.
 import { describe, expect, it } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
 import path from 'node:path';
+import { inflateSync } from 'node:zlib';
 
 const publicDir = path.resolve(__dirname, '../../public');
 
@@ -16,9 +17,103 @@ function pngDims(buffer: Buffer): { width: number; height: number } {
   return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
 }
 
+// 최소 PNG 디코더(bitDepth 8 · colorType 2/6) — RGB 픽셀 반환.
+function pngPixels(buffer: Buffer): { width: number; height: number; rgb: Buffer } {
+  let offset = 8;
+  let width = 0;
+  let height = 0;
+  let bitDepth = 0;
+  let colorType = 0;
+  const idat: Buffer[] = [];
+  while (offset + 8 <= buffer.length) {
+    const length = buffer.readUInt32BE(offset);
+    const type = buffer.toString('ascii', offset + 4, offset + 8);
+    const data = buffer.subarray(offset + 8, offset + 8 + length);
+    if (type === 'IHDR') {
+      width = data.readUInt32BE(0);
+      height = data.readUInt32BE(4);
+      bitDepth = data.readUInt8(8);
+      colorType = data.readUInt8(9);
+    } else if (type === 'IDAT') {
+      idat.push(Buffer.from(data));
+    } else if (type === 'IEND') {
+      break;
+    }
+    offset += 12 + length;
+  }
+  expect(width).toBeGreaterThan(0);
+  expect(height).toBeGreaterThan(0);
+  expect(bitDepth).toBe(8);
+  expect([2, 6]).toContain(colorType); // RGB 또는 RGBA 렌더 기대
+  const channels = colorType === 6 ? 4 : 3;
+  const stride = width * channels;
+  const raw = inflateSync(Buffer.concat(idat));
+  expect(raw.length).toBe(height * (1 + stride));
+
+  const rgb = Buffer.alloc(width * height * 3);
+  let prev = Buffer.alloc(stride);
+  let pos = 0;
+  for (let y = 0; y < height; y += 1) {
+    const filter = raw[pos];
+    pos += 1;
+    const cur = Buffer.from(raw.subarray(pos, pos + stride));
+    pos += stride;
+    const recon = Buffer.alloc(stride);
+    for (let i = 0; i < stride; i += 1) {
+      const a = i >= channels ? recon[i - channels] : 0;
+      const b = prev[i];
+      const c = i >= channels ? prev[i - channels] : 0;
+      let val: number;
+      switch (filter) {
+        case 0:
+          val = cur[i];
+          break;
+        case 1:
+          val = (cur[i] + a) & 0xff;
+          break;
+        case 2:
+          val = (cur[i] + b) & 0xff;
+          break;
+        case 3:
+          val = (cur[i] + ((a + b) >> 1)) & 0xff;
+          break;
+        case 4: {
+          const p = a + b - c;
+          const pa = Math.abs(p - a);
+          const pb = Math.abs(p - b);
+          const pc = Math.abs(p - c);
+          const pr = pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+          val = (cur[i] + pr) & 0xff;
+          break;
+        }
+        default:
+          throw new Error(`지원하지 않는 PNG 필터: ${filter}`);
+      }
+      recon[i] = val;
+    }
+    for (let x = 0; x < width; x += 1) {
+      rgb[(y * width + x) * 3] = recon[x * channels];
+      rgb[(y * width + x) * 3 + 1] = recon[x * channels + 1];
+      rgb[(y * width + x) * 3 + 2] = recon[x * channels + 2];
+    }
+    prev = recon;
+  }
+  return { width, height, rgb };
+}
+
+function pngDarkRatio(buffer: Buffer): { total: number; dark: number; ratio: number } {
+  const { width, height, rgb } = pngPixels(buffer);
+  const total = width * height;
+  let dark = 0;
+  for (let i = 0; i < total; i += 1) {
+    if (rgb[i * 3] < 128 && rgb[i * 3 + 1] < 128 && rgb[i * 3 + 2] < 128) dark += 1;
+  }
+  return { total, dark, ratio: dark / total };
+}
+
 describe('아이콘 자산 존재', () => {
   const required = [
-    'branding/moi-bird.svg',
+    'branding/moi-cracker.svg',
     'favicon.svg',
     'favicon.ico',
     'icons/icon-16.png',
@@ -39,6 +134,11 @@ describe('아이콘 자산 존재', () => {
     for (const rel of required) {
       expect(existsSync(path.join(publicDir, rel)), rel).toBe(true);
     }
+  });
+
+  it('기존 새 마스터(moi-bird.svg)는 삭제되고 크래커로 대체된다', () => {
+    expect(existsSync(path.join(publicDir, 'branding/moi-bird.svg'))).toBe(false);
+    expect(existsSync(path.join(publicDir, 'branding/moi-cracker.svg'))).toBe(true);
   });
 
   it('기존 public 파일(robots.txt)은 유지된다', () => {
@@ -94,29 +194,88 @@ describe('favicon.ico 컨테이너', () => {
 });
 
 describe('SVG 마스터와 파생', () => {
-  it('마스터는 직접 작성한 정사각 viewBox·AWS Orange/잉크 팔레트를 쓴다', () => {
-    const master = readPublic('branding/moi-bird.svg').toString('utf8');
+  it('마스터는 흰 라운드 배경+검정 크래커(-12°)·viewBox 512를 쓴다', () => {
+    const master = readPublic('branding/moi-cracker.svg').toString('utf8');
     expect(master).toContain('viewBox="0 0 512 512"');
-    expect(master).toContain('fill="#FF9900"'); // AWS Orange
-    expect(master).toContain('fill="#232F3E"'); // ink
+    expect(master).toContain('fill="#FFFFFF"'); // 흰 배경(아이콘 자산에만 적용)
+    expect(master).toContain('fill="#0B0B0B"'); // 검정 크래커 1색
+    expect(master).toContain('rx="116"');
+    expect(master).toContain('rotate(-12 256 256)');
     expect((master.match(/<rect /g) ?? []).length).toBe(1);
+    expect(master.includes('#FF9900')).toBe(false);
+    expect(master.includes('#232F3E')).toBe(false);
+  });
+
+  it('마스터는 B안 확정 2x2 큰 구멍 4개다(A안 3x3은 비교 preview 전용)', () => {
+    const master = readPublic('branding/moi-cracker.svg').toString('utf8');
+    const holes = master.match(/<circle[^>]*fill="#FFFFFF"[^>]*\/>/g) ?? [];
+    expect(holes.length).toBe(4);
+    expect(master).toContain('r="34"');
+  });
+
+  it('마스터에 텍스트·그라데이션·그림자가 없다', () => {
+    const master = readPublic('branding/moi-cracker.svg').toString('utf8');
+    expect(master.includes('<text')).toBe(false);
+    expect(master.includes('linearGradient')).toBe(false);
+    expect(master.includes('radialGradient')).toBe(false);
+    expect(master.includes('drop-shadow')).toBe(false);
+    expect(master.includes('<filter')).toBe(false);
   });
 
   it('favicon.svg는 마스터와 동일한 아트다', () => {
-    expect(readPublic('favicon.svg').equals(readPublic('branding/moi-bird.svg'))).toBe(true);
+    expect(readPublic('favicon.svg').equals(readPublic('branding/moi-cracker.svg'))).toBe(true);
   });
 
   it('mask-icon은 배경 rect 없이 단색 실루엣(currentColor)만 담는다', () => {
     const mask = readPublic('icons/mask-icon.svg').toString('utf8');
     expect(mask.includes('<rect')).toBe(false); // 배경 제거 — Safari 사각형 오류 방지
     expect(mask).toContain('currentColor');
-    expect(mask.includes('#FF9900')).toBe(false);
-    expect(mask.includes('#232F3E')).toBe(false);
+    expect(mask.includes('#FFFFFF')).toBe(false);
+    expect(mask.includes('#0B0B0B')).toBe(false);
+  });
+});
+
+describe('PNG 렌더(검정 비율)', () => {
+  const cases = ['icons/icon-16.png', 'icons/icon-32.png', 'icons/icon-48.png'];
+
+  it.each(cases)('%s는 비어있지 않고 검정 비율 0.1~0.5다', (rel) => {
+    const { total, dark, ratio } = pngDarkRatio(readPublic(rel));
+    expect(total).toBeGreaterThan(0);
+    expect(dark).toBeGreaterThan(0);
+    expect(dark).toBeLessThan(total);
+    expect(ratio).toBeGreaterThanOrEqual(0.1);
+    expect(ratio).toBeLessThanOrEqual(0.5);
+  });
+});
+
+describe('maskable 안전원', () => {
+  it('maskable-512은 안전원(반지름 205) 밖으로 실루엣이 나가지 않는다', () => {
+    const { width, height, rgb } = pngPixels(readPublic('icons/maskable-512.png'));
+    expect(width).toBe(512);
+    expect(height).toBe(512);
+    let darkInside = 0;
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        const dx = x + 0.5 - 256;
+        const dy = y + 0.5 - 256;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const r = rgb[(y * width + x) * 3];
+        const g = rgb[(y * width + x) * 3 + 1];
+        const b = rgb[(y * width + x) * 3 + 2];
+        if (dist > 210) {
+          // 안전원+여유 5px 밖은 흰 배경만 허용(앤티앨리어싱 고려 200 임계)
+          expect(Math.min(r, g, b), `x=${x} y=${y} dist=${dist.toFixed(1)}`).toBeGreaterThanOrEqual(200);
+        } else if (r < 128 && g < 128 && b < 128) {
+          darkInside += 1;
+        }
+      }
+    }
+    expect(darkInside).toBeGreaterThan(0); // 크래커가 안전원 안에 실제로 렌더된다
   });
 });
 
 describe('site.webmanifest', () => {
-  it('icon 경로·purpose·색·간결한 이름을 담는다', () => {
+  it('icon 경로(?v=3)·purpose를 담고 브라우저 크롬색은 기존 잉크를 유지한다', () => {
     const manifest = JSON.parse(readPublic('site.webmanifest').toString('utf8')) as {
       name: string;
       short_name: string;
@@ -132,7 +291,8 @@ describe('site.webmanifest', () => {
     expect(manifest.background_color).toBe('#232F3E');
 
     for (const icon of manifest.icons) {
-      const rel = icon.src.replace(/^\//, '');
+      expect(icon.src).toContain('?v=3');
+      const rel = icon.src.replace(/^\//, '').replace(/\?.*$/, '');
       expect(existsSync(path.join(publicDir, rel)), icon.src).toBe(true);
       expect(icon.type).toBe('image/png');
       expect(pngDims(readPublic(rel))).toEqual({
@@ -141,14 +301,14 @@ describe('site.webmanifest', () => {
       });
     }
     expect(manifest.icons.filter((icon) => icon.purpose === 'maskable').map((icon) => icon.src)).toEqual([
-      '/icons/maskable-192.png',
-      '/icons/maskable-512.png',
+      '/icons/maskable-192.png?v=3',
+      '/icons/maskable-512.png?v=3',
     ]);
   });
 });
 
 describe('browserconfig.xml', () => {
-  it('mstile 150 타일과 잉크 타일색을 참조한다', () => {
+  it('mstile 150 타일을 참조하고 타일색은 기존 잉크를 유지한다', () => {
     const xml = readPublic('browserconfig.xml').toString('utf8');
     expect(xml).toContain('src="/icons/mstile-150.png"');
     expect(xml).toContain('<TileColor>#232F3E</TileColor>');
@@ -159,12 +319,12 @@ describe('browserconfig.xml', () => {
 describe('index.html 링크', () => {
   const html = readFileSync(path.resolve(__dirname, '../../index.html'), 'utf8');
 
-  it('icon·apple-touch·mask-icon·manifest·theme-color만 아이콘 관련으로 추가된다', () => {
-    expect(html).toContain('<link rel="icon" href="/favicon.svg" type="image/svg+xml" />');
-    expect(html).toContain('<link rel="icon" href="/favicon.ico" sizes="48x48" />');
-    expect(html).toContain('<link rel="apple-touch-icon" href="/icons/icon-180.png" />');
-    expect(html).toContain('<link rel="mask-icon" href="/icons/mask-icon.svg" color="#FF9900" />');
-    expect(html).toContain('<link rel="manifest" href="/site.webmanifest" />');
+  it('icon·apple-touch·mask-icon·manifest에 ?v=3을 쓰고 테마색은 기존 잉크를 유지한다', () => {
+    expect(html).toContain('<link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />');
+    expect(html).toContain('<link rel="icon" href="/favicon.ico?v=3" sizes="48x48" />');
+    expect(html).toContain('<link rel="apple-touch-icon" href="/icons/icon-180.png?v=3" />');
+    expect(html).toContain('<link rel="mask-icon" href="/icons/mask-icon.svg?v=3" color="#0B0B0B" />');
+    expect(html).toContain('<link rel="manifest" href="/site.webmanifest?v=3" />');
     expect(html).toContain('<meta name="theme-color" content="#232F3E" />');
   });
 });
