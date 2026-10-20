@@ -351,7 +351,6 @@ function submittedDto(set) {
       optionOrder: [...item.optionOrder],
       stem: item.stem,
       options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
-      answerCount: item.correctOptionIds.length,
       response: item.response,
       explanation: item.explanation,
       sourceUrls: [...item.sourceUrls],
