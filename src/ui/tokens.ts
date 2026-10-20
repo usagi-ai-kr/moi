@@ -67,8 +67,9 @@ export const typography = {
   sizes: {
     brand: '20px',
     h1: 'clamp(32px, 7vw, 44px)',
+    h2: '24px',
     lead: 'clamp(16px, 2.4vw, 18px)',
-    small: '13px',
+    small: '14px', // DESIGN.md 보조 설명 최소 14px
   },
   lineHeights: {
     tight: 1.15,
@@ -102,6 +103,8 @@ export const cssVars: Record<string, string> = {
   '--moi-accent-w': px(layout.accentWidth),
   '--moi-accent-h': px(layout.accentHeight),
   '--moi-enter-shift': px(layout.enterShift),
+  '--moi-control-h': px(layout.controlHeight),
+  '--moi-touch-min': px(layout.touchTargetMin),
   '--moi-font-display': typography.fontDisplay,
   '--moi-font-ui': typography.fontUi,
   '--moi-size-body': px(typography.baseSize),

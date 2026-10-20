@@ -20,6 +20,7 @@ body {
   background: var(--moi-color-white);
   color: var(--moi-color-ink);
   font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-body);
   line-height: var(--moi-lh-normal);
   -webkit-font-smoothing: antialiased;
 }
@@ -191,9 +192,18 @@ body {
 }
 .moi-study-open,
 .moi-study-link {
-  min-height: var(--moi-space-8);
-  min-width: var(--moi-space-8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--moi-control-h);
+  font-size: var(--moi-size-body);
   cursor: pointer;
+}
+@media (pointer: coarse) {
+  .moi-study-open,
+  .moi-study-link {
+    min-height: var(--moi-touch-min);
+  }
 }
 .moi-study-open {
   padding-inline: var(--moi-space-4);
