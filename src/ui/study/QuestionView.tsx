@@ -67,6 +67,29 @@ export function QuestionView(p: Props) {
       <div className="moi-study-progressbar" aria-hidden="true">
         <span style={{ width: `${Math.round(((p.index + 1) / total) * 100)}%` }} />
       </div>
+      {/* 상단 액션 — 제출·포기 (#186): 스크롤 없이 바로 닿도록 진행 표시 직후에 둔다. */}
+      <div className="moi-study-question-top">
+        <Button
+          type="button"
+          variant="primary"
+          size="sm"
+          disabled={p.submitting}
+          pending={p.submitting}
+          onClick={p.onSubmitRequest}
+        >
+          {copy.study.submit}
+          {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
+        </Button>
+        <Button type="button" variant="outline" size="sm" className="text-destructive" onClick={p.onAbandonRequest}>
+          {copy.study.abandon}
+        </Button>
+      </div>
+      {/* 제출 실패 알림 — 상단 액션 바로 아래에서 보인다 (#186). */}
+      {p.submitError && (
+        <div className="moi-alert moi-alert-error" role="alert">
+          <p className="moi-alert-text">{p.submitError}</p>
+        </div>
+      )}
       <h2 className="moi-study-title">{item.stem}</h2>
       <p className="moi-note">
         <BookmarkButton client={p.client} examId={p.examId ?? STUDY_EXAM_ID} questionId={item.questionId} />
@@ -107,11 +130,6 @@ export function QuestionView(p: Props) {
           )}
         </p>
       )}
-      {p.submitError && (
-        <div className="moi-alert moi-alert-error" role="alert">
-          <p className="moi-alert-text">{p.submitError}</p>
-        </div>
-      )}
       {/* [이전][다음]은 같은 크기·같은 variant의 secondary. */}
       <div className="moi-study-nav">
         <Button type="button" variant="secondary" disabled={p.index === 0} onClick={() => p.onIndex(p.index - 1)}>
@@ -124,22 +142,6 @@ export function QuestionView(p: Props) {
           onClick={() => p.onIndex(p.index + 1)}
         >
           {copy.study.next}
-        </Button>
-      </div>
-      {/* 제출=primary(최종 제출), 포기=destructive 계열(강도 낮게) — 확인 대화상자에서 확정. */}
-      <div className="moi-study-actions">
-        <Button
-          type="button"
-          variant="primary"
-          disabled={p.submitting}
-          pending={p.submitting}
-          onClick={p.onSubmitRequest}
-        >
-          {copy.study.submit}
-          {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
-        </Button>
-        <Button type="button" variant="outline" className="text-destructive" onClick={p.onAbandonRequest}>
-          {copy.study.abandon}
         </Button>
       </div>
     </section>

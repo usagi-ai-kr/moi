@@ -1,7 +1,7 @@
 {
-  "commit": "eb4d871eba04063f95d819e58ab88fc456b8b670",
-  "commitShort": "eb4d871",
-  "generatedAt": "2026-10-20T04:30:18.947Z",
+  "commit": "a925a5973bf2b2e70013bf053002ce41f8834d3f",
+  "commitShort": "a925a59",
+  "generatedAt": "2026-10-20T04:36:32.035Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
