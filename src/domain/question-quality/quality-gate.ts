@@ -1,6 +1,7 @@
 import type { BatchFinding, QuestionDraft, QuestionFinding, QuestionQualityResult, QualityReport, SaaDomain } from './types';
 import { checkAnswerConsistency, checkRequiredFields } from './rules/structure';
 import { checkExplanationFormat, checkOptionBias, checkOptionDuplication, checkSourceUrls } from './rules/text';
+import { checkMermaidLabels } from './rules/mermaid';
 import { checkAnswerPositionBias, checkBatchDuplication, checkDomainDistribution } from './rules/batch';
 
 /**
@@ -9,7 +10,7 @@ import { checkAnswerPositionBias, checkBatchDuplication, checkDomainDistribution
  *
  * 문제 단위 규칙(순서 고정):
  *   1 required-fields → 2 answer-consistency → 3 duplication → 4 option-bias →
- *   6 explanation-format → 7 source-url
+ *   6 explanation-format → 7 source-url → 10 mermaid-label
  * 배치 단위 규칙: 5 answer-position-bias → 8 domain-distribution → 9 batch-duplication.
  */
 
@@ -22,6 +23,7 @@ export function runQualityGate(drafts: readonly QuestionDraft[]): QualityReport 
       ...checkOptionBias(draft),
       ...checkExplanationFormat(draft),
       ...checkSourceUrls(draft),
+      ...checkMermaidLabels(draft),
     ];
     return { questionId: draft.id, pass: findings.length === 0, findings };
   });

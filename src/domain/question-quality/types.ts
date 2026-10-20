@@ -38,6 +38,7 @@ export type QualityCheckId =
   | 'answer-position-bias'
   | 'explanation-format'
   | 'source-url'
+  | 'mermaid-label'
   | 'domain-distribution'
   | 'batch-duplication';
 
