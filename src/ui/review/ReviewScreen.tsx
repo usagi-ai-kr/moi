@@ -43,10 +43,10 @@ export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
   } = useReviewFlow(client, examId);
 
   return (
-    <div className="moi-page flex flex-col gap-6">
-      <header className="flex flex-col gap-2">
+    <div className="moi-page flex flex-col gap-4">
+      <header className="flex flex-col gap-3">
         <h1 className="moi-title text-2xl font-bold">{copy.review.title}</h1>
-        <div role="tablist" aria-label={copy.review.title} className="flex gap-2 border-b border-border pb-2">
+        <div role="tablist" aria-label={copy.review.title} className="flex flex-wrap gap-2 border-b border-border pb-3">
           <Button
             role="tab"
             variant={mode === 'wrong' ? 'primary' : 'outline'}
@@ -143,6 +143,7 @@ export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
           isStarting={startMutation.isPending}
           onStart={handleStart}
           onRetry={() => void candidatesQuery.refetch()}
+          onSelectMode={setTab}
         />
       )}
     </div>

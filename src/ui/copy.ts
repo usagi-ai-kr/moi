@@ -46,6 +46,11 @@ export const copy = {
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
     starting: '시작하는 중',
+    examLabel: '시험',
+    examOption: 'AWS Certified Solutions Architect – Associate (SAA-C03)',
+    examNote: '현재 지원하는 시험은 1개입니다.',
+    examContext: `한 회차에 ${STUDY_SET_SIZE}문제를 풉니다. 범위(전체/영역별/취약)를 선택하세요.`,
+    unknownDate: '날짜 정보 없음',
     resumeNote: '진행 중인 세트가 있습니다. 이어서 풀 수 있습니다.',
     activeExists: '이미 진행 중인 세트가 있습니다. 이어풀기를 계속하세요.',
     scopeAll: `전체 ${STUDY_SET_SIZE}문제`,
@@ -171,5 +176,6 @@ export const copy = {
     sources: '공식 근거',
     goToWrongReview: '오답 복습 바로가기',
     goToBookmarkReview: '북마크 복습 바로가기',
+    goToStudy: '새 학습 시작',
   },
 } as const;

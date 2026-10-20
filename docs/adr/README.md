@@ -70,4 +70,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0053 | 도식 로딩·오류 안내 AT 노출 | Accepted | 2026-10-20 | [0053-diagram-announcement.md](./0053-diagram-announcement.md) |
 | ADR-0054 | 흰바탕 검정 크래커 파비콘 | Accepted | 2026-10-20 | [0054-monochrome-cracker-favicon.md](./0054-monochrome-cracker-favicon.md) |
 | ADR-0055 | 영역 ID canonical 정합과 원시 ID 차단 | Accepted | 2026-10-20 | [0055-domain-id-canonicalization.md](./0055-domain-id-canonicalization.md) |
+| ADR-0056 | 학습 타임스탬프 표시 규약과 단일 시험 상수 | Accepted | 2026-10-20 | [0056-study-timestamp-and-single-exam.md](./0056-study-timestamp-and-single-exam.md) |
 <!-- ADR_INDEX:END -->
