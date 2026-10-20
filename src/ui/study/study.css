@@ -143,8 +143,9 @@
   font-size: var(--moi-size-body);
   cursor: pointer;
 }
-/* 터치 기기 — 시각 크기는 40px, 터치 타깃은 44px 이상(DESIGN.md 5항). */
-@media (pointer: coarse) {
+/* 터치 기기 — 시각 크기는 40px, 터치 타깃은 44px 이상(DESIGN.md 5항).
+   터치 입력이 하나라도 있는 기기(any-pointer: coarse) 기준 — 터치 화면이 있는 랩톱도 44px (ADR-0050). */
+@media (any-pointer: coarse) {
   .moi-study-primary,
   .moi-study-secondary,
   .moi-study-select {
