@@ -67,4 +67,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0050 | 하이브리드 기기 터치 타깃 44px | Accepted | 2026-10-20 | [0050-any-pointer-touch-target.md](./0050-any-pointer-touch-target.md) |
 | ADR-0051 | 저장소 tmp/ 작업 디렉터리와 이슈 기반 인수인계 | Accepted | 2026-10-20 | [0051-tmp-workdir-handover.md](./0051-tmp-workdir-handover.md) |
 | ADR-0052 | 학습 결과 제출 계약 정합 | Accepted | 2026-10-20 | [0052-study-result-contract.md](./0052-study-result-contract.md) |
+| ADR-0053 | 도식 로딩·오류 안내 AT 노출 | Accepted | 2026-10-20 | [0053-diagram-announcement.md](./0053-diagram-announcement.md) |
 <!-- ADR_INDEX:END -->

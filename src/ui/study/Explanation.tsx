@@ -46,13 +46,7 @@ export function MermaidDiagram({ code }: { code: string }) {
 
   if (failed) {
     return (
-      <div
-        ref={boxRef}
-        data-testid="mermaid-diagram"
-        role="img"
-        aria-label={copy.study.diagramLabel}
-        className="moi-mermaid"
-      >
+      <div ref={boxRef} data-testid="mermaid-diagram" className="moi-mermaid">
         <p role="alert">{copy.study.diagramError}</p>
         <pre>
           <code>{code}</code>
@@ -62,13 +56,7 @@ export function MermaidDiagram({ code }: { code: string }) {
   }
   if (svg === null) {
     return (
-      <div
-        ref={boxRef}
-        data-testid="mermaid-diagram"
-        role="img"
-        aria-label={copy.study.diagramLabel}
-        className="moi-mermaid"
-      >
+      <div ref={boxRef} data-testid="mermaid-diagram" className="moi-mermaid">
         <span role="status">{copy.study.diagramLoading}</span>
       </div>
     );
