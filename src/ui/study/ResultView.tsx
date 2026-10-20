@@ -7,6 +7,7 @@ import { BookmarkButton } from '../review/BookmarkButton';
 import { SourceLinks } from '../SourceLinks';
 import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
+import { ResultQuestionList } from './ResultQuestionList';
 import { scopeLabel, STUDY_EXAM_LABEL } from './types';
 import './study-result.css';
 
@@ -125,6 +126,10 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
           <dd>{r.unansweredCount}</dd>
         </div>
       </dl>
+      {/* 요약 → 문항 목록 → 선택한 한 문제의 상세 — 목록 선택은 기존 페이저 상태를 바꾼다(#132). */}
+      {pageCount > 0 && (
+        <ResultQuestionList perItem={perItem} currentIndex={currentIndex} onSelect={goTo} />
+      )}
       {/* 해설·근거는 한 문항씩 — 좌우 페이저와 방향키로 이동한다(#189). */}
       {pageCount > 0 && (
         <div
