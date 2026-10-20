@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Suspense, lazy } from 'react';
-import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router';
+import { Link, MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { copy } from '../../src/ui/copy';
 import { RouteErrorBoundary } from '../../src/ui/RouteErrorBoundary';
@@ -35,20 +35,11 @@ describe('RouteErrorBoundary (#148)', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     render(
-      <MemoryRouter initialEntries={['/broken']}>
-        <RouteErrorBoundary>
-          <Routes>
-            <Route
-              path="/broken"
-              element={
-                <Suspense fallback={<p>{copy.common.loading}</p>}>
-                  <BrokenRoute />
-                </Suspense>
-              }
-            />
-          </Routes>
-        </RouteErrorBoundary>
-      </MemoryRouter>,
+      <RouteErrorBoundary>
+        <Suspense fallback={<p>{copy.common.loading}</p>}>
+          <BrokenRoute />
+        </Suspense>
+      </RouteErrorBoundary>,
     );
 
     const alert = await screen.findByRole('alert');
@@ -63,6 +54,8 @@ describe('RouteErrorBoundary (#148)', () => {
     expect(homeLink).toBeInTheDocument();
     expect(homeLink).toHaveClass('moi-study-link');
     expect(homeLink).toHaveAttribute('href', '/');
+    // 라우터 없는 사용처(최상위 lazy 실패 경계)는 일반 앵커로 폴백한다.
+    expect(homeLink.tagName.toLowerCase()).toBe('a');
 
     // 오류 메시지 원문·스택·URL은 화면에 노출되지 않음
     expect(screen.queryByText(new RegExp(brokenMessage))).not.toBeInTheDocument();
@@ -89,7 +82,15 @@ describe('RouteErrorBoundary (#148)', () => {
           <button type="button" onClick={() => void navigate('/broken')}>
             Go Broken
           </button>
-          <RouteErrorBoundary key={location.pathname} resetKey={location.pathname}>
+          <RouteErrorBoundary
+            key={location.pathname}
+            resetKey={location.pathname}
+            homeLink={
+              <Link to="/" className="moi-study-link">
+                {copy.common.home}
+              </Link>
+            }
+          >
             <Routes>
               <Route path="/" element={<p>정상 홈 화면</p>} />
               <Route
