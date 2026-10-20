@@ -1,0 +1,10 @@
+/* 로그인 후 트리 전용 — Tailwind theme/utilities + shadcn 의미 변수.
+   엔트리(main.tsx → styles.css)에서는 import하지 않는다.
+   AuthenticatedApp(lazy 청크)에서만 import해 초기 렌더 차단 CSS에서 제외한다 (이슈 #132).
+   로그아웃 홈·로딩/에러 화면은 moi-* 토큰 CSS만으로 렌더되며 Tailwind를 사용하지 않는다. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* shadcn 의미 변수 → --moi-* 단일 매핑 (DESIGN.md·ADR-0035). preflight는 단계적 도입으로 미포함. */
+:root { --background: var(--moi-color-white); --foreground: var(--moi-color-ink); --primary: var(--moi-color-orange); --primary-foreground: var(--moi-color-white); --muted: var(--moi-color-surface); --muted-foreground: var(--moi-color-muted); --border: var(--moi-color-border); --destructive: var(--moi-color-danger); --ring: var(--moi-color-ink); --radius: var(--moi-radius-md); }
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --color-destructive: var(--destructive); --color-ring: var(--ring); --radius-sm: var(--moi-radius-sm); --radius-md: var(--radius); --radius-lg: var(--moi-radius-lg); }
