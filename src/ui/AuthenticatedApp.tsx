@@ -12,6 +12,7 @@ import {
 } from 'react-router';
 import { copy } from './copy';
 import { useLogout, useUiStore, type ApiClient } from './session';
+import './authenticated.css';
 import { AppShell } from './AppShell';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { AuthErrorAlert } from './widgets';
