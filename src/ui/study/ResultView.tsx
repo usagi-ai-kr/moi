@@ -1,5 +1,5 @@
 import { useEffect, useState, type KeyboardEvent } from 'react';
-import { Link, useInRouterContext } from 'react-router';
+import { Link } from 'react-router';
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedItem, StudySubmittedSet } from '../api/client';
 import { Button } from '../components/ui/button';
@@ -53,13 +53,12 @@ function isFormTarget(target: EventTarget | null): boolean {
   return el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName);
 }
 
-// 복습 바로가기 — 라우터 안에서는 풀 리로드 없는 Link, 직접 렌더(테스트)에서는 일반 anchor.
+// 복습 바로가기 — 항상 SPA Link(호출자는 라우터 안에서 렌더한다, #176).
 function ReviewShortcut({ mode, label }: { mode: 'wrong' | 'bookmark'; label: string }) {
-  const inRouter = useInRouterContext();
   const to = `/review?mode=${mode}`;
   return (
     <Button asChild variant="secondary">
-      {inRouter ? <Link to={to}>{label}</Link> : <a href={to}>{label}</a>}
+      <Link to={to}>{label}</Link>
     </Button>
   );
 }

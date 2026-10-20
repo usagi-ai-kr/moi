@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient, ItemResponse, StudyActiveSet } from '../../src/ui/api/client';
@@ -51,6 +52,7 @@ function submittedSet(): StudyActiveSet {
     ...base,
     items: base.items.map((it, i) => ({
       ...it,
+      answerOptionIds: [`${it.questionId}-a`],
       explanation: `문제 ${i} 해설: 정답은 ${it.questionId}-a이다.`,
       sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
     })),
@@ -132,7 +134,9 @@ function renderStudyAtSet(client: ApiClient, userId = 'user-1') {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <StudyScreen client={client} userId={userId} />
+      <MemoryRouter>
+        <StudyScreen client={client} userId={userId} />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }

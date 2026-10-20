@@ -455,7 +455,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
             { optionId: 'opt-a', text: '보기 A' },
             { optionId: 'opt-b', text: '보기 B' },
           ],
-          answerCount: 1,
+          answerOptionIds: ['opt-b'],
           response: { kind: 'unanswered' as const },
           explanation: '해설 내용',
           sourceUrls: [],

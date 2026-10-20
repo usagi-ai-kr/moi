@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudySubmittedSet } from '../../src/ui/api/client';
 import { copy } from '../../src/ui/copy';
@@ -35,6 +36,7 @@ function submittedSet(): StudySubmittedSet {
         : i === 3
           ? { kind: 'unanswered' as const }
           : { kind: 'answered' as const, optionIds: [i === 0 ? `q-${i}-a` : `q-${i}-b`] },
+    answerOptionIds: [`q-${i}-a`],
     explanation: `문제 ${i} 해설`,
     sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
   }));
@@ -91,7 +93,9 @@ function renderResult() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <ResultView client={fakeClient()} set={submittedSet()} onRestart={vi.fn()} onHistory={vi.fn()} />
+      <MemoryRouter>
+        <ResultView client={fakeClient()} set={submittedSet()} onRestart={vi.fn()} onHistory={vi.fn()} />
+      </MemoryRouter>
     </QueryClientProvider>,
   );
 }

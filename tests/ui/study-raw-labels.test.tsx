@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type {
   ApiClient,
@@ -26,7 +27,11 @@ function fakeClient(): ApiClient {
 
 function withQueryClient(ui: React.ReactElement) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>,
+  );
 }
 
 const activeItem: StudyActiveItem = {
@@ -45,10 +50,14 @@ const activeItem: StudyActiveItem = {
 
 function submittedItem(questionId: string): StudySubmittedItem {
   return {
-    ...activeItem,
     questionId,
     questionVersionId: `qv-${questionId}`,
+    versionNo: activeItem.versionNo,
     optionOrder: ['opt-a', 'opt-b', 'opt-c', 'opt-d'],
+    stem: activeItem.stem,
+    options: activeItem.options,
+    answerOptionIds: ['opt-a'],
+    response: activeItem.response,
     explanation: '',
     sourceUrls: [],
   };
