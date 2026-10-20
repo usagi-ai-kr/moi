@@ -18,6 +18,7 @@ import migration0008 from '../../drizzle/migrations/0008_add-reports-recheck.sql
 import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?raw';
 import migration0010 from '../../drizzle/migrations/0010_add-study-corrections.sql?raw';
 import migration0011 from '../../drizzle/migrations/0011_add-review-sessions.sql?raw';
+import migration0013 from '../../drizzle/migrations/0013_add-review-round-queue.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // #54/#51 원자 채점 저장(ADR-0020/0025/0027/0028) — batch 원자성·CAS·firstAttempt SQL 산정을 실 D1로 증명한다.
@@ -100,7 +101,7 @@ function setAttempt(): AttemptRecord {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011]);
+  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0013]);
   try { await db.exec('PRAGMA foreign_keys = ON;'); } catch { /* pragma 미지원 시 FK 강제 여부 자체가 검증 대상 */ }
 });
 beforeEach(async () => {

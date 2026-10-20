@@ -1,22 +1,15 @@
 import { assertSessionOwned } from '@/domain/review/invariants';
+import { planReviewRound, rejoinPending, remainingAfterPick } from '@/domain/review/round-queue';
 import { buildReviewSession, endSession, gradeCurrent, isExhausted, summarize } from '@/domain/review/session';
 import { REVIEW_MIN_CANDIDATES } from '@/domain/review/thresholds';
-import type {
-  ReviewAttempt,
-  ReviewCandidate,
-  ReviewMode,
-  ReviewResponse,
-  ReviewSession,
-} from '@/domain/review/types';
+import type { ReviewAttempt, ReviewCandidate, ReviewMode, ReviewResponse, ReviewSession } from '@/domain/review/types';
 import type { ReviewCandidateInput, ReviewDeps } from './ports';
 
 /**
- * 오답·북마크 복습 use case (이슈 #51, ADR-0020).
- * - 모드별 독립 회차: 계정·시험·모드당 활성 회차 1개, 시작 시 대상·순서 스냅샷 고정.
- * - 한 문제씩 즉시 채점, 문제 수·시간 제한 없음, 사용자가 직접 종료(미채점은 오답 아님).
- * - 대상 소진 후 다음 회차는 소스의 최신 목록을 다시 섞는다.
- * - 다른 사용자/시험 세션 접근 금지(소유권 가드).
- * - 채점은 원자 Port로 회차+attempt를 함께 저장한다(#54, 필수주입·fallback 금지).
+ * 오답·북마크 복습 use case (이슈 #51, ADR-0020/ADR-0059).
+ * - 모드별 독립 회차·queue: 계정·시험·모드당 활성 1개, plan remaining에서 최대 10문항 스냅샷.
+ * - 한 문제씩 즉시 채점, 사용자가 직접 종료(미채점은 오답 아님, pending은 remaining에 재입대).
+ * - 다른 사용자/시험 세션 접근 금지(소유권 가드). 원자 Port만 사용한다(#54).
  */
 
 export type StartReviewResult =
@@ -24,24 +17,14 @@ export type StartReviewResult =
   | { readonly outcome: 'rejected'; readonly reason: 'active_session_exists' | 'no_candidates' };
 
 export type AnswerReviewResult =
-  | {
-      readonly outcome: 'answered';
-      readonly correct: boolean;
-      readonly attempt: ReviewAttempt;
-      readonly session: ReviewSession;
-    }
-  | {
-      readonly outcome: 'rejected';
-      readonly reason: 'not_found' | 'not_current' | 'already_graded' | 'unknown_option' | 'conflict';
-    };
+  | { readonly outcome: 'answered'; readonly correct: boolean; readonly attempt: ReviewAttempt; readonly session: ReviewSession }
+  | { readonly outcome: 'rejected'; readonly reason: 'not_found' | 'not_current' | 'already_graded' | 'unknown_option' | 'conflict' };
 
 export type EndReviewResult =
   | { readonly outcome: 'ended'; readonly session: ReviewSession; readonly summary: ReturnType<typeof summarize> }
   | { readonly outcome: 'rejected'; readonly reason: 'not_found' | 'conflict' };
 
-export type ResumeReviewResult =
-  | { readonly outcome: 'resumed'; readonly session: ReviewSession }
-  | { readonly outcome: 'none' };
+export type ResumeReviewResult = { readonly outcome: 'resumed'; readonly session: ReviewSession } | { readonly outcome: 'none' };
 
 function toCandidate(input: ReviewCandidateInput): ReviewCandidate {
   return {
@@ -58,30 +41,51 @@ function toCandidate(input: ReviewCandidateInput): ReviewCandidate {
 
 async function listCandidates(deps: ReviewDeps, input: { userId: string; examId: string; mode: ReviewMode }) {
   const rows =
-    input.mode === 'wrong'
-      ? await deps.source.listWrongCandidates(input)
-      : await deps.source.listBookmarkCandidates(input);
+    input.mode === 'wrong' ? await deps.source.listWrongCandidates(input) : await deps.source.listBookmarkCandidates(input);
   return rows.map(toCandidate);
 }
 
-/** 회차 시작 — 대상 0이 아니면 최신 목록을 모드별 가중치로 섞어 스냅샷 고정한다. */
-export async function startReviewSession(
+function toEndedQueue(session: ReviewSession | null) {
+  if (session === null) return null;
+  return {
+    itemIds: session.items.map((i) => i.questionId),
+    remaining: session.remainingQuestionIds ?? null,
+    cycle: session.cycleQuestionIds ?? null,
+  };
+}
+
+/** 후보 뷰 — total은 plan된 remaining 개수, items는 호환용 전체 목록이다(ADR-0059). */
+export async function getReviewCandidatesView(
   deps: ReviewDeps,
   input: { userId: string; examId: string; mode: ReviewMode },
-): Promise<StartReviewResult> {
+): Promise<{ candidates: ReviewCandidate[]; total: number }> {
+  const candidates = await listCandidates(deps, input);
+  const lastEnded = await deps.repository.findLastEnded(input);
+  const plan = planReviewRound({ currentIds: candidates.map((c) => c.questionId), lastEnded: toEndedQueue(lastEnded) });
+  return { candidates, total: plan.remaining.length };
+}
+
+/** 회차 시작 — plan remaining에서 모드 가중치로 최대 10문항을 뽑아 스냅샷·queue를 저장한다. */
+export async function startReviewSession(deps: ReviewDeps, input: { userId: string; examId: string; mode: ReviewMode }): Promise<StartReviewResult> {
   const active = await deps.repository.findActive(input);
   if (active !== null) return { outcome: 'rejected', reason: 'active_session_exists' };
   const candidates = await listCandidates(deps, input);
   if (candidates.length < REVIEW_MIN_CANDIDATES) return { outcome: 'rejected', reason: 'no_candidates' };
-  const session = buildReviewSession({
+  const lastEnded = await deps.repository.findLastEnded(input);
+  const plan = planReviewRound({ currentIds: candidates.map((c) => c.questionId), lastEnded: toEndedQueue(lastEnded) });
+  const remainingSet = new Set(plan.remaining);
+  const remainingCandidates = candidates.filter((c) => remainingSet.has(c.questionId));
+  const base = buildReviewSession({
     id: crypto.randomUUID(),
     userId: input.userId,
     examId: input.examId,
     mode: input.mode,
-    candidates,
+    candidates: remainingCandidates,
     createdAt: deps.clock.now(),
     rng: () => deps.rng.next(),
   });
+  const picked = base.items.map((i) => i.questionId);
+  const session: ReviewSession = { ...base, remainingQuestionIds: remainingAfterPick(plan.remaining, picked), cycleQuestionIds: plan.cycle };
   await deps.repository.save({ session });
   return { outcome: 'started', session };
 }
@@ -92,18 +96,13 @@ export async function answerReviewItem(
   input: { userId: string; examId: string; mode: ReviewMode; questionId: string; response: ReviewResponse; expectedCursor?: number },
 ): Promise<AnswerReviewResult> {
   const active = await deps.repository.findActive(input);
-  if (active === null) {
-    return { outcome: 'rejected', reason: input.expectedCursor === undefined ? 'not_found' : 'conflict' };
-  }
+  if (active === null) return { outcome: 'rejected', reason: input.expectedCursor === undefined ? 'not_found' : 'conflict' };
   if (!assertSessionOwned(active, input)) return { outcome: 'rejected', reason: 'not_found' };
   if (input.expectedCursor !== undefined && (!Number.isInteger(input.expectedCursor) || active.cursor !== input.expectedCursor)) {
     return { outcome: 'rejected', reason: 'conflict' };
   }
   const graded = gradeCurrent(active, { questionId: input.questionId, response: input.response, now: deps.clock.now() });
-  if ('outcome' in graded) {
-    // 이미 활성 세션을 확인했으므로 not_active는 소멸 상태 경합으로 보고 not_found로 통일한다.
-    return { outcome: 'rejected', reason: graded.reason === 'not_active' ? 'not_found' : graded.reason };
-  }
+  if ('outcome' in graded) return { outcome: 'rejected', reason: graded.reason === 'not_active' ? 'not_found' : graded.reason };
   const outcome = graded.attempt.response.kind === 'pass' ? 'pass' : graded.correct ? 'correct' : 'wrong';
   const committed = await deps.grading.commit({
     session: graded.session,
@@ -118,48 +117,56 @@ export async function answerReviewItem(
       occurredAt: deps.clock.now() * 1000,
     },
   });
-  // CAS 실패·batch 0행·롤백은 409 경합으로 알리고 쓰기 없음을 보장한다(성공 위장 금지).
   if (!committed) return { outcome: 'rejected', reason: 'conflict' };
   return { outcome: 'answered', correct: graded.correct, attempt: graded.attempt, session: graded.session };
 }
 
-/** 회차 종료 — 사용자 직접 종료. 미채점 문제는 오답 처리하지 않고 그대로 남긴다. */
-export async function endReviewSession(
-  deps: ReviewDeps,
-  input: { userId: string; examId: string; mode: ReviewMode },
-): Promise<EndReviewResult> {
+/** 회차 종료 — pending은 remaining에 재입대해 다음 회차에서 다시 본다(채점분은 소비). */
+export async function endReviewSession(deps: ReviewDeps, input: { userId: string; examId: string; mode: ReviewMode }): Promise<EndReviewResult> {
   const active = await deps.repository.findActive(input);
   if (active === null || !assertSessionOwned(active, input)) return { outcome: 'rejected', reason: 'not_found' };
   const ended = endSession(active, { now: deps.clock.now() });
   if ('outcome' in ended) return { outcome: 'rejected', reason: 'not_found' };
-  const saved = await deps.repository.end({ session: ended.session, expectedCursor: active.cursor });
+  const pending = ended.session.items.filter((i) => i.state.kind === 'pending').map((i) => i.questionId);
+  const isLegacy = active.remainingQuestionIds == null || active.cycleQuestionIds == null;
+  let withQueue: ReviewSession;
+  if (isLegacy) {
+    if (pending.length === 0) withQueue = ended.session;
+    else {
+      withQueue = {
+        ...ended.session,
+        remainingQuestionIds: [...pending],
+        cycleQuestionIds: active.items.map((i) => i.questionId),
+      };
+    }
+  } else {
+    const baseRemaining = active.remainingQuestionIds ?? [];
+    const baseCycle = active.cycleQuestionIds ?? active.items.map((i) => i.questionId);
+    withQueue = {
+      ...ended.session,
+      remainingQuestionIds: rejoinPending(baseRemaining, pending),
+      cycleQuestionIds: baseCycle,
+    };
+  }
+  const saved = await deps.repository.end({ session: withQueue, expectedCursor: active.cursor });
   if (!saved) return { outcome: 'rejected', reason: 'conflict' };
-  return { outcome: 'ended', session: ended.session, summary: summarize(ended.session) };
+  return { outcome: 'ended', session: withQueue, summary: summarize(withQueue) };
 }
 
-/**
- * 이어풀기 — 재방문해도 회차 스냅샷(대상·순서·커서)이 그대로다.
- * 소진된 회차를 재방문하면 `exhausted`로 알리고 새 회차 시작을 안내한다.
- */
-export async function resumeReviewSession(
-  deps: ReviewDeps,
-  input: { userId: string; examId: string; mode: ReviewMode },
-): Promise<ResumeReviewResult> {
+/** 이어풀기 — 재방문해도 회차 스냅샷(대상·순서·커서)이 그대로다. */
+export async function resumeReviewSession(deps: ReviewDeps, input: { userId: string; examId: string; mode: ReviewMode }): Promise<ResumeReviewResult> {
   const active = await deps.repository.findActive(input);
   if (active === null || !assertSessionOwned(active, input)) return { outcome: 'none' };
   return { outcome: 'resumed', session: active };
 }
 
-/** 회차 소진 여부 — true면 다음 시작은 소스의 최신 목록을 다시 섞는다(도메인은 시작 시 매번 재조회). */
+/** 회차 소진 여부 — true면 다음 시작은 queue plan으로 remaining에서 다시 뽑는다. */
 export function isSessionExhausted(session: ReviewSession): boolean {
   return isExhausted(session);
 }
 
 /** 북마크 추가/해제 — 개인별 독립 상태. 진행 중 회차 대상에는 영향 없음(다음 회차부터 반영). */
-export async function toggleBookmark(
-  deps: ReviewDeps,
-  input: { userId: string; questionId: string },
-): Promise<{ bookmarked: boolean }> {
+export async function toggleBookmark(deps: ReviewDeps, input: { userId: string; questionId: string }): Promise<{ bookmarked: boolean }> {
   return deps.source.toggleBookmark(input);
 }
 

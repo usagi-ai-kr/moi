@@ -2,10 +2,10 @@ import { REVIEW_WEIGHT_BASE, REVIEW_WEIGHT_STEP } from './thresholds';
 import type { ReviewCandidate, ReviewMode } from './types';
 
 /**
- * 복습 대상 선택 (이슈 #51, ADR-0020):
- * - `wrong`: 유효 누적 오답 횟수 가중 비복원 추출(1+validWrongCount) — 오답 0(항상 맞힌)도 후보.
+ * 복습 대상 선택 (이슈 #51, ADR-0020/ADR-0059):
+ * - `wrong`: 유효 누적 오답 횟수 가중치 비복원 추출(1+validWrongCount) — 오답 0(항상 맞힌)도 후보.
  * - `bookmark`: 균등 무작위 비복원 추출 — 가중치 없음.
- * - 회차는 후보 전체를 대상으로 하며(문제 수 제한 없음) 추출 순서가 곧 회차 순서다.
+ * - 회차는 plan된 remaining에서 최대 10문항(REVIEW_ROUND_SIZE)만 뽑으며 추출 순서가 곧 회차 순서다.
  * - 추출에 복원이 없으므로 회차 내 중복은 0이다. RNG는 주입받아 결정적 테스트가 가능하다.
  */
 

@@ -57,9 +57,12 @@ export interface ReviewSession {
   readonly status: ReviewSessionStatus;
   readonly createdAt: number;
   readonly endedAt?: number;
-  /** 다음 풀 문제 인덱스 — 모두 채점하면 items.length(문제 수·시간 제한 없음). */
+  /** 다음 풀 문제 인덱스 — 모두 채점하면 items.length(ADR-0059: 한 회차 최대 10문항). */
   readonly cursor: number;
   readonly items: readonly ReviewSessionItem[];
+  /** 회차 큐(ADR-0059) — remaining은 다음 plan 대상, cycle은 이번 순환 전체. null은 legacy 행. API DTO 노출 금지. */
+  readonly remainingQuestionIds?: readonly string[] | null;
+  readonly cycleQuestionIds?: readonly string[] | null;
 }
 
 /** 채점 즉시 보존되는 개별 복습 시도 이력 — 이후 수정·재채점 금지. */

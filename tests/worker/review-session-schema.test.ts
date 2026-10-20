@@ -12,6 +12,7 @@ import migration0008 from '../../drizzle/migrations/0008_add-reports-recheck.sql
 import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?raw';
 import migration0010 from '../../drizzle/migrations/0010_add-study-corrections.sql?raw';
 import migration0011 from '../../drizzle/migrations/0011_add-review-sessions.sql?raw';
+import migration0013 from '../../drizzle/migrations/0013_add-review-round-queue.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // 이슈 #54/#51 review_sessions D1 스키마(ADR-0020/0027) — 테이블·부분 UNIQUE·FK를 증명한다.
@@ -57,6 +58,7 @@ beforeAll(async () => {
     migration0009,
     migration0010,
     migration0011,
+    migration0013,
   ]);
 });
 

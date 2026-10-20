@@ -35,7 +35,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0017 | 0.2.x 버전·거버넌스·출시 게이트 | Superseded by ADR-0030 | 2026-10-18 | [0017-version-governance-0.2.x.md](./0017-version-governance-0.2.x.md) |
 | ADR-0018 | 세션·UI 상태 계약 — 서버 진실 원천과 캐시 규칙 | Accepted | 2026-10-18 | [0018-session-ui-state-contract.md](./0018-session-ui-state-contract.md) |
 | ADR-0019 | 0.2.0 문제은행·품질·관리 API | Superseded by ADR-0030 | 2026-10-18 | [0019-question-bank-quality.md](./0019-question-bank-quality.md) |
-| ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Superseded by ADR-0030 | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
+| ADR-0020 | 0.2.0 20문제 풀이·오답/북마크 복습 | Superseded by ADR-0059 | 2026-10-18 | [0020-study-and-review.md](./0020-study-and-review.md) |
 | ADR-0021 | 0.2.0 저장·복구·단일 세션·신고·정정·통계 | Superseded by ADR-0030 | 2026-10-18 | [0021-storage-reports-stats.md](./0021-storage-reports-stats.md) |
 | ADR-0022 | 디스플레이 폰트 LCP 안정화 — optional·지연 주입 | Accepted | 2026-10-18 | [0022-display-font-lcp-stability.md](./0022-display-font-lcp-stability.md) |
 | ADR-0023 | 에이전트 컨텍스트 리셋·워커 산출물 검증 | Accepted | 2026-10-18 | [0023-agent-context-and-output-verification.md](./0023-agent-context-and-output-verification.md) |
@@ -73,4 +73,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0056 | 학습 타임스탬프 표시 규약과 단일 시험 상수 | Accepted | 2026-10-20 | [0056-study-timestamp-and-single-exam.md](./0056-study-timestamp-and-single-exam.md) |
 | ADR-0057 | 모바일 햄버거·우측 Drawer 구현과 반응형 breakpoint 정책 | Accepted | 2026-10-20 | [0057-mobile-drawer-native-dialog.md](./0057-mobile-drawer-native-dialog.md) |
 | ADR-0058 | 복습 시험 식별자 공개 코드 정규화와 내부 ID 읽기 호환 | Accepted | 2026-10-21 | [0058-review-exam-id-code.md](./0058-review-exam-id-code.md) |
+| ADR-0059 | 복습 10문항 회차와 remaining/cycle 큐 | Accepted | 2026-10-21 | [0059-review-round-10-queue.md](./0059-review-round-10-queue.md) |
 <!-- ADR_INDEX:END -->

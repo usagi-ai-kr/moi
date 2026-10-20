@@ -21,6 +21,7 @@ import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?
 import migration0010 from '../../drizzle/migrations/0010_add-study-corrections.sql?raw';
 import migration0011 from '../../drizzle/migrations/0011_add-review-sessions.sql?raw';
 import migration0012 from '../../drizzle/migrations/0012_add-review-bookmarks.sql?raw';
+import migration0013 from '../../drizzle/migrations/0013_add-review-round-queue.sql?raw';
 import { FAKE_CLIENT_ID, FAKE_CLIENT_SECRET, FAKE_REDIRECT_URI, applyD1Migrations } from './fixtures/kakao-fakes';
 
 // #51/#130/#54 복습 HTTP 실제 경로 — 인증·후보·시작·채점·재개·북마크·종료·경합을 Hono+D1로 증명한다.
@@ -141,7 +142,7 @@ async function seed20(): Promise<void> {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0012]);
+  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0012, migration0013]);
   try { await db.exec('PRAGMA foreign_keys = ON;'); } catch { /* pragma 미지원 시 FK 자체 검증 */ }
 });
 
@@ -465,7 +466,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       items: Array<{ questionId: string; response: null; answerCount?: unknown; id?: unknown; userId?: unknown }>;
     };
     expect(started.cursor).toBe(0);
-    expect(started.total).toBe(20);
+    expect(started.total).toBe(10);
     expect(started).not.toHaveProperty('id');
     expect(started).not.toHaveProperty('userId');
     expect(started.current.answerOptionIds).toBeUndefined();
@@ -552,7 +553,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     const endRes = await req('/api/review/sessions/current/end', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } });
     expect(endRes.status).toBe(200);
     const end = (await endRes.json()) as { summary: { total: number; graded: number; pending: number } };
-    expect(end.summary).toMatchObject({ total: 20, graded: 1, pending: 19 });
+    expect(end.summary).toMatchObject({ total: 10, graded: 1, pending: 9 });
     const after = await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source='review'").first<{ c: number }>();
     expect(after?.c).toBe(before?.c);
     expect((await req(`/api/review/sessions/current?examId=${EXAM_CODE}&mode=wrong`, { token })).status).toBe(404);

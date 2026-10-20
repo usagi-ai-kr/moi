@@ -2,8 +2,9 @@ import type { ReviewMode, ReviewSession, ReviewSessionItem, ReviewSessionStatus 
 import { reviewSessions } from './schema-review';
 
 /**
- * review_sessions(#54/#51, ADR-0020/0027) 행 ↔ ReviewSession 도메인 스냅샷 상호 변환.
+ * review_sessions(#54/#51, ADR-0020/0027/0059) 행 ↔ 도메인 스냅샷 변환.
  * 도메인은 Drizzle 타입을 모르고, 이 mapper만 영속 표현을 안다.
+ * queue 컬럼은 JSON text nullable(legacy null) — API DTO에는 노출하지 않는다.
  */
 
 type SessionRow = typeof reviewSessions.$inferSelect;
@@ -35,7 +36,23 @@ function parseItems(raw: string): ReviewSessionItem[] {
   return parsed as ReviewSessionItem[];
 }
 
+function parseIds(raw: string | null, col: string): string[] | null {
+  if (raw === null) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error(`review_sessions.${col} JSON 파싱에 실패했다`);
+  }
+  if (!Array.isArray(parsed) || parsed.some((id) => typeof id !== 'string')) {
+    throw new Error(`review_sessions.${col}는 문자열 배열이어야 한다`);
+  }
+  return parsed as string[];
+}
+
 export function toDomain(row: SessionRow): ReviewSession {
+  const remaining = parseIds(row.remainingQuestionIds, 'remaining_question_ids');
+  const cycle = parseIds(row.cycleQuestionIds, 'cycle_question_ids');
   return {
     id: row.id,
     userId: row.userId,
@@ -46,6 +63,8 @@ export function toDomain(row: SessionRow): ReviewSession {
     endedAt: row.endedAt ?? undefined,
     cursor: row.cursor,
     items: parseItems(row.items),
+    ...(remaining === null ? {} : { remainingQuestionIds: remaining }),
+    ...(cycle === null ? {} : { cycleQuestionIds: cycle }),
   };
 }
 
@@ -60,6 +79,8 @@ export function toInsert(session: ReviewSession) {
     endedAt: session.endedAt ?? null,
     cursor: session.cursor,
     items: JSON.stringify(session.items),
+    remainingQuestionIds: session.remainingQuestionIds == null ? null : JSON.stringify(session.remainingQuestionIds),
+    cycleQuestionIds: session.cycleQuestionIds == null ? null : JSON.stringify(session.cycleQuestionIds),
   };
 }
 
@@ -69,16 +90,20 @@ export function toUpdateSet(session: ReviewSession) {
     endedAt: session.endedAt ?? null,
     cursor: session.cursor,
     items: JSON.stringify(session.items),
+    remainingQuestionIds: session.remainingQuestionIds == null ? null : JSON.stringify(session.remainingQuestionIds),
+    cycleQuestionIds: session.cycleQuestionIds == null ? null : JSON.stringify(session.cycleQuestionIds),
   };
 }
 
-/** 종료 회차 재저장 멱등 판정 — status·endedAt·cursor·items가 저장 스냅샷과 동일하면 true. */
+/** 종료 회차 재저장 멱등 판정 — status·endedAt·cursor·items·queue가 동일하면 true. */
 export function isSameEndedSnapshot(row: SessionRow, session: ReviewSession): boolean {
   return (
     row.status === session.status &&
     (row.endedAt ?? undefined) === session.endedAt &&
     row.cursor === session.cursor &&
-    deepEqual(parseItems(row.items), session.items)
+    deepEqual(parseItems(row.items), session.items) &&
+    deepEqual(parseIds(row.remainingQuestionIds, 'remaining_question_ids'), session.remainingQuestionIds ?? null) &&
+    deepEqual(parseIds(row.cycleQuestionIds, 'cycle_question_ids'), session.cycleQuestionIds ?? null)
   );
 }
 

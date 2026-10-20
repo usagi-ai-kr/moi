@@ -10,5 +10,8 @@ export const REVIEW_WEIGHT_BASE = 1;
  * 학습 취약 추천(#49 `WRONG_COUNT_WEIGHT_STEP`)과 동일 계약을 사용한다. */
 export const REVIEW_WEIGHT_STEP = 1;
 
-/** 회차 최소 후보 수 — 문제 수·시간 제한은 없고(ADR-0020) 후보 0만 거부하는 경계값. */
+/** 회차 최소 후보 수 — 후보 0만 거부한다(ADR-0059도 유지). */
 export const REVIEW_MIN_CANDIDATES = 1;
+
+/** 한 회차 문제 수 — 대기 후보가 많으면 10문항씩 분할한다(ADR-0059). */
+export const REVIEW_ROUND_SIZE = 10;

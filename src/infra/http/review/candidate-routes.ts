@@ -1,5 +1,5 @@
 import type { Hono } from 'hono';
-import { startReviewSession } from '@/app/review';
+import { getReviewCandidatesView, startReviewSession } from '@/app/review';
 import { isCrossSiteWrite, safeIssues } from './auth';
 import { loadVersionContents } from './content';
 import { toPendingDto } from './dto';
@@ -22,20 +22,19 @@ export function registerReviewCandidateRoutes(app: Hono<{ Bindings: Env }>, opti
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
       // 시험 축 정규화(#51, ADR-0058): 회차·시도는 공개 code('saa-c03')로 저장한다.
-      const rows = parsed.data.mode === 'wrong'
-        ? await deps.source.listWrongCandidates({ userId: auth.userId, examId: exam.code })
-        : await deps.source.listBookmarkCandidates({ userId: auth.userId, examId: exam.code });
-      const contents = await loadVersionContents(c.env.DB, rows.map((row) => row.version.questionVersionId));
-      if (!matchesSnapshot(rows.map((row) => ({ questionId: row.questionId, questionVersionId: row.version.questionVersionId })), contents)) {
+      // total은 queue plan된 remaining 개수(ADR-0059), items는 호환용 전체 목록이다.
+      const view = await getReviewCandidatesView(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode });
+      const contents = await loadVersionContents(c.env.DB, view.candidates.map((row) => row.version.questionVersionId));
+      if (!matchesSnapshot(view.candidates.map((row) => ({ questionId: row.questionId, questionVersionId: row.version.questionVersionId })), contents)) {
         return c.json({ error: 'not_found' }, 404);
       }
       const items = [];
-      for (const row of rows) {
+      for (const row of view.candidates) {
         const content = contents.get(row.version.questionVersionId);
         if (!content) continue;
         items.push({ questionId: row.questionId, validWrongCount: row.validWrongCount, stem: content.stem, options: content.options.map((option) => ({ optionId: option.optionId, text: option.text })) });
       }
-      return c.json({ examId: exam.code, mode: parsed.data.mode, total: items.length, items }, 200);
+      return c.json({ examId: exam.code, mode: parsed.data.mode, total: view.total, items }, 200);
     } catch {
       return c.json({ error: 'internal' }, 500);
     }
