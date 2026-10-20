@@ -103,8 +103,11 @@ function tokens(el: Element): string[] {
   return (el.getAttribute('class') ?? '').split(/\s+/).filter(Boolean);
 }
 
-// 같은 의미의 버튼은 높이·패딩·폰트가 같아야 한다 (DESIGN.md 5절).
-const SIZE_TOKENS = ['h-11', 'min-h-[44px]', 'px-4', 'text-sm'];
+// 같은 의미의 버튼은 높이·폰트가 같아야 한다 (DESIGN.md 5절).
+const SIZE_TOKENS = ['h-11', 'min-h-[44px]', 'text-sm'];
+// 풀이·탐색 버튼은 기본 패딩, 상단 제출·포기는 320px 한 줄 배치를 위한 컴팩트 패딩 (#186).
+const DEFAULT_PADDING = 'px-4';
+const TOP_ACTION_PADDING = 'px-3';
 
 beforeEach(() => {
   window.history.replaceState(null, '', '/');
@@ -144,10 +147,13 @@ describe('학습 화면 버튼 위계', () => {
     expect(tokens(abandon)).toContain('text-destructive');
     expect(tokens(abandon)).toContain('border');
 
-    // 같은 의미의 버튼은 동일 크기(터치 타깃 44px)·동일 패딩·폰트.
+    // 같은 의미의 버튼은 동일 크기(터치 타깃 44px)·동일 폰트.
     for (const el of [submit, pass, clear, prev, next, abandon]) {
       for (const t of SIZE_TOKENS) expect(tokens(el)).toContain(t);
     }
+    // 풀이·탐색 버튼은 기본 패딩, 상단 제출·포기는 컴팩트 패딩(320px 한 줄 배치, #186).
+    for (const el of [pass, clear, prev, next]) expect(tokens(el)).toContain(DEFAULT_PADDING);
+    for (const el of [submit, abandon]) expect(tokens(el)).toContain(TOP_ACTION_PADDING);
   });
 
   it('풀이 화면: 이전/다음 disabled 상태가 유지된다', async () => {
@@ -187,6 +193,41 @@ describe('학습 화면 버튼 위계', () => {
 
     await waitFor(() => expect(screen.getByText(/3\/3 · Pass/)).toBeInTheDocument());
     expect(screen.getByText('문제 2 본문')).toBeInTheDocument();
+  });
+
+  it('제출·포기 버튼이 문제 본문보다 상단(진행 표시 직후)에 온다(#186)', async () => {
+    renderStudy(fakeStudyClient());
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+
+    const progress = screen.getByText(/1\/3/);
+    const submit = screen.getByRole('button', { name: /제출하기/ });
+    const abandon = screen.getByRole('button', { name: '포기하기' });
+    const stem = screen.getByText('문제 0 본문');
+    const before = (a: Element, b: Element) =>
+      (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+
+    expect(before(progress, submit)).toBe(true); // 진행 표시 → 제출
+    expect(before(submit, abandon)).toBe(true); // 제출 → 포기
+    expect(before(abandon, stem)).toBe(true); // 포기 → 문제 본문
+    expect(screen.getByRole('button', { name: /제출하기 \(3 미응답\)/ })).toBeInTheDocument();
+  });
+
+  it('상단 제출·포기 클릭 시 확인 대화상자 흐름이 유지된다(#186)', async () => {
+    renderStudy(fakeStudyClient());
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    expect(await screen.findByRole('alertdialog', { name: '제출 확인' })).toBeInTheDocument();
+    expect(screen.getByText(/풀지 않은 문제가 있습니다/)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '취소' }));
+    expect(screen.queryByRole('alertdialog', { name: '제출 확인' })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '포기하기' }));
+    expect(await screen.findByRole('alertdialog', { name: '포기 확인' })).toBeInTheDocument();
+    expect(screen.getByText(/정말 포기할까요/)).toBeInTheDocument();
   });
 
   it('결과 화면: 새 세트 시작=primary·학습 이력·오답 복습=secondary(같은 크기)', async () => {
