@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { InvalidReviewQuestionError } from '@/app/review/errors';
 import type { ReviewCandidateInput, ReviewSourcePort } from '@/app/review/ports';
 import { questionOptions, questionVersions, questions } from './schema';
-import { createD1ReviewExamResolver } from './review-exam-resolver';
+import { createD1ReviewExamResolver, type ResolvedReviewExam } from './review-exam-resolver';
 import { reviewBookmarks } from './schema-review-bookmarks';
 
 /**
@@ -12,6 +12,9 @@ import { reviewBookmarks } from './schema-review-bookmarks';
  * - 북마크: 개인별 영속, 시험 격리·비활성 제외.
  * - 최신 활성 버전 매핑은 study-pool(#49) 기준을 재사용한다(도메인 규칙 재작성 금지).
  * - 브라우저 노출 없음 — Worker 전용.
+ * - 시험 축 정규화(#51 버그픽스, ADR-0058): `study_attempts.exam_id`는 공개 코드
+ *   ('saa-c03')로 저장되므로, 문제 조회만 내부 ID로 하고 시도 조회는 같은 시험의
+ *   내부 ID·공개 코드를 모두 포함해 과거 내부 ID 데이터와 신규 코드 데이터를 함께 읽는다.
  */
 const IN_ARRAY_CHUNK_SIZE = 90;
 
@@ -25,8 +28,8 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
   const d1 = drizzle(db);
   const examResolver = createD1ReviewExamResolver(db);
 
-  async function resolveExamId(examIdOrCode: string): Promise<string | null> {
-    return (await examResolver.resolve(examIdOrCode))?.id ?? null;
+  async function resolveExam(examIdOrCode: string): Promise<ResolvedReviewExam | null> {
+    return examResolver.resolve(examIdOrCode);
   }
 
   async function loadVersionMap(questionIds: readonly string[]) {
@@ -68,18 +71,19 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
 
   return {
     async listWrongCandidates({ userId, examId }): Promise<readonly ReviewCandidateInput[]> {
-      const resolved = await resolveExamId(examId);
+      const resolved = await resolveExam(examId);
       if (!resolved) return [];
       const active = await d1
         .select({ id: questions.id })
         .from(questions)
-        .where(and(eq(questions.examId, resolved), eq(questions.status, 'active')));
+        .where(and(eq(questions.examId, resolved.id), eq(questions.status, 'active')));
       if (active.length === 0) return [];
+      // 시도 축 호환(ADR-0058): 입력값·내부 ID·공개 코드는 같은 시험이므로 함께 조회한다.
       const agg = await db
         .prepare(
-          "SELECT question_id AS q, COUNT(*) AS c FROM study_attempts WHERE user_id = ?1 AND exam_id = ?2 AND outcome IN ('wrong','pass','unanswered') AND excluded_at IS NULL GROUP BY question_id",
+          "SELECT question_id AS q, COUNT(*) AS c FROM study_attempts WHERE user_id = ?1 AND exam_id IN (?2, ?3, ?4) AND outcome IN ('wrong','pass','unanswered') AND excluded_at IS NULL GROUP BY question_id",
         )
-        .bind(userId, resolved)
+        .bind(userId, examId, resolved.id, resolved.code)
         .all<{ q: string; c: number }>();
       const countByQ = new Map<string, number>();
       for (const r of agg.results ?? []) countByQ.set(r.q, r.c);
@@ -105,7 +109,7 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
     },
 
     async listBookmarkCandidates({ userId, examId }): Promise<readonly ReviewCandidateInput[]> {
-      const resolved = await resolveExamId(examId);
+      const resolved = await resolveExam(examId);
       if (!resolved) return [];
       const marks = await d1
         .select({ questionId: reviewBookmarks.questionId })
@@ -115,7 +119,7 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
       const active = await d1
         .select({ id: questions.id })
         .from(questions)
-        .where(and(eq(questions.examId, resolved), eq(questions.status, 'active')));
+        .where(and(eq(questions.examId, resolved.id), eq(questions.status, 'active')));
       const activeSet = new Set(active.map((q) => q.id));
       const targets = marks.map((m) => m.questionId).filter((id) => activeSet.has(id));
       if (targets.length === 0) return [];
@@ -162,7 +166,7 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
     },
 
     async setBookmark({ userId, examId, questionId, bookmarked }): Promise<{ bookmarked: boolean }> {
-      const resolved = await resolveExamId(examId);
+      const resolved = await resolveExam(examId);
       if (!resolved) throw new InvalidReviewQuestionError();
       const q = await d1
         .select({ id: questions.id, examId: questions.examId })
@@ -170,7 +174,7 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
         .where(eq(questions.id, questionId))
         .limit(1);
       if (!q[0]) throw new InvalidReviewQuestionError();
-      if (q[0].examId !== resolved) throw new InvalidReviewQuestionError();
+      if (q[0].examId !== resolved.id) throw new InvalidReviewQuestionError();
       if (bookmarked) {
         try {
           await db

@@ -21,9 +21,10 @@ export function registerReviewCandidateRoutes(app: Hono<{ Bindings: Env }>, opti
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
+      // 시험 축 정규화(#51, ADR-0058): 회차·시도는 공개 code('saa-c03')로 저장한다.
       const rows = parsed.data.mode === 'wrong'
-        ? await deps.source.listWrongCandidates({ userId: auth.userId, examId: exam.id })
-        : await deps.source.listBookmarkCandidates({ userId: auth.userId, examId: exam.id });
+        ? await deps.source.listWrongCandidates({ userId: auth.userId, examId: exam.code })
+        : await deps.source.listBookmarkCandidates({ userId: auth.userId, examId: exam.code });
       const contents = await loadVersionContents(c.env.DB, rows.map((row) => row.version.questionVersionId));
       if (!matchesSnapshot(rows.map((row) => ({ questionId: row.questionId, questionVersionId: row.version.questionVersionId })), contents)) {
         return c.json({ error: 'not_found' }, 404);
@@ -55,7 +56,7 @@ export function registerReviewCandidateRoutes(app: Hono<{ Bindings: Env }>, opti
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const result = await startReviewSession(deps, { userId: auth.userId, examId: exam.id, mode: parsed.data.mode });
+      const result = await startReviewSession(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode });
       if (result.outcome === 'rejected') {
         if (result.reason === 'active_session_exists') return c.json({ error: 'active_session_exists' }, 409);
         return c.json({ error: 'no_candidates' }, 422);

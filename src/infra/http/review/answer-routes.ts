@@ -22,14 +22,14 @@ export function registerReviewAnswerRoutes(app: Hono<{ Bindings: Env }>, options
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const active = await deps.repository.findActive({ userId: auth.userId, examId: exam.id, mode: parsed.data.mode });
+      const active = await deps.repository.findActive({ userId: auth.userId, examId: exam.code, mode: parsed.data.mode });
       if (!active) return c.json({ error: 'not_found' }, 404);
       const expectedCursor = active.cursor;
       const contents = await loadVersionContents(c.env.DB, active.items.map((item) => item.questionVersionId));
       if (!matchesSnapshot(active.items, contents)) return c.json({ error: 'not_found' }, 404);
       const result = await answerReviewItem(deps, {
         userId: auth.userId,
-        examId: exam.id,
+        examId: exam.code,
         mode: parsed.data.mode,
         questionId: parsed.data.questionId,
         response: parsed.data.response,

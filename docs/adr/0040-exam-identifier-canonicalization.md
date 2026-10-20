@@ -1,9 +1,9 @@
 ---
 id: ADR-0040
 title: 복습 API 시험 식별자 내부 ID 정규화
-status: Accepted
+status: Superseded by ADR-0058
 date: 2026-10-19
-related: ["#51", "#54", "#130", "ADR-0019", "ADR-0039"]
+related: ["#51", "#54", "#130", "ADR-0019", "ADR-0039", "ADR-0058"]
 ---
 
 # ADR-0040: 복습 API 시험 식별자 내부 ID 정규화
