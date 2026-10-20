@@ -52,7 +52,7 @@ export function extractSourceUrl(pkg, fallbackHomepage) {
 }
 
 export function matchPathForVersion(paths, name, version) {
-  const escaped = String(name).replace('/', '+');
+  const escaped = String(name).replaceAll('/', '+');
   const found = (paths || []).find((p) => String(p).includes(`${escaped}@${version}`));
   if (found) return found;
   return '';
@@ -128,4 +128,9 @@ export function findMissingInLockfile(entries, lockfileText) {
 export function findPureDevOnly(entryNames, devDeps, deps) {
   const prod = new Set(deps);
   return entryNames.filter((n) => devDeps.includes(n) && !prod.has(n));
+}
+
+export function findMissingDirectProdDeps(entryNames, prodDeps) {
+  const seen = new Set(entryNames);
+  return (prodDeps || []).filter((n) => !seen.has(n));
 }
