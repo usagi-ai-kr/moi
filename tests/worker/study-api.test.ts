@@ -145,10 +145,11 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
       body: { examId: EXAM, mode: 'all' },
     });
     expect(started.status).toBe(201);
-    const set = (await started.json()) as { id: string; items: Array<{ questionId: string; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown; stem?: unknown; options?: unknown }> };
+    const set = (await started.json()) as { id: string; items: Array<{ questionId: string; answerOptionIds?: unknown; answerCount?: unknown; explanation?: unknown; sourceUrls?: unknown; stem?: unknown; options?: unknown }> };
     expect(set.items).toHaveLength(10);
     for (const item of set.items) {
       expect(item.answerOptionIds).toBeUndefined();
+      expect(item.answerCount).toBe(1);
       expect(item.explanation).toBeUndefined();
       expect(item.sourceUrls).toBeUndefined();
       expect(typeof item.stem).toBe('string');
@@ -391,7 +392,7 @@ describe('현재 활성 세트 조회 (#148)', () => {
     expect(current.headers.get('cache-control')).toBe('no-store');
     const body = (await current.json()) as {
       id: string;
-      items: Array<{ stem?: unknown; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }>;
+      items: Array<{ stem?: unknown; answerOptionIds?: unknown; answerCount?: unknown; explanation?: unknown; sourceUrls?: unknown }>;
     };
     // `current`가 `:id`로 잡히면 id가 'current'인 세트가 없어 404가 된다.
     expect(body.id).toBe(created.id);
@@ -399,6 +400,7 @@ describe('현재 활성 세트 조회 (#148)', () => {
     for (const item of body.items) {
       expect(typeof item.stem).toBe('string');
       expect(item.answerOptionIds).toBeUndefined();
+      expect(item.answerCount).toBe(1);
       expect(item.explanation).toBeUndefined();
       expect(item.sourceUrls).toBeUndefined();
     }

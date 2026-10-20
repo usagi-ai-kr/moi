@@ -33,7 +33,7 @@ interface FakeReviewClientOptions {
     status: 'active';
     cursor: number;
     total: number;
-    current: { questionId: string; stem: string; options: Array<{ optionId: string; text: string }>; response: null } | null;
+    current: { questionId: string; stem: string; options: Array<{ optionId: string; text: string }>; answerCount: number; response: null } | null;
   } | null;
   failCandidates?: boolean;
 }
@@ -138,6 +138,7 @@ function createFakeReviewClient(opts: FakeReviewClientOptions = {}): ApiClient {
                 { optionId: 'opt-a', text: '보기 A 설명' },
                 { optionId: 'opt-b', text: '보기 B 설명' },
               ],
+              answerCount: 1,
               response: null,
             },
             items: [],
@@ -291,6 +292,7 @@ describe('Phase 1: Review Client & Candidate/Resume View', () => {
             { optionId: 'opt-a', text: 'Transit Gateway' },
             { optionId: 'opt-b', text: 'Internet Gateway' },
           ],
+          answerCount: 1,
           response: null,
         },
       },

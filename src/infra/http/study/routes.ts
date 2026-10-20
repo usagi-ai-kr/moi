@@ -76,6 +76,7 @@ function toActiveDto(set: StudySet) {
       optionOrder: [...item.optionOrder],
       stem: item.stem,
       options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+      answerCount: item.answerOptionIds.length,
       response: item.response,
     })),
   };

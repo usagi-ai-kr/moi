@@ -70,7 +70,7 @@ export function ReviewQuestion({
           <CardTitle className="text-base font-semibold leading-relaxed md:text-lg">
             {item.stem}
           </CardTitle>
-          <p className="text-sm text-muted-foreground">{copy.review.multiChoiceHint}</p>
+          <p className="text-sm text-muted-foreground">{copy.review.answerCountHint(item.answerCount)}</p>
         </CardHeader>
         <CardContent>
           <fieldset className="flex flex-col gap-2">

@@ -19,6 +19,7 @@ function makeSet(): StudyActiveSet {
       optionId: id,
       text: `보기 ${id} 내용`,
     })),
+    answerCount: 1,
     response: { kind: 'unanswered' as const },
   }));
   return {

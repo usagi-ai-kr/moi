@@ -26,6 +26,7 @@ export interface ReviewPendingItem {
   readonly questionId: string;
   readonly stem: string;
   readonly options: readonly ReviewOption[];
+  readonly answerCount: number;
   readonly response: null;
 }
 
@@ -83,6 +84,7 @@ export interface ReviewAnswerResponse {
     readonly questionId: string;
     readonly stem: string;
     readonly options: readonly ReviewOption[];
+    readonly answerCount: number;
   } | null;
 }
 
