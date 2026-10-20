@@ -107,4 +107,52 @@ describe('sanitizePeleSvg', () => {
       ),
     ).toBeNull();
   });
+
+  it('java&#10;script: 문자참조(LF) href 우회를 차단한다(#179-A)', () => {
+    expect(
+      sanitizePeleSvg(
+        '<svg xmlns="http://www.w3.org/2000/svg"><a href="java&#10;script:alert(1)"><text>x</text></a></svg>',
+      ),
+    ).toBeNull();
+  });
+
+  it('jav&#9;ascript: 문자참조(TAB) href 우회를 차단한다(#179-A)', () => {
+    expect(
+      sanitizePeleSvg(
+        '<svg xmlns="http://www.w3.org/2000/svg"><a href="jav&#9;ascript:alert(1)"><text>x</text></a></svg>',
+      ),
+    ).toBeNull();
+  });
+
+  it('jav&#13;ascript: 문자참조(CR) href 우회를 차단한다(#179-A)', () => {
+    expect(
+      sanitizePeleSvg(
+        '<svg xmlns="http://www.w3.org/2000/svg"><a href="jav&#13;ascript:alert(1)"><text>x</text></a></svg>',
+      ),
+    ).toBeNull();
+  });
+
+  it('선행 공백 + 문자참조 분할 href 우회를 차단한다(#179-A)', () => {
+    expect(
+      sanitizePeleSvg(
+        '<svg xmlns="http://www.w3.org/2000/svg"><a href="  java&#10;script:alert(1)"><text>x</text></a></svg>',
+      ),
+    ).toBeNull();
+  });
+
+  it('style 내 CSS escape(\\75rl) url 우회를 차단한다(#179-B)', () => {
+    expect(
+      sanitizePeleSvg(
+        '<svg xmlns="http://www.w3.org/2000/svg"><rect style="fill:\\75rl(http://evil.example/x)" width="5"/></svg>',
+      ),
+    ).toBeNull();
+  });
+
+  it('style 내 CSS escape 공백 변형(\\75 rl) 우회를 차단한다(#179-B)', () => {
+    expect(
+      sanitizePeleSvg(
+        '<svg xmlns="http://www.w3.org/2000/svg"><rect style="fill:\\75 rl(http://evil.example/x)" width="5"/></svg>',
+      ),
+    ).toBeNull();
+  });
 });

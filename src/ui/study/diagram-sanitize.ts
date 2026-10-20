@@ -105,15 +105,18 @@ function isLetterCode(code: number): boolean {
   return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
 }
 
-/** scheme: 접두사(대소문자 무시) 존재 여부를 파서로 판정한다(regex 미사용). */
+/** scheme: 접두사(대소문자 무시) 존재 여부를 파서로 판정한다(regex 미사용).
+ * WHATWG URL 파서가 tab/LF/CR을 제거해 scheme으로 해석하므로,
+ * 공백·제어문자(code ≤ 32)를 만나면 차단(true)으로 판정한다(fail-closed, #179). */
 function hasSchemePrefix(value: string): boolean {
   const v = value.trim();
   if (v.length === 0) return false;
-  if (!isLetterCode(v.charCodeAt(0))) return false;
+  if (!isLetterCode(v.charCodeAt(0))) return v.charCodeAt(0) <= 32;
   for (let i = 1; i < v.length; i += 1) {
     const c = v.charCodeAt(i);
     if (c === 58) return true;
     if (c === 47 || c === 63 || c === 35) return false;
+    if (c <= 32) return true;
     if (!isSchemeChar(c)) return false;
   }
   return false;
@@ -163,6 +166,7 @@ function hasBlockedPaintUrl(value: string): boolean {
 }
 
 function styleValueBlocked(style: string): boolean {
+  if (style.includes('\\')) return true;
   if (hasBlockedPaintUrl(style)) return true;
   const s = style.toLowerCase();
   if (s.includes('expression')) return true;
@@ -205,6 +209,9 @@ export function sanitizePeleSvg(svg: string): string | null {
         return null;
       }
       if (hasBlockedPaintUrl(attr.value)) return null;
+      if (name === 'fill' || name === 'stroke') {
+        if (attr.value.includes('\\')) return null;
+      }
       if (name === 'href' || name.endsWith(':href')) {
         if (hrefBlocked(attr.value)) return null;
       }
