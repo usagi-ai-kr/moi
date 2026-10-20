@@ -3,14 +3,14 @@ id: ADR-0055
 title: 영역 ID canonical 정합과 원시 ID 차단
 status: Accepted
 date: 2026-10-20
-related: ["#148", "#214", "#58", "ADR-0019"]
+related: ["#148", "#214", "ADR-0019"]
 ---
 
 # ADR-0055: 영역 ID canonical 정합과 원시 ID 차단
 
 ## 배경
 - 운영 D1 `exam_domains`의 실제 ID는 `dom-cost-optimization`(code `cost-optimization`, name `비용 최적화`)인데 UI `STUDY_DOMAINS`만 `dom-cost`를 쓰고 있었다. `domainLabel`이 미매칭 시 raw id를 반환해 학습 현황·이력 상세에 `dom-cost-optimization`이 노출되고, 학습 시작 영역 선택은 `dom-cost`를 전송해 실제 문항 필터와 불일치했다(#148, 사용자 목격).
-- canonical id·legacy alias·unknown fallback은 영속 UI 정책인데 ADR이 없었다. 리뷰 비차단 #58 지적에 따라 PR #213 후속으로 보강한다.
+- canonical id·legacy alias·unknown fallback은 영속 UI 정책인데 ADR이 없었다. 코드 리뷰의 비차단 지적에 따라 PR #213 후속으로 보강한다.
 
 ## 결정
 - canonical 영역 ID는 운영 D1 `exam_domains.id`(`dom-security`·`dom-resilience`·`dom-performance`·`dom-cost-optimization`)이며, UI `STUDY_DOMAINS`와 학습 시작 영역 필터(`onDomain`→세트 생성 `domainId`)는 canonical만 사용한다.
