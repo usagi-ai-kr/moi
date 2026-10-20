@@ -38,7 +38,7 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
           variant="ghost"
           aria-label="북마크 다시 시도"
           onClick={() => void bookmarksQuery.refetch()}
-          className="text-xs text-destructive hover:bg-muted"
+          className="text-sm text-destructive hover:bg-muted"
         >
           {copy.review.retry}
         </Button>
@@ -86,7 +86,7 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
         {label}
       </Button>
       {errorMsg && (
-        <span role="alert" className="text-xs text-destructive">
+        <span role="alert" className="text-sm text-destructive">
           {errorMsg}
         </span>
       )}
