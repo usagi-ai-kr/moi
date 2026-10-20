@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// CI와 동일한 품질 게이트를 로컬에서 순차 실행한다 (ADR-0007, fail-closed — 이슈 #10).
+// CI와 동일한 품질 게이트를 로컬에서 순차 실행한다 (ADR-0007, ADR-0043, fail-closed — 이슈 #10).
 // 의존성: Node.js + pnpm
 // 사용법: node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]  (기본: CI와 동일한 필수 목록)
 // - package.json이 **파일 자체로 없을 때만**(ENOENT) 0.1.0 이전 임시 예외로 exit 0.
@@ -8,7 +8,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
-const DEFAULT_GATES = ['lint', 'typecheck', 'check:architecture', 'test:unit', 'test:integration', 'test:bdd', 'build'];
+const DEFAULT_GATES = ['lint', 'typecheck', 'check:architecture', 'check:notices', 'test:unit', 'test:integration', 'test:bdd', 'build'];
 const gates = process.argv.slice(2).length ? process.argv.slice(2) : DEFAULT_GATES;
 
 if (!existsSync('package.json')) {

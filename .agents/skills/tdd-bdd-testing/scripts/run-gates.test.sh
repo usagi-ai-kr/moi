@@ -32,7 +32,7 @@ out=$(cd "$tmp" && node "$target" 2>&1) || st=$?
 [ "$st" -eq 1 ] && ok "미정의 게이트 → exit 1" || ng "미정의 → exit $st (기대 1)"
 
 # 4) 전 게이트 정의(전부 true) → exit 0
-printf '{"name":"t","scripts":{"lint":"true","typecheck":"true","check:architecture":"true","test:unit":"true","test:integration":"true","test:bdd":"true","build":"true"}}' > "$tmp/package.json"
+printf '{"name":"t","scripts":{"lint":"true","typecheck":"true","check:architecture":"true","check:notices":"true","test:unit":"true","test:integration":"true","test:bdd":"true","build":"true"}}' > "$tmp/package.json"
 st=0
 out=$(cd "$tmp" && node "$target" 2>&1) || st=$?
 [ "$st" -eq 0 ] && ok "전 게이트 통과 → exit 0" || ng "전 게이트 → exit $st (기대 0)"

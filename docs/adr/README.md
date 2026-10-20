@@ -22,7 +22,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0004 | 내부 사용자 ID와 외부 계정 매핑 | Accepted | 2026-10-18 | [0004-internal-user-identity-mapping.md](./0004-internal-user-identity-mapping.md) |
 | ADR-0005 | 앱 세션 PASETO v4.local | Accepted | 2026-10-18 | [0005-paseto-v4-local-session.md](./0005-paseto-v4-local-session.md) |
 | ADR-0006 | 비밀값·로그·개인정보 정책 | Accepted | 2026-10-18 | [0006-secrets-logging-policy.md](./0006-secrets-logging-policy.md) |
-| ADR-0007 | TDD/BDD와 CI 게이트 | Accepted | 2026-10-18 | [0007-tdd-bdd-ci-gates.md](./0007-tdd-bdd-ci-gates.md) |
+| ADR-0007 | TDD/BDD와 CI 게이트 | Superseded by ADR-0043 | 2026-10-18 | [0007-tdd-bdd-ci-gates.md](./0007-tdd-bdd-ci-gates.md) |
 | ADR-0008 | 버전 규칙과 Milestone 체계 | Superseded by ADR-0017 | 2026-10-18 | [0008-version-and-milestones.md](./0008-version-and-milestones.md) |
 | ADR-0009 | 브랜치·PR 플로우 | Accepted | 2026-10-18 | [0009-branch-pr-flow.md](./0009-branch-pr-flow.md) |
 | ADR-0010 | 하네스·문서 관리 체계 | Accepted | 2026-10-18 | [0010-harness-doc-management.md](./0010-harness-doc-management.md) |
@@ -57,4 +57,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0040 | 복습 API 시험 식별자 내부 ID 정규화 | Accepted | 2026-10-19 | [0040-exam-identifier-canonicalization.md](./0040-exam-identifier-canonicalization.md) |
 | ADR-0041 | 복습 회차 종료 cursor CAS와 stale 답안 경합 | Accepted | 2026-10-19 | [0041-review-session-end-cursor-cas.md](./0041-review-session-end-cursor-cas.md) |
 | ADR-0042 | 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션 | Accepted | 2026-10-20 | [0042-reviewer-callback-orchestration.md](./0042-reviewer-callback-orchestration.md) |
+| ADR-0043 | CI에 THIRD_PARTY_NOTICES --check 게이트 추가 | Accepted | 2026-10-20 | [0043-ci-notices-check-gate.md](./0043-ci-notices-check-gate.md) |
 <!-- ADR_INDEX:END -->

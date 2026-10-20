@@ -9,10 +9,10 @@ import {
   NEEDS_REVIEW,
   checkLockfileConsistency,
   expandEntryVersions,
-  extractCopyrightHit,
   findMissingDirectProdDeps,
   findMissingInLockfile,
   findPureDevOnly,
+  readLicenseHit,
   sortNotices,
   toNoticeEntry,
   renderNotices,
@@ -29,28 +29,6 @@ function parseArgs(argv) {
     else if (argv[i] === '--help') args.help = true;
   }
   return args;
-}
-
-function readLicenseHit(dir) {
-  const licenseNames = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENCE', 'LICENCE.md'];
-  for (const n of licenseNames) {
-    const p = resolve(dir, n);
-    if (!existsSync(p)) continue;
-    try {
-      const hit = extractCopyrightHit(readFileSync(p, 'utf8'));
-      if (hit) return hit;
-    } catch { continue; }
-  }
-  const noticeNames = ['NOTICE', 'NOTICE.md', 'NOTICE.txt'];
-  for (const n of noticeNames) {
-    const p = resolve(dir, n);
-    if (!existsSync(p)) continue;
-    try {
-      const hit = extractCopyrightHit(readFileSync(p, 'utf8'));
-      if (hit) return hit;
-    } catch { continue; }
-  }
-  return '';
 }
 
 function main() {
