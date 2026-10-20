@@ -15,8 +15,8 @@ function Pagination({ total, page, pageSize, onPageChange, disabled = false, cla
 
   if (totalPages <= 1) {
     return (
-      <nav data-slot="pagination" aria-label="페이지네이션" className={cn('flex items-center gap-2', className)} {...props}>
-        <span data-slot="pagination-total" className="text-sm text-muted-foreground">
+      <nav data-slot="pagination" aria-label="페이지네이션" className={cn('flex flex-wrap items-center gap-2', className)} {...props}>
+        <span data-slot="pagination-total" className="whitespace-nowrap text-sm text-muted-foreground">
           총 {total}건
         </span>
       </nav>
@@ -26,19 +26,19 @@ function Pagination({ total, page, pageSize, onPageChange, disabled = false, cla
   const prevDisabled = disabled || page <= 1;
   const nextDisabled = disabled || page >= totalPages;
   const btn =
-    'inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-md border border-border bg-background px-3 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
+    'inline-flex min-h-[44px] min-w-[44px] items-center justify-center whitespace-nowrap rounded-md border border-border bg-background px-3 text-sm font-semibold text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
   return (
     <nav
       data-slot="pagination"
       aria-label="페이지네이션"
       aria-busy={disabled ? 'true' : undefined}
-      className={cn('flex items-center gap-2', className)}
+      className={cn('flex flex-wrap items-center gap-2', className)}
       {...props}
     >
-      <span data-slot="pagination-total" className="text-sm text-muted-foreground">
+      <span data-slot="pagination-total" className="whitespace-nowrap text-sm text-muted-foreground">
         총 {total}건
       </span>
-      <span data-slot="pagination-page" aria-live="polite" className="text-sm">
+      <span data-slot="pagination-page" aria-live="polite" className="whitespace-nowrap text-sm">
         현재 {page} / 전체 {totalPages}
       </span>
       <button

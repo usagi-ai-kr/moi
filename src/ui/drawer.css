@@ -1,0 +1,149 @@
+/* 모바일 햄버거·우측 Drawer — native <dialog> + showModal() (ADR-0057, 이슈 #215).
+   값은 tokens.ts(단일 소스)의 --moi-* 변수만 사용한다 (ADR-0012). */
+
+/* 트리거 — 모바일(≤767px) 전용. 데스크톱에서는 가로 nav로 교체된다. */
+.moi-drawer-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--moi-touch-min);
+  min-height: var(--moi-touch-min);
+  padding: 0;
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  cursor: pointer;
+}
+
+.moi-drawer-trigger svg {
+  width: 24px;
+  height: 24px;
+}
+
+.moi-drawer-trigger:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+/* Drawer — 화면 우측 고정. top layer가 아니어도 헤더(z-index 10) 위에 있어야 한다. */
+.moi-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  z-index: 40;
+  margin: 0;
+  width: min(var(--moi-drawer-w-max), calc(100vw - var(--moi-drawer-gap)));
+  max-width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100%;
+  padding: 0;
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border: 0;
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.moi-drawer::backdrop {
+  background: var(--moi-color-scrim);
+}
+
+.moi-drawer-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* landscape에서 닫기 버튼이 항상 보이도록 상단 고정 (헤더 61px 대체). */
+.moi-drawer-head {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--moi-space-2);
+  padding: var(--moi-space-2) var(--moi-space-3);
+  background: var(--moi-color-white);
+  border-bottom: 1px solid var(--moi-color-border);
+}
+
+.moi-drawer-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--moi-touch-min);
+  min-height: var(--moi-touch-min);
+  padding: 0;
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  cursor: pointer;
+}
+
+.moi-drawer-close svg {
+  width: 20px;
+  height: 20px;
+}
+
+.moi-drawer-close:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+.moi-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-1);
+  padding: var(--moi-space-3) var(--moi-space-2) var(--moi-space-4);
+}
+
+.moi-drawer-link {
+  display: flex;
+  align-items: center;
+  min-height: var(--moi-touch-min);
+  padding-inline: var(--moi-space-3);
+  border-radius: var(--moi-radius-sm);
+  color: var(--moi-color-muted);
+  text-decoration: none;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.moi-drawer-link:hover {
+  color: var(--moi-color-ink);
+}
+
+.moi-drawer-link:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+/* 현재 위치 — 색 + 좌측 액센트로 시각 표시하고 aria-current="page"와 함께 노출한다. */
+.moi-drawer-link[aria-current="page"] {
+  color: var(--moi-color-ink);
+  background: var(--moi-color-surface);
+  box-shadow: inset 3px 0 0 var(--moi-color-orange);
+}
+
+/* 모션 — reduced-motion 존중: 전환은 no-preference에서만 실행한다 (ADR-0012). */
+@media (prefers-reduced-motion: no-preference) {
+  .moi-drawer[open] {
+    animation: moi-drawer-in var(--moi-motion-base) var(--moi-ease);
+  }
+}
+
+@keyframes moi-drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}

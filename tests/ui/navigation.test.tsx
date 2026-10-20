@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
+import { MOBILE_NAV_QUERY } from '../../src/ui/responsive';
 
 const { prefetchSpy } = vi.hoisted(() => ({ prefetchSpy: vi.fn() }));
 
@@ -61,6 +62,23 @@ function renderAt(client: ApiClient, url: string) {
   );
 }
 
+/** 데스크톱(≥768px) 구간 — 가로 nav가 노출되는 컨텍스트 (#215). */
+function useDesktopViewport(): void {
+  vi.spyOn(window, 'matchMedia').mockImplementation(
+    (query: string) =>
+      ({
+        matches: query !== MOBILE_NAV_QUERY,
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      }) as unknown as MediaQueryList,
+  );
+}
+
 beforeEach(() => {
   useUiStore.setState({ authBannerDismissed: false, logoutPending: false });
   window.history.replaceState(null, '', '/');
@@ -79,19 +97,28 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     expect(screen.getByRole('link', { name: '학습 시작' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('AppShell 헤더는 320px 모바일에서도 브랜드와 4개 nav를 모두 노출하고 moi-shell-header를 갖는다', async () => {
+  it('AppShell 헤더는 moi-shell-header를 갖고 브랜드와 현재 위치 링크를 노출한다', async () => {
     renderAt(loggedInClientWithHistory(0), '/review');
     const nav = await screen.findByRole('navigation');
     const header = nav.closest('header');
     expect(header).toHaveClass('moi-shell-header');
     expect(screen.getByRole('link', { name: 'moi' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '복습' })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('가로 nav 4개는 데스크톱 구간에서만 노출된다 (#215)', async () => {
+    // jsdom의 matchMedia는 매칭되지 않으므로 데스크톱 구간을 명시한다.
+    useDesktopViewport();
+    renderAt(loggedInClientWithHistory(0), '/review');
+    const nav = await screen.findByRole('navigation', { name: '주요 메뉴' });
+    expect(nav).not.toHaveAttribute('hidden');
 
     const navLinks = screen.getAllByRole('link', { name: /학습 시작|학습 현황\/이력|복습|계정/ });
     expect(navLinks).toHaveLength(4);
     for (const link of navLinks) {
       expect(link).toHaveClass('moi-nav-link');
     }
+    expect(screen.queryByRole('button', { name: '메뉴 열기' })).not.toBeInTheDocument();
   });
 
   it('/account 직접 진입: 계정 화면에 UUID/masked-id 없이 로그아웃만 있다', async () => {

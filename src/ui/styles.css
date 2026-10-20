@@ -78,6 +78,7 @@ pre,
 
 .moi-main {
   min-height: 100vh;
+  min-height: 100dvh;
   padding-top: calc(var(--moi-header-h) + var(--moi-space-7));
   padding-bottom: var(--moi-space-7);
   display: flex;

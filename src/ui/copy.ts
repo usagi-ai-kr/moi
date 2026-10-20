@@ -22,6 +22,9 @@ export const copy = {
     review: '복습',
     account: '계정',
     label: '주요 메뉴',
+    menuOpen: '메뉴 열기',
+    menuClose: '메뉴 닫기',
+    drawerLabel: '모바일 메뉴',
   },
   account: {
     title: '계정',
