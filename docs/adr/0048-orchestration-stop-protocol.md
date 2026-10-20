@@ -1,7 +1,7 @@
 ---
 id: ADR-0048
 title: 작업 정지 절차와 브리프·보고서 절대 경로
-status: Accepted
+status: Superseded by ADR-0051
 date: 2026-10-20
 related: ["ADR-0042", "ADR-0023"]
 ---

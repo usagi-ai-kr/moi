@@ -20,3 +20,7 @@ coverage/
 playwright-report/
 test-results/
 .features-gen/
+
+# 임시 문서·인수인계 (ADR-0051)
+tmp/*
+!tmp/.gitkeep
