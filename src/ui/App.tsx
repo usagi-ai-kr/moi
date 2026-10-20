@@ -48,7 +48,6 @@ function LoggedOutView({
               <KakaoLoginButton />
             </div>
           )}
-          <p className="moi-note">{copy.home.note}</p>
         </div>
       </main>
     </>
