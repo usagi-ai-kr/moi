@@ -8,11 +8,12 @@
  * - 화면 텍스트의 UUID/`opt-`/`saa-c03`/`dom-` 원시값 노출 여부를 기록한다.
  */
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 
 const PORT = 4174;
+const PREVIEW_TIMEOUT_MS = 30000;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 const OUT_DIR = join(process.cwd(), 'docs/evidence/132-screens');
 const WIDTHS = [320, 375, 768, 1024, 1280];
@@ -476,18 +477,63 @@ const SCREENS = [
   },
 ];
 
-async function waitForServer(target, timeoutMs = 30000) {
+async function waitForServer(target, timeoutMs, previewState, buildMarker) {
   const started = Date.now();
+  let foreignResponse = false;
   while (Date.now() - started < timeoutMs) {
+    if (previewState.exited) return { ok: false, reason: 'exited', foreignResponse };
     try {
       const res = await fetch(target);
-      if (res.ok) return true;
+      if (res.ok) {
+        // 4174에 이미 떠 있던 다른 서버에 붙지 않도록, 응답이 현재 빌드 산출물인지 확인한다.
+        if (!buildMarker) return { ok: true, foreignResponse };
+        const html = await res.text();
+        if (html.includes(buildMarker)) return { ok: true, foreignResponse };
+        foreignResponse = true;
+      }
     } catch {
       // retry
     }
-    await new Promise((r) => setTimeout(r, 500));
+    await new Promise((r) => setTimeout(r, 200));
   }
-  return false;
+  return { ok: false, reason: previewState.exited ? 'exited' : 'timeout', foreignResponse };
+}
+
+function readBuildMarker() {
+  // vite(Cloudflare 플러그인 포함)의 클라이언트 산출물에서 현재 빌드의 자산 경로를 얻는다.
+  for (const candidate of ['dist/client/index.html', 'dist/index.html', 'dist/public/index.html']) {
+    try {
+      const html = readFileSync(join(process.cwd(), candidate), 'utf8');
+      const match = html.match(/(?:src|href)="(\/?assets\/[^"]+\.(?:js|css))"/);
+      if (match) return match[1];
+    } catch {
+      // 다음 후보
+    }
+  }
+  return null;
+}
+
+function previewOutput(previewState) {
+  if (previewState.error) return previewState.error.message;
+  return previewState.output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(-6)
+    .join('\n');
+}
+
+function previewFailure(previewState, wait) {
+  const detail = previewOutput(previewState);
+  const portInUse = /already in use|EADDRINUSE|strictPort/i.test(detail);
+  const message = portInUse
+    ? `포트 ${PORT}가 이미 사용 중입니다. 다른 preview/dev 서버를 종료한 뒤 다시 실행하세요.`
+    : wait.foreignResponse
+      ? `${PORT} 포트의 응답이 현재 빌드 산출물이 아닙니다. 다른 서버가 ${PORT}를 점유하고 있을 수 있습니다.`
+      : wait.reason === 'timeout'
+        ? `${PORT} 포트의 preview 서버가 ${PREVIEW_TIMEOUT_MS / 1000}초 안에 준비되지 않았습니다.`
+        : `vite preview가 준비되기 전에 종료되었습니다 (code=${previewState.code ?? 'null'}, signal=${previewState.signal ?? 'null'}).`;
+  return new Error(`${message}${detail ? `\npreview 출력:\n${detail}` : ''}`);
 }
 
 function build() {
@@ -503,14 +549,32 @@ function build() {
 async function main() {
   build();
 
+  const buildMarker = readBuildMarker();
   console.log(`Starting vite preview on port ${PORT}...`);
   const preview = spawn('pnpm', ['exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], {
-    stdio: 'ignore',
+    stdio: ['ignore', 'pipe', 'pipe'],
     detached: true,
   });
+  const previewState = { exited: false, code: null, signal: null, error: null, output: '' };
+  const recordPreviewOutput = (chunk) => {
+    previewState.output = `${previewState.output}${chunk.toString('utf8')}`.slice(-4000);
+  };
+  preview.stdout?.on('data', recordPreviewOutput);
+  preview.stderr?.on('data', recordPreviewOutput);
+  preview.once('error', (error) => {
+    previewState.error = error;
+    previewState.exited = true;
+  });
+  preview.once('exit', (code, signal) => {
+    previewState.code = code;
+    previewState.signal = signal;
+    previewState.exited = true;
+  });
 
+  let cleanedUp = false;
   const cleanup = () => {
-    if (!preview.pid) return;
+    if (cleanedUp || !preview.pid) return;
+    cleanedUp = true;
     try {
       process.kill(-preview.pid, 'SIGTERM');
     } catch {
@@ -521,16 +585,21 @@ async function main() {
       }
     }
   };
-  process.on('exit', cleanup);
-  process.on('SIGINT', () => { cleanup(); process.exit(1); });
-
-  const ok = await waitForServer(BASE_URL, 30000);
-  if (!ok) {
-    console.error('Failed to connect to vite preview server');
+  const shutdown = (code) => {
     cleanup();
-    process.exit(1);
+    process.exit(code);
+  };
+  process.on('exit', cleanup);
+  process.on('SIGINT', () => shutdown(130));
+  process.on('SIGTERM', () => shutdown(143));
+  process.on('SIGHUP', () => shutdown(129));
+
+  const ready = await waitForServer(BASE_URL, PREVIEW_TIMEOUT_MS, previewState, buildMarker);
+  if (!ready.ok) {
+    cleanup();
+    throw previewFailure(previewState, ready);
   }
-  console.log(`Preview server ready at ${BASE_URL}`);
+  console.log(`Preview server ready at ${BASE_URL}${buildMarker ? ' (current build verified)' : ''}`);
 
   const browser = await chromium.launch({ headless: true });
   const results = {
