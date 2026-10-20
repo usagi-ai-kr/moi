@@ -184,7 +184,7 @@ export function StudyScreen({
   }
 
   return (
-    <div>
+    <div className="moi-study-start">
       <StartView
         scope={s.scope}
         domainId={s.domainId}

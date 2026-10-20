@@ -1,7 +1,7 @@
 {
-  "commit": "e26e28c869adbcf7fad94e18787ab65fc8e312a4",
-  "commitShort": "e26e28c",
-  "generatedAt": "2026-10-20T00:49:36.560Z",
+  "commit": "fab80b0c6d7eefce487d2a4c349ba30407a69376",
+  "commitShort": "fab80b0",
+  "generatedAt": "2026-10-20T02:42:26.218Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -146,8 +146,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "20문제 학습",
+                "tag": "button",
+                "height": 40,
+                "width": 109.6,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -169,8 +184,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "20문제 학습",
+                "tag": "button",
+                "height": 40,
+                "width": 109.6,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -192,8 +222,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "20문제 학습",
+                "tag": "button",
+                "height": 40,
+                "width": 109.6,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -215,8 +260,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "20문제 학습",
+                "tag": "button",
+                "height": 40,
+                "width": 109.6,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -238,8 +298,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "20문제 학습",
+                "tag": "button",
+                "height": 40,
+                "width": 109.6,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -269,8 +344,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "학습 시작",
+                "tag": "button",
+                "height": 40,
+                "width": 91.8,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -292,8 +382,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "학습 시작",
+                "tag": "button",
+                "height": 40,
+                "width": 91.8,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -315,8 +420,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "학습 시작",
+                "tag": "button",
+                "height": 40,
+                "width": 91.8,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -338,8 +458,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "학습 시작",
+                "tag": "button",
+                "height": 40,
+                "width": 91.8,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -361,8 +496,23 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 64,
-            "below44": []
+            "minHeight": 40,
+            "below44": [
+              {
+                "text": "학습 시작",
+                "tag": "button",
+                "height": 40,
+                "width": 91.8,
+                "disabled": false
+              },
+              {
+                "text": "학습 이력",
+                "tag": "button",
+                "height": 40,
+                "width": 85.8,
+                "disabled": false
+              }
+            ]
           },
           "textFindings": {
             "uuid": [],
@@ -1123,7 +1273,7 @@
       1280
     ],
     "overflowCount": 0,
-    "below44Count": 0,
+    "below44Count": 20,
     "rawValueScreenCount": 0,
     "screens": [
       {
@@ -1135,14 +1285,14 @@
       },
       {
         "id": "home",
-        "minButtonHeight": 64,
+        "minButtonHeight": 40,
         "overflowWidths": [],
         "rawValueWidths": [],
         "rawValues": []
       },
       {
         "id": "study-new",
-        "minButtonHeight": 64,
+        "minButtonHeight": 40,
         "overflowWidths": [],
         "rawValueWidths": [],
         "rawValues": []
