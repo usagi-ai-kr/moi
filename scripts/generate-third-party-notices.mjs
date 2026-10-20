@@ -10,6 +10,7 @@ import {
   checkLockfileConsistency,
   expandEntryVersions,
   extractCopyrightHit,
+  findMissingDirectProdDeps,
   findMissingInLockfile,
   findPureDevOnly,
   sortNotices,
@@ -94,6 +95,13 @@ function main() {
   const missing = findMissingInLockfile(entries, lockfileText);
   if (missing.length > 0) {
     console.error(`lockfile에 없는 버전:\n- ${missing.join('\n- ')}`);
+    process.exit(1);
+  }
+  const missingDirect = findMissingDirectProdDeps(
+    entries.map((e) => e.name), Object.keys(pkg.dependencies || {}),
+  );
+  if (missingDirect.length > 0) {
+    console.error(`prod 직접 의존성 누락(--prod 수집 범위 확인):\n- ${missingDirect.join('\n- ')}`);
     process.exit(1);
   }
   const devOnly = findPureDevOnly(

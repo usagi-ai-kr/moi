@@ -6,6 +6,7 @@ import {
   expandEntryVersions,
   extractCopyrightHit,
   extractSourceUrl,
+  findMissingDirectProdDeps,
   findPureDevOnly,
   matchPathForVersion,
   normalizeLicense,
@@ -104,5 +105,25 @@ describe('Given OSS 고지 생성 규칙 / When lib 함수 호출 / Then AC 충�
 
   it('버전 미매칭 경로는 최초 경로로 폴백하지 않고 빈 문자열을 낸다(D3 안전 폴백)', () => {
     expect(matchPathForVersion(['/r/a@1.0.0/x', '/r/a@2.0.0/x'], 'a', '9.9.9')).toBe('');
+  });
+
+  it('prod 직접 의존성이 --prod 수집 결과에 없으면 누락으로 보고한다(#121 갭 회귀)', () => {
+    expect(findMissingDirectProdDeps(['react', 'mermaid'], ['react', 'mermaid'])).toEqual([]);
+    expect(
+      findMissingDirectProdDeps(['react'], ['react', 'mermaid', 'react-markdown', 'remark-gfm']),
+    ).toEqual(['mermaid', 'react-markdown', 'remark-gfm']);
+  });
+
+  it('스코프 전이 패키지(@mermaid-js/parser)의 pnpm 경로를 버전에 맞게 찾는다(#121 갭 회귀)', () => {
+    const paths = [
+      '/r/node_modules/.pnpm/@mermaid-js+parser@2.0.1/node_modules/@mermaid-js/parser',
+      '/r/node_modules/.pnpm/dompurify@3.4.17/node_modules/dompurify',
+      '/r/node_modules/.pnpm/elkjs@0.9.3/node_modules/elkjs',
+    ];
+    expect(matchPathForVersion(paths, '@mermaid-js/parser', '2.0.1')).toContain(
+      '@mermaid-js+parser@2.0.1',
+    );
+    expect(matchPathForVersion(paths, 'elkjs', '0.9.3')).toContain('elkjs@0.9.3');
+    expect(matchPathForVersion(paths, 'dompurify', '3.4.17')).toContain('dompurify@3.4.17');
   });
 });

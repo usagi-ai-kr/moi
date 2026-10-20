@@ -51,3 +51,4 @@ export function checkLockfileConsistency(input: {
 }): { ok: boolean; problems: string[] };
 export function findMissingInLockfile(entries: NoticeEntry[], lockfileText: string): string[];
 export function findPureDevOnly(entryNames: string[], devDeps: string[], deps?: string[]): string[];
+export function findMissingDirectProdDeps(entryNames: string[], prodDeps?: string[]): string[];
