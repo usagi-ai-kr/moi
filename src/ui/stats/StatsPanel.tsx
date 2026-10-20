@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getStudyStats, type ApiClient } from '../api/client';
 import { copy } from '../copy';
+import { StatsSkeleton } from '../Skeletons';
 import { DomainStatusList } from './DomainStatusList';
 import { domainLabel, pct } from './labels';
 import './stats.css';
@@ -18,12 +19,18 @@ export function StatsPanel({ client, examId }: { client: ApiClient; examId: stri
   });
 
   return (
-    <section className="moi-stats" aria-label={copy.stats.title} aria-live="polite">
+    <section
+      className="moi-stats"
+      aria-label={copy.stats.title}
+      aria-live="polite"
+      aria-busy={query.isPending ? 'true' : undefined}
+    >
       <h2 className="moi-stats-title">{copy.stats.title}</h2>
       {query.isPending && (
-        <p className="moi-note" role="status">
-          {copy.stats.loading}
-        </p>
+        <div className="moi-stats-pending" role="status" aria-busy="true">
+          <span className="moi-sr-only">{copy.stats.loading}</span>
+          <StatsSkeleton />
+        </div>
       )}
       {query.isError && (
         <div role="alert" className="moi-stats-error">

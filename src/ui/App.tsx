@@ -2,19 +2,12 @@ import { Suspense, lazy } from 'react';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
+import { RouteFallback } from './RouteFallback';
 import { useAuthCallback, useSessionId, useUiStore, type ApiClient } from './session';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
 // 로그인 후 트리는 비로그인 홈 초기 번들/LCP에 포함하지 않도록 지연 로드한다 (이슈 #132).
 const AuthenticatedApp = lazy(() => import('./AuthenticatedApp'));
-
-function RouteFallback() {
-  return (
-    <p className="moi-note" role="status" aria-live="polite">
-      {copy.common.loading}
-    </p>
-  );
-}
 
 function CheckingView() {
   return (

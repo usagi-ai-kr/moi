@@ -6,6 +6,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
 
+const { prefetchSpy } = vi.hoisted(() => ({ prefetchSpy: vi.fn() }));
+
+vi.mock('../../src/ui/lazy-routes', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../../src/ui/lazy-routes')>();
+  return { ...actual, prefetchRoute: prefetchSpy };
+});
+
 function httpError(status: number, body: unknown): HTTPError {
   return new HTTPError(
     new Response(JSON.stringify(body), { status }),
@@ -126,5 +133,20 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     renderAt(loggedOutClient(), '/account');
     expect(await screen.findByRole('link', { name: '카카오 로그인' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
+  });
+
+  it('nav 링크 hover/focus/touch 시 해당 라우트 청크를 prefetch한다 (#184)', async () => {
+    renderAt(loggedInClientWithHistory(0), '/');
+    const history = await screen.findByRole('link', { name: '학습 현황/이력' });
+    const review = screen.getByRole('link', { name: '복습' });
+    const account = screen.getByRole('link', { name: '계정' });
+
+    fireEvent.mouseEnter(history);
+    fireEvent.focus(review);
+    fireEvent.touchStart(account);
+
+    expect(prefetchSpy).toHaveBeenCalledWith('/history');
+    expect(prefetchSpy).toHaveBeenCalledWith('/review');
+    expect(prefetchSpy).toHaveBeenCalledWith('/account');
   });
 });

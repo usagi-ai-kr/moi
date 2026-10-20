@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router';
 import { isSubmittedSet, type ApiClient } from '../api/client';
 import { copy } from '../copy';
+import { RouteFallback } from '../RouteFallback';
 import { useStudySet } from '../study/queries';
 
 // 레거시 이력 상세 주소 호환 (#148) — /history/:setId.
@@ -14,11 +15,7 @@ export function LegacyHistoryRedirect({ client, setId: propSetId }: { client: Ap
   if (setId === null || query.isError) return <LegacyHistoryUnavailable />;
 
   if (query.isPending) {
-    return (
-      <p className="moi-note" role="status" aria-live="polite">
-        {copy.common.loading}
-      </p>
-    );
+    return <RouteFallback variant="detail" />;
   }
 
   const set = query.data;

@@ -2,6 +2,7 @@ import { Link, useInRouterContext } from 'react-router';
 import { copy } from '../copy';
 import type { StudySummary } from '../api/client';
 import { Pagination } from '../components/ui/pagination';
+import { HistorySkeleton } from '../Skeletons';
 import { domainLabel } from '../stats/labels';
 import { formatDateTime, scopeLabel, STUDY_EXAM_LABEL } from './types';
 import './study.css';
@@ -62,12 +63,22 @@ function HistoryDetailAction({
 }
 
 // 이력 — 완료 세트 목록(날짜·모드/영역·정답률·페이지네이션)과 요약 상세.
+// initial loading은 스켈레톤, background refetch는 기존 목록 유지 + aria-busy (#184).
 export function HistoryView(p: Props) {
   const showPager = !p.pending && !p.loadError && p.total > 0 && !(p.hidePagerWhenEmpty && p.total === 0);
   return (
-    <section className="moi-study" aria-label={copy.study.historyTitle}>
+    <section
+      className="moi-study"
+      aria-label={copy.study.historyTitle}
+      aria-busy={p.isFetching ? 'true' : undefined}
+    >
       <h2 className="moi-study-title">{copy.study.historyTitle}</h2>
-      {p.pending && <p className="moi-note" role="status" aria-live="polite">{copy.common.loading}</p>}
+      {p.pending && !p.loadError && (
+        <div className="moi-history-pending" role="status" aria-busy="true">
+          <span className="moi-sr-only">{copy.common.loading}</span>
+          <HistorySkeleton />
+        </div>
+      )}
       {p.loadError && (
         <div className="moi-alert moi-alert-error" role="alert">
           <p className="moi-alert-text">{copy.session.loadError}</p>

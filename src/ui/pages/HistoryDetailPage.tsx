@@ -1,6 +1,7 @@
 import { Navigate, useLocation, useNavigate } from 'react-router';
 import { copy } from '../copy';
 import { isSubmittedSet, type ApiClient } from '../api/client';
+import { RouteFallback } from '../RouteFallback';
 import { useStudyCorrections, useStudySet } from '../study/queries';
 import { ResultView } from '../study/ResultView';
 
@@ -28,11 +29,7 @@ export function HistoryDetailPage({ client }: { client: ApiClient }) {
   }
 
   if (query.isPending) {
-    return (
-      <p className="moi-note" role="status" aria-live="polite">
-        {copy.common.loading}
-      </p>
-    );
+    return <RouteFallback variant="detail" />;
   }
 
   if (query.isError) {

@@ -1,6 +1,7 @@
 import { Link, Navigate, useParams } from 'react-router';
 import { isSubmittedSet, type ApiClient } from '../api/client';
 import { copy } from '../copy';
+import { RouteFallback } from '../RouteFallback';
 import { useStudySet } from '../study/queries';
 
 // 레거시 학습 주소 호환 (#148) — /study/:setId, /study/:setId/result, /?study=<id>.
@@ -13,11 +14,7 @@ export function LegacyStudyRedirect({ client, setId }: { client: ApiClient; setI
   if (id === null || query.isError) return <LegacyUnavailable />;
 
   if (query.isPending) {
-    return (
-      <p className="moi-note" role="status" aria-live="polite">
-        {copy.common.loading}
-      </p>
-    );
+    return <RouteFallback variant="detail" />;
   }
 
   const set = query.data;
