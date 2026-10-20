@@ -19,6 +19,14 @@ export function AppShell() {
       <header className="moi-header moi-shell-header">
         <div className="moi-container moi-shell-head">
           <Link to="/" className="moi-brand-link" aria-label={copy.brand}>
+            <img
+              src="/favicon.svg"
+              width={22}
+              height={22}
+              alt=""
+              aria-hidden="true"
+              className="moi-brand-icon"
+            />
             <span className="moi-brand">{copy.brand}</span>
           </Link>
           <nav className="moi-nav" aria-label={copy.nav.label}>

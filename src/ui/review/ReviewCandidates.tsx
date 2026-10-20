@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import type { ReviewCandidatesResponse, ReviewMode } from '../api/review-client';
 import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
@@ -13,6 +14,7 @@ interface ReviewCandidatesProps {
   readonly isStarting: boolean;
   readonly onStart: () => void;
   readonly onRetry: () => void;
+  readonly onSelectMode?: (mode: ReviewMode) => void;
 }
 
 export function ReviewCandidates({
@@ -23,6 +25,7 @@ export function ReviewCandidates({
   isStarting,
   onStart,
   onRetry,
+  onSelectMode,
 }: ReviewCandidatesProps) {
   if (isLoading) {
     return (
@@ -47,10 +50,23 @@ export function ReviewCandidates({
   }
 
   if (data && data.total === 0) {
+    const opposite: ReviewMode = mode === 'wrong' ? 'bookmark' : 'wrong';
+    const oppositeLabel = mode === 'wrong' ? copy.review.goToBookmarkReview : copy.review.goToWrongReview;
     return (
       <Card>
-        <CardContent className="py-8 text-center text-muted-foreground">
+        <CardContent className="flex flex-col gap-4 py-8 text-center text-muted-foreground">
           <p>{mode === 'wrong' ? copy.review.emptyWrong : copy.review.emptyBookmark}</p>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Button variant="primary" asChild>
+              <Link to="/study/new">{copy.review.goToStudy}</Link>
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => onSelectMode?.(opposite)}
+            >
+              {oppositeLabel}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
@@ -59,7 +75,7 @@ export function ReviewCandidates({
   if (data && data.total > 0) {
     return (
       <section aria-label="복습 대기 목록" className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-base font-semibold">
             {copy.review.waitingPrefix} {data.total}
             {copy.review.waitingSuffix}

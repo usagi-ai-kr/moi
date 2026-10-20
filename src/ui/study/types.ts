@@ -1,6 +1,7 @@
+import { copy } from '../copy';
 import type { StudyMode } from '../api/client';
 
-// SAA-C03 고정 — 시험 선택 UI 없음 (이슈 #50).
+// SAA-C03 고정 — 단일 시험 selector만 제공한다 (이슈 #212, #50).
 export const STUDY_EXAM_ID = 'saa-c03';
 // 화면 표시명 — 내부 examId 대신 사용자에게 보여준다 (#148).
 export const STUDY_EXAM_LABEL = 'AWS SAA-C03';
@@ -27,10 +28,17 @@ export function scopeLabel(scope: StudyScope): string {
   return '전체';
 }
 
-export function formatDateTime(ms: number): string {
+export function formatDateTime(value: number | null | undefined): string {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
+    return copy.study.unknownDate;
+  }
+  const ms = value < 1e12 ? value * 1000 : value;
   const d = new Date(ms);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  if (Number.isNaN(d.getTime())) return copy.study.unknownDate;
+  return new Intl.DateTimeFormat('ko-KR', {
+    timeZone: 'Asia/Seoul',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  }).format(d);
 }

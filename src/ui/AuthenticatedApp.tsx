@@ -71,12 +71,20 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
       <p className="moi-lead">{copy.session.welcome}</p>
+      <section aria-label={copy.study.examLabel}>
+        <p className="moi-note">{copy.study.examOption}</p>
+        <p className="moi-note">{copy.study.examNote}</p>
+        <p className="moi-note">{copy.study.examContext}</p>
+      </section>
       <div className="moi-cta moi-study-cta-row">
         <button type="button" className="moi-study-open" onClick={() => void navigate('/study/new')}>
           {copy.study.cta}
         </button>
         <button type="button" className="moi-study-link" onClick={() => void navigate('/history')}>
           {copy.study.historyLink}
+        </button>
+        <button type="button" className="moi-study-link" onClick={() => void navigate('/study')}>
+          {copy.study.continueStudy}
         </button>
       </div>
     </div>
