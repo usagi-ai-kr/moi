@@ -124,7 +124,12 @@ function resetStore() {
 
 function LocationProbe() {
   const loc = useLocation();
-  return <p data-testid="location">{loc.pathname + loc.search}</p>;
+  return (
+    <>
+      <p data-testid="location">{loc.pathname + loc.search}</p>
+      <p data-testid="location-state">{JSON.stringify(loc.state ?? null)}</p>
+    </>
+  );
 }
 
 function renderStudyRoutes(client: ApiClient, initial: string | { pathname: string; state: unknown }) {
@@ -219,13 +224,37 @@ describe('학습 라우트 분리 (#148)', () => {
     expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument();
   });
 
-  it('/study/new 시작 성공 시 /study로 이동한다', async () => {
+  it('/study/new 시작 성공 시 /study로 이동하고 풀이 화면 노드를 유지한다 (재마운트 방지)', async () => {
     renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: makeSet() }), '/study/new');
     expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    const questionNode = await screen.findByText(/1\/20/);
+    expect(questionNode).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
+    await waitFor(() => expect(screen.getByTestId('location-state')).toHaveTextContent('null'));
+    expect(questionNode.isConnected).toBe(true);
+    expect(screen.getByText(/1\/20/)).toBe(questionNode);
     expectNoSetIdInUrl();
+  });
+
+  it('startedSetId state로 /study 진입 시 current가 404면 /study/new로 이동하고 state를 제거한다', async () => {
+    renderStudyRoutes(
+      fakeStudyClient({ current: null, get: makeSet() }),
+      { pathname: '/study', state: { startedSetId: 'stale-set-id' } },
+    );
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study\/new$/));
+    expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
+    expect(screen.queryByText(/1\/20/)).not.toBeInTheDocument();
+    expect(screen.getByTestId('location-state')).toHaveTextContent('null');
+  });
+
+  it('시작 직후 current가 404를 돌려주면 /study/new로 replace한다', async () => {
+    renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: null }), '/study/new');
+    expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study\/new$/));
+    expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
+    expect(screen.getByTestId('location-state')).toHaveTextContent('null');
   });
 
   it('409면 이어풀기 버튼으로 /study에 복원한다', async () => {
