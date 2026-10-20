@@ -13,6 +13,7 @@ interface FakeItem {
   optionOrder: string[];
   stem: string;
   options: Array<{ optionId: string; text: string }>;
+  answerCount: number;
   explanation: string;
   sourceUrls: string[];
   response: { kind: string; optionIds?: string[] };
@@ -73,6 +74,7 @@ function freshSet(): { id: string; status: string; items: FakeItem[]; submittedA
     optionOrder: [`q-${i}-a`, `q-${i}-b`, `q-${i}-c`, `q-${i}-d`],
     stem: `문제 ${i} 본문: VPC와 서브넷 구성은?`,
     options: [`q-${i}-a`, `q-${i}-b`, `q-${i}-c`, `q-${i}-d`].map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
+    answerCount: 1,
     explanation: `문제 ${i} 해설: 정답은 q-${i}-a이다.`,
     sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
     response: { kind: 'unanswered' },
@@ -96,6 +98,7 @@ function toActiveDto(s: NonNullable<typeof active>) {
       optionOrder: it.optionOrder,
       stem: it.stem,
       options: it.options,
+      answerCount: it.answerCount,
       response: it.response,
     })),
   };

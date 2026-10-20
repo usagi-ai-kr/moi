@@ -460,16 +460,18 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       total: number;
       id?: unknown;
       userId?: unknown;
-      current: { questionId: string; response: null; answerOptionIds?: unknown; explanation?: unknown };
-      items: Array<{ questionId: string; response: null; id?: unknown; userId?: unknown }>;
+      current: { questionId: string; response: null; answerOptionIds?: unknown; answerCount?: unknown; explanation?: unknown };
+      items: Array<{ questionId: string; response: null; answerCount?: unknown; id?: unknown; userId?: unknown }>;
     };
     expect(started.cursor).toBe(0);
     expect(started.total).toBe(20);
     expect(started).not.toHaveProperty('id');
     expect(started).not.toHaveProperty('userId');
     expect(started.current.answerOptionIds).toBeUndefined();
+    expect(started.current.answerCount).toBe(1);
     expect(started.current.response).toBeNull();
     expect(started.items[0]).toMatchObject({ response: null });
+    expect(started.items[0]?.answerCount).toBe(1);
     expect(started.items[0]).not.toHaveProperty('id');
     expect(started.items[0]).not.toHaveProperty('userId');
     const qid = started.current.questionId;
@@ -479,12 +481,13 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: correct } },
     });
     expect(ansRes.status).toBe(200);
-    const ans = (await ansRes.json()) as { correct: boolean; graded: { questionId: string; explanation: string; correctOptionIds: string[] }; next: { questionId: string; answerOptionIds?: unknown } | null };
+    const ans = (await ansRes.json()) as { correct: boolean; graded: { questionId: string; explanation: string; correctOptionIds: string[] }; next: { questionId: string; answerOptionIds?: unknown; answerCount?: unknown } | null };
     expect(ans.correct).toBe(true);
     expect(ans.graded.questionId).toBe(qid);
     expect(ans.graded.explanation).toBe(`expl-${qid}`);
     expect(ans.graded.correctOptionIds).toEqual(correct);
     expect(ans.next?.answerOptionIds).toBeUndefined();
+    expect(ans.next?.answerCount).toBe(1);
     const resumeRes = await req(`/api/review/sessions/current?examId=${EXAM_CODE}&mode=wrong`, { token });
     expect(resumeRes.status).toBe(200);
     const resume = (await resumeRes.json()) as { cursor: number };

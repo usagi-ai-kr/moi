@@ -11,6 +11,7 @@ interface FakeStudyItem {
   optionOrder: string[];
   stem: string;
   options: Array<{ optionId: string; text: string }>;
+  answerCount: number;
   explanation: string;
   sourceUrls: string[];
   response: { kind: string; optionIds?: string[] };
@@ -21,6 +22,7 @@ interface ReviewMockItem {
   validWrongCount?: number;
   stem: string;
   options: Array<{ optionId: string; text: string }>;
+  answerCount: number;
   explanation: string;
   sourceUrls: string[];
   correctOptionIds: string[];
@@ -64,6 +66,7 @@ function resetReviewMock() {
         { optionId: 'opt-w1-a', text: 'CIDR 블록 중복 불가' },
         { optionId: 'opt-w1-b', text: '동일 리전 한정' },
       ],
+      answerCount: 1,
       explanation: 'VPC 피어링은 CIDR 블록이 중복되면 연결할 수 없습니다.',
       sourceUrls: ['https://docs.aws.amazon.com/vpc/peering'],
       correctOptionIds: ['opt-w1-a'],
@@ -76,6 +79,7 @@ function resetReviewMock() {
         { optionId: 'opt-w2-a', text: 'SSE-S3 기본 활성화' },
         { optionId: 'opt-w2-b', text: '암호화 미지원' },
       ],
+      answerCount: 1,
       explanation: 'S3는 모든 새 버킷에 SSE-S3 기본 암호화를 적용합니다.',
       sourceUrls: ['https://docs.aws.amazon.com/s3/encryption'],
       correctOptionIds: ['opt-w2-a'],
@@ -91,6 +95,7 @@ function resetReviewMock() {
         { optionId: 'opt-bm1-a', text: '균등한 I/O 분산 키 선정' },
         { optionId: 'opt-bm1-b', text: '단일 파티션 집중' },
       ],
+      answerCount: 1,
       explanation: '파티션 키는 파티션 간 읽기/쓰기 요청을 균등하게 분산해야 합니다.',
       sourceUrls: ['https://docs.aws.amazon.com/dynamodb/partition-keys'],
       correctOptionIds: ['opt-bm1-a'],
@@ -159,6 +164,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
           optionId: id,
           text: `보기 ${id} 내용`,
         })),
+        answerCount: 1,
         explanation: `문제 ${i} 해설`,
         sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
         response: { kind: 'unanswered' },
@@ -180,6 +186,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
             optionOrder: it.optionOrder,
             stem: it.stem,
             options: it.options,
+            answerCount: it.answerCount,
             response: it.response,
           })),
         },
@@ -325,6 +332,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
                   { optionId: `${id}-opt-1`, text: '보기 1' },
                   { optionId: `${id}-opt-2`, text: '보기 2' },
                 ],
+                answerCount: 1,
                 explanation: '북마크 문항 해설입니다.',
                 sourceUrls: ['https://docs.aws.amazon.com'],
                 correctOptionIds: [`${id}-opt-1`],
@@ -346,6 +354,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
             questionId: itemsToReview[0].questionId,
             stem: itemsToReview[0].stem,
             options: itemsToReview[0].options,
+            answerCount: itemsToReview[0].answerCount ?? 1,
             response: null,
           }
         : null;
@@ -381,6 +390,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
             questionId: curItem.questionId,
             stem: curItem.stem,
             options: curItem.options,
+            answerCount: curItem.answerCount ?? 1,
             response: null,
           }
         : null;
@@ -458,6 +468,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
                 questionId: nextItem.questionId,
                 stem: nextItem.stem,
                 options: nextItem.options,
+                answerCount: nextItem.answerCount ?? 1,
               }
             : null,
         },

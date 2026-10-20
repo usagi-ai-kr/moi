@@ -29,6 +29,7 @@ function submittedSet(): StudySubmittedSet {
       { optionId: `q-${i}-a`, text: '보기 A' },
       { optionId: `q-${i}-b`, text: '보기 B' },
     ],
+    answerCount: 1,
     response: { kind: 'answered' as const, optionIds: [`q-${i}-a`] },
     explanation: `문제 ${i} 해설`,
     sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],

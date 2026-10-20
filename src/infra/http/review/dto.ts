@@ -1,11 +1,12 @@
 import type { ReviewSession } from '@/domain/review/types';
 import type { VersionContent } from './content';
 
-/** 미채점 문항 DTO — 정답·해설·근거 없음. */
+/** 제출 전 DTO — 본문·보기 텍스트 + 정답 개수(answerCount)만 노출, 정답 ID·해설·근거는 제거한다(#50). */
 export interface PendingItemDto {
   readonly questionId: string;
   readonly stem: string;
   readonly options: ReadonlyArray<{ readonly optionId: string; readonly text: string }>;
+  readonly answerCount: number;
   readonly response: null;
 }
 
@@ -40,11 +41,17 @@ export function orderedOptions(
 }
 
 export function toPendingDto(
-  item: { questionId: string; optionOrder: readonly string[] },
+  item: { questionId: string; optionOrder: readonly string[]; answerOptionIds: readonly string[] },
   content: VersionContent | undefined,
 ): PendingItemDto | null {
   if (!content) return null;
-  return { questionId: item.questionId, stem: content.stem, options: orderedOptions(item, content), response: null };
+  return {
+    questionId: item.questionId,
+    stem: content.stem,
+    options: orderedOptions(item, content),
+    answerCount: item.answerOptionIds.length,
+    response: null,
+  };
 }
 
 /** 재개용 항목 복원 — 채점됨은 response+correct만, 미채점은 null만. 정답·해설 없음. */

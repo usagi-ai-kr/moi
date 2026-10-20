@@ -30,6 +30,7 @@ interface FakeReviewClientPhase2Options {
       questionId: string;
       stem: string;
       options: Array<{ optionId: string; text: string }>;
+      answerCount: number;
       response: null;
     } | null;
   } | null;
@@ -55,6 +56,7 @@ interface FakeReviewClientPhase2Options {
       questionId: string;
       stem: string;
       options: Array<{ optionId: string; text: string }>;
+      answerCount: number;
     } | null;
   };
   failAnswer?: boolean;
@@ -99,6 +101,7 @@ function createFakePhase2Client(opts: FakeReviewClientPhase2Options = {}): {
                   { optionId: 'opt-a', text: 'Glacier 즉시 전환' },
                   { optionId: 'opt-b', text: 'Intelligent-Tiering 전환' },
                 ],
+                answerCount: 1,
                 response: null,
               },
               exhausted: false,
@@ -163,6 +166,7 @@ function createFakePhase2Client(opts: FakeReviewClientPhase2Options = {}): {
                   { optionId: 'opt-c', text: 'CIDR 중복 방지' },
                   { optionId: 'opt-d', text: '게이트웨이 불필요' },
                 ],
+                answerCount: 1,
               },
             }
           );
@@ -315,6 +319,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
             questionId: 'q-w1',
             stem: '중복 클릭 방지 문항',
             options: [{ optionId: 'opt-1', text: '보기 1' }],
+            answerCount: 1,
             response: null,
           },
           exhausted: false,
@@ -450,6 +455,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
             { optionId: 'opt-a', text: '보기 A' },
             { optionId: 'opt-b', text: '보기 B' },
           ],
+          answerCount: 1,
           response: { kind: 'unanswered' as const },
           explanation: '해설 내용',
           sourceUrls: [],
@@ -530,6 +536,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
                 questionId: 'q-409',
                 stem: '409 재개된 활성 문항',
                 options: [{ optionId: 'opt-1', text: '재개 보기 1' }],
+                answerCount: 1,
                 response: null,
               },
               exhausted: false,

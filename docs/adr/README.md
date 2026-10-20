@@ -63,4 +63,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0046 | 학습 세트 10문제 조정 | Accepted | 2026-10-20 | [0046-ten-question-study-set.md](./0046-ten-question-study-set.md) |
 | ADR-0047 | Pele 전환 0.2.4 구현 시점과 전환·복구 계약 | Accepted | 2026-10-20 | [0047-pele-0.2.4-implementation-timing.md](./0047-pele-0.2.4-implementation-timing.md) |
 | ADR-0048 | 작업 정지 절차와 브리프·보고서 절대 경로 | Accepted | 2026-10-20 | [0048-orchestration-stop-protocol.md](./0048-orchestration-stop-protocol.md) |
+| ADR-0049 | 제출 전 정답 개수 안내 | Accepted | 2026-10-20 | [0049-answer-count-disclosure.md](./0049-answer-count-disclosure.md) |
 <!-- ADR_INDEX:END -->

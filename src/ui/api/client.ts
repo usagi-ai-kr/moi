@@ -53,6 +53,7 @@ export interface StudyActiveItem {
   optionOrder: string[];
   stem: string;
   options: StudyOption[];
+  answerCount: number;
   response: ItemResponse;
 }
 /** 제출 후 문항 — 해설·근거가 추가된다(#50). */

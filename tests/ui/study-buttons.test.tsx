@@ -19,6 +19,7 @@ function makeSet(): StudyActiveSet {
       { optionId: `q-${i}-a`, text: `보기 ${i}-a` },
       { optionId: `q-${i}-b`, text: `보기 ${i}-b` },
     ],
+    answerCount: 1,
     response: { kind: 'unanswered' as const },
   }));
   return {

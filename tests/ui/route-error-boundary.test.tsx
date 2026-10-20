@@ -140,6 +140,7 @@ describe('RouteErrorBoundary (#148)', () => {
           { optionId: 'opt-1', text: '보기 1번 내용' },
           // rawOptionId는 options에 text가 없음 -> optionOrder 인덱스+1 (2)이 되어야 함
         ],
+        answerCount: 1,
         response: { kind: 'unanswered' },
       },
     ];

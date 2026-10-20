@@ -39,6 +39,7 @@ const activeItem: StudyActiveItem = {
     { optionId: 'opt-a', text: '보기 A' },
     { optionId: 'opt-b', text: '보기 B' },
   ],
+  answerCount: 1,
   response: { kind: 'unanswered' },
 };
 
