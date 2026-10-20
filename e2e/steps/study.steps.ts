@@ -445,8 +445,16 @@ When('결과 이전 문항 버튼을 누르면', async ({ page }) => {
 
 When('결과 다음 문항 버튼에 포커스를 두고 오른쪽 방향키를 누르면', async ({ page }) => {
   const button = page.getByRole('button', { name: copy.study.nextItem });
-  await button.focus();
-  await page.keyboard.press('ArrowRight');
+  await expect(button).toBeEnabled();
+  // locator.press가 focus+key를 원자적으로 수행 — 제출 후 재렌더 사이 focus 유실 flake 방지. 재시도 없이 1회만 press (중복 press 전진 방지).
+  await button.press('ArrowRight');
+  const status = resultPager(page).locator('.moi-study-pager-status');
+  try {
+    await expect(status).toHaveText(new RegExp(`2/\\d+`));
+  } catch {
+    const actual = await status.textContent().catch(() => null);
+    throw new Error(`결과 진행 표시가 2번째 문항으로 바뀌지 않았다 (실제: ${actual ?? '조회 실패'})`);
+  }
 });
 
 Then('결과 해설 카드는 1개만 보인다', async ({ page }) => {
