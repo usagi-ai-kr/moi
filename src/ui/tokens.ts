@@ -63,13 +63,13 @@ export const typography = {
   // 눈누가 제공하는 공식 웹폰트 경로 — 형태 그대로·수정/재배포 금지라 저장소에 파일을 두지 않는다 (ADR-0014)
   displayFontUrl:
     'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/KoddiUDOnGothic-Bold.woff',
-  baseSize: 16,
+  baseSize: 18,
   sizes: {
-    brand: '20px',
-    h1: 'clamp(32px, 7vw, 44px)',
-    h2: '24px',
-    lead: 'clamp(16px, 2.4vw, 18px)',
-    small: '14px', // DESIGN.md 보조 설명 최소 14px
+    brand: '22px',
+    h1: 'clamp(34px, 7vw, 48px)',
+    h2: '26px',
+    lead: 'clamp(18px, 2.4vw, 20px)',
+    small: '16px', // DESIGN.md 보조 설명 최소 16px (#182)
   },
   lineHeights: {
     tight: 1.15,

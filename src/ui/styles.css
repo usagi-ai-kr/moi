@@ -22,7 +22,21 @@ body {
   font-family: var(--moi-font-ui);
   font-size: var(--moi-size-body);
   line-height: var(--moi-lh-normal);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 한국어는 어절 단위로 줄바꿈하되, 코드·URL·식별자 같은 긴 토큰만 강제로 끊는다 (#182). */
+code,
+pre,
+.moi-source,
+.moi-stats-list,
+.moi-weak-list,
+.moi-note a,
+.moi-explanation a {
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 /* 레이아웃: container 내부 padding으로 충돌 방지 · flex/grid · overflow 지양 (ADR-0012) */
@@ -218,6 +232,8 @@ body {
   background: var(--moi-color-white);
   border: 1px solid var(--moi-color-border);
   border-radius: var(--moi-radius-sm);
+  color: var(--moi-color-ink);
+  text-decoration: none;
 }
 .moi-study-open:focus-visible,
 .moi-study-link:focus-visible {
@@ -225,14 +241,7 @@ body {
   outline-offset: 2px;
 }
 
-/* 학습 현황 패널 — 초기 번들 최소 스타일, 320~1280 오버플로 방지 */
-.moi-stats { width: 100%; max-width: 100%; overflow-wrap: anywhere; }
-.moi-stats-title, .moi-stats-sub { margin: var(--moi-space-2) 0; }
-.moi-stats-list { margin: 0; padding-left: var(--moi-space-5); max-width: 100%; }
-.moi-stats-item { overflow-wrap: anywhere; }
-.moi-stats-progress { max-width: 100%; overflow-wrap: anywhere; }
-.moi-stats:focus-visible { outline: 2px solid var(--moi-color-ink); outline-offset: 2px; }
-.moi-stats-error { max-width: 100%; }
+/* 학습 현황 스타일은 stats/stats.css로 이동 (#182 — 사용하는 컴포넌트가 import). */
 /* 계정·이력 페이지 — 기존 토큰·카드 재사용, 320~1280 기본 반응형 */
 .moi-page { display: flex; flex-direction: column; gap: var(--moi-space-3); width: 100%; max-width: 100%; overflow-wrap: anywhere; }
 @media (max-width: 360px) { .moi-header-inner { gap: var(--moi-space-2); } }

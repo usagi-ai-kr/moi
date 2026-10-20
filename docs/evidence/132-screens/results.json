@@ -1,7 +1,7 @@
 {
-  "commit": "fab80b0c6d7eefce487d2a4c349ba30407a69376",
-  "commitShort": "fab80b0",
-  "generatedAt": "2026-10-20T02:42:26.218Z",
+  "commit": "2cc4e01c6e6d791623804d5ec86de27eacb8c17e",
+  "commitShort": "2cc4e01",
+  "generatedAt": "2026-10-20T03:25:52.416Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -152,14 +152,14 @@
                 "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
-                "width": 109.6,
+                "width": 119.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -190,14 +190,14 @@
                 "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
-                "width": 109.6,
+                "width": 119.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -228,14 +228,14 @@
                 "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
-                "width": 109.6,
+                "width": 119.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -266,14 +266,14 @@
                 "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
-                "width": 109.6,
+                "width": 119.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -304,14 +304,14 @@
                 "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
-                "width": 109.6,
+                "width": 119.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -350,14 +350,14 @@
                 "text": "학습 시작",
                 "tag": "button",
                 "height": 40,
-                "width": 91.8,
+                "width": 99.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -388,14 +388,14 @@
                 "text": "학습 시작",
                 "tag": "button",
                 "height": 40,
-                "width": 91.8,
+                "width": 99.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -426,14 +426,14 @@
                 "text": "학습 시작",
                 "tag": "button",
                 "height": 40,
-                "width": 91.8,
+                "width": 99.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -464,14 +464,14 @@
                 "text": "학습 시작",
                 "tag": "button",
                 "height": 40,
-                "width": 91.8,
+                "width": 99.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -502,14 +502,14 @@
                 "text": "학습 시작",
                 "tag": "button",
                 "height": 40,
-                "width": 91.8,
+                "width": 99.3,
                 "disabled": false
               },
               {
                 "text": "학습 이력",
                 "tag": "button",
                 "height": 40,
-                "width": 85.8,
+                "width": 93.3,
                 "disabled": false
               }
             ]
@@ -1157,7 +1157,7 @@
           },
           "buttonMetrics": {
             "totalButtons": 1,
-            "minHeight": 64,
+            "minHeight": 44,
             "below44": []
           },
           "textFindings": {
@@ -1180,7 +1180,7 @@
           },
           "buttonMetrics": {
             "totalButtons": 1,
-            "minHeight": 64,
+            "minHeight": 44,
             "below44": []
           },
           "textFindings": {
@@ -1203,7 +1203,7 @@
           },
           "buttonMetrics": {
             "totalButtons": 1,
-            "minHeight": 64,
+            "minHeight": 44,
             "below44": []
           },
           "textFindings": {
@@ -1226,7 +1226,7 @@
           },
           "buttonMetrics": {
             "totalButtons": 1,
-            "minHeight": 64,
+            "minHeight": 44,
             "below44": []
           },
           "textFindings": {
@@ -1249,7 +1249,7 @@
           },
           "buttonMetrics": {
             "totalButtons": 1,
-            "minHeight": 64,
+            "minHeight": 44,
             "below44": []
           },
           "textFindings": {
@@ -1334,7 +1334,7 @@
       },
       {
         "id": "account",
-        "minButtonHeight": 64,
+        "minButtonHeight": 44,
         "overflowWidths": [],
         "rawValueWidths": [],
         "rawValues": []

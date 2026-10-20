@@ -52,7 +52,7 @@
   border-radius: var(--moi-radius-sm);
   color: var(--moi-color-muted);
   text-decoration: none;
-  font-size: var(--moi-size-small);
+  font-size: clamp(15px, 4vw, 16px);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -84,8 +84,7 @@
     gap: var(--moi-space-1);
   }
   .moi-nav-link {
-    padding-inline: var(--moi-space-1);
-    font-size: 12px;
+    padding-inline: 0;
   }
 }
 
