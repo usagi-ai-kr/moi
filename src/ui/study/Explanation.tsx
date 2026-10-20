@@ -1,44 +1,59 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { copy } from '../copy';
+import { renderPeleDiagram } from './diagram-pele';
 import './study-feedback.css';
-
-let mermaidReady = false;
 
 export function MermaidDiagram({ code }: { code: string }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
-  const id = `mermaid-${uid}`;
+  const idPrefix = `pele-${uid}`;
+  const boxRef = useRef<HTMLDivElement | null>(null);
+  const [width, setWidth] = useState<number | undefined>(undefined);
   const [svg, setSvg] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    const el = boxRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const update = (): void => {
+      const w = el.clientWidth;
+      if (typeof w === 'number' && w > 0) {
+        setWidth((prev) => (prev === w ? prev : w));
+      }
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   useEffect(() => {
     let live = true;
     setSvg(null);
     setFailed(false);
-    import('mermaid')
-      .then(async (mod) => {
-        const api = (mod as { default?: unknown }).default ?? mod;
-        const m = api as {
-          initialize: (o: unknown) => void;
-          render: (id: string, code: string) => Promise<{ svg: string } | string>;
-        };
-        if (!mermaidReady) {
-          m.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'neutral' });
-          mermaidReady = true;
-        }
-        const out = await m.render(id, code);
-        const text = typeof out === 'string' ? out : out.svg;
-        if (live) setSvg(text);
-      })
-      .catch(() => {
-        if (live) setFailed(true);
-      });
+    const currentWidth = boxRef.current?.clientWidth;
+    const maxWidth = typeof currentWidth === 'number' && currentWidth > 0 ? currentWidth : width;
+    void renderPeleDiagram({ code, idPrefix, maxWidth }).then((out) => {
+      if (!live) return;
+      if (out) setSvg(out.svg);
+      else setFailed(true);
+    });
     return () => {
       live = false;
     };
-  }, [id, code]);
+  }, [code, idPrefix, width]);
+
   if (failed) {
     return (
-      <div data-testid="mermaid-diagram" role="img" aria-label="다이어그램" className="moi-mermaid">
+      <div
+        ref={boxRef}
+        data-testid="mermaid-diagram"
+        role="img"
+        aria-label={copy.study.diagramLabel}
+        className="moi-mermaid"
+      >
+        <p role="alert">{copy.study.diagramError}</p>
         <pre>
           <code>{code}</code>
         </pre>
@@ -47,16 +62,23 @@ export function MermaidDiagram({ code }: { code: string }) {
   }
   if (svg === null) {
     return (
-      <div data-testid="mermaid-diagram" role="img" aria-label="다이어그램" className="moi-mermaid">
-        <span role="status">다이어그램을 불러오는 중입니다</span>
+      <div
+        ref={boxRef}
+        data-testid="mermaid-diagram"
+        role="img"
+        aria-label={copy.study.diagramLabel}
+        className="moi-mermaid"
+      >
+        <span role="status">{copy.study.diagramLoading}</span>
       </div>
     );
   }
   return (
     <div
+      ref={boxRef}
       data-testid="mermaid-diagram"
       role="img"
-      aria-label="다이어그램"
+      aria-label={copy.study.diagramLabel}
       className="moi-mermaid"
       dangerouslySetInnerHTML={{ __html: svg }}
     />
