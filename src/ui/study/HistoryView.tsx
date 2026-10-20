@@ -2,7 +2,7 @@ import { Link, useInRouterContext } from 'react-router';
 import { copy } from '../copy';
 import type { StudySummary } from '../api/client';
 import { Pagination } from '../components/ui/pagination';
-import { domainLabel } from '../stats/StatsPanel';
+import { domainLabel } from '../stats/labels';
 import { formatDateTime, scopeLabel, STUDY_EXAM_LABEL } from './types';
 import './study.css';
 import './study-result.css';

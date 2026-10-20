@@ -184,32 +184,26 @@ export function StudyScreen({
   }
 
   return (
-    <div className="moi-study-start">
-      <StartView
-        scope={s.scope}
-        domainId={s.domainId}
-        pending={f.startMut.isPending}
-        conflict={f.conflict}
-        unauthorized={f.unauth || setQuery.isError}
-        startError={f.startError ?? (setQuery.isError ? copy.session.loadError : null)}
-        onScope={s.setScope}
-        onDomain={s.setDomainId}
-        onStart={f.handleStart}
-        onResume={() => {
-          // 409(이미 진행 중)는 setId를 모르므로 /study의 current 복원으로 이동한다 (#148).
-          if (onNavigate) {
-            onNavigate('/study');
-            return;
-          }
-          if (!f.setId) return;
-          s.setView('active');
-        }}
-      />
-      {onNavigate && (
-        <button type="button" className="moi-study-link" onClick={() => onNavigate('/history')}>
-          {copy.study.historyLink}
-        </button>
-      )}
-    </div>
+    <StartView
+      scope={s.scope}
+      domainId={s.domainId}
+      pending={f.startMut.isPending}
+      conflict={f.conflict}
+      unauthorized={f.unauth || setQuery.isError}
+      startError={f.startError ?? (setQuery.isError ? copy.session.loadError : null)}
+      onScope={s.setScope}
+      onDomain={s.setDomainId}
+      onStart={f.handleStart}
+      onResume={() => {
+        // 409(이미 진행 중)는 setId를 모르므로 /study의 current 복원으로 이동한다 (#148).
+        if (onNavigate) {
+          onNavigate('/study');
+          return;
+        }
+        if (!f.setId) return;
+        s.setView('active');
+      }}
+      onHistory={onNavigate ? () => onNavigate('/history') : undefined}
+    />
   );
 }

@@ -7,4 +7,8 @@
 
 /* shadcn 의미 변수 → --moi-* 단일 매핑 (DESIGN.md·ADR-0035). preflight는 단계적 도입으로 미포함. */
 :root { --background: var(--moi-color-white); --foreground: var(--moi-color-ink); --primary: var(--moi-color-orange); --primary-foreground: var(--moi-color-white); --muted: var(--moi-color-surface); --muted-foreground: var(--moi-color-muted); --border: var(--moi-color-border); --destructive: var(--moi-color-danger); --ring: var(--moi-color-ink); --radius: var(--moi-radius-md); }
-@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --color-destructive: var(--destructive); --color-ring: var(--ring); --radius-sm: var(--moi-radius-sm); --radius-md: var(--radius); --radius-lg: var(--moi-radius-lg); }
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --color-destructive: var(--destructive); --color-ring: var(--ring); --radius-sm: var(--moi-radius-sm); --radius-md: var(--radius); --radius-lg: var(--moi-radius-lg); --text-sm: 1rem; --text-base: 1.125rem; }
+
+/* shadcn Button UA 테두리 리셋 (#182) — preflight 미도입 상태에서 남는 `2px outset`을 제거한다.
+   `outline` variant는 `.border` 유틸리티로 1px 토큰 테두리를 그리므로 제외한다. */
+[data-slot='button']:not(.border) { border: 0; }

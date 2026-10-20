@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { copy } from '../copy';
+import '../account.css';
 
 // 계정 — 로그인 상태 안내 + 로그아웃 버튼만. UUID/sub/jti/마스킹 ID를 표시하지 않는다.
 // 로그아웃 훅은 AppContent가 소유한다 — 계정 화면이 /api/me observer를 중복 생성하지 않게 한다.
@@ -20,8 +21,8 @@ export function AccountPage({
     }
   };
   return (
-    <section className="moi-card moi-page" aria-label={copy.account.title}>
-      <h1 className="moi-card-title">{copy.account.title}</h1>
+    <section className="moi-page moi-account" aria-label={copy.account.title}>
+      <h1 className="moi-account-title">{copy.account.title}</h1>
       <p className="moi-lead">{copy.account.loggedIn}</p>
       {failed && (
         <div className="moi-alert moi-alert-error" role="alert">
@@ -33,7 +34,7 @@ export function AccountPage({
       )}
       <button
         type="button"
-        className="moi-action"
+        className="moi-account-logout"
         disabled={pending}
         aria-busy={pending}
         onClick={() => void handleLogout()}

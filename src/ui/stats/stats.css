@@ -1,0 +1,171 @@
+/* 학습 현황 — 요약 카드·영역별 카드·취약 순위. 토큰 CSS 변수만 사용 (#182). */
+.moi-stats {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+/* 768~1023 — 이력 목록(.moi-study)과 같은 640px 열에 맞춘다. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .moi-stats {
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}
+.moi-stats-title {
+  margin: 0;
+  font-size: var(--moi-size-h2);
+  color: var(--moi-color-ink);
+}
+.moi-stats-sub {
+  margin: var(--moi-space-2) 0 0;
+  font-size: var(--moi-size-body);
+  color: var(--moi-color-ink);
+}
+.moi-stats-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  padding: var(--moi-space-4);
+}
+.moi-stats-progress {
+  margin: 0;
+  max-width: 100%;
+  font-size: var(--moi-size-body);
+  color: var(--moi-color-ink);
+  overflow-wrap: anywhere;
+}
+.moi-stats-coverage {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--moi-color-border);
+  overflow: hidden;
+}
+.moi-stats-coverage span {
+  display: block;
+  height: 100%;
+  background: var(--moi-color-orange);
+}
+.moi-stats-error { max-width: 100%; }
+.moi-stats:focus-visible { outline: 2px solid var(--moi-color-ink); outline-offset: 2px; }
+
+.moi-domain-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.moi-domain-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  min-width: 0;
+  padding: var(--moi-space-4);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+}
+.moi-domain-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--moi-space-2);
+}
+.moi-domain-name {
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+  overflow-wrap: anywhere;
+}
+.moi-domain-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding-inline: var(--moi-space-2);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+.moi-domain-item[data-status='ok'] .moi-domain-badge {
+  border-color: var(--moi-color-orange);
+  color: var(--moi-color-ink);
+}
+.moi-domain-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--moi-space-2);
+  margin: 0;
+}
+.moi-domain-metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.moi-domain-metrics dt {
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+.moi-domain-metrics dd {
+  margin: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+  overflow-wrap: anywhere;
+}
+
+.moi-weak-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.moi-weak-item {
+  display: flex;
+  align-items: center;
+  gap: var(--moi-space-2);
+  min-width: 0;
+  padding: var(--moi-space-2) var(--moi-space-3);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+}
+.moi-weak-rank {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--moi-color-surface);
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+  color: var(--moi-color-muted);
+}
+.moi-weak-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--moi-size-body);
+  color: var(--moi-color-ink);
+  overflow-wrap: anywhere;
+}
+.moi-weak-score {
+  flex: none;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+}

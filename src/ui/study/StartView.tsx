@@ -13,6 +13,7 @@ interface Props {
   onDomain: (id: string) => void;
   onStart: () => void;
   onResume: () => void;
+  onHistory?: () => void;
 }
 
 // 범위(전체/영역/취약) 선택 — AntD 없이 네이티브 라디오 + 토큰 CSS.
@@ -91,7 +92,7 @@ export function StartView(p: Props) {
           <p className="moi-alert-text">{p.startError}</p>
         </div>
       )}
-      <div className="moi-study-actions">
+      <div className="moi-study-actions moi-study-start">
         <button
           type="button"
           className="moi-study-primary"
@@ -101,6 +102,11 @@ export function StartView(p: Props) {
         >
           {p.pending ? copy.study.starting : copy.study.startAction}
         </button>
+        {p.onHistory && (
+          <button type="button" className="moi-study-link" onClick={p.onHistory}>
+            {copy.study.historyLink}
+          </button>
+        )}
       </div>
     </section>
   );

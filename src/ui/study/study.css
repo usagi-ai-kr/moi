@@ -18,24 +18,14 @@
     max-width: 100%;
   }
 }
-/* 시작 화면과 아래 보조 링크를 같은 열에 정렬한다(768~1023 중앙 정렬). */
+/* 시작 화면의 학습 시작·학습 이력 버튼을 같은 줄에 둔다. 좁으면 flex-wrap으로 줄바꿈 (#182). */
 .moi-study-start {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--moi-space-2);
   width: 100%;
-}
-@media (min-width: 768px) {
-  .moi-study-start {
-    max-width: 640px;
-    margin-inline: auto;
-  }
-}
-@media (min-width: 1024px) {
-  .moi-study-start {
-    max-width: 100%;
-  }
 }
 .moi-study-title {
   margin: 0;
@@ -131,11 +121,7 @@
 }
 /* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). */
 .moi-study-confirm { flex-wrap: wrap; }
-/* shadcn Button은 preflight 미도입 상태라 UA 기본 버튼 border(2px outset)가 남는다.
-   이 파일은 layer 밖이라 Tailwind utilities보다 우선하므로, `border` 유틸리티를 가진 variant(outline —
-   북마크 버튼 포함)는 리셋에서 제외해 1px 토큰 테두리를 유지한다. */
-.moi-study [data-slot='button']:not(.border),
-.moi-study-confirm [data-slot='button']:not(.border) { border: 0; }
+/* shadcn Button의 UA border 리셋은 authenticated.css 전역 규칙이 담당한다 (#182). */
 .moi-study [data-slot='button'], .moi-study-confirm [data-slot='button'] { cursor: pointer; }
 .moi-study-primary {
   min-height: var(--moi-control-h);

@@ -49,7 +49,7 @@ export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
         <div role="tablist" aria-label={copy.review.title} className="flex gap-2 border-b border-border pb-2">
           <Button
             role="tab"
-            variant={mode === 'wrong' ? 'primary' : 'ghost'}
+            variant={mode === 'wrong' ? 'primary' : 'outline'}
             aria-selected={mode === 'wrong'}
             disabled={isBusy}
             onClick={() => setTab('wrong')}
@@ -58,7 +58,7 @@ export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
           </Button>
           <Button
             role="tab"
-            variant={mode === 'bookmark' ? 'primary' : 'ghost'}
+            variant={mode === 'bookmark' ? 'primary' : 'outline'}
             aria-selected={mode === 'bookmark'}
             disabled={isBusy}
             onClick={() => setTab('bookmark')}
