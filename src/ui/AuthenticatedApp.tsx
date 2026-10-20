@@ -21,6 +21,9 @@ const StudyRoute = lazy(() => import('./pages/StudyRoute').then((m) => ({ defaul
 const LegacyStudyRedirect = lazy(() =>
   import('./pages/LegacyStudyRedirect').then((m) => ({ default: m.LegacyStudyRedirect })),
 );
+const LegacyHistoryRedirect = lazy(() =>
+  import('./pages/LegacyHistoryRedirect').then((m) => ({ default: m.LegacyHistoryRedirect })),
+);
 const HistoryDetailPage = lazy(() =>
   import('./pages/HistoryDetailPage').then((m) => ({ default: m.HistoryDetailPage })),
 );
@@ -143,8 +146,12 @@ function AuthenticatedRoutes({
             element={<Suspense fallback={<RouteFallback />}><HistoryPage client={client} /></Suspense>}
           />
           <Route
-            path="history/:setId"
+            path="history/detail"
             element={<Suspense fallback={<RouteFallback />}><HistoryDetailPage client={client} /></Suspense>}
+          />
+          <Route
+            path="history/:setId"
+            element={<Suspense fallback={<RouteFallback />}><LegacyHistoryRedirect client={client} /></Suspense>}
           />
           <Route
             path="review"

@@ -347,7 +347,7 @@ Then('문제 화면이 보인다', async ({ page }) => {
 Then('주소창에 내부 세트 ID가 없다', async ({ page }) => {
   const url = page.url();
   expect(url).not.toMatch(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-  expect(new URL(url).pathname).toMatch(/^\/study(\/new|\/result)?$/);
+  expect(new URL(url).pathname).toMatch(/^(\/study(\/new|\/result)?|\/history(\/detail)?)$/);
 });
 
 Then('문제 본문과 보기가 보인다', async ({ page }) => {
@@ -386,6 +386,14 @@ Then('포기 확인이 보인다', async ({ page }) => {
 
 Then('완료 세트가 보인다', async ({ page }) => {
   await expect(page.getByText('완료한 학습')).toBeVisible({ timeout: 10_000 });
+});
+
+When('이력 항목을 선택하면', async ({ page }) => {
+  await page.locator('.moi-study-history-item').first().click();
+});
+
+When('상세 보기 링크를 누르면', async ({ page }) => {
+  await page.getByRole('link', { name: '상세 보기' }).click();
 });
 
 Then('학습 현황이 보인다', async ({ page }) => {
