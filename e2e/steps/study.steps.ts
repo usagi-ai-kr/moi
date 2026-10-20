@@ -427,7 +427,7 @@ Then('풀이 버튼은 44px 이상이고 북마크 버튼 테두리가 보인다
   expect(width).toBe('1px');
 });
 
-// #189 결과 해설 페이저 — 진행 표시는 페이저 영역 안에서만 찾는다(요약의 "정답 1/20"과 구분).
+// #189 결과 해설 페이저 — 진행 표시는 페이저 영역 안에서만 찾는다(요약의 "정답 1/10"과 구분).
 function resultPager(page: import('@playwright/test').Page) {
   return page.getByRole('group', { name: copy.study.resultPagerLabel });
 }
