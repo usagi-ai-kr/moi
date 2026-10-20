@@ -9,6 +9,7 @@
  */
 import { spawn, spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createConnection } from 'node:net';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 
@@ -478,6 +479,7 @@ const SCREENS = [
 ];
 
 async function waitForServer(target, timeoutMs, previewState, buildMarker) {
+  if (!buildMarker) return { ok: false, reason: 'no-build-marker', foreignResponse: false };
   const started = Date.now();
   let foreignResponse = false;
   while (Date.now() - started < timeoutMs) {
@@ -486,7 +488,6 @@ async function waitForServer(target, timeoutMs, previewState, buildMarker) {
       const res = await fetch(target);
       if (res.ok) {
         // 4174에 이미 떠 있던 다른 서버에 붙지 않도록, 응답이 현재 빌드 산출물인지 확인한다.
-        if (!buildMarker) return { ok: true, foreignResponse };
         const html = await res.text();
         if (html.includes(buildMarker)) return { ok: true, foreignResponse };
         foreignResponse = true;
@@ -513,6 +514,24 @@ function readBuildMarker() {
   return null;
 }
 
+function isPortInUse(port, host = '127.0.0.1') {
+  return new Promise((resolve) => {
+    const socket = createConnection({ port, host });
+    socket.once('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once('error', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.setTimeout(500, () => {
+      socket.destroy();
+      resolve(false);
+    });
+  });
+}
+
 function previewOutput(previewState) {
   if (previewState.error) return previewState.error.message;
   return previewState.output
@@ -525,6 +544,9 @@ function previewOutput(previewState) {
 
 function previewFailure(previewState, wait) {
   const detail = previewOutput(previewState);
+  if (wait.reason === 'no-build-marker') {
+    return new Error(`빌드 산출물을 찾을 수 없습니다. 먼저 \`pnpm build\`를 실행하세요.${detail ? `\npreview 출력:\n${detail}` : ''}`);
+  }
   const portInUse = /already in use|EADDRINUSE|strictPort/i.test(detail);
   const message = portInUse
     ? `포트 ${PORT}가 이미 사용 중입니다. 다른 preview/dev 서버를 종료한 뒤 다시 실행하세요.`
@@ -550,6 +572,14 @@ async function main() {
   build();
 
   const buildMarker = readBuildMarker();
+  if (!buildMarker) {
+    console.error('빌드 산출물을 찾을 수 없습니다. 먼저 `pnpm build`를 실행하세요.');
+    process.exit(1);
+  }
+  if (await isPortInUse(PORT)) {
+    console.error(`포트 ${PORT}가 이미 사용 중입니다. 다른 preview/dev 서버를 종료한 뒤 다시 실행하세요.`);
+    process.exit(1);
+  }
   console.log(`Starting vite preview on port ${PORT}...`);
   const preview = spawn('pnpm', ['exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], {
     stdio: ['ignore', 'pipe', 'pipe'],
