@@ -4,6 +4,7 @@ import { Pagination } from '../components/ui/pagination';
 import { domainLabel } from '../stats/StatsPanel';
 import { formatDateTime, scopeLabel, STUDY_EXAM_LABEL } from './types';
 import './study.css';
+import './study-result.css';
 
 interface Props {
   items: StudySummary[];

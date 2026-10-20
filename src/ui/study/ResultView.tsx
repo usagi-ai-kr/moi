@@ -5,6 +5,7 @@ import { BookmarkButton } from '../review/BookmarkButton';
 import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
 import { scopeLabel, STUDY_EXAM_LABEL } from './types';
+import './study-result.css';
 
 interface Props {
   client: ApiClient;

@@ -1,0 +1,43 @@
+/* 학습 결과 — 요약 통계 그리드·기록 이력·상세. 토큰 CSS 변수만 사용, AntD 없음. */
+/* 결과 요약 통계 — 모바일 2×2, 768px 이상 4열(#148). dl/dt/dd 의미 구조는 유지한다. */
+.moi-study-result {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--moi-space-2);
+  margin: 0;
+  font-size: var(--moi-size-small);
+}
+@media (min-width: 768px) { .moi-study-result { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.moi-study-result > div { display: flex; flex-direction: column; gap: var(--moi-space-1); min-width: 0; padding: var(--moi-space-2) var(--moi-space-3); background: var(--moi-color-surface); border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); }
+.moi-study-result dt { font-size: 14px; line-height: var(--moi-lh-tight); color: var(--moi-color-muted); }
+.moi-study-result dd { margin: 0; font-size: 22px; font-weight: 600; line-height: var(--moi-lh-tight); color: var(--moi-color-ink); }
+.moi-study-peritem,
+.moi-study-history {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  font-size: var(--moi-size-small);
+  overflow-wrap: anywhere;
+}
+.moi-study-history {
+  list-style: none;
+  padding: 0;
+}
+.moi-study-history-item {
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-body);
+  min-height: var(--moi-space-8);
+  width: 100%;
+  text-align: left;
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  padding: var(--moi-space-2) var(--moi-space-3);
+  cursor: pointer;
+}
+.moi-study-detail {
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  padding: var(--moi-space-3);
+}
