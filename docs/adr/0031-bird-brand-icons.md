@@ -1,7 +1,7 @@
 ---
 id: ADR-0031
 title: 새와 모이 SVG 마스터 기반 아이콘 자산
-status: Proposed
+status: Superseded by ADR-0054
 date: 2026-10-19
 related: []
 ---
