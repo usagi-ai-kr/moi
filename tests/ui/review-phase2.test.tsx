@@ -430,9 +430,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
     expect(screen.queryByText(/대기 중인/)).not.toBeInTheDocument();
   });
 
-  it('9. ResultView에 북마크 버튼과 오답 복습 바로가기 링크가 제공된다', () => {
-    const { client } = createFakePhase2Client();
-    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  it('9. ResultView의 오답·북마크 복습 바로가기는 SPA 링크이고 이동 후 해당 탭이 선택된다', async () => {
     const mockSet = {
       id: 'set-1',
       userId: 'u-1',
@@ -475,15 +473,38 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
       },
     };
 
-    const { container } = render(
-      <QueryClientProvider client={queryClient}>
-        <ResultView client={client} set={mockSet} onRestart={() => {}} onHistory={() => {}} />
-      </QueryClientProvider>,
-    );
+    function renderResult() {
+      const { client } = createFakePhase2Client();
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+      return render(
+        <QueryClientProvider client={queryClient}>
+          <MemoryRouter initialEntries={['/study/result']}>
+            <Routes>
+              <Route
+                path="/study/result"
+                element={<ResultView client={client} set={mockSet} onRestart={() => {}} onHistory={() => {}} />}
+              />
+              <Route path="/review" element={<ReviewScreen client={client} />} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>,
+      );
+    }
 
-    const reviewLink = screen.getByRole('link', { name: /오답 복습/ });
-    expect(reviewLink).toHaveAttribute('href', '/review?mode=wrong');
-    expect(container.querySelector('[aria-label="북마크 추가"]')).toBeInTheDocument();
+    const first = renderResult();
+    const wrongLink = screen.getByRole('link', { name: /오답 복습/ });
+    expect(wrongLink).toHaveAttribute('href', '/review?mode=wrong');
+    expect(screen.getByRole('link', { name: /북마크 복습/ })).toHaveAttribute('href', '/review?mode=bookmark');
+    expect(first.container.querySelector('[aria-label="북마크 추가"]')).toBeInTheDocument();
+
+    // raw <a>면 jsdom 풀 내비게이션이라 복습 탭이 렌더되지 않는다.
+    fireEvent.click(wrongLink);
+    expect(await screen.findByRole('tab', { name: /오답 복습/ })).toHaveAttribute('aria-selected', 'true');
+    first.unmount();
+
+    renderResult();
+    fireEvent.click(screen.getByRole('link', { name: /북마크 복습/ }));
+    expect(await screen.findByRole('tab', { name: /북마크 복습/ })).toHaveAttribute('aria-selected', 'true');
   });
 
   it('10. 복습 시작(start) 시 409가 발생하면 current를 재조회하여 활성 회차로 재개한다', async () => {

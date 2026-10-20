@@ -1,4 +1,5 @@
 import { useEffect, useState, type KeyboardEvent } from 'react';
+import { Link, useInRouterContext } from 'react-router';
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedItem, StudySubmittedSet } from '../api/client';
 import { Button } from '../components/ui/button';
@@ -49,6 +50,17 @@ function isFormTarget(target: EventTarget | null): boolean {
   const el = target as HTMLElement | null;
   if (!el || typeof el.tagName !== 'string') return false;
   return el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName);
+}
+
+// 복습 바로가기 — 라우터 안에서는 풀 리로드 없는 Link, 직접 렌더(테스트)에서는 일반 anchor.
+function ReviewShortcut({ mode, label }: { mode: 'wrong' | 'bookmark'; label: string }) {
+  const inRouter = useInRouterContext();
+  const to = `/review?mode=${mode}`;
+  return (
+    <Button asChild variant="secondary">
+      {inRouter ? <Link to={to}>{label}</Link> : <a href={to}>{label}</a>}
+    </Button>
+  );
 }
 
 // 결과 — 요약·문항별 선택/정답 + 스냅샷 해설·근거 링크(제출 후 노출).
@@ -212,9 +224,8 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
         <Button type="button" variant="secondary" onClick={onHistory}>
           {copy.study.historyLink}
         </Button>
-        <Button asChild variant="secondary">
-          <a href="/review?mode=wrong">{copy.review.goToWrongReview}</a>
-        </Button>
+        <ReviewShortcut mode="wrong" label={copy.review.goToWrongReview} />
+        <ReviewShortcut mode="bookmark" label={copy.review.goToBookmarkReview} />
       </div>
     </section>
   );
