@@ -1,4 +1,7 @@
 // #121 Phase 1 — OSS 고지 생성 lib 단위 테스트 (Given/When/Then, Red→Green)
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   NEEDS_REVIEW,
@@ -6,10 +9,12 @@ import {
   expandEntryVersions,
   extractCopyrightHit,
   extractSourceUrl,
+  findLicenseFile,
   findMissingDirectProdDeps,
   findPureDevOnly,
   matchPathForVersion,
   normalizeLicense,
+  readLicenseHit,
   renderNotices,
   resolveCopyright,
   sortNotices,
@@ -125,5 +130,36 @@ describe('Given OSS 고지 생성 규칙 / When lib 함수 호출 / Then AC 충�
     );
     expect(matchPathForVersion(paths, 'elkjs', '0.9.3')).toContain('elkjs@0.9.3');
     expect(matchPathForVersion(paths, 'dompurify', '3.4.17')).toContain('dompurify@3.4.17');
+  });
+
+  it('소문자 license만 있어도 Linux에서 저작권을 찾는다(대소문자 비구분)', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'notices-'));
+    writeFileSync(join(dir, 'license'), 'Copyright (c) 2024 Lowercase Only\n');
+    expect(findLicenseFile(['license'])).toBe('license');
+    expect(readLicenseHit(dir)).toContain('Lowercase Only');
+  });
+
+  it('LICENSE와 license 공존 시 정확한 이름이 우선한다(결정론)', () => {
+    // macOS(대소문자 비구분 FS)에서는 같은 디렉터리에 두 파일을 함께 만들 수 없어
+    // 공존 우선순위는 순수 함수로 검증한다. FS 읽기는 단독 파일로 검증.
+    expect(findLicenseFile(['license', 'LICENSE'])).toBe('LICENSE');
+    expect(findLicenseFile(['LICENSE', 'license'])).toBe('LICENSE');
+    const dir = mkdtempSync(join(tmpdir(), 'notices-'));
+    writeFileSync(join(dir, 'LICENSE'), 'Copyright (c) 2024 Exact\n');
+    expect(readLicenseHit(dir)).toContain('Exact');
+  });
+
+  it('라이선스 파일이 없으면 빈 문자열이다', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'notices-'));
+    expect(findLicenseFile([])).toBe('');
+    expect(findLicenseFile(['package.json', 'README.md'])).toBe('');
+    expect(readLicenseHit(dir)).toBe('');
+  });
+
+  it('license.txt 변형도 대소문자 무시로 찾는다', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'notices-'));
+    writeFileSync(join(dir, 'license.txt'), 'Copyright 2020 Txt Variant\n');
+    expect(findLicenseFile(['license.txt'])).toBe('license.txt');
+    expect(readLicenseHit(dir)).toContain('Txt Variant');
   });
 });

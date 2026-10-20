@@ -1,5 +1,8 @@
 // #121 Phase 1 — lockfile 고정 prod 의존성의 OSS 고지 데이터 순수 함수.
 // 저작권은 설치된 LICENSE*의 Copyright 행에서만 확정한다. author는 저작권이 아니다.
+import { readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 export const NEEDS_REVIEW = '확인 필요';
 
 const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -35,6 +38,49 @@ export function extractCopyrightHit(text) {
   if (typeof text !== 'string' || !text) return '';
   const hit = text.split('\n').find((l) => isCopyrightHit(l));
   return hit?.trim().replace(/\s+/g, ' ') || '';
+}
+
+// 대소문자 비구분 라이선스 탐색: macOS(비구분 FS)와 Linux(구분 FS) 동일 결과.
+// 후보 우선순위대로 정확한 이름 우선, 다음 정렬된 엔트리로 결정론 선택.
+export const LICENSE_CANDIDATES = [
+  'LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENCE', 'LICENCE.md',
+  'NOTICE', 'NOTICE.md', 'NOTICE.txt',
+];
+
+export function findLicenseFile(dirEntries, candidates = LICENSE_CANDIDATES) {
+  const present = new Set(dirEntries || []);
+  for (const c of candidates) if (present.has(c)) return c;
+  const byLower = new Map();
+  for (const e of dirEntries || []) {
+    const k = String(e).toLowerCase();
+    if (!byLower.has(k)) byLower.set(k, []);
+    byLower.get(k).push(String(e));
+  }
+  for (const c of candidates) {
+    const hits = byLower.get(String(c).toLowerCase());
+    if (hits?.length) return [...hits].sort()[0];
+  }
+  return '';
+}
+
+export function readLicenseHit(dir) {
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return '';
+  }
+  for (const candidate of LICENSE_CANDIDATES) {
+    const file = findLicenseFile(entries, [candidate]);
+    if (!file) continue;
+    try {
+      const hit = extractCopyrightHit(readFileSync(resolve(dir, file), 'utf8'));
+      if (hit) return hit;
+    } catch {
+      continue;
+    }
+  }
+  return '';
 }
 
 export function extractSourceUrl(pkg, fallbackHomepage) {

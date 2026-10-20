@@ -35,6 +35,9 @@ export function normalizeLicense(entryLicense: unknown, pkg: InstalledPackage): 
 export function resolveCopyright(licenseHit: string): string;
 export function isCopyrightHit(line: string): boolean;
 export function extractCopyrightHit(text: string): string;
+export const LICENSE_CANDIDATES: string[];
+export function findLicenseFile(dirEntries: string[], candidates?: string[]): string;
+export function readLicenseHit(dir: string): string;
 export function extractSourceUrl(pkg: InstalledPackage, fallbackHomepage: string): string;
 export function matchPathForVersion(paths: string[] | undefined, name: string, version: string): string;
 export function expandEntryVersions(entry: RawLicenseEntry): VersionedEntry[];
