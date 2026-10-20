@@ -230,8 +230,8 @@ describe('학습 화면 버튼 위계', () => {
     expect(screen.queryByRole('alertdialog', { name: '제출 확인' })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: '포기하기' }));
-    expect(await screen.findByRole('alertdialog', { name: '포기 확인' })).toBeInTheDocument();
-    expect(screen.getByText(/정말 포기할까요/)).toBeInTheDocument();
+    expect(await screen.findByRole('alertdialog', { name: '정말 학습을 포기하시겠습니까?' })).toBeInTheDocument();
+    expect(screen.getByText('포기한 세트는 채점되지 않습니다.')).toBeInTheDocument();
   });
 
   it('결과 화면: 새 세트 시작=primary·학습 이력·오답 복습=secondary(같은 크기)', async () => {

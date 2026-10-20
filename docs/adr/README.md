@@ -75,4 +75,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0058 | 복습 시험 식별자 공개 코드 정규화와 내부 ID 읽기 호환 | Accepted | 2026-10-21 | [0058-review-exam-id-code.md](./0058-review-exam-id-code.md) |
 | ADR-0059 | 복습 10문항 회차와 remaining/cycle 큐 | Accepted | 2026-10-21 | [0059-review-round-10-queue.md](./0059-review-round-10-queue.md) |
 | ADR-0060 | 홈 안내 문구 삭제 | Accepted | 2026-10-21 | [0060-home-note-removal.md](./0060-home-note-removal.md) |
+| ADR-0061 | 학습 포기 확인을 인라인 경고에서 AlertDialog 모달로 전환 | Accepted | 2026-10-21 | [0061-abandon-confirm-alert-dialog.md](./0061-abandon-confirm-alert-dialog.md) |
 <!-- ADR_INDEX:END -->

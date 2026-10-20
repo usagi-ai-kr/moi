@@ -121,6 +121,28 @@
 }
 /* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). */
 .moi-study-confirm { flex-wrap: wrap; }
+/* 포기 확인 모달 액션 — 제목/본문/액션 분리, 취소 기본·확정 destructive (#223). */
+.moi-abandon-actions {
+  margin-top: var(--moi-space-4);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--moi-space-2);
+}
+.moi-abandon-error {
+  margin: var(--moi-space-2) 0 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-danger);
+}
+/* 360px 이하 세로 적층 — DOM 순서(취소→확정)를 뒤집어 확정을 위, 취소를 아래에 둔다. */
+@media (max-width: 360px) {
+  .moi-abandon-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .moi-abandon-actions > * {
+    width: 100%;
+  }
+}
 /* shadcn Button의 UA border 리셋은 authenticated.css 전역 규칙이 담당한다 (#182). */
 .moi-study [data-slot='button'], .moi-study-confirm [data-slot='button'] { cursor: pointer; }
 .moi-study-primary {
