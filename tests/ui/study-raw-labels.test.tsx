@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type {
   ApiClient,
@@ -8,6 +8,7 @@ import type {
   StudySubmittedSet,
   StudySummary,
 } from '../../src/ui/api/client';
+import { copy } from '../../src/ui/copy';
 import { HistoryView } from '../../src/ui/study/HistoryView';
 import { QuestionView } from '../../src/ui/study/QuestionView';
 import { ResultView } from '../../src/ui/study/ResultView';
@@ -144,10 +145,15 @@ describe('#148 원시 값 제거', () => {
     expect(within(first).getByText(/응답/)).toBeInTheDocument();
     expect(within(first).getByText(/선택: 2, 3/)).toBeInTheDocument();
     expect(within(first).getByText(/정답: 비공개/)).toBeInTheDocument();
-    expect(within(screen.getByTestId('peritem-q-2')).getByText(/Pass/)).toBeInTheDocument();
-    expect(within(screen.getByTestId('peritem-q-3')).getByText(/미응답/)).toBeInTheDocument();
-    expect(within(screen.getByTestId('peritem-q-4')).getByText(/선택: \?/)).toBeInTheDocument();
     expect(screen.queryByText(/answered|unanswered/)).not.toBeInTheDocument();
+    // 해설은 한 문항씩만 보여준다(#189) — 다음 문항으로 넘겨 상태 라벨을 확인한다.
+    const next = screen.getByRole('button', { name: copy.study.nextItem });
+    fireEvent.click(next);
+    expect(within(screen.getByTestId('peritem-q-2')).getByText(/Pass/)).toBeInTheDocument();
+    fireEvent.click(next);
+    expect(within(screen.getByTestId('peritem-q-3')).getByText(/미응답/)).toBeInTheDocument();
+    fireEvent.click(next);
+    expect(within(screen.getByTestId('peritem-q-4')).getByText(/선택: \?/)).toBeInTheDocument();
   });
 
   it('결과 상단은 examId 대신 시험 표시명을 보인다', () => {

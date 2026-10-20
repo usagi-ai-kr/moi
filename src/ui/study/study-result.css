@@ -20,6 +20,25 @@
   font-size: var(--moi-size-small);
   overflow-wrap: anywhere;
 }
+/* 결과 해설 페이저 — 한 문항씩 좌우 이동(#189). 320px에서 줄바꿈·가로 오버플로 0. */
+.moi-study-pager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  min-width: 0;
+}
+.moi-study-pager-status {
+  margin: 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-ink);
+  font-weight: 600;
+}
+.moi-study-pager-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--moi-space-2);
+  min-width: 0;
+}
 .moi-study-history {
   list-style: none;
   padding: 0;

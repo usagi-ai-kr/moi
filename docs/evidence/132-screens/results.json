@@ -1,7 +1,7 @@
 {
-  "commit": "eb4d871eba04063f95d819e58ab88fc456b8b670",
-  "commitShort": "eb4d871",
-  "generatedAt": "2026-10-20T04:34:53.877Z",
+  "commit": "6796436debc4df0dcf359a52af0821ebb331687a",
+  "commitShort": "6796436",
+  "generatedAt": "2026-10-20T04:51:09.126Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -149,7 +149,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "10문제 학습",
+                "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -187,7 +187,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "10문제 학습",
+                "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -225,7 +225,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "10문제 학습",
+                "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -263,7 +263,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "10문제 학습",
+                "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -301,7 +301,7 @@
             "minHeight": 40,
             "below44": [
               {
-                "text": "10문제 학습",
+                "text": "20문제 학습",
                 "tag": "button",
                 "height": 40,
                 "width": 119.3,
@@ -664,7 +664,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -687,7 +687,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -710,7 +710,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -733,7 +733,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -756,7 +756,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -1033,7 +1033,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 3,
+            "totalButtons": 5,
             "minHeight": 44,
             "below44": []
           },
@@ -1056,7 +1056,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 3,
+            "totalButtons": 5,
             "minHeight": 44,
             "below44": []
           },
@@ -1079,7 +1079,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 3,
+            "totalButtons": 5,
             "minHeight": 44,
             "below44": []
           },
@@ -1102,7 +1102,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 3,
+            "totalButtons": 5,
             "minHeight": 44,
             "below44": []
           },
@@ -1125,7 +1125,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 3,
+            "totalButtons": 5,
             "minHeight": 44,
             "below44": []
           },
