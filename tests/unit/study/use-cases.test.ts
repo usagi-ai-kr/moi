@@ -52,13 +52,13 @@ function fakes(overrides?: { poolCount?: number; seed?: number }) {
 }
 
 describe('StartStudySet (활성 세트 1개·스냅샷)', () => {
-  it('활성 세트가 없으면 20문제 세트를 시작하고 스냅샷을 고정한다', async () => {
+  it('활성 세트가 없으면 10문제 세트를 시작하고 스냅샷을 고정한다', async () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
 
     expect(result.outcome).toBe('started');
     if (result.outcome === 'started') {
-      expect(result.set.items).toHaveLength(20);
+      expect(result.set.items).toHaveLength(10);
       expect(result.set.status).toBe('active');
       expect(result.set.createdAt).toBe(1700000000);
       for (const item of result.set.items) {
@@ -111,12 +111,12 @@ describe('StartStudySet (활성 세트 1개·스냅샷)', () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     if (result.outcome === 'started') {
-      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(20);
+      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(10);
     }
   });
 
-  it('풀이 가능한 문제가 20개 미만이면 거부한다(경계 19)', async () => {
-    const f = fakes({ poolCount: 19 });
+  it('풀이 가능한 문제가 10개 미만이면 거부한다(경계 9)', async () => {
+    const f = fakes({ poolCount: 9 });
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     expect(result).toMatchObject({ outcome: 'rejected', reason: 'pool_insufficient' });
   });
@@ -169,7 +169,7 @@ describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
     expect(f.sets.get(set.id)?.status).toBe('active');
   });
 
-  it('확인 후 제출: 전체 20문제 채점·결과 요약·이후 변경 불가', async () => {
+  it('확인 후 제출: 전체 10문제 채점·결과 요약·이후 변경 불가', async () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     const set = (result as { set?: StudySet }).set as StudySet;
@@ -246,7 +246,7 @@ describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
     const result_ = f.sets.get(set.id)?.result;
     expect(result_?.accuracyPercent).toBe(0);
     expect(result_?.passCount).toBe(1);
-    expect(result_?.unansweredCount).toBe(19);
+    expect(result_?.unansweredCount).toBe(9);
   });
 });
 
@@ -299,6 +299,53 @@ describe('ListCompletedSets (이력 페이지네이션·상세)', () => {
     await submitStudySet(f, { setId: set.id, userId: 'u1', confirmUnanswered: true });
     const detail = await f.repository.findById({ id: set.id }) as StudySet;
     expect(detail.status).toBe('submitted');
-    expect(detail.items).toHaveLength(20);
+    expect(detail.items).toHaveLength(10);
+  });
+});
+
+describe('LegacyCompat (기존 20문항 세트 읽기 호환, #187·ADR-0046)', () => {
+  /** 구(20문항) 규격으로 저장된 활성 세트 — 생성 경로를 거치지 않고 직접 적재한다. */
+  function legacyTwentySet(): StudySet {
+    const items = Array.from({ length: 20 }, (_, i) => ({
+      questionId: `legacy-q-${i}`,
+      questionVersionId: `legacy-qv-${i}-v1`,
+      versionNo: 1,
+      optionOrder: ['a', 'b', 'c', 'd'],
+      answerOptionIds: ['b'],
+      stem: `기존 문제 ${i} 본문`,
+      options: ['a', 'b', 'c', 'd'].map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
+      explanation: `기존 문제 ${i} 해설`,
+      sourceUrls: [`https://docs.aws.amazon.com/legacy-q-${i}`],
+      response: { kind: 'unanswered' } as const,
+    }));
+    return {
+      id: 'legacy-set-20',
+      userId: 'u1',
+      examId: 'saa-c03',
+      mode: 'all',
+      status: 'active',
+      createdAt: 1700000000,
+      items,
+    };
+  }
+
+  it('20문항 active 세트는 풀이·제출 경로에서 거부되지 않는다(크기 검사는 생성 시에만)', async () => {
+    const f = fakes();
+    const legacy = legacyTwentySet();
+    await f.repository.save({ set: legacy });
+    const found = (await f.repository.findById({ id: legacy.id })) as StudySet;
+    expect(found.items).toHaveLength(20);
+    for (const item of found.items) {
+      const ok = await answerStudyItem(f, {
+        setId: legacy.id,
+        userId: 'u1',
+        questionId: item.questionId,
+        response: { kind: 'answered', optionIds: ['b'] },
+      });
+      expect(ok.outcome).toBe('answered');
+    }
+    const submitted = await submitStudySet(f, { setId: legacy.id, userId: 'u1', confirmUnanswered: false });
+    expect(submitted.outcome).toBe('submitted');
+    expect(f.sets.get(legacy.id)?.result?.accuracyPercent).toBe(100);
   });
 });

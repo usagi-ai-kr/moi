@@ -9,7 +9,7 @@ import {
 } from '@/domain/study/invariants';
 import { makePoolEntry } from './fixtures';
 
-// 이슈 #49 불변식 — 20문제·동일 문제 중복 0·제출 후 변경 불가·포기 후 채점 불가·활성 세트 1개.
+// 이슈 #49 불변식 — 10문제(#187)·동일 문제 중복 0·제출 후 변경 불가·포기 후 채점 불가·활성 세트 1개.
 
 function buildSet(overrides?: Partial<StudySet>): StudySet {
   const items = Array.from({ length: STUDY_SET_SIZE }, (_, i) => ({
@@ -41,12 +41,12 @@ describe('불변식', () => {
   it('정상 활성 세트는 통과한다', () => {
     expect(() => assertStudySetInvariants(buildSet())).not.toThrow();
     expect(isActive(buildSet())).toBe(true);
-    expect(STUDY_SET_SIZE).toBe(20);
+    expect(STUDY_SET_SIZE).toBe(10);
   });
 
-  it('문제 수가 20이 아니면 거부(19개·경계)', () => {
+  it('문제 수가 10이 아니면 거부(9개·경계)', () => {
     const short = buildSet();
-    const items = short.items.slice(0, 19);
+    const items = short.items.slice(0, 9);
     expect(() => assertStudySetInvariants({ ...short, items })).toThrow();
   });
 

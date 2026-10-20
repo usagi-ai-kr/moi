@@ -196,6 +196,6 @@ describe('#148 원시 값 제거', () => {
       />,
     );
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
-    expect(screen.getByText(/AWS SAA-C03 · 20문제/)).toBeInTheDocument();
+    expect(screen.getByText(/AWS SAA-C03 · 10문제/)).toBeInTheDocument();
   });
 });

@@ -20,7 +20,7 @@ const C: ItemResponse = { kind: 'answered', optionIds: ['q-0-c'] };
 const D: ItemResponse = { kind: 'answered', optionIds: ['q-0-d'] };
 
 function makeSet(overrides?: Partial<StudyActiveSet>): StudyActiveSet {
-  const items = Array.from({ length: 20 }, (_, i) => ({
+  const items = Array.from({ length: 10 }, (_, i) => ({
     questionId: `q-${i}`,
     questionVersionId: `qv-${i}`,
     versionNo: 1,
@@ -56,9 +56,9 @@ function submittedSet(): StudyActiveSet {
     result: {
       answeredCount: 1,
       correctCount: 1,
-      accuracyPercent: 5,
+      accuracyPercent: 10,
       passCount: 1,
-      unansweredCount: 18,
+      unansweredCount: 8,
       perItem: base.items.map((it, i) => ({
         questionId: it.questionId,
         responseKind: i === 0 ? 'answered' : 'unanswered',
@@ -204,7 +204,7 @@ describe('제출 차단 (#52)', () => {
     const calls = { patch: [] as unknown[], post: [] as string[] };
     renderStudyAtSet(fakeStudyClient({ get: makeSet(), patchFailTimes: 99, calls }));
 
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     expect(await screen.findByText('오프라인 임시 저장')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
     expect(await screen.findByText('오프라인 임시 저장')).toBeInTheDocument();
@@ -234,9 +234,9 @@ describe('탭 상태 복구 (#52)', () => {
     );
     renderStudyAtSet(fakeStudyClient({ get: makeSet() }));
 
-    expect(await screen.findByText(/4\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/4\/10/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다음' }));
-    expect(await screen.findByText(/5\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/5\/10/)).toBeInTheDocument();
     await waitFor(() => {
       const saved = JSON.parse(window.sessionStorage.getItem(tabKey('user-1', 'set-1')) as string);
       expect(saved).toMatchObject({ view: 'active', index: 4 });
@@ -290,7 +290,7 @@ describe('로그아웃·계정 격리 (#52)', () => {
     const calls = { patch: [] as unknown[], post: [] as string[] };
     renderStudyAtSet(fakeStudyClient({ get: set, calls }), idB);
 
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     expect(screen.queryByText('답안 충돌 확인')).not.toBeInTheDocument();
     expect(calls.patch.length).toBe(0);
     // A 초안은 그대로 보존된다

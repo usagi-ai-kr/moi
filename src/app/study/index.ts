@@ -7,7 +7,7 @@ import type { PoolEntry, StudyDeps } from './ports';
 import { buildSetAttempts } from '@/app/stats/attempt-builder';
 
 /**
- * 20문제 세트 use case (이슈 #49, ADR-0020).
+ * 10문제 세트 use case (이슈 #49, ADR-0020·ADR-0046).
  * - 활성 세트 1개(계정·시험), 시작 시 문제 버전·보기 순서 스냅샷.
  * - 미풀이 우선, 소진 시 유효 누적 오답 가중. 세트 내 중복 0.
  * - 제출 시 일괄 채점, Pass/미응답은 오답. 포기는 채점/통계 미반영.

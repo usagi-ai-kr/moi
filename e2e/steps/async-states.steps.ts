@@ -40,7 +40,7 @@ const HISTORY_ITEMS = [
     examId: 'saa-c03',
     mode: 'all',
     submittedAt: 1700000001000,
-    correctCount: 10,
+    correctCount: 5,
     accuracyPercent: 50,
   },
 ] as const;
@@ -63,7 +63,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 function freshSet(): FakeSet {
-  const items: FakeItem[] = Array.from({ length: 20 }, (_, i) => {
+  const items: FakeItem[] = Array.from({ length: 10 }, (_, i) => {
     const optionIds = ['a', 'b', 'c', 'd'].map((suffix) => `q-${i}-${suffix}`);
     return {
       questionId: `q-${i}`,
@@ -127,9 +127,9 @@ function submittedDto(s: FakeSet) {
     submittedAt: 1700000001000,
     items: s.items,
     result: {
-      answeredCount: 20 - passCount - unansweredCount,
+      answeredCount: 10 - passCount - unansweredCount,
       correctCount,
-      accuracyPercent: Math.round((correctCount / 20) * 100),
+      accuracyPercent: Math.round((correctCount / 10) * 100),
       passCount,
       unansweredCount,
       perItem,

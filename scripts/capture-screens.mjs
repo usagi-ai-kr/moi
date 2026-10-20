@@ -442,7 +442,7 @@ const SCREENS = [
     path: '/',
     entryPath: '/',
     mock: {},
-    waitFor: (page) => page.getByRole('button', { name: '20문제 학습', exact: true }).waitFor(),
+    waitFor: (page) => page.getByRole('button', { name: '10문제 학습', exact: true }).waitFor(),
   },
   {
     id: 'study-new',

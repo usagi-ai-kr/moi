@@ -20,7 +20,7 @@ function httpError(status: number, body: unknown, url = 'http://localhost/x'): H
 }
 
 function makeSet(overrides?: Partial<StudyActiveSet>): StudyActiveSet {
-  const items = Array.from({ length: 20 }, (_, i) => ({
+  const items = Array.from({ length: 10 }, (_, i) => ({
     questionId: `q-${i}`,
     questionVersionId: `qv-${i}`,
     versionNo: 1,
@@ -56,9 +56,9 @@ function submittedSet(): StudyActiveSet {
     result: {
       answeredCount: 1,
       correctCount: 1,
-      accuracyPercent: 5,
+      accuracyPercent: 10,
       passCount: 1,
-      unansweredCount: 18,
+      unansweredCount: 8,
       perItem: base.items.map((it, i) => ({
         questionId: it.questionId,
         responseKind: i === 0 ? 'answered' : i === 1 ? 'pass' : 'unanswered',
@@ -231,7 +231,7 @@ beforeEach(() => {
 describe('학습 라우트 분리 (#148)', () => {
   it('/study는 current 200이면 풀이 화면을 보이고 URL에 UUID가 없다', async () => {
     renderStudyRoutes(fakeStudyClient({ current: makeSet() }), '/study');
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     expect(screen.getByTestId('location')).toHaveTextContent('/study');
     expectNoSetIdInUrl();
   });
@@ -241,7 +241,7 @@ describe('학습 라우트 분리 (#148)', () => {
     const currentCalls = () =>
       vi.mocked(client.get).mock.calls.filter(([p]) => String(p).startsWith('api/study/sets/current')).length;
     renderStudyRoutes(client, '/study');
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     expect(currentCalls()).toBe(1);
     act(() => {
       focusManager.setFocused(false);
@@ -249,7 +249,7 @@ describe('학습 라우트 분리 (#148)', () => {
     });
     await new Promise((r) => setTimeout(r, 20));
     expect(currentCalls()).toBe(1);
-    expect(screen.getByText(/1\/20/)).toBeInTheDocument();
+    expect(screen.getByText(/1\/10/)).toBeInTheDocument();
     focusManager.setFocused(undefined);
   });
 
@@ -269,12 +269,12 @@ describe('학습 라우트 분리 (#148)', () => {
     renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: makeSet() }), '/study/new');
     expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    const questionNode = await screen.findByText(/1\/20/);
+    const questionNode = await screen.findByText(/1\/10/);
     expect(questionNode).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
     await waitFor(() => expect(screen.getByTestId('location-state')).toHaveTextContent('null'));
     expect(questionNode.isConnected).toBe(true);
-    expect(screen.getByText(/1\/20/)).toBe(questionNode);
+    expect(screen.getByText(/1\/10/)).toBe(questionNode);
     expectNoSetIdInUrl();
   });
 
@@ -285,7 +285,7 @@ describe('학습 라우트 분리 (#148)', () => {
     );
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study\/new$/));
     expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
-    expect(screen.queryByText(/1\/20/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/1\/10/)).not.toBeInTheDocument();
     expect(screen.getByTestId('location-state')).toHaveTextContent('null');
   });
 
@@ -306,14 +306,14 @@ describe('학습 라우트 분리 (#148)', () => {
     fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
     expect(await screen.findByText(/이미 진행 중인 세트/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이어풀기' }));
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
   });
 
   it('제출 성공 시 /study/result로 이동하고 URL에 UUID가 없다', async () => {
     renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: makeSet() }), '/study/new');
     fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
     fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
@@ -339,7 +339,7 @@ describe('학습 라우트 분리 (#148)', () => {
 
   it('레거시 /study/:id active는 /study로 replace한다', async () => {
     renderStudyRoutes(fakeStudyClient({ get: makeSet(), current: makeSet() }), '/study/set-1');
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
   });
 
@@ -383,7 +383,7 @@ describe('학습 라우트 분리 (#148)', () => {
         </QueryClientProvider>
       </MemoryRouter>,
     );
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     expect(document.body.textContent).not.toContain('set-1');
   });
 
@@ -409,7 +409,7 @@ describe('학습 라우트 분리 (#148)', () => {
     fireEvent.click(detailLink);
 
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
-    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
+    expect(screen.getByText(/정답률 10%/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
     expectNoSetIdInUrl();
     expect(requestedSetPaths(client)).toEqual(['api/study/sets/set-1']);
@@ -426,7 +426,7 @@ describe('학습 라우트 분리 (#148)', () => {
     const client = fakeStudyClient({ sets: { 'set-1': submittedSet() } });
     renderHistoryRoutes(client, '/history/set-1');
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
-    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
+    expect(screen.getByText(/정답률 10%/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
     expectNoSetIdInUrl();
     expect(requestedSetPaths(client)).toEqual(['api/study/sets/set-1']);

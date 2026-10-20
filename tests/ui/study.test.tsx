@@ -12,7 +12,7 @@ function httpError(status: number, body: unknown, url = 'http://localhost/api/st
 }
 
 function makeSet(overrides?: Partial<StudyActiveSet>): StudyActiveSet {
-  const items = Array.from({ length: 20 }, (_, i) => ({
+  const items = Array.from({ length: 10 }, (_, i) => ({
     questionId: `q-${i}`,
     questionVersionId: `qv-${i}`,
     versionNo: 1,
@@ -48,9 +48,9 @@ function submittedSet(): StudyActiveSet {
     result: {
       answeredCount: 1,
       correctCount: 1,
-      accuracyPercent: 5,
+      accuracyPercent: 10,
       passCount: 1,
-      unansweredCount: 18,
+      unansweredCount: 8,
       perItem: base.items.map((it, i) => ({
         questionId: it.questionId,
         responseKind: i === 0 ? 'answered' : i === 1 ? 'pass' : 'unanswered',
@@ -151,9 +151,9 @@ describe('학습 시작', () => {
   it('범위 선택 + 영역 선택 + 시작 버튼을 렌더링한다', () => {
     renderStudy(fakeStudyClient());
     expect(screen.getByText('학습 범위 선택')).toBeInTheDocument();
-    expect(screen.getByText('전체 20문제')).toBeInTheDocument();
+    expect(screen.getByText('전체 10문제')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '학습 시작' })).toBeInTheDocument();
-    fireEvent.click(screen.getByText('영역별 20문제'));
+    fireEvent.click(screen.getByText('영역별 10문제'));
     expect(screen.getByLabelText('영역')).toBeInTheDocument();
   });
 
@@ -177,10 +177,10 @@ describe('학습 시작', () => {
     });
   });
 
-  it('시작 성공 시 문제 화면(1/20·문제 본문·보기 텍스트)을 보인다', async () => {
+  it('시작 성공 시 문제 화면(1/10·문제 본문·보기 텍스트)을 보인다', async () => {
     renderStudy(fakeStudyClient({ start: makeSet() }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
     expect(screen.getByText('문제 0 본문: VPC와 서브넷 구성은?')).toBeInTheDocument();
     expect(screen.getByText('1. 보기 q-0-a 내용')).toBeInTheDocument();
     expect(screen.getByLabelText(/보기 1/)).toBeInTheDocument();
@@ -205,7 +205,7 @@ describe('문제 풀이·자동 저장', () => {
     const calls = { patch: [] as unknown[], post: [] as string[] };
     renderStudy(fakeStudyClient({ start: makeSet(), calls }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByLabelText(/보기 1/));
     await waitFor(() => expect(calls.patch.length).toBe(1));
     expect(await screen.findByText('저장됨')).toBeInTheDocument();
@@ -215,7 +215,7 @@ describe('문제 풀이·자동 저장', () => {
     const calls = { patch: [] as unknown[], post: [] as string[] };
     renderStudy(fakeStudyClient({ start: makeSet(), calls }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByRole('button', { name: 'Pass' }));
     await waitFor(() => expect(calls.patch.length).toBe(1));
     expect(calls.patch[0]).toMatchObject({ response: { kind: 'pass' } });
@@ -225,7 +225,7 @@ describe('문제 풀이·자동 저장', () => {
     const calls = { patch: [] as unknown[], post: [] as string[] };
     renderStudy(fakeStudyClient({ start: makeSet(), get: makeSet(), patchHttpFailTimes: 1, calls }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByLabelText(/보기 1/));
     expect(await screen.findByText(/저장 실패/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
@@ -238,7 +238,7 @@ describe('문제 풀이·자동 저장', () => {
     // GET도 함께 실패(전체 오프라인) — 낙관적 선택이 서버 확인 전에 지워지지 않는다
     renderStudy(fakeStudyClient({ start: makeSet(), patchFailTimes: 99, calls }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByLabelText(/보기 1/));
     expect(await screen.findByText('오프라인 임시 저장')).toBeInTheDocument();
     expect(screen.getByLabelText(/보기 1/)).toBeChecked(); // optimistic 선택 유지 (롤백 없음)
@@ -249,11 +249,11 @@ describe('문제 풀이·자동 저장', () => {
   it('이전/다음으로 이동한다', async () => {
     renderStudy(fakeStudyClient({ start: makeSet() }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByRole('button', { name: '다음' }));
-    expect(await screen.findByText(/2\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/2\/10/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이전' }));
-    expect(await screen.findByText(/1\/20/)).toBeInTheDocument();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
   });
 });
 
@@ -261,12 +261,12 @@ describe('제출·결과·포기', () => {
   it('미응답이 있으면 확인 대화상자 후 제출 → 결과 화면', async () => {
     renderStudy(fakeStudyClient({ start: makeSet(), submit: submittedSet() }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
     expect(await screen.findByText(/풀지 않은 문제/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '제출 확인' }));
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
-    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
+    expect(screen.getByText(/정답률 10%/)).toBeInTheDocument();
     const item = screen.getByTestId('peritem-q-0');
     expect(within(item).getAllByText(/정답/).length).toBeGreaterThanOrEqual(1);
     expect(within(item).getByText(/문제 0 해설: 정답은 q-0-a이다/)).toBeInTheDocument();
@@ -280,7 +280,7 @@ describe('제출·결과·포기', () => {
   it('포기는 확인 후 시작 화면으로 돌아간다', async () => {
     renderStudy(fakeStudyClient({ start: makeSet() }));
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
-    await screen.findByText(/1\/20/);
+    await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByRole('button', { name: '포기하기' }));
     expect(await screen.findByText(/정말 포기할까요/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '포기 확인' }));
