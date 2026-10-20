@@ -115,9 +115,9 @@ function submittedDto(s: NonNullable<typeof activeStudySet>) {
   const passCount = s.items.filter((i) => i.response.kind === 'pass').length;
   const unansweredCount = s.items.filter((i) => i.response.kind === 'unanswered').length;
   const result = {
-    answeredCount: 20 - passCount - unansweredCount,
+    answeredCount: 10 - passCount - unansweredCount,
     correctCount,
-    accuracyPercent: Math.round((correctCount / 20) * 100),
+    accuracyPercent: Math.round((correctCount / 10) * 100),
     passCount,
     unansweredCount,
     perItem,
@@ -149,7 +149,7 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
     const path = url.pathname;
 
     if (method === 'POST' && path === '/api/study/sets') {
-      const items: FakeStudyItem[] = Array.from({ length: 20 }, (_, i) => ({
+      const items: FakeStudyItem[] = Array.from({ length: 10 }, (_, i) => ({
         questionId: `q-${i}`,
         questionVersionId: `qv-${i}`,
         versionNo: 1,

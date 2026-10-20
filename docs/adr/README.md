@@ -60,4 +60,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0043 | CI에 THIRD_PARTY_NOTICES --check 게이트 추가 | Accepted | 2026-10-20 | [0043-ci-notices-check-gate.md](./0043-ci-notices-check-gate.md) |
 | ADR-0044 | 해설 Mermaid 노드 라벨 인용 규칙 | Accepted | 2026-10-20 | [0044-mermaid-label-quote.md](./0044-mermaid-label-quote.md) |
 | ADR-0045 | 해설 Mermaid 렌더러 Pele 전환 | Accepted | 2026-10-20 | [0045-pele-mermaid-renderer.md](./0045-pele-mermaid-renderer.md) |
+| ADR-0046 | 학습 세트 10문제 조정 | Accepted | 2026-10-20 | [0046-ten-question-study-set.md](./0046-ten-question-study-set.md) |
 <!-- ADR_INDEX:END -->

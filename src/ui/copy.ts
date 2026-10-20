@@ -1,4 +1,6 @@
 // UI 문구 — 단일 소스 (ADR-0012). 컴포넌트에 문자열을 하드코딩하지 않는다.
+import { STUDY_SET_SIZE } from '../domain/study/thresholds';
+
 export const copy = {
   brand: 'moi',
   tagline: '문제 중심 시험 대비 플랫폼',
@@ -12,7 +14,7 @@ export const copy = {
     kakao: '카카오 로그인',
   },
   home: {
-    note: '카카오 로그인 → 20문제 풀이 → 저장·결과 확인. 현재 첫 학습 범위는 AWS SAA입니다.',
+    note: `카카오 로그인 → ${STUDY_SET_SIZE}문제 풀이 → 저장·결과 확인. 현재 첫 학습 범위는 AWS SAA입니다.`,
   },
   nav: {
     study: '학습 시작',
@@ -39,16 +41,16 @@ export const copy = {
     loadError: '상태를 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.',
   },
   study: {
-    cta: '20문제 학습',
+    cta: `${STUDY_SET_SIZE}문제 학습`,
     historyLink: '학습 이력',
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
     starting: '시작하는 중',
     resumeNote: '진행 중인 세트가 있습니다. 이어서 풀 수 있습니다.',
     activeExists: '이미 진행 중인 세트가 있습니다. 이어풀기를 계속하세요.',
-    scopeAll: '전체 20문제',
-    scopeDomain: '영역별 20문제',
-    scopeWeak: '취약 영역 20문제',
+    scopeAll: `전체 ${STUDY_SET_SIZE}문제`,
+    scopeDomain: `영역별 ${STUDY_SET_SIZE}문제`,
+    scopeWeak: `취약 영역 ${STUDY_SET_SIZE}문제`,
     domainLabel: '영역',
     questionLabel: '문제',
     pass: 'Pass',
@@ -116,7 +118,7 @@ export const copy = {
     loading: '학습 현황을 불러오고 있습니다',
     error: '학습 현황을 불러오지 못했습니다',
     retry: '다시 시도',
-    empty: '아직 풀이 기록이 없습니다. 20문제 학습을 시작해 보세요.',
+    empty: `아직 풀이 기록이 없습니다. ${STUDY_SET_SIZE}문제 학습을 시작해 보세요.`,
     progress: '진도',
     accuracy: '전체 정답률',
     noAccuracy: '데이터 부족 — 채점 기록이 쌓이면 표시됩니다',
@@ -128,7 +130,7 @@ export const copy = {
     title: '복습',
     tabWrong: '오답 복습',
     tabBookmark: '북마크 복습',
-    emptyWrong: '복습할 오답이 없습니다. 20문제 학습을 진행하면 틀리거나 통과한 문제가 이곳에 모입니다.',
+    emptyWrong: `복습할 오답이 없습니다. ${STUDY_SET_SIZE}문제 학습을 진행하면 틀리거나 통과한 문제가 이곳에 모입니다.`,
     emptyBookmark: '북마크한 문제가 없습니다. 문제 풀이 중 북마크를 눌러 나중에 복습할 문제를 추가해 보세요.',
     waitingPrefix: '복습 대기',
     waitingSuffix: '문제',

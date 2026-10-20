@@ -188,7 +188,7 @@ describe('복습 HTTP 인증·검증', () => {
 });
 
 describe('복습 HTTP 후보→시작→채점→재개', () => {
-  it('실제 20문제 세트 HTTP 제출에서 복습 후보·채점·재개까지 D1에 보존한다', async () => {
+  it('실제 10문제 세트 HTTP 제출에서 복습 후보·채점·재개까지 D1에 보존한다', async () => {
     // seed20은 exam id=e-1 / code=saa-c03 fixture다. 세트 생성은 ID, 복습 조회는 code를 쓰고 setup attempt는 제거한다.
     await db.prepare('DELETE FROM study_attempts').run();
     const before = await db.prepare('SELECT COUNT(*) AS c FROM study_attempts').first<{ c: number }>();
@@ -205,7 +205,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       items: Array<{ questionId: string; questionVersionId: string; stem?: unknown; options: Array<{ optionId: string }>; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }>;
     };
     expect(set.examId).toBe('e-1');
-    expect(set.items).toHaveLength(20);
+    expect(set.items).toHaveLength(10);
     for (const item of set.items) {
       expect(item.answerOptionIds).toBeUndefined();
       expect(item.explanation).toBeUndefined();
@@ -231,23 +231,23 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     expect(submit.status).toBe(200);
     const submitted = (await submit.json()) as { status: string; result: { correctCount: number; passCount: number; unansweredCount: number } };
     expect(submitted.status).toBe('submitted');
-    expect(submitted.result).toMatchObject({ correctCount: 5, passCount: 5, unansweredCount: 5 });
+    expect(submitted.result).toMatchObject({ correctCount: 3, passCount: 2, unansweredCount: 2 });
 
     const setAttempts = await db.prepare("SELECT outcome, source, source_id, user_id, exam_id, first_attempt FROM study_attempts WHERE source = 'set'").all<{
       outcome: string; source: string; source_id: string; user_id: string; exam_id: string; first_attempt: number;
     }>();
-    expect(setAttempts.results).toHaveLength(20);
+    expect(setAttempts.results).toHaveLength(10);
     expect(setAttempts.results.every((row) => row.source_id === set.id && row.user_id === U1 && row.exam_id === 'e-1')).toBe(true);
-    expect(setAttempts.results.filter((row) => row.first_attempt === 1)).toHaveLength(10);
+    expect(setAttempts.results.filter((row) => row.first_attempt === 1)).toHaveLength(6);
     expect(Object.fromEntries(['correct', 'wrong', 'pass', 'unanswered'].map((outcome) => [
       outcome, setAttempts.results.filter((row) => row.outcome === outcome).length,
-    ]))).toEqual({ correct: 5, wrong: 5, pass: 5, unanswered: 5 });
+    ]))).toEqual({ correct: 3, wrong: 3, pass: 2, unanswered: 2 });
 
     const candidatesRes = await req(`/api/review/candidates?examId=${EXAM_CODE}&mode=wrong`, { token });
     expect(candidatesRes.status).toBe(200);
     const candidates = (await candidatesRes.json()) as { total: number; items: Array<{ questionId: string; validWrongCount: number; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }> };
-    expect(candidates.total).toBe(15);
-    expect(candidates.items).toHaveLength(15);
+    expect(candidates.total).toBe(7);
+    expect(candidates.items).toHaveLength(7);
     expect(candidates.items.every((item) => item.validWrongCount === 1)).toBe(true);
     for (const item of candidates.items) {
       expect(item.answerOptionIds).toBeUndefined();
@@ -268,7 +268,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       current: { questionId: string; response: null; answerOptionIds?: unknown; explanation?: unknown; correctOptionIds?: unknown };
     };
     expect(review.cursor).toBe(0);
-    expect(review.total).toBe(15);
+    expect(review.total).toBe(7);
     expect(review.current.response).toBeNull();
     expect(review.current.answerOptionIds).toBeUndefined();
     expect(review.current.explanation).toBeUndefined();

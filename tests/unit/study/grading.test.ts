@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { gradeItems, type GradableItem, type VersionAnswer } from '@/domain/study/grading';
 
-// 이슈 #49 규칙 — 20문제 일괄 채점: optionId 집합 완전 일치 정답·Pass/미응답 오답·정답률/Pass/미응답 요약.
+// 이슈 #49 규칙 — 10문제(#187) 일괄 채점: optionId 집합 완전 일치 정답·Pass/미응답 오답·정답률/Pass/미응답 요약.
 
 function item(questionId: string, response: GradableItem['response']): GradableItem {
   return {
@@ -47,19 +47,19 @@ describe('gradeItems (일괄 채점)', () => {
     expect(result.accuracyPercent).toBe(0);
   });
 
-  it('정답률 요약: 20문제 중 15정답·2Pass·3미응답 → 75%', () => {
+  it('정답률 요약: 10문제 중 7정답·1Pass·2미응답 → 70%', () => {
     const items: GradableItem[] = [
-      ...Array.from({ length: 15 }, (_, i) => item(`${i}`, { kind: 'answered', optionIds: ['b'] })),
-      ...Array.from({ length: 2 }, (_, i) => item(`p${i}`, { kind: 'pass' })),
-      ...Array.from({ length: 3 }, (_, i) => item(`u${i}`, { kind: 'unanswered' })),
+      ...Array.from({ length: 7 }, (_, i) => item(`${i}`, { kind: 'answered', optionIds: ['b'] })),
+      ...Array.from({ length: 1 }, (_, i) => item(`p${i}`, { kind: 'pass' })),
+      ...Array.from({ length: 2 }, (_, i) => item(`u${i}`, { kind: 'unanswered' })),
     ];
     const wideAnswers: VersionAnswer[] = items.map((i) => ({ questionVersionId: i.questionVersionId, answerOptionIds: ['b'] }));
     const result = gradeItems(items, wideAnswers);
 
-    expect(result.accuracyPercent).toBe(75);
-    expect(result.answeredCount).toBe(15);
-    expect(result.passCount).toBe(2);
-    expect(result.unansweredCount).toBe(3);
+    expect(result.accuracyPercent).toBe(70);
+    expect(result.answeredCount).toBe(7);
+    expect(result.passCount).toBe(1);
+    expect(result.unansweredCount).toBe(2);
   });
 
   it('빈 정답 집합은 완전 일치로 인정하지 않는다(fail-closed)', () => {

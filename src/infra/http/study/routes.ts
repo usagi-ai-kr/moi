@@ -15,7 +15,7 @@ import { createStudyRuntime, type StudyRuntime } from './runtime';
 import { abandonBodySchema, answerBodySchema, currentSetQuerySchema, historyQuerySchema, startSetBodySchema, submitBodySchema } from './schemas';
 
 /**
- * 20문제 세트 HTTP API (이슈 #49 후속, ADR-0020).
+ * 10문제 세트 HTTP API (이슈 #49 후속, ADR-0020·ADR-0046).
  * - 인증: `__Host-moi_session` 쿠키를 세션 런타임으로 검증해 user_id를 얻는다.
  *   body의 userId는 무시한다(IDOR 금지). 미인증 401.
  * - 제출 전 응답에는 정답·해설·근거를 포함하지 않는다(스냅샷 answerOptionIds·explanation·sourceUrls 제거, stem·options만 노출).

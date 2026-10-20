@@ -80,11 +80,11 @@ describe('App (세션 상태 화면)', () => {
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('moi');
     expect(screen.getAllByText('문제 중심 시험 대비 플랫폼').length).toBeGreaterThanOrEqual(1);
     expect(document.querySelector('.moi-lead')).toHaveTextContent('문제 중심 시험 대비 플랫폼');
-    expect(screen.getByText(/20문제 풀이.*저장.*결과.*AWS SAA/)).toBeInTheDocument();
+    expect(screen.getByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).toBeInTheDocument();
     expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '카카오 로그인' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '20문제 학습' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '10문제 학습' })).not.toBeInTheDocument();
     expect(screen.queryByText('내 계정')).not.toBeInTheDocument();
   });
 
@@ -101,7 +101,7 @@ describe('App (세션 상태 화면)', () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
     renderApp(client, '/');
-    expect(await screen.findByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '학습 시작' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
@@ -189,7 +189,7 @@ describe('App (세션 상태 화면)', () => {
     expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '20문제 학습' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
     });
     expect(calls).toBe(2);
   });
@@ -202,7 +202,7 @@ describe('App (세션 상태 화면)', () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
     renderApp(client);
-    await screen.findByRole('button', { name: '20문제 학습' });
+    await screen.findByRole('button', { name: '10문제 학습' });
     expect(getItem).not.toHaveBeenCalled();
     expect(setItem).not.toHaveBeenCalled();
     expect(sessGet).not.toHaveBeenCalled();

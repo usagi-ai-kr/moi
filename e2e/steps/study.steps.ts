@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 
-// 학습 UI E2E route mock (#50) — 실제 백엔드 대신 결정적 20문제 세트를 제공한다.
+// 학습 UI E2E route mock (#50) — 실제 백엔드 대신 결정적 10문제 세트를 제공한다.
 // "API 모의가 준비되면"(auth.steps)과 충돌하지 않게 별도 문구를 사용한다.
 const { Given, When, Then } = createBdd();
 
@@ -65,7 +65,7 @@ const STATS_DTO = {
 } as const;
 
 function freshSet(): { id: string; status: string; items: FakeItem[]; submittedAt?: number; result?: unknown } {
-  const items: FakeItem[] = Array.from({ length: 20 }, (_, i) => ({
+  const items: FakeItem[] = Array.from({ length: 10 }, (_, i) => ({
     questionId: `q-${i}`,
     questionVersionId: `qv-${i}`,
     versionNo: 1,
@@ -117,9 +117,9 @@ function submittedDto(s: NonNullable<typeof active>) {
   const passCount = s.items.filter((i) => i.response.kind === 'pass').length;
   const unansweredCount = s.items.filter((i) => i.response.kind === 'unanswered').length;
   const result = {
-    answeredCount: 20 - passCount - unansweredCount,
+    answeredCount: 10 - passCount - unansweredCount,
     correctCount,
-    accuracyPercent: Math.round((correctCount / 20) * 100),
+    accuracyPercent: Math.round((correctCount / 10) * 100),
     passCount,
     unansweredCount,
     perItem,
@@ -198,13 +198,13 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
                 },
               ],
               corrected: {
-                answeredCount: 19,
+                answeredCount: 9,
                 correctCount: 0,
                 accuracyPercent: 0,
                 passCount: 0,
-                unansweredCount: 19,
+                unansweredCount: 9,
                 ungraded: false,
-                validTotal: 19,
+                validTotal: 9,
                 excludedCount: 1,
                 excludedQuestionVersionIds: ['qv-0'],
                 perItem: [],
@@ -285,7 +285,7 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
                 mode: 'all',
                 submittedAt: 1700000001000,
                 correctCount: 1,
-                accuracyPercent: 5,
+                accuracyPercent: 10,
               },
             ]
           : [];
@@ -300,8 +300,8 @@ Given('답안 저장이 일시 실패하도록 준비되면', async () => {
   failNextAnswer = true;
 });
 
-When('20문제 학습 버튼을 누르면', async ({ page }) => {
-  await page.getByRole('button', { name: '20문제 학습' }).click();
+When('10문제 학습 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '10문제 학습' }).click();
 });
 
 When('학습 시작 버튼을 누르면', async ({ page }) => {
@@ -341,7 +341,7 @@ Then('학습 범위 선택이 보인다', async ({ page }) => {
 });
 
 Then('문제 화면이 보인다', async ({ page }) => {
-  await expect(page.getByText(/1\/20/)).toBeVisible();
+  await expect(page.getByText(/1\/10/)).toBeVisible();
 });
 
 Then('주소창에 내부 세트 ID가 없다', async ({ page }) => {
@@ -409,8 +409,8 @@ Then('학습 현황이 보인다', async ({ page }) => {
 Then('정정 반영이 보인다', async ({ page }) => {
   const panel = page.locator('section.moi-study-detail');
   await expect(panel.getByText('정정 반영')).toBeVisible({ timeout: 10_000 });
-  await expect(panel.getByText('최초 정답률 5% → 정정 정답률 0%')).toBeVisible();
-  await expect(panel.getByText('유효 19문제 · 제외 1문제')).toBeVisible();
+  await expect(panel.getByText('최초 정답률 10% → 정정 정답률 0%')).toBeVisible();
+  await expect(panel.getByText('유효 9문제 · 제외 1문제')).toBeVisible();
   await expect(panel.getByText('문제 1 · 오탈자가 있습니다')).toBeVisible();
 });
 

@@ -39,7 +39,7 @@ export async function logout(client: ApiClient): Promise<void> {
   await client.post('auth/logout');
 }
 
-// 20문제 학습 세트 DTO — 제출 전에는 정답·해설·근거가 없다 (#50).
+// 10문제 학습 세트 DTO — 제출 전에는 정답·해설·근거가 없다 (#50, #187).
 export type StudyMode = 'all' | 'domain' | 'weak';
 export type ItemResponse =
   | { kind: 'answered'; optionIds: string[] }
