@@ -1,0 +1,3277 @@
+{
+  "meta": {
+    "issue": "#179",
+    "ranAt": "2026-10-20T06:34:58.146Z",
+    "productSha": "71d81282f9b09b55c7218935645ede8269c496fe",
+    "dirtySnapshotHash": "docs/evidence/179-pele/\nscripts/pele-validation/",
+    "dirtyFileCount": 2,
+    "repoRoot": "/Users/young-mini/Workspace/moi-wt/179-pele-renderer",
+    "harness": "scripts/pele-validation/harness (Explanation → renderPeleDiagram → sanitizePeleSvg)",
+    "note": "제품 src는 읽기만. 하네스는 scripts/pele-validation/** 와 docs/evidence/179-pele/** 에만 생성."
+  },
+  "diagrams": {
+    "total": 71,
+    "rendered": 71,
+    "fallback": 0,
+    "loading": 0,
+    "domCount": 71,
+    "pageOverflowPx": 0,
+    "bodyOverflowPx": 0,
+    "overflowElements": [],
+    "duplicateIds": [],
+    "internalOverflowCount": 0,
+    "textClippedCount": 0,
+    "byType": {
+      "flowchart": {
+        "total": 66,
+        "rendered": 66,
+        "fallback": 0
+      },
+      "sequenceDiagram": {
+        "total": 5,
+        "rendered": 5,
+        "fallback": 0
+      }
+    },
+    "failures": [],
+    "rows": [
+      {
+        "index": 0,
+        "questionId": "saa-cost-0001",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 16,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 428,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 428,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 1,
+        "questionId": "saa-cost-0003",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 7,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 491,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 491,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 2,
+        "questionId": "saa-cost-0004",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 8,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 501,
+          "height": 117
+        },
+        "svgRect": {
+          "width": 501,
+          "height": 117
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 3,
+        "questionId": "saa-cost-0005",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 18,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 512,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 4,
+        "questionId": "saa-cost-0007",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 20,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 557,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 557,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 5,
+        "questionId": "saa-cost-0010",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 9,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 457,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 457,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 6,
+        "questionId": "saa-cost-0011",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 14,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 364,
+          "height": 328
+        },
+        "svgRect": {
+          "width": 364,
+          "height": 328
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 7,
+        "questionId": "saa-cost-0012",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 20,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 436,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 436,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 8,
+        "questionId": "saa-cost-0013",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 14,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 631,
+          "height": 64
+        },
+        "svgRect": {
+          "width": 620,
+          "height": 62.88
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 9,
+        "questionId": "saa-cost-0018",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 11,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 545,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 545,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 10,
+        "questionId": "saa-cost-0020",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 18,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 538,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 538,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 11,
+        "questionId": "saa-cost-0021",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 12,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 562,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 562,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 12,
+        "questionId": "saa-cost-0024",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 19,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 222,
+          "height": 352
+        },
+        "svgRect": {
+          "width": 222,
+          "height": 352
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 13,
+        "questionId": "saa-cost-0025",
+        "sourceFile": "content/questions/saa-c03/cost-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 598,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 598,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 14,
+        "questionId": "saa-perf-0005",
+        "sourceFile": "content/questions/saa-c03/perf-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 10,
+        "minFontPx": 16,
+        "contrast": 4.83,
+        "textFill": "rgb(107, 114, 128)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 383,
+          "height": 124
+        },
+        "svgRect": {
+          "width": 383,
+          "height": 124
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 15,
+        "questionId": "saa-perf-0006",
+        "sourceFile": "content/questions/saa-c03/perf-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 10,
+        "minFontPx": 16,
+        "contrast": 4.83,
+        "textFill": "rgb(107, 114, 128)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 573,
+          "height": 124
+        },
+        "svgRect": {
+          "width": 573,
+          "height": 124
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 16,
+        "questionId": "saa-perf-0007",
+        "sourceFile": "content/questions/saa-c03/perf-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 5,
+        "minFontPx": 16,
+        "contrast": 4.83,
+        "textFill": "rgb(107, 114, 128)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 368,
+          "height": 124
+        },
+        "svgRect": {
+          "width": 368,
+          "height": 124
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 17,
+        "questionId": "saa-perf-0012",
+        "sourceFile": "content/questions/saa-c03/perf-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 10,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 567,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 567,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 18,
+        "questionId": "saa-perf-0020",
+        "sourceFile": "content/questions/saa-c03/perf-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 17,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 208,
+          "height": 448
+        },
+        "svgRect": {
+          "width": 208,
+          "height": 448
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 19,
+        "questionId": "saa-perf-0031",
+        "sourceFile": "content/questions/saa-c03/perf-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 8,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 432,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 432,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 20,
+        "questionId": "saa-perf-0032",
+        "sourceFile": "content/questions/saa-c03/perf-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 21,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 222,
+          "height": 352
+        },
+        "svgRect": {
+          "width": 222,
+          "height": 352
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 21,
+        "questionId": "saa-perf-0044",
+        "sourceFile": "content/questions/saa-c03/perf-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 16,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 564,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 564,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 22,
+        "questionId": "saa-perf-0045",
+        "sourceFile": "content/questions/saa-c03/perf-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 11,
+        "minFontPx": 16,
+        "contrast": 4.83,
+        "textFill": "rgb(107, 114, 128)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 461,
+          "height": 300
+        },
+        "svgRect": {
+          "width": 461,
+          "height": 300
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 23,
+        "questionId": "saa-perf-0048",
+        "sourceFile": "content/questions/saa-c03/perf-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 11,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 359,
+          "height": 277
+        },
+        "svgRect": {
+          "width": 359,
+          "height": 277
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 24,
+        "questionId": "saa-perf-0052",
+        "sourceFile": "content/questions/saa-c03/perf-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 7,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 607,
+          "height": 153
+        },
+        "svgRect": {
+          "width": 607,
+          "height": 153
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 25,
+        "questionId": "saa-perf-0054",
+        "sourceFile": "content/questions/saa-c03/perf-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 7,
+        "maxTextLen": 12,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 634,
+          "height": 132
+        },
+        "svgRect": {
+          "width": 620,
+          "height": 129.08
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 26,
+        "questionId": "saa-perf-0057",
+        "sourceFile": "content/questions/saa-c03/perf-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 485,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 485,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 27,
+        "questionId": "saa-perf-0058",
+        "sourceFile": "content/questions/saa-c03/perf-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 16,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 580,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 580,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 28,
+        "questionId": "saa-perf-0059",
+        "sourceFile": "content/questions/saa-c03/perf-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 20,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 282,
+          "height": 299
+        },
+        "svgRect": {
+          "width": 282,
+          "height": 299
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 29,
+        "questionId": "saa-perf-0080",
+        "sourceFile": "content/questions/saa-c03/perf-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 10,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 574,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 574,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 30,
+        "questionId": "saa-perf-0084",
+        "sourceFile": "content/questions/saa-c03/perf-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 22,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 420,
+          "height": 401
+        },
+        "svgRect": {
+          "width": 420,
+          "height": 401
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 31,
+        "questionId": "saa-perf-0091",
+        "sourceFile": "content/questions/saa-c03/perf-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 13,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 577,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 577,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 32,
+        "questionId": "saa-perf-0095",
+        "sourceFile": "content/questions/saa-c03/perf-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 14,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 220,
+          "height": 389
+        },
+        "svgRect": {
+          "width": 220,
+          "height": 389
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 33,
+        "questionId": "saa-perf-0100",
+        "sourceFile": "content/questions/saa-c03/perf-04.json",
+        "blockIndex": 0,
+        "diagramType": "sequenceDiagram",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 10,
+        "maxTextLen": 12,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 361,
+          "height": 278
+        },
+        "svgRect": {
+          "width": 361,
+          "height": 278
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 34,
+        "questionId": "saa-perf-0102",
+        "sourceFile": "content/questions/saa-c03/perf-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 7,
+        "maxTextLen": 19,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 435,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 435,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 35,
+        "questionId": "saa-perf-0105",
+        "sourceFile": "content/questions/saa-c03/perf-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 145,
+          "height": 485
+        },
+        "svgRect": {
+          "width": 145,
+          "height": 485
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 36,
+        "questionId": "saa-perf-0110",
+        "sourceFile": "content/questions/saa-c03/perf-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 594,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 594,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 37,
+        "questionId": "saa-perf-0112",
+        "sourceFile": "content/questions/saa-c03/perf-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 10,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 172,
+          "height": 327
+        },
+        "svgRect": {
+          "width": 172,
+          "height": 327
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 38,
+        "questionId": "saa-perf-0117",
+        "sourceFile": "content/questions/saa-c03/perf-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 154,
+          "height": 377
+        },
+        "svgRect": {
+          "width": 154,
+          "height": 377
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 39,
+        "questionId": "saa-res-0001",
+        "sourceFile": "content/questions/saa-c03/res-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 12,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 519,
+          "height": 84
+        },
+        "svgRect": {
+          "width": 519,
+          "height": 84
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 40,
+        "questionId": "saa-res-0004",
+        "sourceFile": "content/questions/saa-c03/res-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 7,
+        "maxTextLen": 11,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 313,
+          "height": 414
+        },
+        "svgRect": {
+          "width": 313,
+          "height": 414
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 41,
+        "questionId": "saa-res-0020",
+        "sourceFile": "content/questions/saa-c03/res-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 16,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 209,
+          "height": 352
+        },
+        "svgRect": {
+          "width": 209,
+          "height": 352
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 42,
+        "questionId": "saa-res-0022",
+        "sourceFile": "content/questions/saa-c03/res-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 16,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 549,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 549,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 43,
+        "questionId": "saa-res-0031",
+        "sourceFile": "content/questions/saa-c03/res-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 10,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 163,
+          "height": 417
+        },
+        "svgRect": {
+          "width": 163,
+          "height": 417
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 44,
+        "questionId": "saa-res-0043",
+        "sourceFile": "content/questions/saa-c03/res-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 15,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 234,
+          "height": 377
+        },
+        "svgRect": {
+          "width": 234,
+          "height": 377
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 45,
+        "questionId": "saa-res-0045",
+        "sourceFile": "content/questions/saa-c03/res-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 10,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 136,
+          "height": 402
+        },
+        "svgRect": {
+          "width": 136,
+          "height": 402
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 46,
+        "questionId": "saa-res-0057",
+        "sourceFile": "content/questions/saa-c03/res-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 15,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 308,
+          "height": 397
+        },
+        "svgRect": {
+          "width": 308,
+          "height": 397
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 47,
+        "questionId": "saa-res-0059",
+        "sourceFile": "content/questions/saa-c03/res-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 13,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 634,
+          "height": 88
+        },
+        "svgRect": {
+          "width": 620,
+          "height": 86.05
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 48,
+        "questionId": "saa-res-0076",
+        "sourceFile": "content/questions/saa-c03/res-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 10,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 483,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 483,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 49,
+        "questionId": "saa-res-0077",
+        "sourceFile": "content/questions/saa-c03/res-04.json",
+        "blockIndex": 0,
+        "diagramType": "sequenceDiagram",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 16,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 294,
+          "height": 290
+        },
+        "svgRect": {
+          "width": 294,
+          "height": 290
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 50,
+        "questionId": "saa-res-0083",
+        "sourceFile": "content/questions/saa-c03/res-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 9,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 410,
+          "height": 240
+        },
+        "svgRect": {
+          "width": 410,
+          "height": 240
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 51,
+        "questionId": "saa-res-0096",
+        "sourceFile": "content/questions/saa-c03/res-04.json",
+        "blockIndex": 0,
+        "diagramType": "sequenceDiagram",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 15,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 339,
+          "height": 283
+        },
+        "svgRect": {
+          "width": 339,
+          "height": 283
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 52,
+        "questionId": "saa-res-0112",
+        "sourceFile": "content/questions/saa-c03/res-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 14,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 615,
+          "height": 166
+        },
+        "svgRect": {
+          "width": 615,
+          "height": 166
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 53,
+        "questionId": "saa-res-0114",
+        "sourceFile": "content/questions/saa-c03/res-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 538,
+          "height": 85
+        },
+        "svgRect": {
+          "width": 538,
+          "height": 85
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 54,
+        "questionId": "saa-res-0122",
+        "sourceFile": "content/questions/saa-c03/res-05.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 14,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 201,
+          "height": 377
+        },
+        "svgRect": {
+          "width": 201,
+          "height": 377
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 55,
+        "questionId": "saa-res-0126",
+        "sourceFile": "content/questions/saa-c03/res-06.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 18,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 402
+        },
+        "svgRect": {
+          "width": 200,
+          "height": 402
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 56,
+        "questionId": "saa-res-0129",
+        "sourceFile": "content/questions/saa-c03/res-06.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 25,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 615,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 615,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 57,
+        "questionId": "saa-sec-0002",
+        "sourceFile": "content/questions/saa-c03/sec-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 9,
+        "maxTextLen": 9,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 228,
+          "height": 500
+        },
+        "svgRect": {
+          "width": 228,
+          "height": 500
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 58,
+        "questionId": "saa-sec-0004",
+        "sourceFile": "content/questions/saa-c03/sec-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 9,
+        "maxTextLen": 13,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 307,
+          "height": 545
+        },
+        "svgRect": {
+          "width": 307,
+          "height": 545
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 59,
+        "questionId": "saa-sec-0014",
+        "sourceFile": "content/questions/saa-c03/sec-01.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 22,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 580,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 580,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 60,
+        "questionId": "saa-sec-0029",
+        "sourceFile": "content/questions/saa-c03/sec-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 16,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 248,
+          "height": 533
+        },
+        "svgRect": {
+          "width": 248,
+          "height": 533
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 61,
+        "questionId": "saa-sec-0032",
+        "sourceFile": "content/questions/saa-c03/sec-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 18,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 610,
+          "height": 152
+        },
+        "svgRect": {
+          "width": 610,
+          "height": 152
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 62,
+        "questionId": "saa-sec-0041",
+        "sourceFile": "content/questions/saa-c03/sec-02.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 19,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 221,
+          "height": 352
+        },
+        "svgRect": {
+          "width": 221,
+          "height": 352
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 63,
+        "questionId": "saa-sec-0052",
+        "sourceFile": "content/questions/saa-c03/sec-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 6,
+        "maxTextLen": 15,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 414,
+          "height": 377
+        },
+        "svgRect": {
+          "width": 414,
+          "height": 377
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 64,
+        "questionId": "saa-sec-0059",
+        "sourceFile": "content/questions/saa-c03/sec-03.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 15,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 232,
+          "height": 352
+        },
+        "svgRect": {
+          "width": 232,
+          "height": 352
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 65,
+        "questionId": "saa-sec-0067",
+        "sourceFile": "content/questions/saa-c03/sec-03.json",
+        "blockIndex": 0,
+        "diagramType": "sequenceDiagram",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 9,
+        "maxTextLen": 15,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 446,
+          "height": 241
+        },
+        "svgRect": {
+          "width": 446,
+          "height": 241
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 66,
+        "questionId": "saa-sec-0077",
+        "sourceFile": "content/questions/saa-c03/sec-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 8,
+        "maxTextLen": 25,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 381,
+          "height": 633
+        },
+        "svgRect": {
+          "width": 381,
+          "height": 633
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 67,
+        "questionId": "saa-sec-0086",
+        "sourceFile": "content/questions/saa-c03/sec-04.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 11,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 195,
+          "height": 448
+        },
+        "svgRect": {
+          "width": 195,
+          "height": 448
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 68,
+        "questionId": "saa-sec-0114",
+        "sourceFile": "content/questions/saa-c03/sec-05.json",
+        "blockIndex": 0,
+        "diagramType": "sequenceDiagram",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 9,
+        "maxTextLen": 13,
+        "minFontPx": 14,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 400,
+          "height": 241
+        },
+        "svgRect": {
+          "width": 400,
+          "height": 241
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 69,
+        "questionId": "saa-sec-0126",
+        "sourceFile": "content/questions/saa-c03/sec-06.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 5,
+        "maxTextLen": 8,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 145,
+          "height": 448
+        },
+        "svgRect": {
+          "width": 145,
+          "height": 448
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      },
+      {
+        "index": 70,
+        "questionId": "saa-sec-0134",
+        "sourceFile": "content/questions/saa-c03/sec-06.json",
+        "blockIndex": 0,
+        "diagramType": "flowchart",
+        "rendered": true,
+        "fallback": false,
+        "loading": false,
+        "internalOverflowPx": 0,
+        "textClipped": false,
+        "textCount": 4,
+        "maxTextLen": 15,
+        "minFontPx": 16,
+        "contrast": 13.57,
+        "textFill": "rgb(35, 47, 62)",
+        "viewBox": {
+          "x": 0,
+          "y": 0,
+          "width": 198,
+          "height": 352
+        },
+        "svgRect": {
+          "width": 198,
+          "height": 352
+        },
+        "hasSvgTitle": false,
+        "hasSvgDesc": false,
+        "hasRoleImg": true,
+        "hasAriaLabel": true,
+        "fallbackSourceMatches": null
+      }
+    ],
+    "externalRequests": [],
+    "consoleErrors": [],
+    "pageErrors": []
+  },
+  "attacks": {
+    "sampleCount": 30,
+    "rendered": 29,
+    "fallback": 1,
+    "violationCount": 0,
+    "violations": [],
+    "useRefs": [],
+    "payloadTextVisible": [
+      "a11-style-import",
+      "a29-entity-entity"
+    ],
+    "pwned": 0,
+    "externalRequests": [],
+    "externalRequestCount": 0,
+    "cspViolations": [],
+    "consoleErrors": [],
+    "pageErrors": [],
+    "samples": [
+      {
+        "attackId": "a01-script-tag",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a02-script-src",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a03-img-onerror",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a04-img-external",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a05-img-network-path",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a06-iframe",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a07-iframe-js",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a08-foreign-object",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a09-svg-onload",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a10-object-embed",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a11-style-import",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a12-style-bg-url",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a13-link-javascript",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a14-link-external",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a15-link-network-path",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a16-link-data-url",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a17-base-tag",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a18-meta-refresh",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a19-link-stylesheet",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a20-body-onload",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a21-svg-use-xlink",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a22-svg-image-href",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a23-anchor-xlink-js",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a24-textarea-break",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a25-init-directive",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a26-form-action",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a27-invalid-syntax",
+        "rendered": false,
+        "fallback": true,
+        "problems": []
+      },
+      {
+        "attackId": "a28-unsupported-type",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a29-entity-entity",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      },
+      {
+        "attackId": "a30-long-korean",
+        "rendered": true,
+        "fallback": false,
+        "problems": []
+      }
+    ]
+  },
+  "sanitizeBoundary": {
+    "caseCount": 38,
+    "blockedCount": 32,
+    "allowedCount": 6,
+    "mismatches": [
+      {
+        "id": "c06-clip-path",
+        "expect": "allow",
+        "actual": "block",
+        "note": "clip-path 속성은 허용목록에 없음(허용목록 관찰용)"
+      },
+      {
+        "id": "c08-polyline-marker",
+        "expect": "allow",
+        "actual": "block",
+        "note": "marker-end 속성은 허용목록에 없음(허용목록 관찰용)"
+      }
+    ],
+    "cases": [
+      {
+        "id": "b01-script",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b02-onload",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b03-onclick",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b04-foreign-object",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b05-iframe",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b06-image",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b07-use-external",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b08-use-xlink-external",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b09-xlink-javascript",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b10-href-https",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b11-href-network-path",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b12-href-data-url",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b13-paint-url-external",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b14-style-url-external",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b15-style-expression",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b16-style-import",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b17-style-behavior",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b18-doctype",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b19-processing-instruction",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b20-invalid-xml",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b21-not-svg-root",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b22-wrong-namespace",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b23-foreign-namespace-child",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b24-disallowed-element",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b25-disallowed-attr",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b26-entity-xxe",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b27-paint-url-malformed",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b28-href-backslash",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b29-image-in-allowed",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "b30-style-js-url",
+        "expect": "block",
+        "note": null,
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": true,
+        "outPrefix": null
+      },
+      {
+        "id": "c01-internal-fragment",
+        "expect": "allow",
+        "note": "내부 fragment paint 마커 허용(요구사항)",
+        "threw": null,
+        "blocked": false,
+        "allowed": true,
+        "matched": true,
+        "outPrefix": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\"><g><rect width=\"10\" height=\"10\" fill=\"url(#grad)\"/></g></svg>"
+      },
+      {
+        "id": "c02-internal-href",
+        "expect": "allow",
+        "note": null,
+        "threw": null,
+        "blocked": false,
+        "allowed": true,
+        "matched": true,
+        "outPrefix": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\"><a href=\"#local\"><text>x</text></a></svg>"
+      },
+      {
+        "id": "c03-title-desc",
+        "expect": "allow",
+        "note": null,
+        "threw": null,
+        "blocked": false,
+        "allowed": true,
+        "matched": true,
+        "outPrefix": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\"><title id=\"t\">제목</title><desc id=\"d\">설명</desc><rect width=\"10\" height=\"10"
+      },
+      {
+        "id": "c04-aria",
+        "expect": "allow",
+        "note": null,
+        "threw": null,
+        "blocked": false,
+        "allowed": true,
+        "matched": true,
+        "outPrefix": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\"><g role=\"img\" aria-label=\"다이어그램\"><rect width=\"10\" height=\"10\"/></g></svg>"
+      },
+      {
+        "id": "c05-data-attr",
+        "expect": "allow",
+        "note": null,
+        "threw": null,
+        "blocked": false,
+        "allowed": true,
+        "matched": true,
+        "outPrefix": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\"><g data-testid=\"x\"><rect width=\"10\" height=\"10\"/></g></svg>"
+      },
+      {
+        "id": "c06-clip-path",
+        "expect": "allow",
+        "note": "clip-path 속성은 허용목록에 없음(허용목록 관찰용)",
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": false,
+        "outPrefix": null
+      },
+      {
+        "id": "c07-text-tspan",
+        "expect": "allow",
+        "note": null,
+        "threw": null,
+        "blocked": false,
+        "allowed": true,
+        "matched": true,
+        "outPrefix": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\" width=\"100\" height=\"100\"><g><text x=\"1\" y=\"2\"><tspan>한국어 텍스트</tspan></text></g></svg>"
+      },
+      {
+        "id": "c08-polyline-marker",
+        "expect": "allow",
+        "note": "marker-end 속성은 허용목록에 없음(허용목록 관찰용)",
+        "threw": null,
+        "blocked": true,
+        "allowed": false,
+        "matched": false,
+        "outPrefix": null
+      }
+    ],
+    "pageErrors": []
+  },
+  "viewports": {
+    "viewports": [
+      {
+        "width": 320,
+        "colorScheme": "light",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 252,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 320,
+        "colorScheme": "dark",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 252,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 375,
+        "colorScheme": "light",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 301.5,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 375,
+        "colorScheme": "dark",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 301.5,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 768,
+        "colorScheme": "light",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 228,
+        "svgWidthMax": 668,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 768,
+        "colorScheme": "dark",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 228,
+        "svgWidthMax": 668,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 1024,
+        "colorScheme": "light",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 620,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 1024,
+        "colorScheme": "dark",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 620,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 1280,
+        "colorScheme": "light",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 620,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      },
+      {
+        "width": 1280,
+        "colorScheme": "dark",
+        "pageOverflowPx": 0,
+        "bodyOverflowPx": 0,
+        "overflowElementCount": 0,
+        "overflowElements": [],
+        "rendered": 71,
+        "fallback": 0,
+        "internalOverflowCount": 0,
+        "maxInternalOverflowPx": 0,
+        "textClippedCount": 0,
+        "minFontPx": 14,
+        "minContrast": 4.83,
+        "maxTextLen": 25,
+        "svgWidthMin": 136,
+        "svgWidthMax": 620,
+        "duplicateIds": [],
+        "styles": {
+          "bodyBackground": "rgb(255, 255, 255)",
+          "bodyColor": "rgb(35, 47, 62)",
+          "diagramBackground": "rgb(255, 255, 255)",
+          "diagramColor": "rgb(35, 47, 62)"
+        },
+        "externalRequestCount": 0,
+        "consoleErrors": [],
+        "pageErrors": []
+      }
+    ],
+    "darkIdenticalToLight": true,
+    "screenshots": [
+      "screenshots/pele-viewport-320.png",
+      "screenshots/pele-viewport-375.png",
+      "screenshots/pele-viewport-768.png",
+      "screenshots/pele-viewport-1024.png",
+      "screenshots/pele-viewport-1280.png"
+    ]
+  },
+  "perf": {
+    "runs": 3,
+    "coldP50": 54.6,
+    "warmP50": 2.2,
+    "coldMs": [
+      55.8,
+      54.6,
+      53.6
+    ],
+    "warmMs": [
+      2.2,
+      2.1,
+      2.2
+    ],
+    "jsAtFirstSvg": [
+      {
+        "encodedBytes": 175978,
+        "decodedBytes": 524201,
+        "scripts": 12
+      },
+      {
+        "encodedBytes": 175978,
+        "decodedBytes": 524201,
+        "scripts": 12
+      },
+      {
+        "encodedBytes": 175978,
+        "decodedBytes": 524201,
+        "scripts": 12
+      }
+    ],
+    "note": "하네스 번들 기준 — 제품 배포 번들과는 엔트리 구성이 달라 직접 비교 불가(감소율 산출 금지).",
+    "detail": [
+      {
+        "run": 1,
+        "coldMs": 55.8,
+        "warmMs": 2.2,
+        "jsAtFirstSvg": {
+          "encodedBytes": 175978,
+          "decodedBytes": 524201,
+          "scripts": 12
+        },
+        "scriptsRequested": 12
+      },
+      {
+        "run": 2,
+        "coldMs": 54.6,
+        "warmMs": 2.1,
+        "jsAtFirstSvg": {
+          "encodedBytes": 175978,
+          "decodedBytes": 524201,
+          "scripts": 12
+        },
+        "scriptsRequested": 12
+      },
+      {
+        "run": 3,
+        "coldMs": 53.6,
+        "warmMs": 2.2,
+        "jsAtFirstSvg": {
+          "encodedBytes": 175978,
+          "decodedBytes": 524201,
+          "scripts": 12
+        },
+        "scriptsRequested": 12
+      }
+    ]
+  }
+}
