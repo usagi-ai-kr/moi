@@ -12,6 +12,7 @@ import {
 } from 'react-router';
 import { copy } from './copy';
 import { useLogout, useUiStore, type ApiClient } from './session';
+import { STUDY_EXAMS } from './study/types';
 import './authenticated.css';
 import { AppShell } from './AppShell';
 import { importAccount, importHistory, importReview } from './lazy-routes';
@@ -72,7 +73,7 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
       {showAuthError && <AuthErrorAlert />}
       <p className="moi-lead">{copy.session.welcome}</p>
       <section aria-label={copy.study.examLabel}>
-        <p className="moi-note">{copy.study.examOption}</p>
+        <p className="moi-note">{STUDY_EXAMS[0].label}</p>
         <p className="moi-note">{copy.study.examNote}</p>
         <p className="moi-note">{copy.study.examContext}</p>
       </section>

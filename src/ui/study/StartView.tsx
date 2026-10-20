@@ -1,6 +1,6 @@
 import { copy } from '../copy';
 import { STUDY_SET_SIZE } from '@/domain/study/thresholds';
-import { STUDY_DOMAINS, STUDY_EXAM_ID, STUDY_EXAM_LABEL } from './types';
+import { STUDY_DOMAINS, STUDY_EXAMS, STUDY_EXAM_ID, STUDY_EXAM_LABEL } from './types';
 import type { StudyScope } from './types';
 
 interface Props {
@@ -33,7 +33,11 @@ export function StartView(p: Props) {
           disabled
           aria-label={copy.study.examLabel}
         >
-          <option value={STUDY_EXAM_ID}>{copy.study.examOption}</option>
+          {STUDY_EXAMS.map((e) => (
+            <option key={e.id} value={e.id}>
+              {e.label}
+            </option>
+          ))}
         </select>
       </label>
       <p className="moi-note">{copy.study.examNote}</p>
