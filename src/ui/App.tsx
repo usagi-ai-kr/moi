@@ -1,9 +1,11 @@
 import { Suspense, lazy } from 'react';
 import {
   MemoryRouter,
+  Outlet,
   Route,
   Routes,
   useInRouterContext,
+  useLocation,
   useNavigate,
   useSearchParams,
 } from 'react-router';
@@ -11,6 +13,7 @@ import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
 import { AppShell } from './AppShell';
+import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
 // 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
@@ -32,11 +35,20 @@ const AccountPage = lazy(() =>
   import('./pages/AccountPage').then((m) => ({ default: m.AccountPage })),
 );
 
-function StudyFallback() {
+function RouteFallback() {
   return (
     <p className="moi-note" role="status" aria-live="polite">
-      {copy.session.checking}
+      {copy.common.loading}
     </p>
+  );
+}
+
+function RouteBoundaryLayout() {
+  const location = useLocation();
+  return (
+    <RouteErrorBoundary key={location.pathname} resetKey={location.pathname}>
+      <Outlet />
+    </RouteErrorBoundary>
   );
 }
 
@@ -95,7 +107,7 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
   // legacy: /?study=<UUID> 북마크도 서버 소유권 확인 후 새 주소로 replace (#148).
   if (legacyStudy) {
     return (
-      <Suspense fallback={<StudyFallback />}>
+      <Suspense fallback={<RouteFallback />}>
         <LegacyStudyRedirect client={client} setId={legacyStudy} />
       </Suspense>
     );
@@ -141,80 +153,46 @@ function AppContent({ client }: { client: ApiClient }) {
   return (
     <Routes>
       <Route element={<AppShell />}>
-        <Route index element={<Home showAuthError={showAuthError} client={client} />} />
-        <Route
-          path="study"
-          element={
-            <Suspense key={userId} fallback={<StudyFallback />}>
-              <StudyRoute client={client} userId={userId} mode="current" />
-            </Suspense>
-          }
-        />
-        <Route
-          path="study/new"
-          element={
-            <Suspense key={userId} fallback={<StudyFallback />}>
-              <StudyRoute client={client} userId={userId} mode="start" />
-            </Suspense>
-          }
-        />
-        <Route
-          path="study/result"
-          element={
-            <Suspense key={userId} fallback={<StudyFallback />}>
-              <StudyRoute client={client} userId={userId} mode="result" />
-            </Suspense>
-          }
-        />
-        <Route
-          path="study/:setId"
-          element={
-            <Suspense fallback={<StudyFallback />}>
-              <LegacyStudyRedirect client={client} />
-            </Suspense>
-          }
-        />
-        <Route
-          path="study/:setId/result"
-          element={
-            <Suspense fallback={<StudyFallback />}>
-              <LegacyStudyRedirect client={client} />
-            </Suspense>
-          }
-        />
-        <Route
-          path="history"
-          element={
-            <Suspense fallback={<StudyFallback />}>
-              <HistoryPage client={client} />
-            </Suspense>
-          }
-        />
-        <Route
-          path="history/:setId"
-          element={
-            <Suspense fallback={<StudyFallback />}>
-              <HistoryDetailPage client={client} />
-            </Suspense>
-          }
-        />
-        <Route
-          path="review"
-          element={
-            <Suspense fallback={<StudyFallback />}>
-              <ReviewScreen client={client} />
-            </Suspense>
-          }
-        />
-        <Route
-          path="account"
-          element={
-            <Suspense fallback={<StudyFallback />}>
-              <AccountPage pending={logoutPending} onLogout={doLogout} />
-            </Suspense>
-          }
-        />
-        <Route path="*" element={<NotFound />} />
+        <Route element={<RouteBoundaryLayout />}>
+          <Route index element={<Home showAuthError={showAuthError} client={client} />} />
+          <Route
+            path="study"
+            element={<Suspense key={userId} fallback={<RouteFallback />}><StudyRoute client={client} userId={userId} mode="current" /></Suspense>}
+          />
+          <Route
+            path="study/new"
+            element={<Suspense key={userId} fallback={<RouteFallback />}><StudyRoute client={client} userId={userId} mode="start" /></Suspense>}
+          />
+          <Route
+            path="study/result"
+            element={<Suspense key={userId} fallback={<RouteFallback />}><StudyRoute client={client} userId={userId} mode="result" /></Suspense>}
+          />
+          <Route
+            path="study/:setId"
+            element={<Suspense fallback={<RouteFallback />}><LegacyStudyRedirect client={client} /></Suspense>}
+          />
+          <Route
+            path="study/:setId/result"
+            element={<Suspense fallback={<RouteFallback />}><LegacyStudyRedirect client={client} /></Suspense>}
+          />
+          <Route
+            path="history"
+            element={<Suspense fallback={<RouteFallback />}><HistoryPage client={client} /></Suspense>}
+          />
+          <Route
+            path="history/:setId"
+            element={<Suspense fallback={<RouteFallback />}><HistoryDetailPage client={client} /></Suspense>}
+          />
+          <Route
+            path="review"
+            element={<Suspense fallback={<RouteFallback />}><ReviewScreen client={client} /></Suspense>}
+          />
+          <Route
+            path="account"
+            element={<Suspense fallback={<RouteFallback />}><AccountPage pending={logoutPending} onLogout={doLogout} /></Suspense>}
+          />
+          <Route path="*" element={<NotFound />} />
+        </Route>
       </Route>
     </Routes>
   );

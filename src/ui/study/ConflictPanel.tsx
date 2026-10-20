@@ -10,12 +10,15 @@ interface Props {
   onUseMine: (questionId: string) => void;
 }
 
-function answerText(r: ItemResponse, items: StudyActiveItem[]): string {
+function answerText(r: ItemResponse, item: StudyActiveItem | undefined): string {
   if (r.kind === 'pass') return copy.study.pass;
   if (r.kind === 'unanswered') return copy.study.unansweredLabel;
-  const texts = r.optionIds.map(
-    (id) => items.find((i) => i.options.some((o) => o.optionId === id))?.options.find((o) => o.optionId === id)?.text ?? id,
-  );
+  const texts = r.optionIds.map((id) => {
+    const opt = item?.options.find((o) => o.optionId === id);
+    if (opt?.text) return opt.text;
+    const index = item?.optionOrder.indexOf(id) ?? -1;
+    return index >= 0 ? String(index + 1) : '?';
+  });
   return texts.length > 0 ? texts.join(', ') : copy.study.unansweredLabel;
 }
 
@@ -29,16 +32,17 @@ export function ConflictPanel({ conflicts, items, pending, onUseServer, onUseMin
       <ul className="moi-conflict-list">
         {conflicts.map((c) => {
           const index = items.findIndex((i) => i.questionId === c.questionId);
+          const item = index >= 0 ? items[index] : undefined;
           return (
             <li key={c.questionId} className="moi-conflict-item">
               <p className="moi-conflict-q">
-                {index >= 0 ? `${copy.study.questionLabel} ${index + 1}` : c.questionId} · {c.questionId}
+                {index >= 0 ? `${copy.study.questionLabel} ${index + 1}` : copy.study.questionLabel}
               </p>
               <p className="moi-note">
-                {copy.study.conflictServer}: {answerText(c.server, items)}
+                {copy.study.conflictServer}: {answerText(c.server, item)}
               </p>
               <p className="moi-note">
-                {copy.study.conflictMine}: {answerText(c.local, items)}
+                {copy.study.conflictMine}: {answerText(c.local, item)}
               </p>
               <div className="moi-study-actions">
                 <button type="button" className="moi-study-secondary" disabled={pending} onClick={() => onUseServer(c.questionId)}>
