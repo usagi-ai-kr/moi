@@ -146,7 +146,7 @@ describe('결과 해설 좌우 페이징 (#189)', () => {
     expect(perItemIds()).toEqual(['peritem-q-0']);
     // 요약은 상단에 그대로 둔다.
     expect(screen.getByText(/정답률 33%/)).toBeInTheDocument();
-    expect(screen.getByText('정답')).toBeInTheDocument();
+    expect(screen.getByText('정답', { selector: 'dt' })).toBeInTheDocument();
   });
 
   it('다음·이전 버튼으로 문항을 넘기면 해설·근거 링크가 함께 바뀐다', () => {

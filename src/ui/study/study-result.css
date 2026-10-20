@@ -11,6 +11,70 @@
 .moi-study-result > div { display: flex; flex-direction: column; gap: var(--moi-space-1); min-width: 0; padding: var(--moi-space-2) var(--moi-space-3); background: var(--moi-color-surface); border: 1px solid var(--moi-color-border); border-radius: var(--moi-radius-md); }
 .moi-study-result dt { font-size: var(--moi-size-small); line-height: var(--moi-lh-tight); color: var(--moi-color-muted); }
 .moi-study-result dd { margin: 0; font-size: 22px; font-weight: 600; line-height: var(--moi-lh-tight); color: var(--moi-color-ink); }
+/* 문항 목록 — 모바일 2열, 768px 이상 5열. 번호·상태 문구·기호를 함께 보여준다(#132). */
+.moi-study-question-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  min-width: 0;
+}
+.moi-study-question-list-title {
+  margin: 0;
+  font-size: var(--moi-size-small);
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
+}
+.moi-study-question-list-hint { margin: 0; }
+.moi-study-question-items {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--moi-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .moi-study-question-items { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+.moi-study-question-items > li { min-width: 0; }
+.moi-study-question-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--moi-space-1);
+  width: 100%;
+  min-height: var(--moi-touch-min);
+  padding: var(--moi-space-1) var(--moi-space-2);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  color: var(--moi-color-ink);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-small);
+  text-align: left;
+  cursor: pointer;
+}
+.moi-study-question-item:hover { background: var(--moi-color-surface); }
+.moi-study-question-item:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+.moi-study-question-item[aria-current='step'] {
+  border-color: var(--moi-color-orange);
+  box-shadow: inset 0 0 0 1px var(--moi-color-orange);
+  background: var(--moi-color-surface);
+}
+.moi-study-question-number { flex: none; font-weight: 600; }
+.moi-study-question-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--moi-space-1);
+  min-width: 0;
+  color: var(--moi-color-muted);
+}
+.moi-study-question-item[data-status='correct'] .moi-study-question-status { color: var(--moi-color-ink); }
+.moi-study-question-item[data-status='incorrect'] .moi-study-question-status { color: var(--moi-color-danger); }
+.moi-study-question-status-symbol { font-weight: 600; }
 .moi-study-peritem,
 .moi-study-history {
   margin: 0;
