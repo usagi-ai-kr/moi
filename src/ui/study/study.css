@@ -11,6 +11,12 @@
     max-width: 640px;
   }
 }
+/* 큰 화면 — 본문은 셸의 읽기 열을 그대로 채운다(가운데 정렬·폭은 셸이 담당). */
+@media (min-width: 1024px) {
+  .moi-study {
+    max-width: 100%;
+  }
+}
 .moi-study-title {
   margin: 0;
   font-size: var(--moi-size-lead);

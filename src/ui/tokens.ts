@@ -43,6 +43,8 @@ export const radius = {
 
 export const layout = {
   containerMaxWidth: 960,
+  // 큰 화면의 읽기 열 — 헤더 내부와 본문이 같은 폭을 공유한다 (#148 6항).
+  readingMaxWidth: 720,
   headerHeight: 56,
   containerPaddingX: 'clamp(16px, 5vw, 32px)',
   accentWidth: 48,
@@ -94,6 +96,7 @@ export const cssVars: Record<string, string> = {
   ...Object.fromEntries(Object.entries(space).map(([k, v]) => [`--moi-space-${k}`, px(v)])),
   ...Object.fromEntries(Object.entries(radius).map(([k, v]) => [`--moi-radius-${k}`, px(v)])),
   '--moi-container-max': px(layout.containerMaxWidth),
+  '--moi-reading-max': px(layout.readingMaxWidth),
   '--moi-header-h': px(layout.headerHeight),
   '--moi-container-pad-x': layout.containerPaddingX,
   '--moi-accent-w': px(layout.accentWidth),

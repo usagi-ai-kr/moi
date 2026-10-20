@@ -93,4 +93,9 @@
   .moi-nav {
     gap: var(--moi-space-2);
   }
+  /* 큰 화면 — 헤더 내부와 본문을 같은 읽기 열(가운데)로 맞춰 좌우 정렬을 일치시킨다 (#148 6항). */
+  .moi-shell-header .moi-shell-head,
+  .moi-shell-main > .moi-main-inner {
+    max-width: var(--moi-reading-max);
+  }
 }
