@@ -135,7 +135,7 @@ async function seed(): Promise<void> {
     ['dom-sec', 'security', '보안', 30],
     ['dom-res', 'resilience', '복원력', 26],
     ['dom-perf', 'performance', '성능', 24],
-    ['dom-cost', 'cost-optimization', '비용 최적화', 20],
+    ['dom-cost-optimization', 'cost-optimization', '비용 최적화', 20],
   ] as const;
   for (const [id, code, name, weight] of domains) {
     await questions.insertDomain({ id, examId: 'exam-saa', code, name, weight });

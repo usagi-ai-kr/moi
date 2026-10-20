@@ -6,7 +6,11 @@ export function pct(v: number | null): string {
 }
 
 export function domainLabel(id: string): string {
-  return STUDY_DOMAINS.find((d) => d.id === id)?.label ?? id;
+  const found = STUDY_DOMAINS.find((d) => d.id === id)?.label;
+  if (found) return found;
+  // legacy alias — 과거 UI·픽스처가 쓰던 짧은 id도 canonical 라벨로 매핑한다.
+  if (id === 'dom-cost') return '비용 최적화';
+  return copy.stats.unknownDomain;
 }
 
 export function statusLabel(s: 'ok' | 'insufficient-data'): string {

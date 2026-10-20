@@ -21,7 +21,7 @@ const DOMAINS = [
   { id: 'dom-security', code: 'security', name: '보안', weight: 30 },
   { id: 'dom-resilience', code: 'resilience', name: '복원력', weight: 26 },
   { id: 'dom-performance', code: 'performance', name: '성능', weight: 24 },
-  { id: 'dom-cost', code: 'cost', name: '비용 최적화', weight: 20 },
+  { id: 'dom-cost-optimization', code: 'cost-optimization', name: '비용 최적화', weight: 20 },
 ];
 
 async function seedExam(): Promise<void> {

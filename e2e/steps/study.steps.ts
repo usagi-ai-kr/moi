@@ -47,7 +47,7 @@ const STATS_DTO = {
       status: 'ok',
     },
     {
-      domainId: 'dom-cost',
+      domainId: 'dom-cost-optimization',
       uniqueFirstSolved: 8,
       gradedAttempts: 15,
       cumulativeAccuracy: 0.5,
@@ -57,7 +57,7 @@ const STATS_DTO = {
   ],
   weakDomains: [
     {
-      domainId: 'dom-cost',
+      domainId: 'dom-cost-optimization',
       score: 0.45,
       cumulativeAccuracy: 0.5,
       effectiveRecentAccuracy: 0.4,
