@@ -1,5 +1,6 @@
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
+import { Button } from '../components/ui/button';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { ReportButton } from './ReportButton';
 import { STUDY_EXAM_ID, type SaveState } from './types';
@@ -87,21 +88,14 @@ export function QuestionView(p: Props) {
           </label>
         ))}
       </fieldset>
+      {/* 버튼 위계 — DESIGN.md 5절: Pass=secondary, 미응답으로 지우기=ghost (shadcn Button 공통 규격). */}
       <div className="moi-study-actions">
-        <button
-          type="button"
-          className="moi-study-secondary"
-          onClick={() => p.onPass(item.questionId, item.response)}
-        >
+        <Button type="button" variant="secondary" onClick={() => p.onPass(item.questionId, item.response)}>
           {copy.study.pass}
-        </button>
-        <button
-          type="button"
-          className="moi-study-ghost"
-          onClick={() => p.onClear(item.questionId, item.response)}
-        >
+        </Button>
+        <Button type="button" variant="ghost" className="bg-transparent" onClick={() => p.onClear(item.questionId, item.response)}>
           {copy.study.clear}
-        </button>
+        </Button>
       </div>
       {saveText && (
         <p className="moi-note" role="status" aria-live="polite">
@@ -118,38 +112,35 @@ export function QuestionView(p: Props) {
           <p className="moi-alert-text">{p.submitError}</p>
         </div>
       )}
+      {/* [이전][다음]은 같은 크기·같은 variant의 secondary. */}
       <div className="moi-study-nav">
-        <button
-          type="button"
-          className="moi-study-secondary"
-          disabled={p.index === 0}
-          onClick={() => p.onIndex(p.index - 1)}
-        >
+        <Button type="button" variant="secondary" disabled={p.index === 0} onClick={() => p.onIndex(p.index - 1)}>
           {copy.study.prev}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="moi-study-secondary"
+          variant="secondary"
           disabled={p.index >= total - 1}
           onClick={() => p.onIndex(p.index + 1)}
         >
           {copy.study.next}
-        </button>
+        </Button>
       </div>
+      {/* 제출=primary(최종 제출), 포기=destructive 계열(강도 낮게) — 확인 대화상자에서 확정. */}
       <div className="moi-study-actions">
-        <button
+        <Button
           type="button"
-          className="moi-study-primary"
+          variant="primary"
           disabled={p.submitting}
-          aria-busy={p.submitting}
+          pending={p.submitting}
           onClick={p.onSubmitRequest}
         >
           {copy.study.submit}
           {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
-        </button>
-        <button type="button" className="moi-study-ghost" onClick={p.onAbandonRequest}>
+        </Button>
+        <Button type="button" variant="outline" className="text-destructive" onClick={p.onAbandonRequest}>
           {copy.study.abandon}
-        </button>
+        </Button>
       </div>
     </section>
   );

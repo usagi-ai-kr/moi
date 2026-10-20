@@ -1,5 +1,6 @@
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedItem, StudySubmittedSet } from '../api/client';
+import { Button } from '../components/ui/button';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
@@ -136,16 +137,17 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
           </ul>
         </section>
       )}
+      {/* 하단 버튼 위계 — 새 세트 시작=primary, 학습 이력·오답 복습=secondary(같은 크기). */}
       <div className="moi-study-actions">
-        <button type="button" className="moi-study-primary" onClick={onRestart}>
+        <Button type="button" variant="primary" onClick={onRestart}>
           {copy.study.backToStart}
-        </button>
-        <button type="button" className="moi-study-secondary" onClick={onHistory}>
+        </Button>
+        <Button type="button" variant="secondary" onClick={onHistory}>
           {copy.study.historyLink}
-        </button>
-        <a href="/review?mode=wrong" className="moi-study-ghost">
-          {copy.review.goToWrongReview}
-        </a>
+        </Button>
+        <Button asChild variant="secondary">
+          <a href="/review?mode=wrong">{copy.review.goToWrongReview}</a>
+        </Button>
       </div>
     </section>
   );

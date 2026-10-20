@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { copy } from '../copy';
 import { isSubmittedSet, type ApiClient } from '../api/client';
+import { Button } from '../components/ui/button';
 import { ConflictPanel } from './ConflictPanel';
 import { HistoryView } from './HistoryView';
 import { QuestionView } from './QuestionView';
@@ -11,25 +12,34 @@ import { useStudyFlow } from './useStudyFlow';
 import './study.css';
 
 function ConfirmDialog({
-  tone, label, text, confirm, pending, onConfirm, onCancel,
+  tone, label, text, confirm, pending, destructive, onConfirm, onCancel,
 }: {
   tone: string;
   label: string;
   text: string;
   confirm: string;
   pending: boolean;
+  destructive: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
   return (
-    <div className={`moi-alert ${tone}`} role="alertdialog" aria-label={label}>
+    <div className={`moi-alert moi-study-confirm ${tone}`} role="alertdialog" aria-label={label}>
       <p className="moi-alert-text">{text}</p>
-      <button type="button" className="moi-study-primary" onClick={onConfirm} disabled={pending}>
+      {/* 확정 버튼 위계 — 제출=primary, 포기=destructive 계열(강도 낮게). 취소=ghost. */}
+      <Button
+        type="button"
+        variant={destructive ? 'outline' : 'primary'}
+        className={destructive ? 'text-destructive' : undefined}
+        onClick={onConfirm}
+        disabled={pending}
+        pending={pending}
+      >
         {confirm}
-      </button>
-      <button type="button" className="moi-alert-retry" onClick={onCancel}>
+      </Button>
+      <Button type="button" variant="ghost" className="bg-transparent" onClick={onCancel}>
         {copy.study.cancel}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -135,6 +145,7 @@ export function StudyScreen({
             text={unanswered > 0 ? copy.study.unansweredWarn : copy.study.confirmSubmit}
             confirm={copy.study.confirmSubmit}
             pending={f.submitMut.isPending}
+            destructive={false}
             onConfirm={f.doSubmit}
             onCancel={() => s.setConfirmSubmit(false)}
           />
@@ -146,6 +157,7 @@ export function StudyScreen({
             text={copy.study.abandonAsk}
             confirm={copy.study.confirmAbandon}
             pending={f.abandonMut.isPending}
+            destructive
             onConfirm={f.doAbandon}
             onCancel={() => s.setConfirmAbandon(false)}
           />

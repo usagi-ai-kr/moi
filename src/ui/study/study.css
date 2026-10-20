@@ -63,6 +63,14 @@
   flex-wrap: wrap;
   gap: var(--moi-space-2);
 }
+/* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). */
+.moi-study-confirm { flex-wrap: wrap; }
+/* shadcn Button은 preflight 미도입 상태라 UA 기본 버튼 border(2px outset)가 남는다.
+   이 파일은 layer 밖이라 Tailwind utilities보다 우선하므로, `border` 유틸리티를 가진 variant(outline —
+   북마크 버튼 포함)는 리셋에서 제외해 1px 토큰 테두리를 유지한다. */
+.moi-study [data-slot='button']:not(.border),
+.moi-study-confirm [data-slot='button']:not(.border) { border: 0; }
+.moi-study [data-slot='button'], .moi-study-confirm [data-slot='button'] { cursor: pointer; }
 .moi-study-primary {
   min-height: var(--moi-space-8);
   padding-inline: var(--moi-space-4);

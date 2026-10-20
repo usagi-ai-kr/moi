@@ -402,3 +402,15 @@ Then('정정 반영이 보인다', async ({ page }) => {
   await expect(panel.getByText('유효 19문제 · 제외 1문제')).toBeVisible();
   await expect(panel.getByText('문제 1 · 오탈자가 있습니다')).toBeVisible();
 });
+
+// #148 5항 — 실제 브라우저 계산 스타일로 버튼 크기·outline 테두리 회귀를 막는다.
+Then('풀이 버튼은 44px 이상이고 북마크 버튼 테두리가 보인다', async ({ page }) => {
+  for (const name of ['Pass', '미응답으로 지우기', '다음', /제출하기/, '포기하기']) {
+    const box = await page.getByRole('button', { name }).first().boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+  }
+  const bookmark = page.getByRole('button', { name: /북마크/ }).first();
+  await expect(bookmark).toBeVisible();
+  const width = await bookmark.evaluate((el) => getComputedStyle(el).borderTopWidth);
+  expect(width).toBe('1px');
+});
