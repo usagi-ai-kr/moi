@@ -858,7 +858,14 @@ async function main() {
         await page.waitForTimeout(250);
 
         const imgFilename = `${screen.id}-${width}.png`;
-        await page.screenshot({ path: join(OUT_DIR, imgFilename), fullPage: true });
+        // fullPage:true는 터치 컨텍스트에서 @media (pointer:coarse) 렌더링을
+        // 유실한다(DOM rect 44px인데 PNG 40px). 전체 높이로 뷰포트를 키워
+        // viewport 캡처한다 — 같은 페이지·같은 실행 산출물이다.
+        const fullHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+        await page.setViewportSize({ width, height: fullHeight });
+        await page.waitForTimeout(100);
+        await page.screenshot({ path: join(OUT_DIR, imgFilename) });
+        await page.setViewportSize({ width, height: 800 });
 
         // 터치 매칭 증거: coarse 매칭 여부 + below44 카운트(버튼 높이 <44).
         const pointerCoarse = await page.evaluate(() => window.matchMedia('(pointer: coarse)').matches);
