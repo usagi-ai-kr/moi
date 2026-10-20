@@ -1,6 +1,7 @@
 import { Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { Brand } from './Brand';
 import { Drawer } from './components/ui/drawer';
 import { copy } from './copy';
 import { prefetchRoute } from './lazy-routes';
@@ -43,15 +44,7 @@ export function AppShell() {
       <header className="moi-header moi-shell-header">
         <div className="moi-container moi-shell-head">
           <Link to="/" className="moi-brand-link" aria-label={copy.brand}>
-            <img
-              src="/favicon.svg"
-              width={22}
-              height={22}
-              alt=""
-              aria-hidden="true"
-              className="moi-brand-icon"
-            />
-            <span className="moi-brand">{copy.brand}</span>
+            <Brand />
           </Link>
           <nav className="moi-nav" aria-label={copy.nav.label} hidden={isMobile}>
             <NavLink to="/" end className="moi-nav-link">
@@ -96,7 +89,7 @@ export function AppShell() {
       >
         <div className="moi-drawer-panel">
           <div className="moi-drawer-head">
-            <span className="moi-brand">{copy.brand}</span>
+            <Brand />
             <button
               type="button"
               className="moi-drawer-close"

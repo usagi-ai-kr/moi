@@ -1,0 +1,20 @@
+/* 공통 브랜드 — 토큰 변수만 사용 (ADR-0012, #225). */
+.moi-brand-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--moi-space-2);
+}
+
+.moi-brand {
+  font-family: var(--moi-font-display);
+  font-weight: 700;
+  font-size: var(--moi-size-brand);
+  color: var(--moi-color-ink);
+}
+
+.moi-brand-icon {
+  display: block;
+  flex: none;
+  width: var(--moi-brand-icon-size);
+  height: var(--moi-brand-icon-size);
+}

@@ -46,9 +46,14 @@ export const layout = {
   containerMaxWidth: 960,
   // 큰 화면의 읽기 열 — 헤더 내부와 본문이 같은 폭을 공유한다 (#148 6항).
   readingMaxWidth: 720,
+  // 구 첫 화면 헤더 높이 — #225에서 셸(61px) 단일 규격으로 통일해 CSS 사용 중단.
+  // 호환을 위해 값은 유지한다 (삭제 금지 — 외부 참조 가능).
   headerHeight: 56,
   // 로그인 후 셸 헤더 실측 높이 — 브랜드 링크 44px + 헤더 패딩 8px×2 + 하단 테두리 1px (#215).
+  // #225 공통 헤더 단일 소스 — 첫 화면·셸·Drawer 모두 이 값만 사용한다.
   shellHeaderHeight: 61,
+  // 공통 브랜드 아이콘 광학 크기 — favicon 22px 단일 소스 (#225).
+  brandIconSize: 22,
   containerPaddingX: 'clamp(16px, 5vw, 32px)',
   accentWidth: 48,
   accentHeight: 4,
@@ -111,6 +116,7 @@ export const cssVars: Record<string, string> = {
   '--moi-reading-max': px(layout.readingMaxWidth),
   '--moi-header-h': px(layout.headerHeight),
   '--moi-shell-header-h': px(layout.shellHeaderHeight),
+  '--moi-brand-icon-size': px(layout.brandIconSize),
   '--moi-drawer-w-max': px(layout.drawerWidthMax),
   '--moi-drawer-gap': px(layout.drawerViewportGap),
   '--moi-container-pad-x': layout.containerPaddingX,

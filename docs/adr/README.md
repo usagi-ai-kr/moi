@@ -76,4 +76,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0059 | 복습 10문항 회차와 remaining/cycle 큐 | Accepted | 2026-10-21 | [0059-review-round-10-queue.md](./0059-review-round-10-queue.md) |
 | ADR-0060 | 홈 안내 문구 삭제 | Accepted | 2026-10-21 | [0060-home-note-removal.md](./0060-home-note-removal.md) |
 | ADR-0061 | 학습 포기 확인을 인라인 경고에서 AlertDialog 모달로 전환 | Accepted | 2026-10-21 | [0061-abandon-confirm-alert-dialog.md](./0061-abandon-confirm-alert-dialog.md) |
+| ADR-0062 | 공통 브랜드·헤더 토큰 계약 | Accepted | 2026-10-21 | [0062-brand-header-tokens.md](./0062-brand-header-tokens.md) |
 <!-- ADR_INDEX:END -->
