@@ -74,9 +74,15 @@ interface FakeOpts {
   start?: StudyActiveSet;
   startError?: number;
   get?: StudyActiveSet;
+  /** 세트 ID별 응답 — 경로의 ID와 실제 조회 대상을 일치시켜 검증한다 (#171). */
+  sets?: Record<string, StudyActiveSet>;
   current?: StudyActiveSet | null;
   currentError?: number;
   history?: { items: StudySummary[]; total: number };
+}
+
+function requestedSetId(path: string): string {
+  return path.slice('api/study/sets/'.length).split('/')[0];
 }
 
 function fakeStudyClient(o: FakeOpts = {}): ApiClient {
@@ -108,6 +114,11 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
           return { items: [], total: 0 };
         }
         if (p.startsWith('api/study/sets/')) {
+          if (o.sets) {
+            const set = o.sets[requestedSetId(p)];
+            if (!set) throw httpError(404, { error: 'not_found' });
+            return set;
+          }
           if (o.get) return o.get;
           if (o.current) return o.current;
           throw httpError(404, { error: 'not_found' });
@@ -128,6 +139,13 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
     })),
     patch: vi.fn(() => ({ json: async () => ({ outcome: 'answered' }) })),
   } as unknown as ApiClient;
+}
+
+function requestedSetPaths(client: ApiClient): string[] {
+  return vi
+    .mocked(client.get)
+    .mock.calls.map(([p]) => String(p))
+    .filter((p) => p.startsWith('api/study/sets/') && !p.includes('/corrections'));
 }
 
 function resetStore() {
@@ -379,7 +397,7 @@ describe('학습 라우트 분리 (#148)', () => {
       accuracyPercent: 50,
     };
     const client = fakeStudyClient({
-      get: submittedSet(),
+      sets: { 'set-1': submittedSet() },
       history: { items: [summary], total: 1 },
     });
     renderHistoryRoutes(client, '/history');
@@ -391,8 +409,10 @@ describe('학습 라우트 분리 (#148)', () => {
     fireEvent.click(detailLink);
 
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
     expectNoSetIdInUrl();
+    expect(requestedSetPaths(client)).toEqual(['api/study/sets/set-1']);
   });
 
   it('/history/detail 직접 진입 시 state가 없으면 /history로 replace한다', async () => {
@@ -403,11 +423,13 @@ describe('학습 라우트 분리 (#148)', () => {
   });
 
   it('레거시 /history/:id 본인 제출 세트는 /history/detail로 replace한다', async () => {
-    const client = fakeStudyClient({ get: submittedSet() });
+    const client = fakeStudyClient({ sets: { 'set-1': submittedSet() } });
     renderHistoryRoutes(client, '/history/set-1');
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
     expectNoSetIdInUrl();
+    expect(requestedSetPaths(client)).toEqual(['api/study/sets/set-1']);
   });
 
   it('레거시 /history/:id 404/오류 시 UUID 없는 안내와 이력 링크를 보인다', async () => {
@@ -449,6 +471,32 @@ describe('학습 라우트 분리 (#148)', () => {
     const client = fakeStudyClient({ get: submittedSet() });
     renderHistoryRoutes(client, { pathname: '/history/detail', state: { setId: 'set-1', page: 2 } });
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
+  });
+
+  it('목록에서 상세로 이동했다가 돌아오면 원래 페이지 번호(?page=N)를 유지한다', async () => {
+    const summary = {
+      id: 'set-1',
+      examId: 'saa-c03',
+      mode: 'all' as const,
+      submittedAt: 1700000000000,
+      correctCount: 10,
+      accuracyPercent: 50,
+    };
+    const client = fakeStudyClient({
+      sets: { 'set-1': submittedSet() },
+      history: { items: [summary], total: 21 },
+    });
+    renderHistoryRoutes(client, '/history?page=2');
+
+    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    fireEvent.click(itemBtn);
+    fireEvent.click(await screen.findByRole('link', { name: '상세 보기' }));
+
+    expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
+
     fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
   });
