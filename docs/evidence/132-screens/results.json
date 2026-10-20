@@ -1,0 +1,1194 @@
+{
+  "commit": "e26e28c869adbcf7fad94e18787ab65fc8e312a4",
+  "commitShort": "e26e28c",
+  "generatedAt": "2026-10-20T00:49:36.560Z",
+  "baseUrl": "http://127.0.0.1:4174",
+  "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
+  "screens": [
+    {
+      "id": "home-logged-out",
+      "label": "로그아웃 홈",
+      "path": "/",
+      "entryPath": "/",
+      "widths": {
+        "320": {
+          "image": "home-logged-out-320.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 46,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "home-logged-out-375.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 46,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "home-logged-out-768.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 46,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "home-logged-out-1024.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 46,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "home-logged-out-1280.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 46,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "home",
+      "label": "홈(로그인 후)",
+      "path": "/",
+      "entryPath": "/",
+      "widths": {
+        "320": {
+          "image": "home-320.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "home-375.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "home-768.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "home-1024.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "home-1280.png",
+          "finalPath": "/",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "study-new",
+      "label": "학습 시작",
+      "path": "/study/new",
+      "entryPath": "/study/new",
+      "widths": {
+        "320": {
+          "image": "study-new-320.png",
+          "finalPath": "/study/new",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "study-new-375.png",
+          "finalPath": "/study/new",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "study-new-768.png",
+          "finalPath": "/study/new",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "study-new-1024.png",
+          "finalPath": "/study/new",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "study-new-1280.png",
+          "finalPath": "/study/new",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 2,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "study-active",
+      "label": "풀이 중",
+      "path": "/study",
+      "entryPath": "/study",
+      "widths": {
+        "320": {
+          "image": "study-active-320.png",
+          "finalPath": "/study",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 8,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "study-active-375.png",
+          "finalPath": "/study",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 8,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "study-active-768.png",
+          "finalPath": "/study",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 8,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "study-active-1024.png",
+          "finalPath": "/study",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 8,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "study-active-1280.png",
+          "finalPath": "/study",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 8,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "study-result",
+      "label": "결과(해설 포함)",
+      "path": "/study/result",
+      "entryPath": "/study/new",
+      "widths": {
+        "320": {
+          "image": "study-result-320.png",
+          "finalPath": "/study/result",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 9,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "study-result-375.png",
+          "finalPath": "/study/result",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 9,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "study-result-768.png",
+          "finalPath": "/study/result",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 9,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "study-result-1024.png",
+          "finalPath": "/study/result",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 9,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "study-result-1280.png",
+          "finalPath": "/study/result",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 9,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "history-empty",
+      "label": "이력(0건)",
+      "path": "/history",
+      "entryPath": "/history",
+      "widths": {
+        "320": {
+          "image": "history-empty-320.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 0,
+            "minHeight": null,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "history-empty-375.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 0,
+            "minHeight": null,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "history-empty-768.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 0,
+            "minHeight": null,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "history-empty-1024.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 0,
+            "minHeight": null,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "history-empty-1280.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 0,
+            "minHeight": null,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "history-populated",
+      "label": "이력(다건)",
+      "path": "/history",
+      "entryPath": "/history",
+      "widths": {
+        "320": {
+          "image": "history-populated-320.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 4,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "history-populated-375.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 4,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "history-populated-768.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 4,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "history-populated-1024.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 4,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "history-populated-1280.png",
+          "finalPath": "/history",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 4,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "review",
+      "label": "복습",
+      "path": "/review",
+      "entryPath": "/review",
+      "widths": {
+        "320": {
+          "image": "review-320.png",
+          "finalPath": "/review",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 3,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "review-375.png",
+          "finalPath": "/review",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 3,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "review-768.png",
+          "finalPath": "/review",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 3,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "review-1024.png",
+          "finalPath": "/review",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 3,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "review-1280.png",
+          "finalPath": "/review",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 3,
+            "minHeight": 44,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    },
+    {
+      "id": "account",
+      "label": "계정",
+      "path": "/account",
+      "entryPath": "/account",
+      "widths": {
+        "320": {
+          "image": "account-320.png",
+          "finalPath": "/account",
+          "overflow": {
+            "scrollWidth": 320,
+            "clientWidth": 320,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "375": {
+          "image": "account-375.png",
+          "finalPath": "/account",
+          "overflow": {
+            "scrollWidth": 375,
+            "clientWidth": 375,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "768": {
+          "image": "account-768.png",
+          "finalPath": "/account",
+          "overflow": {
+            "scrollWidth": 768,
+            "clientWidth": 768,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1024": {
+          "image": "account-1024.png",
+          "finalPath": "/account",
+          "overflow": {
+            "scrollWidth": 1024,
+            "clientWidth": 1024,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        },
+        "1280": {
+          "image": "account-1280.png",
+          "finalPath": "/account",
+          "overflow": {
+            "scrollWidth": 1280,
+            "clientWidth": 1280,
+            "delta": 0,
+            "hasOverflow": false,
+            "overflowing": []
+          },
+          "buttonMetrics": {
+            "totalButtons": 1,
+            "minHeight": 64,
+            "below44": []
+          },
+          "textFindings": {
+            "uuid": [],
+            "opt": [],
+            "examCode": [],
+            "domainCode": [],
+            "exposed": false
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "totalScreens": 9,
+    "widths": [
+      320,
+      375,
+      768,
+      1024,
+      1280
+    ],
+    "overflowCount": 0,
+    "below44Count": 0,
+    "rawValueScreenCount": 0,
+    "screens": [
+      {
+        "id": "home-logged-out",
+        "minButtonHeight": 46,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "home",
+        "minButtonHeight": 64,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "study-new",
+        "minButtonHeight": 64,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "study-active",
+        "minButtonHeight": 44,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "study-result",
+        "minButtonHeight": 44,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "history-empty",
+        "minButtonHeight": null,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "history-populated",
+        "minButtonHeight": 64,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "review",
+        "minButtonHeight": 44,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      },
+      {
+        "id": "account",
+        "minButtonHeight": 64,
+        "overflowWidths": [],
+        "rawValueWidths": [],
+        "rawValues": []
+      }
+    ]
+  }
+}
