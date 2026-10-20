@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import type { ApiClient } from '../api/client';
 import { HistoryView } from '../study/HistoryView';
 import { useStudyHistory } from '../study/queries';
@@ -18,11 +18,16 @@ function parsePageParam(raw: string | null): { page: number; isInvalid: boolean 
 
 // 학습 현황/이력 — URL searchParams('page')를 단일 진실 원천으로 삼는다 (이슈 #148).
 export function HistoryPage({ client }: { client: ApiClient }) {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const rawPage = searchParams.get('page');
   const { page, isInvalid } = parsePageParam(rawPage);
 
   const [detailId, setDetailId] = useState<string | null>(null);
+
+  const handleOpenDetail = (setId: string) => {
+    void navigate('/history/detail', { state: { setId, page } });
+  };
 
   // 잘못된 page param (0, 음수, 소수, 문자, 안전정수 밖) 은 1로 replace
   useEffect(() => {
@@ -100,6 +105,7 @@ export function HistoryPage({ client }: { client: ApiClient }) {
         detailId={query.isError ? null : detailId}
         onPage={handlePageChange}
         onDetail={setDetailId}
+        onOpenDetail={handleOpenDetail}
         onRetry={() => void query.refetch()}
         hidePagerWhenEmpty
       />

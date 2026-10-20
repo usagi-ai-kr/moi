@@ -1,3 +1,4 @@
+import { Link, useInRouterContext } from 'react-router';
 import { copy } from '../copy';
 import type { StudySummary } from '../api/client';
 import { Pagination } from '../components/ui/pagination';
@@ -17,8 +18,47 @@ interface Props {
   onPage: (p: number) => void;
   onDetail: (id: string | null) => void;
   onRetry: () => void;
+  onOpenDetail?: (id: string) => void;
   hidePagerWhenEmpty?: boolean;
   isFetching?: boolean;
+}
+
+function HistoryDetailAction({
+  setId,
+  page,
+  onOpenDetail,
+}: {
+  setId: string;
+  page: number;
+  onOpenDetail?: (id: string) => void;
+}) {
+  const inRouter = useInRouterContext();
+  if (inRouter) {
+    return (
+      <Link
+        className="moi-study-link"
+        to="/history/detail"
+        state={{ setId, page }}
+        onClick={(e) => {
+          if (onOpenDetail) {
+            e.preventDefault();
+            onOpenDetail(setId);
+          }
+        }}
+      >
+        {copy.study.detail}
+      </Link>
+    );
+  }
+  return (
+    <button
+      type="button"
+      className="moi-study-link"
+      onClick={() => onOpenDetail?.(setId)}
+    >
+      {copy.study.detail}
+    </button>
+  );
 }
 
 // 이력 — 완료 세트 목록(날짜·모드/영역·정답률·페이지네이션)과 요약 상세.
@@ -52,9 +92,16 @@ export function HistoryView(p: Props) {
                   {STUDY_EXAM_LABEL} · {scopeLabel(s.mode)}
                   {s.domainId ? ` · ${domainLabel(s.domainId)}` : ''} · {formatDateTime(s.submittedAt)}
                 </p>
-                <button type="button" className="moi-study-ghost" onClick={() => p.onDetail(null)}>
-                  {copy.study.close}
-                </button>
+                <div className="moi-cta moi-study-cta-row">
+                  <HistoryDetailAction
+                    setId={s.id}
+                    page={p.page}
+                    onOpenDetail={p.onOpenDetail}
+                  />
+                  <button type="button" className="moi-study-ghost" onClick={() => p.onDetail(null)}>
+                    {copy.study.close}
+                  </button>
+                </div>
               </div>
             )}
           </li>

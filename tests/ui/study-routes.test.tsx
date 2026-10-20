@@ -6,8 +6,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import type { ApiClient, StudyActiveSet } from '../../src/ui/api/client';
 import { HistoryDetailPage } from '../../src/ui/pages/HistoryDetailPage';
+import { HistoryPage } from '../../src/ui/pages/HistoryPage';
+import { LegacyHistoryRedirect } from '../../src/ui/pages/LegacyHistoryRedirect';
 import { LegacyStudyRedirect } from '../../src/ui/pages/LegacyStudyRedirect';
 import { StudyRoute } from '../../src/ui/pages/StudyRoute';
+import type { StudySummary } from '../../src/ui/api/client';
 import { useStudyUiStore } from '../../src/ui/study/store';
 
 const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
@@ -71,8 +74,15 @@ interface FakeOpts {
   start?: StudyActiveSet;
   startError?: number;
   get?: StudyActiveSet;
+  /** 세트 ID별 응답 — 경로의 ID와 실제 조회 대상을 일치시켜 검증한다 (#171). */
+  sets?: Record<string, StudyActiveSet>;
   current?: StudyActiveSet | null;
   currentError?: number;
+  history?: { items: StudySummary[]; total: number };
+}
+
+function requestedSetId(path: string): string {
+  return path.slice('api/study/sets/'.length).split('/')[0];
 }
 
 function fakeStudyClient(o: FakeOpts = {}): ApiClient {
@@ -80,12 +90,35 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
     get: vi.fn((path: string) => ({
       json: async () => {
         const p = String(path);
+        if (p.includes('/corrections')) return { items: [] };
+        if (p.startsWith('api/study/stats')) {
+          return {
+            totalAttempts: 0,
+            recentAccuracyPercent: 0,
+            overallAccuracyPercent: 0,
+            weakestDomainId: null,
+            byDomain: [],
+          };
+        }
         if (p.startsWith('api/study/sets/current')) {
           if (o.currentError) throw httpError(o.currentError, { error: 'internal' });
           if (o.current) return o.current;
           throw httpError(404, { error: 'no_active_set' });
         }
+        if (p.startsWith('api/study/sets?')) {
+          if (o.history) return o.history;
+          return { items: [], total: 0 };
+        }
+        if (p === 'api/study/sets') {
+          if (o.history) return o.history;
+          return { items: [], total: 0 };
+        }
         if (p.startsWith('api/study/sets/')) {
+          if (o.sets) {
+            const set = o.sets[requestedSetId(p)];
+            if (!set) throw httpError(404, { error: 'not_found' });
+            return set;
+          }
           if (o.get) return o.get;
           if (o.current) return o.current;
           throw httpError(404, { error: 'not_found' });
@@ -106,6 +139,13 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
     })),
     patch: vi.fn(() => ({ json: async () => ({ outcome: 'answered' }) })),
   } as unknown as ApiClient;
+}
+
+function requestedSetPaths(client: ApiClient): string[] {
+  return vi
+    .mocked(client.get)
+    .mock.calls.map(([p]) => String(p))
+    .filter((p) => p.startsWith('api/study/sets/') && !p.includes('/corrections'));
 }
 
 function resetStore() {
@@ -155,7 +195,7 @@ function renderStudyRoutes(client: ApiClient, initial: string | { pathname: stri
   );
 }
 
-function renderHistoryDetail(client: ApiClient, initial: string) {
+function renderHistoryRoutes(client: ApiClient, initial: string | { pathname: string; state: unknown }) {
   resetStore();
   window.history.replaceState(null, '', '/');
   window.localStorage.clear();
@@ -165,8 +205,9 @@ function renderHistoryDetail(client: ApiClient, initial: string) {
     <MemoryRouter initialEntries={[initial]}>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/history/:setId" element={<HistoryDetailPage client={client} />} />
-          <Route path="/history" element={<p>history-list</p>} />
+          <Route path="/history" element={<HistoryPage client={client} />} />
+          <Route path="/history/detail" element={<HistoryDetailPage client={client} />} />
+          <Route path="/history/:setId" element={<LegacyHistoryRedirect client={client} />} />
         </Routes>
         <LocationProbe />
       </QueryClientProvider>
@@ -346,17 +387,70 @@ describe('학습 라우트 분리 (#148)', () => {
     expect(document.body.textContent).not.toContain('set-1');
   });
 
-  it('/history/:id 로딩 상태를 보인다', async () => {
+  it('목록에서 상세로 이동 시 URL에 UUID가 없고 상세 내용을 표시한다', async () => {
+    const summary = {
+      id: 'set-1',
+      examId: 'saa-c03',
+      mode: 'all' as const,
+      submittedAt: 1700000000000,
+      correctCount: 10,
+      accuracyPercent: 50,
+    };
+    const client = fakeStudyClient({
+      sets: { 'set-1': submittedSet() },
+      history: { items: [summary], total: 1 },
+    });
+    renderHistoryRoutes(client, '/history');
+
+    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    fireEvent.click(itemBtn);
+
+    const detailLink = await screen.findByRole('link', { name: '상세 보기' });
+    fireEvent.click(detailLink);
+
+    expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
+    expectNoSetIdInUrl();
+    expect(requestedSetPaths(client)).toEqual(['api/study/sets/set-1']);
+  });
+
+  it('/history/detail 직접 진입 시 state가 없으면 /history로 replace한다', async () => {
+    const client = fakeStudyClient();
+    renderHistoryRoutes(client, '/history/detail');
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history'));
+    expectNoSetIdInUrl();
+  });
+
+  it('레거시 /history/:id 본인 제출 세트는 /history/detail로 replace한다', async () => {
+    const client = fakeStudyClient({ sets: { 'set-1': submittedSet() } });
+    renderHistoryRoutes(client, '/history/set-1');
+    expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    expect(screen.getByText(/정답률 5%/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
+    expectNoSetIdInUrl();
+    expect(requestedSetPaths(client)).toEqual(['api/study/sets/set-1']);
+  });
+
+  it('레거시 /history/:id 404/오류 시 UUID 없는 안내와 이력 링크를 보인다', async () => {
+    const client = fakeStudyClient();
+    renderHistoryRoutes(client, '/history/set-1');
+    expect(await screen.findByText('학습 세트를 찾을 수 없습니다.')).toBeInTheDocument();
+    expect(screen.getByRole('alert').textContent).not.toContain('set-1');
+    expect(screen.getByRole('link', { name: '학습 이력' })).toHaveAttribute('href', '/history');
+  });
+
+  it('/history/detail 로딩 상태를 보인다', async () => {
     const client = {
       get: vi.fn(() => ({ json: () => new Promise(() => {}) })),
       post: vi.fn(),
       patch: vi.fn(),
     } as unknown as ApiClient;
-    renderHistoryDetail(client, '/history/set-1');
+    renderHistoryRoutes(client, { pathname: '/history/detail', state: { setId: 'set-1' } });
     expect(await screen.findByRole('status')).toBeInTheDocument();
   });
 
-  it('/history/:id 오류 시 재시도와 돌아가기를 보인다', async () => {
+  it('/history/detail 오류 시 재시도와 돌아가기를 보인다', async () => {
     const client = {
       get: vi.fn(() => ({
         json: async () => {
@@ -366,16 +460,54 @@ describe('학습 라우트 분리 (#148)', () => {
       post: vi.fn(),
       patch: vi.fn(),
     } as unknown as ApiClient;
-    renderHistoryDetail(client, '/history/set-1');
+    renderHistoryRoutes(client, { pathname: '/history/detail', state: { setId: 'set-1', page: 2 } });
     expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '이력으로 돌아가기' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
   });
 
-  it('/history/:id 정상 시 결과와 돌아가기를 보인다', async () => {
+  it('상세에서 목록 복귀 시 원래 페이지 번호(?page=N)를 유지한다', async () => {
     const client = fakeStudyClient({ get: submittedSet() });
-    renderHistoryDetail(client, '/history/set-1');
+    renderHistoryRoutes(client, { pathname: '/history/detail', state: { setId: 'set-1', page: 2 } });
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
+  });
+
+  it('목록에서 상세로 이동했다가 돌아오면 원래 페이지 번호(?page=N)를 유지한다', async () => {
+    const summary = {
+      id: 'set-1',
+      examId: 'saa-c03',
+      mode: 'all' as const,
+      submittedAt: 1700000000000,
+      correctCount: 10,
+      accuracyPercent: 50,
+    };
+    const client = fakeStudyClient({
+      sets: { 'set-1': submittedSet() },
+      history: { items: [summary], total: 21 },
+    });
+    renderHistoryRoutes(client, '/history?page=2');
+
+    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    fireEvent.click(itemBtn);
+    fireEvent.click(await screen.findByRole('link', { name: '상세 보기' }));
+
+    expect(await screen.findByText('학습 결과')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
+
+    fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
+  });
+
+  it('레거시 /history/:id 로딩 상태를 보인다', async () => {
+    const client = {
+      get: vi.fn(() => ({ json: () => new Promise(() => {}) })),
+      post: vi.fn(),
+      patch: vi.fn(),
+    } as unknown as ApiClient;
+    renderHistoryRoutes(client, '/history/set-1');
+    expect(await screen.findByRole('status')).toBeInTheDocument();
   });
 });
