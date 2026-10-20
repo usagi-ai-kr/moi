@@ -1,7 +1,7 @@
 {
-  "commit": "24077707d99cebe1401b46b6a44cf0e8554581a8",
-  "commitShort": "2407770",
-  "generatedAt": "2026-10-20T04:40:13.635Z",
+  "commit": "6c0a25e693c6dedb78069c408731ddd1312edb00",
+  "commitShort": "6c0a25e",
+  "generatedAt": "2026-10-20T04:48:11.229Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -664,7 +664,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -687,7 +687,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -710,7 +710,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -733,7 +733,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },
@@ -756,7 +756,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 9,
+            "totalButtons": 7,
             "minHeight": 44,
             "below44": []
           },

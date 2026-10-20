@@ -1,5 +1,6 @@
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
+import { copy } from '../../src/ui/copy';
 
 // 학습 UI E2E route mock (#50) — 실제 백엔드 대신 결정적 10문제 세트를 제공한다.
 // "API 모의가 준비되면"(auth.steps)과 충돌하지 않게 별도 문구를 사용한다.
@@ -424,4 +425,36 @@ Then('풀이 버튼은 44px 이상이고 북마크 버튼 테두리가 보인다
   await expect(bookmark).toBeVisible();
   const width = await bookmark.evaluate((el) => getComputedStyle(el).borderTopWidth);
   expect(width).toBe('1px');
+});
+
+// #189 결과 해설 페이저 — 진행 표시는 페이저 영역 안에서만 찾는다(요약의 "정답 1/20"과 구분).
+function resultPager(page: import('@playwright/test').Page) {
+  return page.getByRole('group', { name: copy.study.resultPagerLabel });
+}
+
+When('결과 다음 문항 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: copy.study.nextItem }).click();
+});
+
+When('결과 이전 문항 버튼을 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: copy.study.prevItem }).click();
+});
+
+When('결과 다음 문항 버튼에 포커스를 두고 오른쪽 방향키를 누르면', async ({ page }) => {
+  const button = page.getByRole('button', { name: copy.study.nextItem });
+  await button.focus();
+  await page.keyboard.press('ArrowRight');
+});
+
+Then('결과 해설 카드는 1개만 보인다', async ({ page }) => {
+  await expect(page.locator('[data-testid^="peritem-"]')).toHaveCount(1);
+});
+
+Then('결과 진행 표시가 {int}번째 문항이다', async ({ page }, position: number) => {
+  const status = resultPager(page).locator('.moi-study-pager-status');
+  await expect(status).toHaveText(new RegExp(`${position}/\\d+`));
+});
+
+Then('결과 이전 문항 버튼은 비활성 상태다', async ({ page }) => {
+  await expect(page.getByRole('button', { name: copy.study.prevItem })).toBeDisabled();
 });
