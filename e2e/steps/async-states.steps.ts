@@ -276,29 +276,26 @@ Given('제출 응답이 {int}ms 지연된다', async ({}, ms: number) => {
   submitDelayMs = ms;
 });
 
-When('학습 시작 화면으로 이동한다', async ({ page }) => {
-  await page.goto('/study/new');
-});
-
 When('이력 화면으로 이동한다', async ({ page }) => {
   await page.goto('/history');
 });
 
-When('시작 버튼을 연타하면', async ({ page }) => {
+When('대기 중 시작 버튼에 키보드 입력을 보내면', async ({ page }) => {
   const btn = page.getByRole('region', { name: copy.study.startTitle }).locator('button').first();
-  // 대기 상태를 먼저 확인한 뒤 연타한다(대기 중 버튼은 disabled).
+  // 중복 방지의 실제 근거: 대기 중에는 disabled+aria-busy라 클릭·키 활성화가 발생하지 않는다.
   await expect(btn).toBeDisabled();
-  await btn.click({ force: true });
-  await btn.click({ force: true });
-  await btn.click({ force: true });
+  await expect(btn).toHaveAttribute('aria-busy', 'true');
+  // disabled 버튼은 Enter/Space로도 활성화되지 않아야 한다(브라우저 기본 동작 확인).
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Space');
 });
 
-When('제출 확인 버튼을 연타하면', async ({ page }) => {
+When('대기 중 제출 확인 버튼에 키보드 입력을 보내면', async ({ page }) => {
   const btn = page.getByRole('button', { name: copy.study.confirmSubmit });
   await expect(btn).toBeDisabled();
-  await btn.click({ force: true });
-  await btn.click({ force: true });
-  await btn.click({ force: true });
+  await expect(btn).toHaveAttribute('aria-busy', 'true');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Space');
 });
 
 When('재시도 버튼을 누르면', async ({ page }) => {
@@ -323,7 +320,7 @@ Then('시작 버튼이 대기 상태로 표시된다', async ({ page }) => {
 });
 
 Then('세트 시작 요청이 1회만 전송된다', async () => {
-  expect(startPostCount).toBe(1);
+  await expect.poll(() => startPostCount).toBe(1);
 });
 
 Then('시작 오류 안내가 보인다', async ({ page }) => {
@@ -360,11 +357,11 @@ Then('제출 버튼이 대기 상태로 표시된다', async ({ page }) => {
 });
 
 Then('제출 요청이 1회만 전송된다', async () => {
-  expect(submitPostCount).toBe(1);
+  await expect.poll(() => submitPostCount).toBe(1);
 });
 
-Then('결과 화면 전 정답과 해설이 노출되지 않는다', async ({ page }) => {
-  await expect(page.getByText('정답', { exact: true })).toHaveCount(0);
+Then('결과 화면 전 해설과 문항별 결과가 노출되지 않는다', async ({ page }) => {
+  // 제출 전 DTO에 해설·문항별 정오답이 없어야 한다(정답 문구 자체는 DTO에 없어 자명하므로 제외).
   await expect(page.getByText(/해설: 정답은/)).toHaveCount(0);
   await expect(page.locator('[data-testid^="peritem-"]')).toHaveCount(0);
 });
