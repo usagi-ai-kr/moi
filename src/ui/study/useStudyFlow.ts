@@ -120,6 +120,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
           onError: (e) => {
             if (isUnauthorized(e)) return setUnauth(true);
             if (!(e instanceof HTTPError)) {
+              if (draft === 'failed') setFailed({ questionId, response }); // 초안 저장 실패 — 메모리 답안으로 재시도 (#52 AC7)
               s.setSave(draft === 'failed' ? 'error' : 'offline');
               return;
             }
