@@ -1,11 +1,12 @@
 import { Component, type ReactNode } from 'react';
-import { Link } from 'react-router';
 import { copy } from './copy';
 
 export interface RouteErrorBoundaryProps {
   children: ReactNode;
   resetKey?: unknown;
-  homeHref?: string;
+  // 라우터 안쪽 사용처는 client-side 이동을 유지하도록 Link를 넘긴다.
+  // 넘기지 않으면 라우터 없이도 동작하는 <a href="/">를 렌더한다.
+  homeLink?: ReactNode;
 }
 
 interface RouteErrorBoundaryState {
@@ -43,14 +44,10 @@ export class RouteErrorBoundary extends Component<RouteErrorBoundaryProps, Route
             >
               {copy.common.reload}
             </button>
-            {this.props.homeHref ? (
-              <a href={this.props.homeHref} className="moi-study-link">
+            {this.props.homeLink ?? (
+              <a href="/" className="moi-study-link">
                 {copy.common.home}
               </a>
-            ) : (
-              <Link to="/" className="moi-study-link">
-                {copy.common.home}
-              </Link>
             )}
           </div>
         </div>

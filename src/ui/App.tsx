@@ -74,7 +74,7 @@ export function App({ client }: { client: ApiClient }) {
   }
 
   return (
-    <RouteErrorBoundary homeHref="/">
+    <RouteErrorBoundary>
       <Suspense fallback={<RouteFallback />}>
         <AuthenticatedApp client={client} userId={userId} showAuthError={showAuthError} />
       </Suspense>

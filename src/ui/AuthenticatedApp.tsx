@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import {
   BrowserRouter,
+  Link,
   Outlet,
   Route,
   Routes,
@@ -45,7 +46,15 @@ function RouteFallback() {
 function RouteBoundaryLayout() {
   const location = useLocation();
   return (
-    <RouteErrorBoundary key={location.pathname} resetKey={location.pathname}>
+    <RouteErrorBoundary
+      key={location.pathname}
+      resetKey={location.pathname}
+      homeLink={
+        <Link to="/" className="moi-study-link">
+          {copy.common.home}
+        </Link>
+      }
+    >
       <Outlet />
     </RouteErrorBoundary>
   );
