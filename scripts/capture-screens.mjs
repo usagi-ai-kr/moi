@@ -839,9 +839,13 @@ async function main() {
       };
 
       for (const width of WIDTHS) {
+        // 모바일 폭(320/375/768)은 터치 컨텍스트로 pointer:coarse를 매칭한다.
+        // 데스크톱 폭(1024/1280)은 fine 유지. 제품 CSS(pointer:coarse) 변경 없음.
+        const isTouchWidth = width <= 768;
         const context = await browser.newContext({
           viewport: { width, height: 800 },
           reducedMotion: 'reduce',
+          ...(isTouchWidth ? { hasTouch: true, isMobile: true } : {}),
         });
         const page = await context.newPage();
 
@@ -855,6 +859,9 @@ async function main() {
 
         const imgFilename = `${screen.id}-${width}.png`;
         await page.screenshot({ path: join(OUT_DIR, imgFilename), fullPage: true });
+
+        // 터치 매칭 증거: coarse 매칭 여부 + below44 카운트(버튼 높이 <44).
+        const pointerCoarse = await page.evaluate(() => window.matchMedia('(pointer: coarse)').matches);
 
         const overflow = await page.evaluate(() => {
           const de = document.documentElement;
@@ -942,6 +949,9 @@ async function main() {
         screenResult.widths[width] = {
           image: imgFilename,
           finalPath: new URL(page.url()).pathname,
+          touch: isTouchWidth,
+          pointerCoarse,
+          below44Count: buttonMetrics.below44.length,
           overflow,
           buttonMetrics,
           textFindings,
