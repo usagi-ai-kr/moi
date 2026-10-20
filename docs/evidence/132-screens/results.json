@@ -1,7 +1,7 @@
 {
-  "commit": "f204a898ce808847e7b568b14371ecc5106b29e0",
-  "commitShort": "f204a89",
-  "generatedAt": "2026-10-20T05:16:27.670Z",
+  "commit": "8a88d86979338deb48d05287daaee04266f1a2fd",
+  "commitShort": "8a88d86",
+  "generatedAt": "2026-10-20T06:46:29.113Z",
   "baseUrl": "http://127.0.0.1:4174",
   "mode": "local vite preview + deterministic Playwright route mock (not real account/deployment)",
   "screens": [
@@ -14,6 +14,9 @@
         "320": {
           "image": "home-logged-out-320.png",
           "finalPath": "/",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -37,6 +40,9 @@
         "375": {
           "image": "home-logged-out-375.png",
           "finalPath": "/",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -60,6 +66,9 @@
         "768": {
           "image": "home-logged-out-768.png",
           "finalPath": "/",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -83,6 +92,9 @@
         "1024": {
           "image": "home-logged-out-1024.png",
           "finalPath": "/",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -106,6 +118,9 @@
         "1280": {
           "image": "home-logged-out-1280.png",
           "finalPath": "/",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -137,6 +152,9 @@
         "320": {
           "image": "home-320.png",
           "finalPath": "/",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -146,23 +164,8 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 40,
-            "below44": [
-              {
-                "text": "10문제 학습",
-                "tag": "button",
-                "height": 40,
-                "width": 119.3,
-                "disabled": false
-              },
-              {
-                "text": "학습 이력",
-                "tag": "button",
-                "height": 40,
-                "width": 93.3,
-                "disabled": false
-              }
-            ]
+            "minHeight": 44,
+            "below44": []
           },
           "textFindings": {
             "uuid": [],
@@ -175,6 +178,9 @@
         "375": {
           "image": "home-375.png",
           "finalPath": "/",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -184,23 +190,8 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 40,
-            "below44": [
-              {
-                "text": "10문제 학습",
-                "tag": "button",
-                "height": 40,
-                "width": 119.3,
-                "disabled": false
-              },
-              {
-                "text": "학습 이력",
-                "tag": "button",
-                "height": 40,
-                "width": 93.3,
-                "disabled": false
-              }
-            ]
+            "minHeight": 44,
+            "below44": []
           },
           "textFindings": {
             "uuid": [],
@@ -213,6 +204,9 @@
         "768": {
           "image": "home-768.png",
           "finalPath": "/",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -222,23 +216,8 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 40,
-            "below44": [
-              {
-                "text": "10문제 학습",
-                "tag": "button",
-                "height": 40,
-                "width": 119.3,
-                "disabled": false
-              },
-              {
-                "text": "학습 이력",
-                "tag": "button",
-                "height": 40,
-                "width": 93.3,
-                "disabled": false
-              }
-            ]
+            "minHeight": 44,
+            "below44": []
           },
           "textFindings": {
             "uuid": [],
@@ -251,6 +230,9 @@
         "1024": {
           "image": "home-1024.png",
           "finalPath": "/",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 2,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -289,6 +271,9 @@
         "1280": {
           "image": "home-1280.png",
           "finalPath": "/",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 2,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -335,6 +320,9 @@
         "320": {
           "image": "study-new-320.png",
           "finalPath": "/study/new",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -344,23 +332,8 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 40,
-            "below44": [
-              {
-                "text": "학습 시작",
-                "tag": "button",
-                "height": 40,
-                "width": 99.3,
-                "disabled": false
-              },
-              {
-                "text": "학습 이력",
-                "tag": "button",
-                "height": 40,
-                "width": 93.3,
-                "disabled": false
-              }
-            ]
+            "minHeight": 44,
+            "below44": []
           },
           "textFindings": {
             "uuid": [],
@@ -373,6 +346,9 @@
         "375": {
           "image": "study-new-375.png",
           "finalPath": "/study/new",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -382,23 +358,8 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 40,
-            "below44": [
-              {
-                "text": "학습 시작",
-                "tag": "button",
-                "height": 40,
-                "width": 99.3,
-                "disabled": false
-              },
-              {
-                "text": "학습 이력",
-                "tag": "button",
-                "height": 40,
-                "width": 93.3,
-                "disabled": false
-              }
-            ]
+            "minHeight": 44,
+            "below44": []
           },
           "textFindings": {
             "uuid": [],
@@ -411,6 +372,9 @@
         "768": {
           "image": "study-new-768.png",
           "finalPath": "/study/new",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -420,23 +384,8 @@
           },
           "buttonMetrics": {
             "totalButtons": 2,
-            "minHeight": 40,
-            "below44": [
-              {
-                "text": "학습 시작",
-                "tag": "button",
-                "height": 40,
-                "width": 99.3,
-                "disabled": false
-              },
-              {
-                "text": "학습 이력",
-                "tag": "button",
-                "height": 40,
-                "width": 93.3,
-                "disabled": false
-              }
-            ]
+            "minHeight": 44,
+            "below44": []
           },
           "textFindings": {
             "uuid": [],
@@ -449,6 +398,9 @@
         "1024": {
           "image": "study-new-1024.png",
           "finalPath": "/study/new",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 2,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -487,6 +439,9 @@
         "1280": {
           "image": "study-new-1280.png",
           "finalPath": "/study/new",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 2,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -533,6 +488,9 @@
         "320": {
           "image": "study-active-320.png",
           "finalPath": "/study",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -556,6 +514,9 @@
         "375": {
           "image": "study-active-375.png",
           "finalPath": "/study",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -579,6 +540,9 @@
         "768": {
           "image": "study-active-768.png",
           "finalPath": "/study",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -602,6 +566,9 @@
         "1024": {
           "image": "study-active-1024.png",
           "finalPath": "/study",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -625,6 +592,9 @@
         "1280": {
           "image": "study-active-1280.png",
           "finalPath": "/study",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -656,6 +626,9 @@
         "320": {
           "image": "study-result-320.png",
           "finalPath": "/study/result",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -664,7 +637,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 7,
+            "totalButtons": 8,
             "minHeight": 44,
             "below44": []
           },
@@ -679,6 +652,9 @@
         "375": {
           "image": "study-result-375.png",
           "finalPath": "/study/result",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -687,7 +663,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 7,
+            "totalButtons": 8,
             "minHeight": 44,
             "below44": []
           },
@@ -702,6 +678,9 @@
         "768": {
           "image": "study-result-768.png",
           "finalPath": "/study/result",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -710,7 +689,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 7,
+            "totalButtons": 8,
             "minHeight": 44,
             "below44": []
           },
@@ -725,6 +704,9 @@
         "1024": {
           "image": "study-result-1024.png",
           "finalPath": "/study/result",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -733,7 +715,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 7,
+            "totalButtons": 8,
             "minHeight": 44,
             "below44": []
           },
@@ -748,6 +730,9 @@
         "1280": {
           "image": "study-result-1280.png",
           "finalPath": "/study/result",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -756,7 +741,7 @@
             "overflowing": []
           },
           "buttonMetrics": {
-            "totalButtons": 7,
+            "totalButtons": 8,
             "minHeight": 44,
             "below44": []
           },
@@ -779,6 +764,9 @@
         "320": {
           "image": "history-empty-320.png",
           "finalPath": "/history",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -802,6 +790,9 @@
         "375": {
           "image": "history-empty-375.png",
           "finalPath": "/history",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -825,6 +816,9 @@
         "768": {
           "image": "history-empty-768.png",
           "finalPath": "/history",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -848,6 +842,9 @@
         "1024": {
           "image": "history-empty-1024.png",
           "finalPath": "/history",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -871,6 +868,9 @@
         "1280": {
           "image": "history-empty-1280.png",
           "finalPath": "/history",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -902,6 +902,9 @@
         "320": {
           "image": "history-populated-320.png",
           "finalPath": "/history",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -925,6 +928,9 @@
         "375": {
           "image": "history-populated-375.png",
           "finalPath": "/history",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -948,6 +954,9 @@
         "768": {
           "image": "history-populated-768.png",
           "finalPath": "/history",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -971,6 +980,9 @@
         "1024": {
           "image": "history-populated-1024.png",
           "finalPath": "/history",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -994,6 +1006,9 @@
         "1280": {
           "image": "history-populated-1280.png",
           "finalPath": "/history",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -1025,6 +1040,9 @@
         "320": {
           "image": "review-320.png",
           "finalPath": "/review",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -1048,6 +1066,9 @@
         "375": {
           "image": "review-375.png",
           "finalPath": "/review",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -1071,6 +1092,9 @@
         "768": {
           "image": "review-768.png",
           "finalPath": "/review",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -1094,6 +1118,9 @@
         "1024": {
           "image": "review-1024.png",
           "finalPath": "/review",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -1117,6 +1144,9 @@
         "1280": {
           "image": "review-1280.png",
           "finalPath": "/review",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -1148,6 +1178,9 @@
         "320": {
           "image": "account-320.png",
           "finalPath": "/account",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 320,
             "clientWidth": 320,
@@ -1171,6 +1204,9 @@
         "375": {
           "image": "account-375.png",
           "finalPath": "/account",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 375,
             "clientWidth": 375,
@@ -1194,6 +1230,9 @@
         "768": {
           "image": "account-768.png",
           "finalPath": "/account",
+          "touch": true,
+          "pointerCoarse": true,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 768,
             "clientWidth": 768,
@@ -1217,6 +1256,9 @@
         "1024": {
           "image": "account-1024.png",
           "finalPath": "/account",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1024,
             "clientWidth": 1024,
@@ -1240,6 +1282,9 @@
         "1280": {
           "image": "account-1280.png",
           "finalPath": "/account",
+          "touch": false,
+          "pointerCoarse": false,
+          "below44Count": 0,
           "overflow": {
             "scrollWidth": 1280,
             "clientWidth": 1280,
@@ -1273,7 +1318,7 @@
       1280
     ],
     "overflowCount": 0,
-    "below44Count": 20,
+    "below44Count": 8,
     "rawValueScreenCount": 0,
     "screens": [
       {
