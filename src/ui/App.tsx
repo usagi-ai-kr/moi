@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
+import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { useAuthCallback, useSessionId, useUiStore, type ApiClient } from './session';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
@@ -73,8 +74,10 @@ export function App({ client }: { client: ApiClient }) {
   }
 
   return (
-    <Suspense fallback={<RouteFallback />}>
-      <AuthenticatedApp client={client} userId={userId} showAuthError={showAuthError} />
-    </Suspense>
+    <RouteErrorBoundary homeHref="/">
+      <Suspense fallback={<RouteFallback />}>
+        <AuthenticatedApp client={client} userId={userId} showAuthError={showAuthError} />
+      </Suspense>
+    </RouteErrorBoundary>
   );
 }

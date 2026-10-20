@@ -5,6 +5,7 @@ import { copy } from './copy';
 export interface RouteErrorBoundaryProps {
   children: ReactNode;
   resetKey?: unknown;
+  homeHref?: string;
 }
 
 interface RouteErrorBoundaryState {
@@ -42,9 +43,15 @@ export class RouteErrorBoundary extends Component<RouteErrorBoundaryProps, Route
             >
               {copy.common.reload}
             </button>
-            <Link to="/" className="moi-study-link">
-              {copy.common.home}
-            </Link>
+            {this.props.homeHref ? (
+              <a href={this.props.homeHref} className="moi-study-link">
+                {copy.common.home}
+              </a>
+            ) : (
+              <Link to="/" className="moi-study-link">
+                {copy.common.home}
+              </Link>
+            )}
           </div>
         </div>
       );
