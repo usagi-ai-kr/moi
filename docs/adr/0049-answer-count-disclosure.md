@@ -1,7 +1,7 @@
 ---
 id: ADR-0049
 title: 제출 전 정답 개수 안내
-status: Proposed
+status: Accepted
 date: 2026-10-20
 related: []
 ---
