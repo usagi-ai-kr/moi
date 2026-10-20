@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Explanation } from '../../src/ui/study/Explanation';
 import { copy } from '../../src/ui/copy';
@@ -63,25 +63,54 @@ describe('MermaidDiagram AT 안내 (#179)', () => {
     expect(box.querySelector('[aria-busy="true"]')).toBeNull();
   });
 
-  it('code 변경·언마운트 시 stale 출력·업데이트가 없다', async () => {
+  it('폭 변경 경합에서 stale 렌더가 최신 결과를 덮어쓰지 않는다', async () => {
     const renderAsync = await peleMock();
     let resolveFirst!: (v: { svg: string; type: string }) => void;
+    renderAsync.mockImplementation(() => Promise.resolve({ svg: safeSvg('second'), type: 'flowchart' } as never));
     renderAsync.mockImplementationOnce(
       () =>
         new Promise((res) => {
           resolveFirst = res as (v: { svg: string; type: string }) => void;
         }),
     );
-    renderAsync.mockImplementationOnce(() => Promise.resolve({ svg: safeSvg('second'), type: 'flowchart' } as never));
-    const { rerender, unmount } = render(<Explanation markdown={'```mermaid\nflowchart LR\n A-->B\n```'} />);
-    rerender(<Explanation markdown={'```mermaid\nsequenceDiagram\n A->>B: hi\n```'} />);
-    // 두 번째 렌더가 먼저 끝나도 첫 번째 결과가 덮어쓰지 않아야 한다(기존 경합 계약 유지).
-    resolveFirst({ svg: safeSvg('first'), type: 'flowchart' });
-    const boxes = await screen.findAllByTestId('mermaid-diagram');
-    await waitFor(() => expect(boxes[0].querySelector('svg') ?? boxes[0].querySelector('pre')).not.toBeNull(), {
-      timeout: 2000,
-    });
-    unmount();
-    expect(screen.queryByTestId('mermaid-diagram')).toBeNull();
+    // code 변경은 react-markdown 리마운트로 live 가드가 실행되지 않으므로,
+    // 동일 인스턴스 effect가 재실행되는 유일한 폭 변경 경로를 재현한다.
+    let roUpdate: (() => void) | null = null;
+    const OrigRO = (globalThis as unknown as { ResizeObserver?: unknown }).ResizeObserver;
+    class FakeRO {
+      constructor(cb: () => void) {
+        roUpdate = cb;
+      }
+      observe(): void {}
+      unobserve(): void {}
+      disconnect(): void {}
+    }
+    (globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = FakeRO;
+    let currentWidth = 0;
+    const widthSpy = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(() => currentWidth);
+    try {
+      render(<Explanation markdown={'```mermaid\nflowchart LR\n A-->B\n```'} />);
+      await waitFor(() => expect(renderAsync).toHaveBeenCalledTimes(1));
+      currentWidth = 640;
+      await act(async () => {
+        roUpdate?.();
+      });
+      await waitFor(() => expect(renderAsync).toHaveBeenCalledTimes(2));
+      const box = await screen.findByTestId('mermaid-diagram');
+      await waitFor(() => expect(box.innerHTML).toContain('second-title'), { timeout: 2000 });
+      await act(async () => {
+        resolveFirst({ svg: safeSvg('first'), type: 'flowchart' });
+        await Promise.resolve();
+      });
+      await waitFor(() => expect(box.querySelector('svg')).not.toBeNull());
+      expect(box.innerHTML).toContain('second-title');
+      expect(box.innerHTML).not.toContain('first-title');
+      const secondOpts = vi.mocked(renderAsync).mock.calls[1][1] as { maxWidth?: number };
+      expect(secondOpts.maxWidth).toBe(640);
+    } finally {
+      widthSpy.mockRestore();
+      if (OrigRO === undefined) delete (globalThis as unknown as { ResizeObserver?: unknown }).ResizeObserver;
+      else (globalThis as unknown as { ResizeObserver: unknown }).ResizeObserver = OrigRO;
+    }
   });
 });
