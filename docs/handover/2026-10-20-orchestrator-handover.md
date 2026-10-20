@@ -1,71 +1,71 @@
-# moi 오케스트레이터 인수인계 — 2026-10-20
+# moi 오케스트레이터 인수인계 — 2026-10-20 (2차 정지)
 
-> 이 문서가 `2026-10-19-*.md` 3종보다 우선한다. 사용자 지시로 전체 작업을 정지한 시점의 스냅샷이다. 다음 오케스트레이터는 상태를 직접 다시 확인한 뒤 이어받는다.
+> 이 문서가 `2026-10-19-*.md`와 이 파일의 1차 판(PR #175, `24c11f0`)보다 우선한다. 사용자 지시("인수인계를 위한 이슈와 프롬프트만 남기고 모두 중지")로 정지한 시점의 스냅샷이다. 다음 o는 8장 프롬프트로 시작하고 상태를 직접 다시 확인한다.
 
 ## 0. 요약
-- 기준: dev `11c3d35`. 수업(2026-10-22) 대비 배포 1회 완료(dev `4766d78`).
-- 오늘 병합 16건: #155~#167, #169, #170, #172.
-- 하네스 재편(ADR-0042): o/r/w1~w3 역할, 워커 콜백, 폴백 타이머, 수정 라운드.
-- 정지 시점: 모든 워커 idle/done, 진행 중 단위는 WIP로 커밋·push했다(4장).
+- 기준: dev `b6a3079`(CI success). 수업은 2026-10-22.
+- 1차 인계 이후 병합 15건: #171, #173~#175, #177, #180, #181, #183, #190~#196.
+- 배포: dev `63098c1` 기준(3장). dev와의 차이는 ADR 문서뿐이라 재배포가 필요 없다.
+- 정지 절차·절대 경로 규칙은 ADR-0048로 기록했다(`agent-orchestration` 스킬 반영).
 
-## 1. 역할과 패널 (ADR-0042, `agent-orchestration` 스킬)
-| 탭 | 패널 | 에이전트(모델) | 역할 |
-| --- | --- | --- | --- |
-| o | w17:p1 | Claude | 오케스트레이터: 브리프·디스패치·콜백 수신·수락·커밋/PR/병합만 |
-| r | w17:p3 | agy (Gemini 3.8 Flash) | 리뷰 전담(교차 리뷰·재리뷰) |
-| w1 | w17:p2 | OpenCode (DeepSeek V4.1 Flash) | 구현 |
-| w2 | w17:p7 | OpenCode (Muse Spark 1.3) | 구현 |
-| w3 | w17:p6 | OpenCode (MiniMax M3.1 Flash Free) | 구현 |
-- 패널 ID는 바뀔 수 있다: `herdr tab list --workspace w17`, `herdr agent list`로 재확인한다.
-- 컨텍스트 리셋: opencode `/new`, agy `/clear`. 리셋 후 idle을 확인하고 나서 브리프를 보낸다.
-- 디스패치 프롬프트(압축형): `brief=<path> 수행. 완료 시 턴 종료 전: herdr agent prompt w17:p1 "[callback] unit=<u> status=<done|blocked|failed> report=<path>"`
-- 브리프·보고서 디렉터리: `$TMPDIR/opencode/moi-work/` (`brief-*.md`, `report-*.md`. 첫 줄 `status:`)
-- 사용자 선호: 브리프·보고는 대화체 없이 bullet 압축형(토큰 절약).
+## 1. 역할과 패널 (ADR-0042)
+| 역할 | 패널 | 에이전트(모델) |
+| --- | --- | --- |
+| o | w17:p1 | Codex/Claude (오케스트레이터) |
+| r | w17:p3 | OpenCode (GLM-5.3-Flash max, 사용자 교체) |
+| w1 | w17:p2 | OpenCode (DeepSeek V4.1 Flash) |
+| w2 | w17:p7 | OpenCode (Muse Spark 1.3) |
+| w3 | w17:p6 | OpenCode (MiniMax M3.1 Flash Free) |
+- 패널 ID는 `herdr tab list --workspace w17`, `herdr agent list`로 재확인한다. 정지 시 4패널 모두 중지 프롬프트를 받고 대기 중이다.
+- 콜백: `sh /Users/young-mini/Workspace/moi/.agents/skills/agent-orchestration/scripts/notify.sh w17:p1 <unit> <status> <report>`.
+- 브리프·보고서: `$TMPDIR/opencode/moi-work/`(절대 경로로 전달). 상태 메모: `resume-current.md`. 폴백 타이머는 해제했다.
+- 사용자 지시: 서브에이전트 금지, 기존 패널에 균형 분배, 재배포 후 알림, 0.2.x 자율 진행, Pele 0.2.4 편입.
 
 ## 2. 배포 상태 (#146)
-- URL: https://moi.qus0in.workers.dev / 버전 `756078b4-f351-4d5f-a9f7-d52025fc091a` / dev `4766d78`
-- 롤백 대상: `dccb0280-1714-4c96-b70a-ef2edababb51`
-- 원격 D1: `0012_add-review-bookmarks`까지 적용(미적용 0). 사전 백업: time-travel bookmark + export(저장소 밖 보관, 내용 비공개)
-- smoke 통과(`/`·`/study`·`/favicon.svg` 200, `/api/me` 401 + no-store)
-- 배포 URL Lighthouse: 모바일 97 / 데스크톱 100(#132 코멘트). 로컬 preview(무압축) 87~88점은 기준으로 쓰지 않는다.
-- **미배포 변경**(dev `4766d78..11c3d35`): #166 라우터 지연 로드·청크 실패 경계, #167 캡처 스크립트, #169 큰 화면 레이아웃, #170 하네스, #172 렌더 차단 CSS 축소. 수업 전 재배포 후보(#171 포함 권장).
-- 사용자 몫: 실계정 Kakao 로그인 → 20문제 → 제출/결과 → 복습·북마크 확인.
+- URL: https://moi.qus0in.workers.dev / 버전 `61c13d57-068e-4119-b13a-f2a176f44add` / dev `63098c1`
+- 롤백 대상: `2304b188-b433-4dd3-9bd2-3284fef60892`. DB·Secrets 변경 없음, 원격 미적용 migration 0.
+- 확장 smoke·자산 hash 일치·Kakao 시작 17항목 통과. Lighthouse 모바일 98/100/96/100.
+- 이 배포본은 Mermaid를 쓴다(Pele 미반영).
+- 사용자 몫: 실계정 로그인 → 10문항 → 새로고침 복원 → 제출/해설 → 오답·북마크 → 로그아웃.
 
-## 3. 열린 PR
-| PR | 내용 | 상태 | 다음 |
+## 3. 열린 PR·브랜치
+| 대상 | 내용 | 상태 | 다음 |
 | --- | --- | --- | --- |
-| #171 | 이력 상세 주소창 UUID 제거 | w1 리뷰 request-changes → 테스트 보강(`01639ca`, mutation Red→Green) 반영. r 재리뷰 중 정지 | r 재리뷰 → 병합 |
-| #173 | THIRD_PARTY_NOTICES 재생성(95→380행) + 누락 검출 | CI 대기, 리뷰 전 | r 리뷰 → 병합 |
-| #174 | CI `check:notices` 게이트, ADR-0043 | #173 병합 후 rebase 필요. 쟁점: ADR-0007 전체 supersede가 맞는지(보완이 적절할 수 있음) | r 리뷰 |
-| #133 | 0.3 라이선스 페이지 인계(Draft) | 보존, 0.2 병합 금지 | — |
+| PR #197 `fix/52-draft-retry` `30078c6` | 저장소 quota + 네트워크 동시 실패 시 답안 재전송(#52) | 8게이트 통과, CI success, r 승인(차단 0) | o 최종 수락 → squash 병합 |
+| `feat/179-pele-renderer` `4164012`(push됨, PR 없음) | Pele lazy 렌더러 + SVG sanitizer, Mermaid 의존성 제거 | w2 전체 게이트 통과(unit 585·integration 215·BDD 41). Draft PR 생성은 정지로 중단 | w3 독립 검증(4장) → r 리뷰 → PR |
+| `fix/132-review-typography` `150eb9e`(push됨, WIP) | 복습 보조텍스트 12/14→16px, 미정의 `success`/`card` 색 클래스를 기존 토큰으로 치환 | **게이트·브라우저 실측 미검증**. 정지 때문에 o가 보존용 WIP 커밋을 남겼다 | 브리프 `brief-132-review-type.md` 기준으로 Red/Green 실측 → 게이트 → 리뷰 |
+| PR #133 | 0.3 라이선스 페이지(Draft) | 보존, 0.2에 병합 금지 | — |
 
-## 4. 중단된 단위 (WIP 커밋·push 완료)
-| 브랜치 | 내용 | 상태 |
-| --- | --- | --- |
-| `fix/134-mermaid-label-quote` (`0de51dd`) | `saa-res-0129` 라벨 `G["Global Accelerator (고정 IP)"]` 인용 + Mermaid 라벨 품질 규칙 초안(`src/domain/question-quality/rules/mermaid.ts`) | 작성 중 중단. 게이트 미검증. 원격 D1 재등록 필요 여부 미확인(실행 금지) |
-| `test/168-mermaid-inventory` (`1f068c5`) | `scripts/mermaid-inventory.mjs` + Pele PoC 의존성 | PoC 결과는 #168 코멘트. r 독립 리뷰 → **채택 여부는 사용자 결정**. 수업 직전 전환 금지 |
-| `fix/132-lcp-shell` (`88b0ec6`) | 정적 셸 + 엔트리 load 후 주입 실험(88점) | **보류·병합 금지**(커스텀 플러그인, 상호작용 지연, 로그인 사용자 셸 깜빡임). 배포 URL 97점이라 불필요 |
-| `test/bdd-flake` | BDD 간헐 실패 원인 규명 | 시작 직후 정지, 변경 없음. 증상: 동시 부하(다른 worktree 빌드·Lighthouse) 중 run-gates `test:bdd` 실패 1건이 4회, 단독 재실행은 39/39 |
+## 4. 중단된 단위
+- **179-validation(w3)**: `brief-179-validation.md`. 실제 `Explanation → renderPeleDiagram → sanitizePeleSvg` 경로로 71개 도식 전수, 공격 샘플 15종 이상, 5 viewport × light/dark, cold/warm 성능 측정. 시작 전 정지, `scripts/pele-validation/`·`docs/evidence/179-pele/`은 아직 없다. 검증 통과 전 Pele 병합·배포 금지(ADR-0047).
+- **132-review-type(w1)**: 3장 참조.
+- 정리 대상 worktree(병합 완료): `189-result-pager`, `179-pele-scope`, `final-evidence`, `deploy-dev`, `perf-baseline-8bad361`. 보류: `132-lcp-shell`(병합 금지), `168-mermaid-inventory`(PoC 참고용), `bdd-flake`(변경 없음).
+- 잔여 프로세스: `vite preview --port 4175`(04:41 경과)와 Playwright test-server 2개가 떠 있다. 소유를 확인한 뒤에만 종료한다.
 
 ## 5. 남은 일 (우선순위)
-1. #171 재리뷰·병합 → dev 재배포(`release-deploy-workers` runbook, 원격 migration 변경 없음 확인)
-2. #173 → #174 리뷰·병합(#174는 ADR supersede 쟁점 판단)
-3. `fix/134-mermaid-label-quote` 마무리(게이트·리뷰), 원격 콘텐츠 반영은 #127 승인 범위 확인 후
-4. #168 Pele: r 리뷰 → 사용자 채택 결정 대기
-5. BDD flake 원인 규명(재시도 상향으로 은폐 금지)
-6. 후속 관찰: 디스플레이 폰트(KoddiUD 외부 CDN) 무압축 1.66MB, 로그아웃 상태 `/api/me` 401 콘솔 오류(BP 96), Pele 채택 시 ADR-0034 supersede
+1. PR #197 수락·병합 → 재배포 여부 판단(UI 동작 변경이므로 수업 전 배포 권장, `release-deploy-workers`).
+2. #132 typography WIP 검증·리뷰·병합.
+3. #179 Pele: w3 검증 → r 리뷰 → PR → 병합 → 배포. 수업(10-22) 직전이면 사용자에게 배포 시점을 확인한다.
+4. 감사 후속 후보(`report-02-ui-ac-audit.md`, `report-02-content-audit.md`): 단일/복수 유형 힌트 부재(DTO 계약 판단 필요), 콘텐츠 재등록 시 UUID 중복 위험 문서화.
+5. 0.2 열린 이슈(#148, #146, #134, #132, #131, #127 등)는 사용자 검증 항목과 구분하고 성급하게 닫지 않는다.
 
-## 6. 오늘 바뀐 계약
-- 학습 주소: `/study`(서버 `GET /api/study/sets/current`로 복원), `/study/new`, `/study/result`(router state). 레거시 `/study/:id`·`/?study=` → 서버 소유권 확인 후 replace. #171이 병합되면 이력 상세 `/history/detail`(state)·레거시 `/history/:id`도 같은 패턴.
-- 로그아웃 홈은 라우터·로그인 후 트리를 로드하지 않는다(`AuthenticatedApp` lazy). 최상위·라우트 lazy 실패는 `RouteErrorBoundary`(엔트리는 react-router 비의존).
-- Tailwind utilities는 `src/ui/authenticated.css`(로그인 후 청크). 엔트리 CSS는 `moi-*` 토큰만.
-- 큰 화면(≥1024px) 읽기 열 `--moi-reading-max: 720px`.
-- `study.css`는 `study.css`/`study-result.css`/`study-feedback.css`로 분할, 스타일을 쓰는 컴포넌트가 직접 import.
-- 화면 증거: `node scripts/capture-screens.mjs`(4174 포트 사전검사, 빌드 마커 확인) → `docs/evidence/132-screens/`.
+## 6. 1차 인계 이후 바뀐 계약
+- 학습 세트 10문제(#187), 근거 링크는 문서명 표시(#188), 결과 해설 좌우 페이징(#189), Pass 즉시 다음 문제(#185).
+- Mermaid 라벨 예약 문자 인용 + 품질 규칙 10(#177). Pele 채택(ADR-0045) → 0.2.4 편입(ADR-0047).
+- CI `check:notices` 게이트(#174). 리뷰 폴백: r 병목 시 다른 모델의 유휴 w가 리뷰(#195).
 
 ## 7. 주의
 - 비밀값·토큰·쿠키·DB export 내용을 저장소·이슈·PR에 남기지 않는다.
-- 원격 D1 쓰기·Secrets 변경은 사용자 승인 범위(#127) 안에서만 한다. 이번 배포는 사용자 지시("배포 먼저 해봐")에 따른 것이다.
-- main 병합·태그·Release는 정식 릴리스 때만(4종 산출물). 0.2.x 수업용 배포는 dev에서 한다.
-- 스택 PR을 squash한 뒤에는 `git rebase --onto origin/dev <이전 하위 head>`로 옮기고 base를 바꾼다. base만 바꾸면 CI가 다시 돌지 않으므로 커밋을 갱신한다.
-- 하네스 운용 기록(공개): usagi-ai-kr/usagi#1.
+- 원격 D1 쓰기·Secrets 변경은 #127 승인 범위 안에서만 한다.
+- main 병합·태그·Release는 정식 릴리스 때만(4종 산출물). 수업용 배포는 dev에서 한다.
+- `$TMPDIR`는 `/var/...`와 `/private/var/...`로 표기가 섞인다. 보고서는 절대 경로로 확인한다.
+
+## 8. 다음 오케스트레이터 재개 프롬프트
+```
+moi o 역할로 재개. 먼저 docs/handover/2026-10-20-orchestrator-handover.md와 #176을 읽어라.
+- 확인: git fetch → dev SHA, PR #197 CI/리뷰, feat/179-pele-renderer·fix/132-review-typography HEAD, herdr w17 패널 상태.
+- 규칙: AGENTS.md, agent-orchestration(ADR-0042/0048). o는 직접 구현하지 않는다. 서브에이전트 금지, 기존 패널에 분배.
+- 순서: #197 수락·병합 → 재배포 판단 → 132-review-type 검증 단위(w1) → 179-validation(w3) → Pele r 리뷰.
+- 브리프·보고서는 $TMPDIR/opencode/moi-work/ 절대 경로, 압축형 bullet. 폴백 타이머 1개·15분.
+- 배포·원격 D1·Pele 배포 시점은 사용자 승인 범위를 확인한 뒤에만 한다.
+```
