@@ -10,6 +10,7 @@ export const colors = {
   white: '#FFFFFF',
   danger: '#F5222D', // AntD red-6 — 로그아웃·오류 강조 (tokens 단일 소스 유지)
   warning: '#FAAD14', // AntD gold-6 — 경고 강조
+  scrim: 'rgb(35 47 62 / 45%)', // Drawer 백드롭 — ink 45% (토큰 단일 소스)
 } as const;
 
 // 카카오 로그인 버튼 — 카카오 공식 디자인 가이드 값(변경 금지, ADR-0014)
@@ -46,12 +47,16 @@ export const layout = {
   // 큰 화면의 읽기 열 — 헤더 내부와 본문이 같은 폭을 공유한다 (#148 6항).
   readingMaxWidth: 720,
   headerHeight: 56,
+  // 로그인 후 셸 헤더 실측 높이 — 브랜드 링크 44px + 헤더 패딩 8px×2 + 하단 테두리 1px (#215).
+  shellHeaderHeight: 61,
   containerPaddingX: 'clamp(16px, 5vw, 32px)',
   accentWidth: 48,
   accentHeight: 4,
   enterShift: 8,
   controlHeight: 40,
   touchTargetMin: 44, // 접근성: 터치 타깃 최소
+  drawerWidthMax: 320, // Drawer 최대 폭(20rem) — 320px 뷰포트에서 272px가 된다 (#215)
+  drawerViewportGap: 48, // Drawer와 화면단 사이 최소 여백(3rem) — 백드롭 클릭 영역 확보
 } as const;
 
 export const typography = {
@@ -105,6 +110,9 @@ export const cssVars: Record<string, string> = {
   '--moi-container-max': px(layout.containerMaxWidth),
   '--moi-reading-max': px(layout.readingMaxWidth),
   '--moi-header-h': px(layout.headerHeight),
+  '--moi-shell-header-h': px(layout.shellHeaderHeight),
+  '--moi-drawer-w-max': px(layout.drawerWidthMax),
+  '--moi-drawer-gap': px(layout.drawerViewportGap),
   '--moi-container-pad-x': layout.containerPaddingX,
   '--moi-accent-w': px(layout.accentWidth),
   '--moi-accent-h': px(layout.accentHeight),

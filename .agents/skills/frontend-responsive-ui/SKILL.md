@@ -20,6 +20,8 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 
 ## 반응형 기준 (Mobile-first)
 - 브레이크포인트: 모바일 320–767px / 태블릿 768–1199px / 데스크탑 1200px 이상.
+- **상단 메뉴 전환 정책(ADR-0057)**: **≤767px는 햄버거 + 우측 Drawer(native `<dialog>`+`showModal()`)**, **≥768px는 가로 nav**. Drawer는 **새 런타임 의존성 없이** 구현하고, 모바일 구간의 가로 nav는 `hidden`으로 화면·키보드·AT에서 제거한다(시각 숨김만으로 두지 않는다). Drawer 폭 `min(320px, 100vw - 48px)`·높이 `100dvh`+safe-area+내부 스크롤·`z-index`는 헤더(10)보다 큰 값·전환은 `prefers-reduced-motion: no-preference`에서만.
+- Drawer 접근성 계약: `aria-expanded`·`aria-controls`(dialog id와 일치)·접근 가능한 레이블, Escape/닫기/백드롭/메뉴 선택 닫기, 닫힌 뒤 트리거로 포커스 복귀, 열릴 때 배경 스크롤 잠금(iOS `position:fixed`+`scrollY` 복원), 트리거·닫기·항목 44×44px.
 - shadcn/ui `Button`/`Separator`/variant + Tailwind flex/grid·간격 유틸 사용(DESIGN.md·ADR-0035). 한 화면에서 viewport별 레이아웃을 조절한다. AntD는 과도기 기존 코드에만 한정한다.
 - 검증 viewport: **320 / 375 / 768 / 1024 / 1280px** — 로그인·로그아웃·오류 화면에서 가로 스크롤/겹침 없음.
 - 접근성: 키보드 포커스, 접근 가능한 버튼 명칭, 터치 타깃 크기, 로딩/에러 상태 표시 포함.
@@ -60,4 +62,5 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 - React Testing Library로 UI 상태·오류 처리 단위 테스트.
 - Playwright-BDD로 핵심 화면 320/375/768/1024/1280 전부, 보조 시나리오 375/768/1280 실행.
 - 반응형 판정 분리(ADR-0011): 가로 오버플로 도구의 통과는 **반응형 전체 통과가 아니다**. 핵심 화면 5종에서 주요 요소 가시성·클릭 가능·포커스 순서·스크린샷 비교는 Playwright 시나리오가 담당한다(#12).
+- 모바일 Drawer(ADR-0057)는 `e2e/features/mobile-nav.feature`가 햄버거 노출·가로 nav 숨김(키보드 중복 0)·열림/닫힘 4종·포커스 복귀·스크롤 잠금·5화면×5폭 가림/클릭 가능성·landscape·200% 확대를 검증한다.
 - 상태 소유권 테스트: TanStack Query가 진실 원천이고, Zustand에 토큰/중복 사용자 상태가 없음을 검증.
