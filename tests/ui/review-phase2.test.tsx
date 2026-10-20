@@ -261,7 +261,10 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
     });
 
     expect(await screen.findByText('Intelligent-Tiering이 가장 적합합니다.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /https:\/\/docs.aws.amazon.com\/s3\/pricing/ })).toBeInTheDocument();
+    const sourceLink = screen.getByRole('link', { name: 'Pricing' });
+    expect(sourceLink).toHaveAttribute('href', 'https://docs.aws.amazon.com/s3/pricing');
+    expect(sourceLink).toHaveAttribute('title', 'https://docs.aws.amazon.com/s3/pricing');
+    expect(sourceLink).not.toHaveTextContent(/https?:\/\//);
 
     // 다음 문항 정답은 아직 미노출
     expect(screen.queryByText('CIDR 중복 방지')).not.toBeInTheDocument();

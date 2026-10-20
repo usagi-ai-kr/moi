@@ -377,7 +377,10 @@ Then('학습 결과가 보인다', async ({ page }) => {
 
 Then('해설과 근거가 보인다', async ({ page }) => {
   await expect(page.getByText(/문제 0 해설: 정답은/)).toBeVisible();
-  await expect(page.getByRole('link', { name: /docs.aws.amazon.com/ }).first()).toBeVisible();
+  const source = page.getByRole('link', { name: 'Q 0' });
+  await expect(source).toBeVisible();
+  await expect(source).toHaveAttribute('href', 'https://docs.aws.amazon.com/q-0');
+  await expect(source).toHaveAttribute('title', 'https://docs.aws.amazon.com/q-0');
 });
 
 Then('포기 확인이 보인다', async ({ page }) => {

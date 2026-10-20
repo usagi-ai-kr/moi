@@ -2,6 +2,7 @@ import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedItem, StudySubmittedSet } from '../api/client';
 import { Button } from '../components/ui/button';
 import { BookmarkButton } from '../review/BookmarkButton';
+import { SourceLinks } from '../SourceLinks';
 import { Explanation } from './Explanation';
 import { ReportButton } from './ReportButton';
 import { scopeLabel, STUDY_EXAM_LABEL } from './types';
@@ -103,12 +104,10 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
                     <Explanation markdown={content.explanation || '—'} />
                   </div>
                   {content.sourceUrls && content.sourceUrls.length > 0 && (
-                    <p className="moi-note">
-                      {copy.study.sources}:{' '}
-                      {content.sourceUrls.map((u) => (
-                        <a key={u} href={u} target="_blank" rel="noreferrer">{u}</a>
-                      ))}
-                    </p>
+                    <div className="moi-study-sources">
+                      <span className="moi-study-sources-label">{copy.study.sources}</span>
+                      <SourceLinks urls={content.sourceUrls} />
+                    </div>
                   )}
                 </>
               )}
