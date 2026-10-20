@@ -32,6 +32,8 @@ export interface ReviewSourcePort {
 /** 회차 저장소 — 계정·시험·모드별 활성 회차는 최대 1개(어댑터가 부분 UNIQUE로 보장). */
 export interface ReviewSessionRepository {
   findActive(input: { userId: string; examId: string; mode: ReviewMode }): Promise<ReviewSession | null>;
+  /** 직전 ended 회차(큐 포함) — 10문항 queue plan용. 없으면 null. */
+  findLastEnded(input: { userId: string; examId: string; mode: ReviewMode }): Promise<ReviewSession | null>;
   save(input: { session: ReviewSession }): Promise<void>;
   /** 종료 전용 cursor CAS. stale cursor·소유권·이미 종료된 다른 snapshot은 false. 동일 ended snapshot은 멱등 성공. */
   end(input: { session: ReviewSession; expectedCursor: number }): Promise<boolean>;

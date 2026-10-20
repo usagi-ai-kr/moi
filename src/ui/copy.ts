@@ -154,6 +154,7 @@ export const copy = {
     emptyBookmark: '북마크한 문제가 없습니다. 문제 풀이 중 북마크를 눌러 나중에 복습할 문제를 추가해 보세요.',
     waitingPrefix: '복습 대기',
     waitingSuffix: '문제',
+    roundHint: '10문제씩 진행됩니다',
     startAction: '복습 시작하기',
     loadError: '목록을 불러오지 못했습니다. 네트워크를 확인하고 다시 시도해 주세요.',
     retry: '다시 시도',

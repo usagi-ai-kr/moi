@@ -92,11 +92,19 @@ export function fakeSource(input: {
 /** 가짜 회차 저장소 — 계정·시험·모드별 활성 1개를 메모리로 유지한다. */
 export function fakeRepository() {
   const sessions = new Map<string, ReviewSession>();
+  const endedByKey = new Map<string, ReviewSession>();
   const key = (userId: string, examId: string, mode: string) => `${userId}|${examId}|${mode}`;
   const repository: ReviewSessionRepository = {
     async findActive({ userId, examId, mode }) {
       const session = sessions.get(key(userId, examId, mode)) ?? null;
       return session !== null && session.status === 'active' ? session : null;
+    },
+    async findLastEnded({ userId, examId, mode }) {
+      const k = key(userId, examId, mode);
+      const byEnd = endedByKey.get(k) ?? null;
+      if (byEnd !== null) return byEnd;
+      const session = sessions.get(k) ?? null;
+      return session !== null && session.status === 'ended' ? session : null;
     },
     async save({ session }) {
       const existing = sessions.get(key(session.userId, session.examId, session.mode));
@@ -111,6 +119,7 @@ export function fakeRepository() {
       if (!stored || stored.id !== session.id || stored.status !== 'active' || session.status !== 'ended') return false;
       if (stored.cursor !== expectedCursor || session.cursor !== expectedCursor) return false;
       sessions.set(key(session.userId, session.examId, session.mode), session);
+      endedByKey.set(key(session.userId, session.examId, session.mode), session);
       return true;
     },
   };

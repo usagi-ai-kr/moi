@@ -670,17 +670,20 @@ Then('북마크 복습 대기 목록이 보인다', async ({ page }) => {
 });
 
 Then('오답 복습과 북마크 대상이 독립적이다', async ({ page }) => {
-  await expect(page.getByText(/북마크된 학습 문항/)).toBeVisible();
+  // ADR-0059: 대기 목록은 개수만 표시하고 stem 목록은 노출하지 않는다. 독립성은 탭별 개수로 확인한다.
+  await expect(page.getByRole('tab', { name: copy.review.tabBookmark, selected: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: new RegExp(copy.review.waitingPrefix) })).toBeVisible();
   await expect(page.getByText('VPC 피어링')).not.toBeVisible();
+  await expect(page.getByText(/북마크된 학습 문항/)).not.toBeVisible();
 
   await page.getByRole('tab', { name: copy.review.tabWrong }).click();
   await expect(page.getByRole('tab', { name: copy.review.tabWrong, selected: true })).toBeVisible();
-  await expect(page.getByText('VPC 피어링')).toBeVisible();
-  await expect(page.getByText(/북마크된 학습 문항/)).not.toBeVisible();
+  await expect(page.getByRole('heading', { name: new RegExp(copy.review.waitingPrefix) })).toBeVisible();
+  await expect(page.getByText('VPC 피어링')).not.toBeVisible();
 
   await page.getByRole('tab', { name: copy.review.tabBookmark }).click();
   await expect(page.getByRole('tab', { name: copy.review.tabBookmark, selected: true })).toBeVisible();
-  await expect(page.getByText(/북마크된 학습 문항/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: new RegExp(copy.review.waitingPrefix) })).toBeVisible();
 });
 
 Then('북마크 복습 문제가 보인다', async ({ page }) => {

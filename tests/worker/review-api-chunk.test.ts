@@ -17,6 +17,7 @@ import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?
 import migration0010 from '../../drizzle/migrations/0010_add-study-corrections.sql?raw';
 import migration0011 from '../../drizzle/migrations/0011_add-review-sessions.sql?raw';
 import migration0012 from '../../drizzle/migrations/0012_add-review-bookmarks.sql?raw';
+import migration0013 from '../../drizzle/migrations/0013_add-review-round-queue.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // D1 bind 상한 회귀 — 120 후보(questions/versions/options 전체 chunk) 실제 Worker 경로.
@@ -72,7 +73,7 @@ async function seed120(): Promise<void> {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0012]);
+  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0012, migration0013]);
   try { await db.exec('PRAGMA foreign_keys = ON;'); } catch { /* noop */ }
 });
 
@@ -92,7 +93,7 @@ describe('복습 D1 바인드 상한 (120 후보)', () => {
     const startRes = await req('/api/review/sessions', { method: 'POST', token, body: { examId: 'saa-c03', mode: 'wrong' } });
     expect(startRes.status).toBe(201);
     const started = (await startRes.json()) as { total: number; current: { questionId: string } };
-    expect(started.total).toBe(120);
+    expect(started.total).toBe(10);
     const qid = started.current.questionId;
     const ans = await req('/api/review/sessions/current/answers', { method: 'POST', token, body: { examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'pass' } } });
     expect(ans.status).toBe(200);

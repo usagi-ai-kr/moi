@@ -227,17 +227,19 @@ describe('Phase 1: Review Client & Candidate/Resume View', () => {
     expect(patched.bookmarked).toBe(true);
   });
 
-  it('오답 복습 후보 목록과 문항 수를 렌더하고 내부 ID는 노출하지 않는다', async () => {
+  it('오답 복습 대기 개수만 렌더하고 문항 stem 목록은 노출하지 않는다', async () => {
     const client = createFakeReviewClient();
     renderReviewScreen(client, '/review?mode=wrong');
 
     expect(await screen.findByRole('tab', { name: '오답 복습' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: '북마크 복습' })).toBeInTheDocument();
 
-    expect(await screen.findByText(/Amazon S3 수명 주기 정책/)).toBeInTheDocument();
-    expect(screen.getByText(/VPC 간 안전한 전송/)).toBeInTheDocument();
-    expect(screen.getByText(/복습 대기 2문제/)).toBeInTheDocument();
+    expect(await screen.findByText(/복습 대기 2문제/)).toBeInTheDocument();
+    expect(screen.getByText(/10문제씩 진행됩니다/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /복습 시작/ })).toBeInTheDocument();
 
+    expect(screen.queryByText(/Amazon S3 수명 주기 정책/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/VPC 간 안전한 전송/)).not.toBeInTheDocument();
     expect(screen.queryByText('q-w1')).not.toBeInTheDocument();
     expect(screen.queryByText('q-w2')).not.toBeInTheDocument();
   });

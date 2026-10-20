@@ -14,6 +14,7 @@ import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?
 import migration0010 from '../../drizzle/migrations/0010_add-study-corrections.sql?raw';
 import migration0011 from '../../drizzle/migrations/0011_add-review-sessions.sql?raw';
 import migration0012 from '../../drizzle/migrations/0012_add-review-bookmarks.sql?raw';
+import migration0013 from '../../drizzle/migrations/0013_add-review-round-queue.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // #51 D1 복습 소스·북마크 (wrong/pass/unanswered 집계·excluded 제외·격리·현행버전)
@@ -78,7 +79,7 @@ async function seedAttempts(): Promise<void> {
 }
 
 beforeAll(async () => {
-  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0012]);
+  await applyD1Migrations(db, [migration0000, migration0001, migration0002, migration0003, migration0004, migration0005, migration0006, migration0007, migration0008, migration0009, migration0010, migration0011, migration0012, migration0013]);
   try { await db.exec('PRAGMA foreign_keys = ON;'); } catch { /* pragma 미지원 시 FK 자체 검증 */ }
 });
 
