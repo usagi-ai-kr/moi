@@ -339,7 +339,7 @@ Then('시작 버튼이 다시 눌릴 수 있다', async ({ page }) => {
 
 Then('이력 로딩 상태가 보인다', async ({ page }) => {
   const section = page.getByRole('region', { name: copy.study.historyTitle });
-  await expect(section.getByRole('status')).toContainText(copy.session.checking);
+  await expect(section.getByRole('status')).toContainText(copy.common.loading);
 });
 
 Then('이력 오류 안내와 재시도 버튼이 보인다', async ({ page }) => {

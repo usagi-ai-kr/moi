@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyActiveSet } from '../../src/ui/api/client';
+import { copy } from '../../src/ui/copy';
 import { StudyScreen } from '../../src/ui/study/StudyScreen';
 import { useStudyUiStore } from '../../src/ui/study/store';
 
@@ -154,6 +155,26 @@ describe('학습 시작', () => {
     expect(screen.getByRole('button', { name: '학습 시작' })).toBeInTheDocument();
     fireEvent.click(screen.getByText('영역별 20문제'));
     expect(screen.getByLabelText('영역')).toBeInTheDocument();
+  });
+
+  it('시작 대기 중 버튼 라벨은 "시작하는 중"이다(#148)', async () => {
+    let resolveStart: (v: StudyActiveSet) => void = () => {};
+    const pending = new Promise<StudyActiveSet>((resolve) => {
+      resolveStart = resolve;
+    });
+    const client = {
+      ...fakeStudyClient(),
+      post: vi.fn(() => ({ json: () => pending })),
+    } as unknown as ApiClient;
+    renderStudy(client);
+    fireEvent.click(screen.getByRole('button', { name: copy.study.startAction }));
+
+    const btn = await screen.findByRole('button', { name: copy.study.starting });
+    expect(btn).toBeDisabled();
+    expect(btn).toHaveAttribute('aria-busy', 'true');
+    await act(async () => {
+      resolveStart(makeSet());
+    });
   });
 
   it('시작 성공 시 문제 화면(1/20·문제 본문·보기 텍스트)을 보인다', async () => {

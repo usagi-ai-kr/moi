@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient } from '../../src/ui/api/client';
+import { copy } from '../../src/ui/copy';
 import { HistoryPage } from '../../src/ui/pages/HistoryPage';
 
 function httpError(status: number, body: unknown): HTTPError {
@@ -198,7 +199,7 @@ describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
     const { client } = makeMockClient({ total: 45, delayMs: 150 });
     renderHistoryPage(client, '/history');
 
-    expect(screen.getByText(/확인하고 있습니다/)).toBeInTheDocument();
+    expect(screen.getByText(copy.common.loading)).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: '페이지네이션' })).not.toBeInTheDocument();
 
     expect(await screen.findByText('총 45건')).toBeInTheDocument();

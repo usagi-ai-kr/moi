@@ -26,7 +26,7 @@ export function HistoryView(p: Props) {
   return (
     <section className="moi-study" aria-label={copy.study.historyTitle}>
       <h2 className="moi-study-title">{copy.study.historyTitle}</h2>
-      {p.pending && <p className="moi-note" role="status" aria-live="polite">{copy.session.checking}</p>}
+      {p.pending && <p className="moi-note" role="status" aria-live="polite">{copy.common.loading}</p>}
       {p.loadError && (
         <div className="moi-alert moi-alert-error" role="alert">
           <p className="moi-alert-text">{copy.session.loadError}</p>

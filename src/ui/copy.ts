@@ -43,6 +43,7 @@ export const copy = {
     historyLink: '학습 이력',
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
+    starting: '시작하는 중',
     resumeNote: '진행 중인 세트가 있습니다. 이어서 풀 수 있습니다.',
     activeExists: '이미 진행 중인 세트가 있습니다. 이어풀기를 계속하세요.',
     scopeAll: '전체 20문제',
