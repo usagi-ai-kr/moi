@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check:architecture": "depcruise src --config .dependency-cruiser.cjs",
+    "check:notices": "node scripts/generate-third-party-notices.mjs --check",
     "test:unit": "vitest run --project unit --project ui",
     "test:integration": "vitest run --project worker",
     "test:bdd": "bddgen && playwright test"
