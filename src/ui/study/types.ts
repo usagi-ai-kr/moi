@@ -13,7 +13,7 @@ export const STUDY_DOMAINS: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'dom-security', label: '보안' },
   { id: 'dom-resilience', label: '복원력' },
   { id: 'dom-performance', label: '성능' },
-  { id: 'dom-cost', label: '비용 최적화' },
+  { id: 'dom-cost-optimization', label: '비용 최적화' },
 ];
 
 export type StudyView = 'start' | 'active' | 'result' | 'history';

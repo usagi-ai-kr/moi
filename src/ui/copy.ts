@@ -136,6 +136,7 @@ export const copy = {
     domainsTitle: '영역별 현황',
     weakTitle: '취약 추천',
     weakEmpty: '추천할 취약 영역이 없습니다',
+    unknownDomain: '기타 영역',
   },
   review: {
     title: '복습',

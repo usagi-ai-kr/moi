@@ -14,6 +14,10 @@ import { HistoryView } from '../../src/ui/study/HistoryView';
 import { QuestionView } from '../../src/ui/study/QuestionView';
 import { ResultView } from '../../src/ui/study/ResultView';
 import { StartView } from '../../src/ui/study/StartView';
+import { STUDY_DOMAINS } from '../../src/ui/study/types';
+import { DomainStatusList } from '../../src/ui/stats/DomainStatusList';
+import { StatsPanel } from '../../src/ui/stats/StatsPanel';
+import { domainLabel } from '../../src/ui/stats/labels';
 
 function fakeClient(): ApiClient {
   return {
@@ -213,5 +217,131 @@ describe('#148 원시 값 제거', () => {
     );
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
     expect(screen.getByText(/AWS SAA-C03 · 10문제/)).toBeInTheDocument();
+  });
+});
+
+describe('#148 domain-label canonical 정합', () => {
+  it('STUDY_DOMAINS 비용 최적화 id는 canonical dom-cost-optimization이다', () => {
+    const cost = STUDY_DOMAINS.find((d) => d.label === '비용 최적화');
+    expect(cost?.id).toBe('dom-cost-optimization');
+  });
+
+  it('domainLabel은 canonical·legacy를 비용 최적화로, 미지는 기타 영역으로 매핑한다', () => {
+    expect(domainLabel('dom-cost-optimization')).toBe('비용 최적화');
+    // legacy alias 1건만 명시적 유지
+    expect(domainLabel('dom-cost')).toBe('비용 최적화');
+    expect(domainLabel('dom-xyz')).toBe(copy.stats.unknownDomain);
+    expect(domainLabel('dom-xyz')).not.toMatch(/dom-/);
+    expect(copy.stats.unknownDomain).not.toMatch(/dom-/);
+  });
+
+  it('StartView 영역 select는 canonical value·한글 라벨을 쓰고 변경 시 canonical을 전달한다', () => {
+    const onDomain = vi.fn();
+    const noop = vi.fn();
+    render(
+      <StartView
+        scope="domain"
+        domainId="dom-cost-optimization"
+        pending={false}
+        conflict={false}
+        unauthorized={false}
+        startError={null}
+        onScope={noop}
+        onDomain={onDomain}
+        onStart={noop}
+        onResume={noop}
+      />,
+    );
+    const select = screen.getByLabelText('영역') as unknown as HTMLSelectElement;
+    expect(select.value).toBe('dom-cost-optimization');
+    const costOption = within(select as unknown as HTMLElement).getByRole('option', { name: '비용 최적화' }) as unknown as HTMLOptionElement;
+    expect(costOption.value).toBe('dom-cost-optimization');
+    fireEvent.change(select, { target: { value: 'dom-cost-optimization' } });
+    expect(onDomain).toHaveBeenCalledWith('dom-cost-optimization');
+    expect(screen.queryByText(/dom-cost/)).not.toBeInTheDocument();
+  });
+
+  it('HistoryView 상세는 canonical domainId를 비용 최적화로 보이고 raw를 숨긴다', () => {
+    const canonical: StudySummary = {
+      ...summary,
+      id: 's-cost',
+      domainId: 'dom-cost-optimization',
+    };
+    render(
+      <HistoryView
+        items={[canonical]}
+        total={1}
+        page={1}
+        pageSize={20}
+        pending={false}
+        loadError={false}
+        detailId="s-cost"
+        onPage={vi.fn()}
+        onDetail={vi.fn()}
+        onRetry={vi.fn()}
+      />,
+    );
+    const dialog = screen.getByRole('dialog');
+    expect(within(dialog).getByText(/비용 최적화/)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/dom-cost/)).not.toBeInTheDocument();
+  });
+
+  it('DomainStatusList·취약 영역은 canonical을 비용 최적화로 보인다', async () => {
+    render(
+      <DomainStatusList
+        domains={[
+          {
+            domainId: 'dom-cost-optimization',
+            uniqueFirstSolved: 8,
+            gradedAttempts: 15,
+            cumulativeAccuracy: 0.5,
+            recentAccuracy: 0.4,
+            status: 'insufficient-data',
+          },
+        ]}
+      />,
+    );
+    expect(screen.getByText('비용 최적화')).toBeInTheDocument();
+    expect(screen.queryByText(/dom-cost/)).not.toBeInTheDocument();
+  });
+
+  it('StatsPanel은 canonical 영역·취약을 비용 최적화로 보이고 raw를 숨긴다', async () => {
+    const stats = {
+      examId: 'saa-c03',
+      totalQuestions: 500,
+      uniqueFirstSolved: 20,
+      coverage: 0.04,
+      overallAccuracy: 0.7,
+      domains: [
+        {
+          domainId: 'dom-cost-optimization',
+          uniqueFirstSolved: 8,
+          gradedAttempts: 15,
+          cumulativeAccuracy: 0.5,
+          recentAccuracy: 0.4,
+          status: 'insufficient-data' as const,
+        },
+      ],
+      weakDomains: [
+        {
+          domainId: 'dom-cost-optimization',
+          score: 0.45,
+          cumulativeAccuracy: 0.5,
+          effectiveRecentAccuracy: 0.4,
+          uniqueFirstSolved: 8,
+        },
+      ],
+    };
+    const client = {
+      get: vi.fn(() => ({ json: async () => stats })),
+    } as unknown as ApiClient;
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <StatsPanel client={client} examId="saa-c03" />
+      </QueryClientProvider>,
+    );
+    expect((await screen.findAllByText('비용 최적화')).length).toBeGreaterThanOrEqual(2);
+    expect(screen.queryByText(/dom-cost-optimization/)).not.toBeInTheDocument();
   });
 });

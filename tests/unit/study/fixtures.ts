@@ -22,7 +22,7 @@ export function scriptedRng(values: readonly number[]): () => number {
   return () => values[i++ % values.length] ?? 0;
 }
 
-export const DOMAIN_CODES = ['dom-security', 'dom-resilience', 'dom-performance', 'dom-cost'] as const;
+export const DOMAIN_CODES = ['dom-security', 'dom-resilience', 'dom-performance', 'dom-cost-optimization'] as const;
 
 /** 공식 영역 비중(150/130/120/100)을 domainWeight로 반영한 풀 엔트리를 만든다. */
 export function makePoolEntry(

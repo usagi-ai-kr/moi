@@ -39,7 +39,7 @@ const STATS_DTO = {
       status: 'ok',
     },
     {
-      domainId: 'dom-cost',
+      domainId: 'dom-cost-optimization',
       uniqueFirstSolved: 8,
       gradedAttempts: 15,
       cumulativeAccuracy: 0.5,
@@ -49,7 +49,7 @@ const STATS_DTO = {
   ],
   weakDomains: [
     {
-      domainId: 'dom-cost',
+      domainId: 'dom-cost-optimization',
       score: 0.45,
       cumulativeAccuracy: 0.5,
       effectiveRecentAccuracy: 0.4,
@@ -276,7 +276,7 @@ const HISTORY_SETS = [
     id: 'set-history-3',
     examId: 'saa-c03',
     mode: 'weak',
-    domainId: 'dom-cost',
+    domainId: 'dom-cost-optimization',
     submittedAt: 1699800000000,
     correctCount: 10,
     accuracyPercent: 50,
