@@ -1,6 +1,7 @@
 import { copy } from '../copy';
 import type { ItemResponse, StudyActiveItem } from '../api/client';
 import type { ConflictItem } from './draft-sync';
+import './study-feedback.css';
 
 interface Props {
   conflicts: ConflictItem[];

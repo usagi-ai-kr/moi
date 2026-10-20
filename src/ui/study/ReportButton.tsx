@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { submitQuestionReport, type ApiClient, type ReportReason } from '../api/client';
 import { copy } from '../copy';
+import './study-feedback.css';
 
 const REASONS: ReadonlyArray<{ value: ReportReason; label: string }> = [
   { value: 'answer', label: copy.report.reasonAnswer },
