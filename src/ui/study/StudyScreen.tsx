@@ -64,7 +64,7 @@ export function StudyScreen({
     ...(onNavigate
       ? {
           // 주소창에 세트 UUID를 남기지 않는다 — /study가 current API로 복원한다 (#148).
-          onSetStarted: () => onNavigate('/study'),
+          onSetStarted: (id) => onNavigate('/study', { state: { startedSetId: id } }),
           onSubmitted: (id) => onNavigate('/study/result', { state: { setId: id } }),
           onAbandoned: () => onNavigate('/study/new'),
         }
