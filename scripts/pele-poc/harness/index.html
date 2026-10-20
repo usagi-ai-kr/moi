@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>#168 Pele PoC harness</title>
+    <style>
+      :root { color-scheme: light; }
+      html, body { margin: 0; padding: 0; background: #ffffff; }
+      body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif; color: #1f1f1f; }
+      #stage { display: inline-block; padding: 16px; background: #ffffff; }
+      .stage-box { overflow-x: auto; border: 1px solid #e5e5e5; border-radius: 8px; padding: 8px; background: #fff; }
+      .stage-box svg { max-width: 100%; height: auto; }
+      .stage-label { font: 12px/1.4 monospace; color: #6e6e6e; margin-bottom: 4px; }
+      .stage-error { font: 12px/1.5 monospace; white-space: pre-wrap; color: #b42318; }
+      .stage-source { font: 12px/1.5 monospace; white-space: pre-wrap; color: #1f1f1f; }
+      /* Pele는 앱이 CSS 변수를 정의하지 않아도 SVG 인라인 폴백(var(--pele-bg,#fff))로 색이 유지된다. */
+    </style>
+  </head>
+  <body>
+    <div id="stage"></div>
+    <script type="module" src="/boot.js"></script>
+  </body>
+</html>
