@@ -6,7 +6,7 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 
 ## 작업 원칙
 - 이슈 기반으로 작업한다. 관련 이슈의 Acceptance Criteria(BDD)와 완료 정의를 구현·검증의 기준으로 삼는다.
-- 워커는 피처명으로 고정 배치·명명하지 않는다. 단위마다 컨텍스트를 리셋하고 기존 워커 풀에서 교차 리뷰·산출물 검증 후 병합한다. 새 에이전트·페인·리뷰어와 범위 밖 작업은 사용자 승인 후에만 한다. → `agent-orchestration`
+- 워커는 피처명으로 고정 배치하지 않는다(o=디스패치·수락, r=리뷰, w1~w3=구현). 완료·blocked·failed는 `[callback]`으로 o에 알리고, 단위마다 컨텍스트를 리셋해 교차 리뷰·검증 후 병합한다. 새 에이전트·리뷰어·범위 밖 작업은 승인 후에만. → `agent-orchestration`
 - 문서·이슈·PR·커밋 메시지는 한국어로 작성한다.
 - 비밀값·토큰·인가 코드·개인정보를 이슈, 코드, 커밋, CI 로그에 남기지 않는다.
 - 계층 검사·테스트·타입 검사가 통과하지 않으면 완료로 표시하지 않는다.
@@ -105,7 +105,7 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 | `d1-drizzle-persistence` | 스키마/마이그레이션/Repository 어댑터, D1 쿼리 |
 | `tdd-bdd-testing` | 테스트 작성, BDD 시나리오, CI 게이트, PR 증거 |
 | `release-deploy-workers` | Workers 배포·D1 migration·Secrets·smoke |
-| `agent-orchestration` | 컨텍스트·산출물 검증·리뷰 |
+| `agent-orchestration` | 역할·콜백·산출물 검증 |
 | `harness-budget` | 모듈 길이 예산 검사·해소, 하네스 비대화 방지 |
 
 > 이 규칙과 스킬은 GitHub 이슈 #1–#13 및 사용자 확정 사항(2026-10-18)에서 추출했습니다. 초기 결정은 `docs/adr/` ADR-0001–0010으로 백필합니다(이슈 #1 첫 PR·#9 추적). 이슈 내용과 충돌하면 이슈의 최신 합의를 우선하고, 합의된 변경을 문서에 반영합니다.

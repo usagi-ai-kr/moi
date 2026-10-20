@@ -56,4 +56,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0039 | 복습 HTTP API와 Worker·D1 통합 계약 | Accepted | 2026-10-19 | [0039-review-http-api-worker.md](./0039-review-http-api-worker.md) |
 | ADR-0040 | 복습 API 시험 식별자 내부 ID 정규화 | Accepted | 2026-10-19 | [0040-exam-identifier-canonicalization.md](./0040-exam-identifier-canonicalization.md) |
 | ADR-0041 | 복습 회차 종료 cursor CAS와 stale 답안 경합 | Accepted | 2026-10-19 | [0041-review-session-end-cursor-cas.md](./0041-review-session-end-cursor-cas.md) |
+| ADR-0042 | 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션 | Accepted | 2026-10-20 | [0042-reviewer-callback-orchestration.md](./0042-reviewer-callback-orchestration.md) |
 <!-- ADR_INDEX:END -->
