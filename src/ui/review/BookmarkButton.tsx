@@ -2,8 +2,9 @@ import { useState } from 'react';
 import type { ApiClient } from '../api/client';
 import { Button } from '../components/ui/button';
 import { copy } from '../copy';
-import { iconBookmark, iconRefresh } from '../icons';
-import { useBookmarks, useSetBookmark } from './queries';
+import { iconBookmark, iconLoading, iconRefresh } from '../icons';
+import { useSessionUser } from '../session';
+import { useBookmarkOverrides, useBookmarks, useSetBookmark } from './bookmark-queries';
 
 interface BookmarkButtonProps {
   readonly client: ApiClient;
@@ -13,18 +14,55 @@ interface BookmarkButtonProps {
 }
 
 export function BookmarkButton({ client, examId, questionId, className }: BookmarkButtonProps) {
-  const bookmarksQuery = useBookmarks(client, examId);
-  const setBookmarkMutation = useSetBookmark(client);
+  const session = useSessionUser(client);
+  const userId = session.user?.id ?? 'anonymous';
+  const bookmarksQuery = useBookmarks(client, examId, userId);
+  const bookmarkOverrides = useBookmarkOverrides(examId, userId);
+  const setBookmarkMutation = useSetBookmark(client, examId, questionId, userId);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [retryTarget, setRetryTarget] = useState<boolean | null>(null);
 
-  if (bookmarksQuery.isError) {
+  const hasOverride = Object.prototype.hasOwnProperty.call(bookmarkOverrides.data, questionId);
+  const hasBookmarkList = Array.isArray(bookmarksQuery.data?.items);
+  const canDetermineStatus = hasOverride || (bookmarksQuery.isSuccess && hasBookmarkList);
+  const isBookmarked = hasOverride
+    ? bookmarkOverrides.data[questionId]
+    : (Array.isArray(bookmarksQuery.data?.items) &&
+      bookmarksQuery.data.items.some((item) => item.questionId === questionId));
+
+  const handleMutation = (target: boolean) => {
+    setErrorMsg(null);
+    setSuccessMsg(null);
+    setBookmarkMutation.mutate(
+      { examId, questionId, bookmarked: target },
+      {
+        onSuccess: (result) => {
+          setRetryTarget(null);
+          setSuccessMsg(result.bookmarked ? copy.review.bookmarkAdded : copy.review.bookmarkRemoved);
+        },
+        onError: () => {
+          setRetryTarget(target);
+          setErrorMsg(copy.review.bookmarkSaveError);
+        },
+      },
+    );
+  };
+
+  const isSaving = setBookmarkMutation.isTargetPending;
+  const isBusy = session.status === 'loading' || (!canDetermineStatus && !bookmarksQuery.isError) || isSaving;
+  const isDisabled = isBusy || !canDetermineStatus;
+  const label = isBookmarked ? copy.review.bookmarkRemove : copy.review.bookmarkAdd;
+
+  if (bookmarksQuery.isError && !hasOverride) {
     return (
-      <span className="inline-flex items-center gap-1">
+      <span className="inline-flex flex-wrap items-center gap-1">
         <Button
           type="button"
           size="sm"
           variant="outline"
           aria-label={copy.review.bookmarkAdd}
+          aria-busy={session.status === 'loading' || undefined}
           disabled
           className={`min-h-[44px] min-w-[44px] px-3 text-sm ${className ?? ''}`}
         >
@@ -46,52 +84,49 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
     );
   }
 
-  const isBookmarked =
-    Array.isArray(bookmarksQuery.data?.items)
-      ? bookmarksQuery.data.items.some((item) => item.questionId === questionId)
-      : false;
-
   const handleToggle = () => {
-    if (!bookmarksQuery.isSuccess) return;
-    setErrorMsg(null);
-    setBookmarkMutation.mutate(
-      { examId, questionId, bookmarked: !isBookmarked },
-      {
-        onError: () => {
-          setErrorMsg(copy.review.retry);
-        },
-      },
-    );
+    if (isDisabled || !canDetermineStatus) return;
+    handleMutation(!isBookmarked);
   };
 
-  const label = isBookmarked ? copy.review.bookmarkRemove : copy.review.bookmarkAdd;
-  const isPending = bookmarksQuery.isLoading || !bookmarksQuery.data || setBookmarkMutation.isPending;
+  const handleRetry = () => {
+    if (retryTarget === null || isSaving) return;
+    handleMutation(retryTarget);
+  };
 
   return (
-    <span className="inline-flex items-center gap-1">
+    <span className="inline-flex max-w-full flex-wrap items-center gap-1">
       <Button
         type="button"
         size="sm"
         variant={isBookmarked ? 'secondary' : 'outline'}
-        aria-label={label}
+        aria-label={isSaving ? copy.review.bookmarkSaving : label}
         aria-pressed={isBookmarked}
-        aria-busy={isPending}
-        disabled={isPending}
+        aria-busy={isBusy || undefined}
+        disabled={isDisabled}
         className={`min-h-[44px] min-w-[44px] px-3 text-sm ${className ?? ''}`}
         onClick={handleToggle}
       >
-        {/* 설정/미설정을 아이콘 모양(채움 fill)으로 구분한다 — 색만으로 상태를 알리지 않는다(#260). */}
-        <iconBookmark.icon
-          aria-hidden="true"
-          size={iconBookmark.size}
-          fill={isBookmarked ? 'currentColor' : 'none'}
-          className="mr-1"
-        />
+        <span className="mr-1 inline-flex size-5 shrink-0 items-center justify-center">
+          {isBusy ? (
+            <iconLoading.icon aria-hidden="true" size={iconLoading.size} className="animate-spin" />
+          ) : (
+            <iconBookmark.icon
+              aria-hidden="true"
+              size={iconBookmark.size}
+              fill={isBookmarked ? 'currentColor' : 'none'}
+            />
+          )}
+        </span>
         {label}
       </Button>
+      {successMsg && <span role="status" aria-live="polite" className="sr-only">{successMsg}</span>}
       {errorMsg && (
-        <span role="alert" className="text-sm text-destructive">
-          {errorMsg}
+        <span role="alert" className="inline-flex basis-full flex-wrap items-center gap-1 text-sm text-destructive">
+          <span>{errorMsg}</span>
+          <Button type="button" size="sm" variant="ghost" onClick={handleRetry} disabled={isSaving}>
+            {copy.review.retry}
+          </Button>
         </span>
       )}
     </span>
