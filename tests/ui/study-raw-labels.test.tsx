@@ -176,7 +176,6 @@ describe('#148 원시 값 제거', () => {
     withQueryClient(
       <ResultView client={fakeClient()} set={submittedSet} onRestart={vi.fn()} onHistory={vi.fn()} />,
     );
-    expect(screen.getByText(/AWS SAA-C03/)).toBeInTheDocument();
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
   });
 
@@ -218,8 +217,8 @@ describe('#148 원시 값 제거', () => {
       />,
     );
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
-    // 시험 기준 배지로 표시명을 보여준다(#239) — 시험 선택은 셸 1곳에만 있다.
-    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    // 페이지별 시험 배지는 제거했다 — 시험 선택은 셸 1곳에만 있다(#259).
+    expect(container.querySelector('.moi-exam-scope')).toBeNull();
     expect(screen.queryByRole('combobox', { name: '시험' })).not.toBeInTheDocument();
   });
 });

@@ -2,7 +2,6 @@ import type { RefObject } from 'react';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { Button } from '../components/ui/button';
-import { ExamScope } from '../exam/ExamScope';
 import {
   iconAbandon,
   iconNext,
@@ -84,8 +83,6 @@ export function QuestionView(p: Props) {
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
-      {/* 시험 기준 라벨 — 풀이 화면도 선택 시험에 묶인다(#239). */}
-      <ExamScope />
       <p className="moi-study-progress" aria-live="polite">
         {p.index + 1}/{total} · {responseLabel(item.response)}
       </p>

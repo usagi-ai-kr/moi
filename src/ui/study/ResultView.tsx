@@ -3,7 +3,6 @@ import { Link } from 'react-router';
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
 import { Button } from '../components/ui/button';
-import { ExamScope } from '../exam/ExamScope';
 import {
   iconBookmark,
   iconHistory,
@@ -108,7 +107,7 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
         {copy.study.resultTitle}
       </h1>
       <p className="moi-note">
-        {scopeLabel(set.mode)} · <ExamScope code={set.examId} /> · 정답률 {r.accuracyPercent}%
+        {scopeLabel(set.mode)} · 정답률 {r.accuracyPercent}%
       </p>
       <dl className="moi-study-result">
         <div>

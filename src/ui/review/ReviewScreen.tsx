@@ -4,7 +4,6 @@ import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { copy } from '../copy';
 import { iconRefresh } from '../icons';
-import { ExamScope } from '../exam/ExamScope';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { ReviewCandidates } from './ReviewCandidates';
 import { ReviewExhausted } from './ReviewExhausted';
@@ -49,8 +48,6 @@ export function ReviewScreen({ client }: Props) {
     <div className="moi-page flex flex-col gap-4">
       <header className="flex flex-col gap-3">
         <h1 className="moi-title">{copy.review.title}</h1>
-        {/* 시험 기준 라벨 — 복습 후보도 이 시험 기준이다(#239). */}
-        <ExamScope />
         <div role="tablist" aria-label={copy.review.title} className="flex flex-wrap gap-2 border-b border-border pb-3">
           <Button
             role="tab"
