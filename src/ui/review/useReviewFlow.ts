@@ -18,6 +18,7 @@ import {
   useStartReview,
   useSubmitReviewAnswer,
 } from './queries';
+import { useInFlightGuard } from '../study/useInteractionLock';
 
 export function useReviewFlow(client: ApiClient, examId: string) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,6 +51,8 @@ export function useReviewFlow(client: ApiClient, examId: string) {
   const startMutation = useStartReview(client);
   const submitMutation = useSubmitReviewAnswer(client);
   const endMutation = useEndReview(client);
+  // #270 복습 시작 동기 가드 — isPending 리렌더 이전 연속 클릭 1회 제한. 서버/D1 계약 변경 없음.
+  const startLock = useInFlightGuard();
 
   const isBusy =
     startMutation.isPending ||
@@ -80,6 +83,7 @@ export function useReviewFlow(client: ApiClient, examId: string) {
   };
 
   const handleStart = () => {
+    if (!startLock.tryAcquire(startMutation.isPending)) return;
     startMutation.mutate(
       { examId, mode },
       {
@@ -88,6 +92,7 @@ export function useReviewFlow(client: ApiClient, examId: string) {
             void currentQuery.refetch();
           }
         },
+        onSettled: () => startLock.release(),
       },
     );
   };

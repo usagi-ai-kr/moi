@@ -94,4 +94,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0077 | 시험 선택을 콘텐츠 최상단으로 이동 | Accepted | 2026-10-21 | [0077-exam-content-top.md](./0077-exam-content-top.md) |
 | ADR-0078 | 문제 신고 액션 버튼 표면/상태/44px 계약 | Accepted | 2026-10-21 | [0078-report-button-action-surface.md](./0078-report-button-action-surface.md) |
 | ADR-0079 | 근거 링크 칩 padding·wrap·상태·외부링크 semantics | Accepted | 2026-10-21 | [0079-source-link-chip-padding-wrap-state-semantics.md](./0079-source-link-chip-padding-wrap-state-semantics.md) |
+| ADR-0080 | 중복 인터랙션 잠금 — 시작·제출 동기 가드와 충돌 CTA 차단 | Accepted | 2026-10-21 | [0080-interaction-lock.md](./0080-interaction-lock.md) |
 <!-- ADR_INDEX:END -->

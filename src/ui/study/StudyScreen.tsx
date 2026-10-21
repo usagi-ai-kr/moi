@@ -36,6 +36,7 @@ function InlineConfirmDialog({
     <div ref={dialogRef} tabIndex={-1} className={`moi-alert moi-study-confirm ${tone}`} role="alertdialog" aria-label={label}>
       <p className="moi-alert-text">{text}</p>
       {/* 확정 버튼 위계 — 제출=primary, 포기=destructive 계열(강도 낮게). 취소=ghost. */}
+      {/* #270 확정 요청 시작 후 취소는 실제 요청 취소가 아니므로 pending 중 취소도 잠근다(포기 다이얼로그와 동일 정책). */}
       <Button
         type="button"
         variant={destructive ? 'outline' : 'primary'}
@@ -46,7 +47,7 @@ function InlineConfirmDialog({
       >
         {confirm}
       </Button>
-      <Button type="button" variant="ghost" className="bg-transparent" onClick={onCancel}>
+      <Button type="button" variant="ghost" className="bg-transparent" onClick={onCancel} disabled={pending}>
         {copy.study.cancel}
       </Button>
     </div>
@@ -186,7 +187,10 @@ export function StudyScreen({
           onClear={(qid, prev) => f.handleAnswer(qid, { kind: 'unanswered' }, prev)}
           onRetry={() => f.handleRetry()}
           onSubmitRequest={f.handleSubmitRequest}
-          onAbandonRequest={() => s.setConfirmAbandon(true)}
+          onAbandonRequest={() => {
+            if (f.submitMut.isPending) return;
+            s.setConfirmAbandon(true);
+          }}
           abandonTriggerRef={abandonTriggerRef}
         />
       </div>

@@ -111,7 +111,7 @@ export function QuestionView(p: Props) {
           </Button>
         )}
         <Button asChild variant="outline" size="sm" className="text-destructive">
-          <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest}>
+          <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest} disabled={p.submitting} aria-busy={p.submitting}>
             <AbandonIcon
               size={iconAbandon.size}
               aria-hidden="true"
@@ -144,6 +144,7 @@ export function QuestionView(p: Props) {
             <input
               type="checkbox"
               checked={isChecked(item, optionId)}
+              disabled={p.submitting}
               onChange={() => p.onAnswer(item.questionId, toggleOption(item, optionId), item.response)}
               aria-label={`보기 ${k + 1} ${optionText(item, optionId)}`}
             />
@@ -155,7 +156,7 @@ export function QuestionView(p: Props) {
       </fieldset>
       {/* 버튼 위계 — DESIGN.md 5절: Pass=secondary, 미응답으로 지우기=ghost (shadcn Button 공통 규격). */}
       <div className="moi-study-actions">
-        <Button type="button" variant="secondary" onClick={() => p.onPass(item.questionId, item.response)}>
+        <Button type="button" variant="secondary" disabled={p.submitting} aria-busy={p.submitting} onClick={() => p.onPass(item.questionId, item.response)}>
           <PassIcon
             size={iconPass.size}
             aria-hidden="true"
@@ -164,7 +165,7 @@ export function QuestionView(p: Props) {
           />
           {copy.study.pass}
         </Button>
-        <Button type="button" variant="ghost" className="bg-transparent" onClick={() => p.onClear(item.questionId, item.response)}>
+        <Button type="button" variant="ghost" className="bg-transparent" disabled={p.submitting} onClick={() => p.onClear(item.questionId, item.response)}>
           {copy.study.clear}
         </Button>
       </div>

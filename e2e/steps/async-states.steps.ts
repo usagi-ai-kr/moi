@@ -49,6 +49,8 @@ let meDelayMs = 0;
 let startDelayMs = 0;
 let startFailStatus: number | null = null;
 let startFailArmed = false;
+// #270 차단3 응답 유실 모드: 첫 POST는 서버에 세트를 남기고 응답을 유실(abort)한다. 재시도는 409.
+let startLoseArmed = false;
 let historyDelayMs = 0;
 let historyFailStatus: number | null = null;
 let historyFailArmed = false;
@@ -142,6 +144,7 @@ Given('비동기 상태 API 모의가 준비되면', async ({ page }) => {
   startDelayMs = 0;
   startFailStatus = null;
   startFailArmed = false;
+  startLoseArmed = false;
   historyDelayMs = 0;
   historyFailStatus = null;
   historyFailArmed = false;
@@ -168,6 +171,16 @@ Given('비동기 상태 API 모의가 준비되면', async ({ page }) => {
     }
     if (method === 'POST' && path === '/api/study/sets') {
       startPostCount += 1;
+      // #270 차단3 응답 유실: 첫 요청은 서버에 세트를 남기고 응답을 유실한다. 재시도는 409.
+      if (startLoseArmed) {
+        if (startPostCount === 1) {
+          activeSet = freshSet();
+          await route.abort('connectionaborted');
+          return;
+        }
+        await route.fulfill({ status: 409, json: { error: 'active_set_exists' } });
+        return;
+      }
       if (startDelayMs > 0) await sleep(startDelayMs);
       if (startFailStatus !== null && startFailArmed) {
         startFailArmed = false;
@@ -263,6 +276,10 @@ Given('세트 시작 응답이 {int} 상태로 한 번 실패한다', async ({},
   startFailArmed = true;
 });
 
+Given('세트 시작 첫 응답이 유실되고 서버에는 활성 세트가 남는다', async ({}) => {
+  startLoseArmed = true;
+});
+
 Given('이력 응답이 {int}ms 지연된다', async ({}, ms: number) => {
   historyDelayMs = ms;
 });
@@ -286,6 +303,13 @@ When('대기 중 시작 버튼에 키보드 입력을 보내면', async ({ page 
   // 중복 방지의 실제 근거: 대기 중에는 disabled+aria-busy라 클릭·키 활성화가 발생하지 않는다.
   await expect(btn).toBeDisabled();
   await expect(btn).toHaveAttribute('aria-busy', 'true');
+  // 약한 검증 보완(#270-r2): 실제 시작 버튼에 포커스를 시도한 뒤 Enter/Space.
+  // disabled라 포커스가 가지 않아야 하며 키 입력으로도 활성화되지 않는다.
+  // Tab 순회 뒤 초점이 링크 등에 남아 있으면 Enter가 내비게이션을 유발하므로
+  // 포커스 시도·미포커스 확인 뒤 body로 blur하고 키를 보낸다.
+  await btn.focus().catch(() => {});
+  await expect(btn).not.toBeFocused();
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur?.());
   // disabled 버튼은 Enter/Space로도 활성화되지 않아야 한다(브라우저 기본 동작 확인).
   await page.keyboard.press('Enter');
   await page.keyboard.press('Space');
@@ -367,4 +391,264 @@ Then('결과 화면 전 해설과 문항별 결과가 노출되지 않는다', a
   // 제출 전 DTO에 해설·문항별 정오답이 없어야 한다(정답 문구 자체는 DTO에 없어 자명하므로 제외).
   await expect(page.getByText(/해설: 정답은/)).toHaveCount(0);
   await expect(page.locator('[data-testid^="peritem-"]')).toHaveCount(0);
+});
+
+// #270 차단3 — 시작 지연 중 충돌 CTA 차단. 범위·이력·Enter·연속 클릭을 함께 검증한다.
+Then('시작 지연 중 범위 선택과 학습 이력이 비활성이다', async ({ page }) => {
+  const region = page.getByRole('region', { name: copy.study.startTitle });
+  await expect(region.getByRole('button', { name: copy.study.historyLink })).toBeDisabled();
+  await expect(region.getByRole('button', { name: copy.study.historyLink })).toHaveAttribute('aria-busy', 'true');
+  for (const radio of await region.getByRole('radio').all()) {
+    await expect(radio).toBeDisabled();
+  }
+});
+
+// #270 B1 — Tab 순회가 영역을 실제로 지나갔음을 증명한다.
+//  (1) 매 Tab/Shift+Tab 뒤 activeElement 를 식별자(마커·tag·role·접근이름·id·텍스트)로 기록한다.
+//  (2) region 내부 focusable 이 0개(전부 disabled)임을 확인하고, DOM 순서상 region 직후 focusable
+//      (없으면 문서 처음으로 순환)을 계산해 Tab 이 그 요소에 도달했음을 확인한다(안전 상한 30회).
+//  (3) 기록된 어떤 activeElement 도 비활성 조작(시작·이력·범위 라디오·이어풀기)이 아님을 확인한다.
+// disabled 요소는 Tab 순서에서 제외되므로 "비활성 조작에 포커스가 가지 않음"만으로는 영역 도달을
+// 증명할 수 없다. (2) 의 순서 기록(region 직전 요소 → region 직후 요소)이 영역 통과를 대신 증명한다.
+// 이 스텝이 검증하는 범위: (a) 대기 중 region 조작이 전부 disabled 이고 focusable 이 0개,
+// (b) Tab/Shift+Tab 순회가 region 내부로 들어가지 않고 region 직후 요소까지 도달한다,
+// (c) 순회 중 기록된 어떤 요소도 비활성 조작이 아니다. (b) 는 순회 중 focus 대상 식별자
+// (마커·tag·role·접근이름·id·텍스트) 배열로 남기고 실패 시 그 배열을 메시지에 포함한다.
+When('대기 중 Tab 순회에서는 비활성 조작에 포커스가 가지 않는다', async ({ page }) => {
+  const region = page.getByRole('region', { name: copy.study.startTitle });
+  const startBtn = region.locator('button').first();
+  const historyBtn = region.getByRole('button', { name: copy.study.historyLink });
+  const radios = region.getByRole('radio');
+
+  await expect(startBtn).toBeDisabled();
+  await expect(historyBtn).toBeDisabled();
+  for (const radio of await radios.all()) {
+    await expect(radio).toBeDisabled();
+  }
+
+  // 안전 상한 — 이 값을 넘기면 영역을 통과하지 못한 것으로 실패한다.
+  const MAX_TABS = 30;
+
+  // DOM 조사 + 식별 마커 부여(테스트 런타임 한정). 제품 코드는 건드리지 않는다.
+  const plan = await page.evaluate(
+    (labels) => {
+      const FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]';
+      const isVisible = (el: Element): boolean => {
+        for (let p: Element | null = el; p; p = p.parentElement) {
+          if (p.hasAttribute('hidden')) return false;
+          if (p.getAttribute('aria-hidden') === 'true') return false;
+          const style = getComputedStyle(p);
+          if (style.display === 'none' || style.visibility === 'hidden') return false;
+        }
+        return true;
+      };
+      const isTabbable = (el: Element): boolean => {
+        const html = el as HTMLElement;
+        if (html.matches(':disabled')) return false;
+        const tabindex = html.getAttribute('tabindex');
+        if (tabindex !== null && Number(tabindex) < 0) return false;
+        return isVisible(html);
+      };
+      const describe = (el: Element | null) => {
+        if (!el) return null;
+        const html = el as HTMLElement;
+        return {
+          marker: html.getAttribute('data-b1-focus'),
+          tag: html.tagName.toLowerCase(),
+          role: html.getAttribute('role'),
+          ariaLabel: html.getAttribute('aria-label'),
+          id: html.id || null,
+          text: (html.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40),
+        };
+      };
+
+      document.querySelectorAll('[data-b1-focus]').forEach((n) => n.removeAttribute('data-b1-focus'));
+      document.querySelectorAll('[data-b1-inactive]').forEach((n) => n.removeAttribute('data-b1-inactive'));
+      document.querySelectorAll('[data-b1-region]').forEach((n) => n.removeAttribute('data-b1-region'));
+
+      const regionEl = document.querySelector(`section[aria-label="${labels.regionLabel}"]`);
+      if (!regionEl) return null;
+      regionEl.setAttribute('data-b1-region', '1');
+
+      // region 내부 조작에 종류 표시 — 시작/이력/범위 라디오/이어풀기
+      const regionButtons = Array.from(regionEl.querySelectorAll('button'));
+      regionButtons.forEach((button, index) => {
+        const text = (button.textContent ?? '').replace(/\s+/g, ' ').trim();
+        let kind = 'other';
+        if (index === 0) kind = 'start';
+        else if (text.includes(labels.history)) kind = 'history';
+        else if (text.includes(labels.resume)) kind = 'resume';
+        button.setAttribute('data-b1-inactive', kind);
+      });
+      regionEl.querySelectorAll('input[type="radio"]').forEach((radio) => {
+        radio.setAttribute('data-b1-inactive', 'radio');
+      });
+
+      const focusables = Array.from(document.querySelectorAll(FOCUSABLE)).filter(isTabbable);
+      focusables.forEach((el, index) => el.setAttribute('data-b1-focus', String(index)));
+
+      const follows = (el: Element, ref: Element): boolean =>
+        (ref.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+      const afterRegion = focusables.find((el) => follows(el, regionEl)) ?? null;
+      const beforeRegion = focusables.filter((el) => follows(regionEl, el));
+      const before = beforeRegion.length ? beforeRegion[beforeRegion.length - 1] : null;
+
+      return {
+        totalFocusable: focusables.length,
+        regionFocusableCount: Array.from(regionEl.querySelectorAll(FOCUSABLE)).filter(isTabbable).length,
+        first: describe(focusables[0] ?? null),
+        before: describe(before),
+        // region 직후 focusable — 없으면 문서 처음으로 순환한다.
+        expected: describe(afterRegion ?? focusables[0] ?? null),
+      };
+    },
+    {
+      regionLabel: copy.study.startTitle,
+      history: copy.study.historyLink,
+      resume: copy.study.continueStudy,
+    },
+  );
+
+  expect(plan, '학습 범위 선택 영역(region)을 찾지 못했다').not.toBeNull();
+  if (!plan) throw new Error('학습 범위 선택 영역(region)을 찾지 못했다');
+  expect(plan.expected, 'focusable 요소가 하나도 없다').not.toBeNull();
+  if (!plan.expected) throw new Error('focusable 요소가 하나도 없다');
+
+  // (2-a) region 내부 focusable 은 0개 — 모든 조작이 disabled 라 Tab 순서에서 제외된다.
+  expect(
+    plan.regionFocusableCount,
+    'region 내부에 focusable 조작이 있다(전부 disabled 여야 한다)',
+  ).toBe(0);
+
+  const readActive = () =>
+    page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      const html = el && el !== document.body ? el : null;
+      return {
+        marker: html ? html.getAttribute('data-b1-focus') : null,
+        tag: html ? html.tagName.toLowerCase() : 'body',
+        role: html ? html.getAttribute('role') : null,
+        ariaLabel: html ? html.getAttribute('aria-label') : null,
+        id: html && html.id ? html.id : null,
+        text: html ? (html.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40) : '',
+        disabled: html ? html.matches(':disabled') : false,
+        inactive: html ? html.getAttribute('data-b1-inactive') : null,
+        inRegion: html ? !!html.closest('[data-b1-region]') : false,
+      };
+    });
+
+  // (1) 식별자 기록 — 어느 요소가 포커스를 받았는지 남긴다.
+  const visited: Awaited<ReturnType<typeof readActive>>[] = [];
+  const trace = (v: Awaited<ReturnType<typeof readActive>>): string =>
+    `#${v.marker ?? '-'} ${v.tag}${v.ariaLabel ? `[aria-label=${v.ariaLabel}]` : ''}` +
+    `${v.id ? `#${v.id}` : ''} "${v.text}"${v.inactive ? ` inactive=${v.inactive}` : ''}`;
+
+  // 순회는 문서 첫 focusable 에서 시작한다(결정적 시작점).
+  await page.evaluate(() => {
+    const first = document.querySelector<HTMLElement>('[data-b1-focus="0"]');
+    (first ?? document.body).focus();
+  });
+  visited.push(await readActive());
+
+  const firstIndexOf = (marker: string | null | undefined): number =>
+    visited.findIndex((v) => v.marker === marker);
+  const lastIndexOf = (marker: string | null | undefined): number => {
+    for (let i = visited.length - 1; i >= 0; i--) {
+      if (visited[i].marker === marker) return i;
+    }
+    return -1;
+  };
+
+  // 정방향 통과: region 직전 요소에 도달한 뒤 region 직후 요소에 도달하면 영역을 통과한 것이다.
+  // region 뒤에 focusable 이 없으면 문서 처음으로 순환한다. 이때 브라우저가 문서를 벗어났다가
+  // 다시 들어오면서 body 를 거칠 수 있으므로 "연속"이 아니라 "순서"로 판정한다.
+  const crossedForward = (): boolean => {
+    if (!plan.before) return visited[0]?.marker === plan.expected?.marker;
+    const beforeIndex = firstIndexOf(plan.before.marker);
+    if (beforeIndex < 0) return false;
+    return visited.some((v, index) => index > beforeIndex && v.marker === plan.expected?.marker);
+  };
+
+  for (let i = 0; i < MAX_TABS && !crossedForward(); i++) {
+    await page.keyboard.press('Tab');
+    visited.push(await readActive());
+  }
+  expect(
+    crossedForward(),
+    `Tab 이 region 직후 focusable(${plan.expected.tag} "${plan.expected.text}")에 도달하지 못했다. 기록: ${visited.map(trace).join(' → ')}`,
+  ).toBe(true);
+
+  // 역방향 통과: region 직후 요소 다음에 region 직전 요소가 오면 역방향도 영역을 건너뛴 것이다.
+  if (plan.before) {
+    const crossedBackward = (): boolean => {
+      const expectedIndex = lastIndexOf(plan.expected?.marker);
+      if (expectedIndex < 0) return false;
+      return visited.some((v, index) => index > expectedIndex && v.marker === plan.before?.marker);
+    };
+    for (let i = 0; i < MAX_TABS && !crossedBackward(); i++) {
+      await page.keyboard.press('Shift+Tab');
+      visited.push(await readActive());
+    }
+    expect(
+      crossedBackward(),
+      `Shift+Tab 이 region 직전 focusable("${plan.before.text}")에 도달하지 못했다. 기록: ${visited.map(trace).join(' → ')}`,
+    ).toBe(true);
+  }
+
+  // (3) 기록된 어떤 요소도 비활성 조작(시작·이력·범위 라디오·이어풀기)이 아니다.
+  const inactiveHits = visited.filter((v) => v.inactive !== null || v.inRegion);
+  expect(
+    inactiveHits.map((v) => trace(v)),
+    '비활성 조작에 포커스가 갔다',
+  ).toEqual([]);
+  const disabledHits = visited.filter((v) => v.disabled);
+  expect(
+    disabledHits.map((v) => trace(v)),
+    '비활성 요소에 포커스가 갔다',
+  ).toEqual([]);
+
+  // 이어풀기 버튼은 충돌(conflict)일 때만 렌더된다. 이 시나리오는 충돌이 없어 미렌더다.
+  await expect(page.getByRole('button', { name: copy.study.continueStudy })).toHaveCount(0);
+
+  // 순회 뒤에도 시작 버튼은 여전히 대기 상태여야 한다(지연 창 안에서 실행).
+  await expect(startBtn).toBeDisabled();
+});
+
+// #270-r2 완료 뒤 조작 복구 — 시작 성공 후 문제 화면에서 답안 조작이 가능해야 한다.
+Then('문제 화면에서 첫 보기가 조작 가능하다', async ({ page }) => {
+  const first = page.getByLabel(/보기 1/).first();
+  await expect(first).toBeEnabled();
+  await first.focus();
+  await expect(first).toBeFocused();
+});
+
+When('시작 버튼을 연속 클릭하면', async ({ page }) => {
+  const btn = page.getByRole('region', { name: copy.study.startTitle }).locator('button').first();
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+});
+
+// #270 차단3 — 제출 지연 중 답안·포기·취소 차단. 확정 후 취소는 실제 요청 취소가 아니다.
+Then('제출 지연 중 답안 입력과 포기하기와 취소가 비활성이다', async ({ page }) => {
+  await expect(page.getByLabel(/보기 1/).first()).toBeDisabled();
+  await expect(page.getByRole('button', { name: copy.study.pass })).toBeDisabled();
+  await expect(page.getByRole('button', { name: copy.study.abandon })).toBeDisabled();
+  await expect(page.getByRole('button', { name: copy.study.cancel })).toBeDisabled();
+});
+
+When('제출 확인 버튼을 연속 클릭하면', async ({ page }) => {
+  const btn = page.getByRole('button', { name: copy.study.confirmSubmit });
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+});
+
+// #270 차단3 — 응답 유실→409→이어풀기. fetch 실패를 timeout이라 부르지 않는다.
+Then('이미 진행 중인 세트 안내가 보인다', async ({ page }) => {
+  await expect(page.getByText(/이미 진행 중인 세트/)).toBeVisible();
+});
+
+When('이어풀기를 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: copy.study.continueStudy }).click();
 });
