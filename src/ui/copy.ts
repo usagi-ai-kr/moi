@@ -195,5 +195,17 @@ export const copy = {
     tabCompleted: '완료한 학습',
     accuracyNote: '정답·오답으로 채점된 시도 기준이며, Pass·미응답은 제외합니다.',
     noDomainHistory: '학습 이력 없음',
+    // 완료 목록 컬럼 — 완료일/학습 범위/정답률/문항 수/상세 보기 (#224 추가 피드백).
+    completedTableCaption: '완료한 학습 목록',
+    completedColumnDate: '완료일',
+    completedColumnScope: '학습 범위',
+    completedColumnAccuracy: '정답률',
+    completedColumnCount: '문항 수',
+    // 값 표기 — 셀에서 숫자만 고정폭·tabular로 보여주고 단위·한글은 본문 서체를 유지한다.
+    accuracyValue: (percent: number) => `${percent}%`,
+    questionCountValue: (count: number) => `${count}문제`,
+    scopeWithDomain: (scope: string, domain: string | null) =>
+      domain ? `${scope} · ${domain}` : scope,
+    detailDialogLabel: (dateText: string) => `${dateText} 학습 상세`,
   },
 } as const;
