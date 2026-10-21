@@ -2,7 +2,7 @@
 // .moi-title/.moi-account-title: margin-bottom space-3(12) + 부모 gap 12 = 24.
 // h1.moi-study-title: margin-bottom space-1(4) + 부모 gap 12 + 다음 .moi-note margin-top 8 = 24.
 // h2.moi-study-title에는 적용하지 않는다. 하드코딩 px 금지(토큰만).
-// 실제 Chromium 레이아웃으로 h1.bottom→다음 top bbox를 검증한다.
+// #244 이후 로그아웃 첫 화면도 .moi-page 리듬을 공유해 h1 → 다음 24px이다 (구 .moi-main-inner gap 8 구조 20px 예외 해소).
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -22,7 +22,7 @@ const PAGE_MARKUP = `<div class="moi-page"><h1 class="moi-title">제목</h1><div
 const ACCOUNT_MARKUP = `<section class="moi-page moi-account"><h1 class="moi-account-title">계정</h1><p class="moi-lead">안내</p></section>`;
 const STUDY_H1_MARKUP = `<section class="moi-study"><h1 class="moi-study-title">시작</h1><p class="moi-note">안내</p></section>`;
 const STUDY_H2_MARKUP = `<section class="moi-study"><h2 class="moi-study-title">이력</h2><p class="moi-note">안내</p></section>`;
-const LOGGED_OUT_MARKUP = `<div class="moi-main-inner"><h1 class="moi-title">moi</h1><p class="moi-lead">소개</p></div>`;
+const LOGGED_OUT_MARKUP = `<div class="moi-container moi-main-inner moi-landing"><div class="moi-page moi-landing-page"><h1 class="moi-title">moi</h1><p class="moi-lead">소개</p></div></div>`;
 
 function blockOf(text: string, selector: string): string {
   const esc = selector.replace('.', '\\.');
@@ -105,9 +105,9 @@ describe('#243 페이지 제목-하단 24px 계약', () => {
     expect(h2.gap).toBe(20);
   }, 30_000);
 
-  it('실브라우저: 로그아웃 첫 화면(.moi-main-inner gap 8) h1 → 다음 20px — 구조상 예외 기록', async () => {
+  it('실브라우저: 로그아웃 첫 화면(#244 .moi-page 공유) h1 → 다음 24px', async () => {
     const d = await gap(browser, LOGGED_OUT_MARKUP, 'h1.moi-title');
     expect(d.marginBottom).toBe('12px');
-    expect(d.gap).toBe(20);
+    expect(d.gap).toBe(24);
   }, 30_000);
 });

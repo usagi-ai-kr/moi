@@ -31,23 +31,25 @@ function LoggedOutView({
   return (
     <>
       <header className="moi-header">
-        <div className="moi-container moi-header-inner">
+        <div className="moi-container moi-header-inner moi-landing-head">
           <Brand />
         </div>
       </header>
       <main className="moi-main">
-        <div className="moi-container moi-main-inner moi-enter">
-          <div className="moi-accent" aria-hidden="true" />
-          {showAuthError && <AuthErrorAlert />}
-          <h1 className="moi-title">{copy.brand}</h1>
-          <p className="moi-lead">{copy.tagline}</p>
-          {status === 'loading' && <CheckingView />}
-          {status === 'error' && <LoadErrorAlert onRetry={onRetry} />}
-          {status === 'logged-out' && (
-            <div className="moi-cta">
-              <KakaoLoginButton />
-            </div>
-          )}
+        <div className="moi-container moi-main-inner moi-landing moi-enter">
+          <div className="moi-page moi-landing-page">
+            <div className="moi-accent" aria-hidden="true" />
+            {showAuthError && <AuthErrorAlert />}
+            <h1 className="moi-title">{copy.brand}</h1>
+            <p className="moi-lead">{copy.tagline}</p>
+            {status === 'loading' && <CheckingView />}
+            {status === 'error' && <LoadErrorAlert onRetry={onRetry} />}
+            {status === 'logged-out' && (
+              <div className="moi-cta">
+                <KakaoLoginButton />
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </>
