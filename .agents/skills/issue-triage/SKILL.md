@@ -45,6 +45,10 @@ compatibility: gh CLI 인증 필요 (scripts/new-issue.sh).
 - 전이: `reviewed → approved/rejected` 판정 시 이전 검토 라벨을 제거한다. 라벨 변경 사유와 근거(이슈/PR·테스트 증거)를 댓글로 기록한다.
 - `closed`/`merged`와 검토 라벨은 별개이며 상태 전환을 자동으로 일으키지 않는다.
 
+## 승인·우선순위 (이슈 #288)
+- `focus` 라벨 또는 `0.2.4` Milestone 이슈를 후속으로 옮기거나 범위에서 제외할 때는 **사용자 명시 승인 근거**를 댓글/PR에 남긴다. 에이전트 코멘트만으로 승인을 대체하지 않는다.
+- 이슈 라벨·Milestone과 사용자 최신 지시를 먼저 대조한 뒤 분류한다.
+
 ## 운영 규칙
 - 각 이슈는 작업 성격 라벨(focus/instant/tuck 중 **한 개**)과 검토 결과 라벨(최대 1개)로 구성한다.
 - 라벨은 작업 성격 분류이며 진행 상태(open/blocked/in-progress/closed)를 나타내지 않는다. 진행 상태는 이슈 상태·본문/PR로 관리한다.

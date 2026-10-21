@@ -96,5 +96,6 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0079 | 근거 링크 칩 padding·wrap·상태·외부링크 semantics | Accepted | 2026-10-21 | [0079-source-link-chip-padding-wrap-state-semantics.md](./0079-source-link-chip-padding-wrap-state-semantics.md) |
 | ADR-0080 | 중복 인터랙션 잠금 — 시작·제출 동기 가드와 충돌 CTA 차단 | Accepted | 2026-10-21 | [0080-interaction-lock.md](./0080-interaction-lock.md) |
 | ADR-0081 | 학습·복습 회차 문제 수 4/8 선택 | Accepted | 2026-10-21 | [0081-set-size-4-8.md](./0081-set-size-4-8.md) |
+| ADR-0082 | 학습·복습 문제 풀이 카드 UI 공통화 | Accepted | 2026-10-21 | [0082-question-card-ui-unification.md](./0082-question-card-ui-unification.md) |
 | ADR-0084 | 에이전트 코멘트와 사용자 승인 구분 — 우선순위·범위 변경 규칙 | Accepted | 2026-10-21 | [0084-agent-comment-approval.md](./0084-agent-comment-approval.md) |
 <!-- ADR_INDEX:END -->
