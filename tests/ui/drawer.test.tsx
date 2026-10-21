@@ -98,6 +98,19 @@ describe('모바일 Drawer — 트리거·메뉴 노출 (#215)', () => {
     expect(screen.getByRole('link', { name: '복습' })).toHaveAttribute('aria-current', 'page');
     expect(screen.getByRole('link', { name: '계정' })).not.toHaveAttribute('aria-current');
   });
+
+  it('시험 selector는 Drawer에만 있다 — 열었을 때 1개, 접근 이름이 "시험"이다 (#239)', async () => {
+    useViewport(true);
+    renderAt('/');
+    const trigger = await screen.findByRole('button', { name: '메뉴 열기' });
+    // 닫힌 상태에서는 헤더에도 Drawer에도 selector가 없다.
+    expect(screen.queryByRole('combobox', { name: '시험' })).not.toBeInTheDocument();
+    fireEvent.click(trigger);
+    const select = await screen.findByRole('combobox', { name: '시험' });
+    expect(select).toBeEnabled();
+    expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+  });
 });
 
 describe('모바일 Drawer — 닫기·포커스·스크롤 잠금 (#215)', () => {

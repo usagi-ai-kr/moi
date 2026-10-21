@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import type { ApiClient } from '../api/client';
 import { copy } from '../copy';
+import { ExamScope } from '../exam/ExamScope';
+import { useExamScope } from '../exam/ExamScopeProvider';
 import { HistoryTabs } from '../history/HistoryTabs';
 import { resolveHistoryTab, type HistoryTab } from '../history/history-tab-state';
 import { StatsDomainsPanel } from '../stats/StatsDomainsPanel';
 import { StatsSummaryPanel } from '../stats/StatsSummaryPanel';
 import { HistoryView } from '../study/HistoryView';
 import { useStudyHistory } from '../study/queries';
-import { HISTORY_PAGE_SIZE, STUDY_EXAM_ID } from '../study/types';
+import { HISTORY_PAGE_SIZE } from '../study/types';
 
 function parsePageParam(raw: string | null): { page: number; isInvalid: boolean } {
   if (raw === null) return { page: 1, isInvalid: false };
@@ -25,6 +27,8 @@ function parsePageParam(raw: string | null): { page: number; isInvalid: boolean 
 export function HistoryPage({ client }: { client: ApiClient }) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  // 통계는 선택 시험(공개 코드) 기준 — 하드코딩 없음 (#239).
+  const { examId } = useExamScope();
   const rawTab = searchParams.get('tab');
   const rawPage = searchParams.get('page');
   const { tab: activeTab, needsReplace } = resolveHistoryTab(rawTab, rawPage);
@@ -129,11 +133,13 @@ export function HistoryPage({ client }: { client: ApiClient }) {
   return (
     <div className="moi-page">
       <h1 className="moi-title">{copy.nav.history}</h1>
+      {/* 시험 기준 라벨 — 3탭 모두 이 기준으로 조회된다(#239). */}
+      <ExamScope />
       <HistoryTabs
         value={activeTab}
         onChange={handleTabChange}
-        summary={<StatsSummaryPanel client={client} examId={STUDY_EXAM_ID} />}
-        domains={<StatsDomainsPanel client={client} examId={STUDY_EXAM_ID} />}
+        summary={<StatsSummaryPanel client={client} examId={examId} />}
+        domains={<StatsDomainsPanel client={client} examId={examId} />}
         completed={
           <HistoryView
             items={query.data?.items ?? []}

@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { HTTPError } from 'ky';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse } from '../api/client';
+import { useExamScope } from '../exam/ExamScopeProvider';
 import { isConflict, isUnauthorized, useAbandonStudy, useAnswerStudy, useStartStudy, useStudyHistory, useStudySet, useSubmitStudy } from './queries';
 import { useAbandonFlow } from './useAbandonFlow';
 import { useStudyUiStore } from './store';
-import { STUDY_EXAM_ID } from './types';
 import { clearSetDrafts, completeDraftSend, dropTabState, listDraftsForSet, openDraftStorage, recordDraft } from './draft-sync';
 import { useDraftSync } from './useDraftSync';
 import { useTabState } from './useTabState';
@@ -40,6 +40,8 @@ export interface StudyFlowOptions {
 
 export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlowOptions) {
   const s = useStudyUiStore();
+  // 학습 세트 시작은 선택 시험(공개 코드) 기준 — 하드코딩 없음 (#239).
+  const { examId } = useExamScope();
   const initialOpt = opts?.initialSetId;
   const [setId, setSetId] = useState<string | null>(() => (initialOpt !== undefined ? initialOpt : readStudyParam()));
   const [startError, setStartError] = useState<string | null>(null);
@@ -73,8 +75,8 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
     setUnauth(false);
     startMut.mutate(
       s.scope === 'domain'
-        ? { examId: STUDY_EXAM_ID, mode: s.scope, domainId: s.domainId }
-        : { examId: STUDY_EXAM_ID, mode: s.scope },
+        ? { examId, mode: s.scope, domainId: s.domainId }
+        : { examId, mode: s.scope },
       {
         onSuccess: (set) => {
           setSetId(set.id);
@@ -97,7 +99,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
         },
       },
     );
-  }, [s, setId, startMut, opts]);
+  }, [s, setId, startMut, opts, examId]);
 
   const handleAnswer = useCallback(
     (questionId: string, response: ItemResponse, previous?: ItemResponse) => {

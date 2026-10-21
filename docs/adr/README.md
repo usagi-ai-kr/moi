@@ -82,6 +82,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0065 | 결과 CTA 밑줄·마지막 문항 제출 위치·결과 종료 동선 | Accepted | 2026-10-21 | [0065-result-cta-last-question-submit.md](./0065-result-cta-last-question-submit.md) |
 | ADR-0066 | 완료한 학습 목록의 컬럼 표·숫자 서체와 모바일 라벨-값 카드 | Accepted | 2026-10-21 | [0066-completed-history-columns.md](./0066-completed-history-columns.md) |
 | ADR-0067 | 학습 시작 환영 문구 32종·1시간 유지 | Accepted | 2026-10-21 | [0067-hero-greeting.md](./0067-hero-greeting.md) |
+| ADR-0068 | 시험 연결 context·selector·URL 계약과 Phase 1/2 경계 | Accepted | 2026-10-21 | [0068-exam-context-selector.md](./0068-exam-context-selector.md) |
 | ADR-0069 | nav 워드마크 Bricolage Grotesque 적용 | Accepted | 2026-10-21 | [0069-brand-wordmark-bricolage.md](./0069-brand-wordmark-bricolage.md) |
 | ADR-0070 | 정적 OG/X 메타와 1200×630 공유 이미지 계약 | Accepted | 2026-10-21 | [0070-og-static-meta-image.md](./0070-og-static-meta-image.md) |
 <!-- ADR_INDEX:END -->

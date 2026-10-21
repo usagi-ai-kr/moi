@@ -121,6 +121,17 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     expect(screen.queryByRole('button', { name: '메뉴 열기' })).not.toBeInTheDocument();
   });
 
+  it('데스크톱 헤더의 시험 selector는 1개만 있고 접근 이름이 "시험"이다 (#239)', async () => {
+    useDesktopViewport();
+    renderAt(loggedInClientWithHistory(0), '/');
+    const select = await screen.findByRole('combobox', { name: '시험' });
+    expect(select).toBeEnabled();
+    expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
+    // 옵션은 현재 지원 시험 1개 — 시험 추가 시 목록만 늘어난다.
+    expect(screen.getAllByRole('option')).toHaveLength(1);
+    expect(screen.getByRole('option', { name: 'AWS SAA-C03' })).toBeInTheDocument();
+  });
+
   it('/account 직접 진입: 계정 화면에 UUID/masked-id 없이 로그아웃만 있다', async () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     renderAt(loggedInClientWithHistory(0), '/account');

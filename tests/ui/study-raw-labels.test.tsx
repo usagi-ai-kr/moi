@@ -129,7 +129,6 @@ describe('#148 원시 값 제거', () => {
     withQueryClient(
       <QuestionView
         client={fakeClient()}
-        examId="saa-c03"
         items={[activeItem]}
         index={0}
         save="idle"
@@ -204,7 +203,7 @@ describe('#148 원시 값 제거', () => {
 
   it('학습 시작 화면은 내부 시험 ID 대신 표시명을 보인다', () => {
     const noop = vi.fn();
-    render(
+    const { container } = render(
       <StartView
         scope="all"
         domainId=""
@@ -219,7 +218,9 @@ describe('#148 원시 값 제거', () => {
       />,
     );
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
-    expect(screen.getByText(/AWS SAA-C03 · 10문제/)).toBeInTheDocument();
+    // 시험 기준 배지로 표시명을 보여준다(#239) — 시험 선택은 셸 1곳에만 있다.
+    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    expect(screen.queryByRole('combobox', { name: '시험' })).not.toBeInTheDocument();
   });
 });
 

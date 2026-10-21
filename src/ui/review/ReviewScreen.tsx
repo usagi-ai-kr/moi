@@ -3,7 +3,8 @@ import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { copy } from '../copy';
-import { STUDY_EXAM_ID } from '../study/types';
+import { ExamScope } from '../exam/ExamScope';
+import { useExamScope } from '../exam/ExamScopeProvider';
 import { ReviewCandidates } from './ReviewCandidates';
 import { ReviewExhausted } from './ReviewExhausted';
 import { ReviewFeedback } from './ReviewFeedback';
@@ -13,10 +14,11 @@ import { useReviewFlow } from './useReviewFlow';
 
 interface Props {
   readonly client: ApiClient;
-  readonly examId?: string;
 }
 
-export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
+export function ReviewScreen({ client }: Props) {
+  // 복습 후보·회차는 선택 시험(공개 코드) 기준 — 하드코딩 없음 (#239).
+  const { examId } = useExamScope();
   const {
     mode,
     isBusy,
@@ -46,6 +48,8 @@ export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
     <div className="moi-page flex flex-col gap-4">
       <header className="flex flex-col gap-3">
         <h1 className="moi-title">{copy.review.title}</h1>
+        {/* 시험 기준 라벨 — 복습 후보도 이 시험 기준이다(#239). */}
+        <ExamScope />
         <div role="tablist" aria-label={copy.review.title} className="flex flex-wrap gap-2 border-b border-border pb-3">
           <Button
             role="tab"

@@ -9,7 +9,7 @@ import { AppShell } from '../../src/ui/AppShell';
 import { copy } from '../../src/ui/copy';
 import type { ApiClient } from '../../src/ui/api/client';
 import { ReviewScreen } from '../../src/ui/review/ReviewScreen';
-import { formatDateTime, STUDY_EXAM_ID } from '../../src/ui/study/types';
+import { formatDateTime } from '../../src/ui/study/types';
 import { StartView } from '../../src/ui/study/StartView';
 
 function loggedInClient(): ApiClient {
@@ -108,9 +108,9 @@ describe('#212 날짜 표시 (초/ms 정규화·손상값 fallback)', () => {
 });
 
 describe('#212 학습 시작 selector/CTA', () => {
-  it('단일 시험 selector(value saa-c03)와 지원 안내·10문제 맥락을 보인다', () => {
+  it('시험 선택은 셸 1곳에만 있고 화면은 시험 기준 라벨로 알린다 (#239)', () => {
     const noop = vi.fn();
-    renderWithClient(
+    const { container } = renderWithClient(
       <StartView
         scope="all"
         domainId="dom-security"
@@ -125,13 +125,10 @@ describe('#212 학습 시작 selector/CTA', () => {
         onHistory={noop}
       />,
     );
-    const select = screen.getByLabelText(copy.study.examLabel) as unknown as HTMLSelectElement;
-    expect(select.value).toBe(STUDY_EXAM_ID);
-    expect(select.value).toBe('saa-c03');
-    expect(select.disabled).toBe(true);
-    expect(screen.getByRole('option', { name: copy.study.examOption })).toBeInTheDocument();
-    expect(screen.getAllByRole('option')).toHaveLength(1);
-    expect(screen.getByText(copy.study.examNote)).toBeInTheDocument();
+    // 가짜 비활성 selector는 제거했다 — 시험 선택은 셸(헤더/드로어)의 실제 select 1곳이다.
+    expect(screen.queryByRole('combobox', { name: copy.exam.label })).not.toBeInTheDocument();
+    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
     expect(screen.getByText(copy.study.examContext)).toBeInTheDocument();
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
   });
@@ -163,7 +160,7 @@ describe('#212 학습 시작 selector/CTA', () => {
     const client = loggedInClient();
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     window.history.replaceState(null, '', '/');
-    render(
+    const { container } = render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={['/']}>
           <App client={client} />
@@ -173,8 +170,9 @@ describe('#212 학습 시작 selector/CTA', () => {
     expect(await screen.findByRole('button', { name: copy.study.cta })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.study.historyLink })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.study.continueStudy })).toBeInTheDocument();
-    expect(screen.getByText(copy.study.examOption)).toBeInTheDocument();
-    expect(screen.getByText(copy.study.examNote)).toBeInTheDocument();
+    // 현재 시험 라벨(배지)과 지원 안내를 보여준다(#239).
+    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
   });
 });
 

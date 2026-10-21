@@ -12,7 +12,8 @@ import {
 } from 'react-router';
 import { copy } from './copy';
 import { useLogout, useUiStore, type ApiClient } from './session';
-import { STUDY_EXAMS } from './study/types';
+import { ExamScope } from './exam/ExamScope';
+import { ExamScopeProvider } from './exam/ExamScopeProvider';
 import './authenticated.css';
 import { AppShell } from './AppShell';
 import { importAccount, importHistory, importReview } from './lazy-routes';
@@ -74,9 +75,9 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
       <h1 className="moi-title">{greeting}</h1>
-      <section aria-label={copy.study.examLabel}>
-        <p className="moi-note">{STUDY_EXAMS[0].label}</p>
-        <p className="moi-note">{copy.study.examNote}</p>
+      <section aria-label={copy.exam.label}>
+        <ExamScope />
+        <p className="moi-note">{copy.exam.note}</p>
         <p className="moi-note">{copy.study.examContext}</p>
       </section>
       <div className="moi-cta moi-study-cta-row">
@@ -118,54 +119,56 @@ function AuthenticatedRoutes({
   const logoutPending = useUiStore((s) => s.logoutPending);
 
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route element={<RouteBoundaryLayout />}>
-          <Route index element={<Home showAuthError={showAuthError} client={client} />} />
-          <Route
-            path="study"
-            element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="current" /></Suspense>}
-          />
-          <Route
-            path="study/new"
-            element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="start" /></Suspense>}
-          />
-          <Route
-            path="study/result"
-            element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="result" /></Suspense>}
-          />
-          <Route
-            path="study/:setId"
-            element={<Suspense fallback={<RouteFallback />}><LegacyStudyRedirect client={client} /></Suspense>}
-          />
-          <Route
-            path="study/:setId/result"
-            element={<Suspense fallback={<RouteFallback />}><LegacyStudyRedirect client={client} /></Suspense>}
-          />
-          <Route
-            path="history"
-            element={<Suspense fallback={<RouteFallback />}><HistoryPage client={client} /></Suspense>}
-          />
-          <Route
-            path="history/detail"
-            element={<Suspense fallback={<RouteFallback variant="detail" />}><HistoryDetailPage client={client} /></Suspense>}
-          />
-          <Route
-            path="history/:setId"
-            element={<Suspense fallback={<RouteFallback />}><LegacyHistoryRedirect client={client} /></Suspense>}
-          />
-          <Route
-            path="review"
-            element={<Suspense fallback={<RouteFallback />}><ReviewScreen client={client} /></Suspense>}
-          />
-          <Route
-            path="account"
-            element={<Suspense fallback={<RouteFallback />}><AccountPage pending={logoutPending} onLogout={doLogout} /></Suspense>}
-          />
-          <Route path="*" element={<NotFound />} />
+    <ExamScopeProvider>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route element={<RouteBoundaryLayout />}>
+            <Route index element={<Home showAuthError={showAuthError} client={client} />} />
+            <Route
+              path="study"
+              element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="current" /></Suspense>}
+            />
+            <Route
+              path="study/new"
+              element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="start" /></Suspense>}
+            />
+            <Route
+              path="study/result"
+              element={<Suspense key={userId} fallback={<RouteFallback variant="form" />}><StudyRoute client={client} userId={userId} mode="result" /></Suspense>}
+            />
+            <Route
+              path="study/:setId"
+              element={<Suspense fallback={<RouteFallback />}><LegacyStudyRedirect client={client} /></Suspense>}
+            />
+            <Route
+              path="study/:setId/result"
+              element={<Suspense fallback={<RouteFallback />}><LegacyStudyRedirect client={client} /></Suspense>}
+            />
+            <Route
+              path="history"
+              element={<Suspense fallback={<RouteFallback />}><HistoryPage client={client} /></Suspense>}
+            />
+            <Route
+              path="history/detail"
+              element={<Suspense fallback={<RouteFallback variant="detail" />}><HistoryDetailPage client={client} /></Suspense>}
+            />
+            <Route
+              path="history/:setId"
+              element={<Suspense fallback={<RouteFallback />}><LegacyHistoryRedirect client={client} /></Suspense>}
+            />
+            <Route
+              path="review"
+              element={<Suspense fallback={<RouteFallback />}><ReviewScreen client={client} /></Suspense>}
+            />
+            <Route
+              path="account"
+              element={<Suspense fallback={<RouteFallback />}><AccountPage pending={logoutPending} onLogout={doLogout} /></Suspense>}
+            />
+            <Route path="*" element={<NotFound />} />
+          </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </ExamScopeProvider>
   );
 }
 

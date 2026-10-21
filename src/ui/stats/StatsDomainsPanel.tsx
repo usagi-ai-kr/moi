@@ -1,7 +1,7 @@
 import type { ApiClient, DomainStats } from '../api/client';
 import { copy } from '../copy';
 import { StatsSkeleton } from '../Skeletons';
-import { STUDY_DOMAINS, STUDY_EXAM_ID } from '../study/types';
+import { STUDY_DOMAINS } from '../study/types';
 import { domainLabel, pct, statusLabel } from './labels';
 import { useStudyStats } from './useStudyStats';
 import './stats.css';
@@ -39,13 +39,7 @@ function DomainMetrics({
   );
 }
 
-export function StatsDomainsPanel({
-  client,
-  examId = STUDY_EXAM_ID,
-}: {
-  client: ApiClient;
-  examId?: string;
-}) {
+export function StatsDomainsPanel({ client, examId }: { client: ApiClient; examId: string }) {
   const query = useStudyStats(client, examId, true);
   const data = query.data ?? null;
 

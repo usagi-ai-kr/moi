@@ -44,6 +44,21 @@
   gap: var(--moi-space-1);
 }
 
+/* nav + 시험 선택 그룹 — 좁으면 2행으로 줄바꿈한다(오버플로 0, #239). */
+.moi-shell-nav-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--moi-space-2);
+  min-width: 0;
+}
+
+/* 헤더의 시험 선택 — nav 옆. 넓을 때 한 줄, 좁으면 그룹 안에서 줄바꿈. */
+.moi-shell-exam {
+  flex: 0 1 auto;
+}
+
 /* 모바일(≤767px)에서는 가로 nav를 숨겨 햄버거 Drawer와 중복 노출하지 않는다 (ADR-0057).
    hidden 속성은 포커스 순서와 AT 탐색에서 제거되지만, .moi-nav의 display:flex가 이를
    덮어쓰므로 display:none을 명시한다. */
@@ -96,8 +111,9 @@
   .moi-shell-head {
     flex-wrap: nowrap;
   }
+  /* nav는 한 줄을 유지하되, 시험 선택이 붙으면 그룹 안에서 2줄로 줄바꿈된다(#239). */
   .moi-nav {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
 }
 

@@ -1,7 +1,6 @@
 import type { ApiClient } from '../api/client';
 import { copy } from '../copy';
 import { StatsSkeleton } from '../Skeletons';
-import { STUDY_EXAM_ID } from '../study/types';
 import { pct } from './labels';
 import { useStudyStats } from './useStudyStats';
 import './stats.css';
@@ -9,13 +8,7 @@ import './stats.css';
 // 요약 패널 — 진도·커버리지·정답률 + 모집단 설명 (#224).
 // 마운트된 탭에서만 조회한다 (완료 탭에서는 마운트되지 않아 API 미발생).
 // 결과 영역만 aria-live="polite" — 로딩 role="status" 와 중복 announce 되지 않게 분리한다.
-export function StatsSummaryPanel({
-  client,
-  examId = STUDY_EXAM_ID,
-}: {
-  client: ApiClient;
-  examId?: string;
-}) {
+export function StatsSummaryPanel({ client, examId }: { client: ApiClient; examId: string }) {
   const query = useStudyStats(client, examId, true);
 
   return (

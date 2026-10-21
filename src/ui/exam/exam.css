@@ -1,0 +1,56 @@
+/* 시험 selector·배지 — 셸 1곳(데스크톱 nav/모바일 Drawer) + 페이지 라벨 (ADR-0068, 이슈 #239).
+   값은 tokens.ts의 --moi-* 변수만 사용한다 (ADR-0012). */
+
+/* 페이지 시험 배지 — "시험 기준 · AWS SAA-C03". */
+.moi-exam-scope {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--moi-space-1);
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+/* 접두사와 시험명 사이 구분선 — 장식이라 DOM 텍스트에 넣지 않는다. */
+.moi-exam-scope-label::after {
+  content: '·';
+  margin-left: var(--moi-space-1);
+}
+
+.moi-exam-scope-name {
+  font-weight: 600;
+  color: var(--moi-color-ink);
+}
+
+/* 시험 선택 — 라벨(시각) + 실제 select. 44px 터치 타깃. */
+.moi-exam-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--moi-space-1);
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+.moi-exam-selector-label {
+  flex: none;
+}
+
+.moi-exam-select {
+  min-width: 0;
+  max-width: 100%;
+  min-height: var(--moi-touch-min);
+  padding-inline: var(--moi-space-2);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  font-family: inherit;
+  font-size: var(--moi-size-small);
+  cursor: pointer;
+}
+
+.moi-exam-select:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}

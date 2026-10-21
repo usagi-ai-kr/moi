@@ -46,9 +46,6 @@ export const copy = {
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
     starting: '시작하는 중',
-    examLabel: '시험',
-    examOption: 'AWS Certified Solutions Architect – Associate (SAA-C03)',
-    examNote: '현재 지원하는 시험은 1개입니다.',
     examContext: `한 회차에 ${STUDY_SET_SIZE}문제를 풉니다. 범위(전체/영역별/취약)를 선택하세요.`,
     unknownDate: '날짜 정보 없음',
     resumeNote: '진행 중인 세트가 있습니다. 이어서 풀 수 있습니다.',
@@ -210,5 +207,11 @@ export const copy = {
     scopeWithDomain: (scope: string, domain: string | null) =>
       domain ? `${scope} · ${domain}` : scope,
     detailDialogLabel: (dateText: string) => `${dateText} 학습 상세`,
+  },
+  // 시험 문구 — 시험 목록(라벨)은 src/ui/exam/exam-catalog.ts가 단일 소스다 (ADR-0068).
+  exam: {
+    label: '시험',
+    scopeLabel: '시험 기준',
+    note: '현재 지원하는 시험은 1개입니다.',
   },
 } as const;
