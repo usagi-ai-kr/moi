@@ -47,17 +47,24 @@
   min-height: var(--moi-touch-min);
   min-width: var(--moi-touch-min);
   padding-inline: var(--moi-space-2);
-  background: transparent;
-  border: 0;
+  padding-block: var(--moi-space-2);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
   border-radius: var(--moi-radius-sm);
-  color: var(--moi-color-muted);
+  color: var(--moi-color-ink);
   font-size: var(--moi-size-small);
-  text-decoration: underline;
+  font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--moi-space-1);
 }
-.moi-report-open:hover { background: var(--moi-color-surface); color: var(--moi-color-ink); }
+.moi-report-open:hover { background: var(--moi-color-surface); color: var(--moi-color-ink); text-decoration: none; }
 .moi-report-open:active { opacity: 0.88; }
 .moi-report-open:disabled { cursor: not-allowed; opacity: 0.5; }
+.moi-report-open:focus-visible { text-decoration: none; }
 .moi-report-dialog {
   display: flex;
   flex-direction: column;
