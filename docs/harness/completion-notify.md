@@ -23,7 +23,7 @@ env 파일은 **실행 없이 파싱**한다(`KEY=VALUE`만 읽고, 셸 평가·
 # 1) payload만 확인 (전송 없음)
 node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs \
   --status complete \
-  --title "0.2.4 수업 실사용" \
+  --title "0.2.4 학습 실사용" \
   --summary "전 PR merge·배포·smoke 통과, 이슈 #279 close" \
   --milestone 0.2.4 --version 0.2.4 \
   --url https://moi.qus0in.workers.dev \
@@ -34,7 +34,7 @@ node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs
 
 # 2) o가 확인한 뒤 실제 전송 (--dry-run 제거)
 node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs \
-  --status complete --title "0.2.4 수업 실사용" --summary "전 PR merge·배포·smoke 통과" \
+  --status complete --title "0.2.4 학습 실사용" --summary "전 PR merge·배포·smoke 통과" \
   --milestone 0.2.4 --version 0.2.4 --url https://moi.qus0in.workers.dev --commit abc1234 \
   --issue 279 --test "lint·typecheck·test:unit"
 ```
@@ -57,7 +57,7 @@ node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs
 {
   "embeds": [
     {
-      "title": "0.2.4 수업 실사용",
+      "title": "0.2.4 학습 실사용",
       "description": "전 PR merge·배포·smoke 통과, 이슈 #279 close",
       "color": 4619907,
       "fields": [

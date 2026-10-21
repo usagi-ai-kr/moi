@@ -48,7 +48,7 @@ function readPack(file: string): RawPack {
   return JSON.parse(readFileSync(join(CONTENT_DIR, file), 'utf8')) as RawPack;
 }
 
-/** 500문항 집계 대상 팩. 예시 팩(sample-pack.json)은 수업 사용 금지 예시이므로 제외한다. */
+/** 500문항 집계 대상 팩. 예시 팩(sample-pack.json)은 실사용 금지 예시이므로 제외한다. */
 function contentPackFiles(): string[] {
   return readdirSync(CONTENT_DIR)
     .filter((file) => file.endsWith('.json') && file !== SAMPLE_PACK_FILE)
@@ -100,7 +100,7 @@ describe('toDraft 매핑', () => {
       id: 'saa-sample-0001',
       exam: 'AWS-SAA-C03',
       domain: 'resilience',
-      stem: '예시 문항(수업 사용 금지): 다중 AZ에 걸친 상태 비저장 웹 계층의 가용성을 높이기 위해 가장 적절한 구성은?',
+      stem: '예시 문항(실사용 금지): 다중 AZ에 걸친 상태 비저장 웹 계층의 가용성을 높이기 위해 가장 적절한 구성은?',
       options: [
         { id: 'A', text: '단일 AZ에 고정된 단일 EC2 인스턴스로 운영한다.' },
         { id: 'B', text: 'ALB 뒤에 여러 AZ에 걸친 Auto Scaling 그룹을 둔다.' },

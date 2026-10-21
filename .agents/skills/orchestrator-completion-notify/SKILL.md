@@ -18,14 +18,14 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 1. 먼저 payload만 확인한다(전송 없음):
    ```bash
    node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs \
-     --status complete --title "0.2.4 수업 실사용" --summary "PR 전부 merge·배포·smoke 통과" \
+     --status complete --title "0.2.4 학습 실사용" --summary "PR 전부 merge·배포·smoke 통과" \
      --milestone 0.2.4 --version 0.2.4 --url https://moi.example.workers.dev --commit abc1234 \
      --issue 279 --test "lint·typecheck·test:unit" --dry-run
    ```
 2. payload를 확인한 뒤 o가 실제 전송한다(`--dry-run` 제거):
    ```bash
    node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs \
-     --status complete --title "0.2.4 수업 실사용" --summary "PR 전부 merge·배포·smoke 통과" \
+     --status complete --title "0.2.4 학습 실사용" --summary "PR 전부 merge·배포·smoke 통과" \
      --milestone 0.2.4 --version 0.2.4 --url https://moi.example.workers.dev --commit abc1234 \
      --issue 279 --test "lint·typecheck·test:unit"
    ```

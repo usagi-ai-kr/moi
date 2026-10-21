@@ -5,7 +5,7 @@
     {
       "questionId": "saa-sample-0001",
       "domainCode": "resilience",
-      "stem": "예시 문항(수업 사용 금지): 다중 AZ에 걸친 상태 비저장 웹 계층의 가용성을 높이기 위해 가장 적절한 구성은?",
+      "stem": "예시 문항(실사용 금지): 다중 AZ에 걸친 상태 비저장 웹 계층의 가용성을 높이기 위해 가장 적절한 구성은?",
       "explanation": "구조 예시용 해설이다. ALB 뒤에 여러 AZ의 Auto Scaling 그룹을 두면 AZ 장애에 대응할 수 있다.",
       "sourceUrls": ["https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html"],
       "answerOptionKeys": ["B"],
@@ -19,7 +19,7 @@
     {
       "questionId": "saa-sample-0002",
       "domainCode": "performance",
-      "stem": "예시 문항(수업 사용 금지): 읽기 비중이 높은 워크로드의 데이터베이스 읽기 처리량을 확장하는 대표적인 방법은?",
+      "stem": "예시 문항(실사용 금지): 읽기 비중이 높은 워크로드의 데이터베이스 읽기 처리량을 확장하는 대표적인 방법은?",
       "explanation": "구조 예시용 해설이다. 읽기 복제본으로 읽기 트래픽을 분산하는 것이 대표적이다.",
       "sourceUrls": ["https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html"],
       "answerOptionKeys": ["C"],
@@ -33,7 +33,7 @@
     {
       "questionId": "saa-sample-0003",
       "domainCode": "security",
-      "stem": "예시 문항(수업 사용 금지): 최소 권한 원칙에 따라 EC2의 애플리케이션 자격 증명을 관리하는 방법은?",
+      "stem": "예시 문항(실사용 금지): 최소 권한 원칙에 따라 EC2의 애플리케이션 자격 증명을 관리하는 방법은?",
       "explanation": "구조 예시용 해설이다. IAM 역할을 인스턴스에 연결하면 장기 자격 증명을 저장하지 않아도 된다.",
       "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html"],
       "answerOptionKeys": ["A"],
@@ -47,7 +47,7 @@
     {
       "questionId": "saa-sample-0004",
       "domainCode": "cost-optimization",
-      "stem": "예시 문항(수업 사용 금지): 간헐적으로 실행되는 배치 작업의 컴퓨팅 비용을 줄이는 방법은?",
+      "stem": "예시 문항(실사용 금지): 간헐적으로 실행되는 배치 작업의 컴퓨팅 비용을 줄이는 방법은?",
       "explanation": "구조 예시용 해설이다. 중단 가능한 스팟 기반 용량이 간헐적 배치에 적합하다.",
       "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html"],
       "answerOptionKeys": ["D"],
