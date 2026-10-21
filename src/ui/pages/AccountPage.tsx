@@ -1,6 +1,5 @@
 import { copy } from '../copy';
 import type { MeUser } from '../api/client';
-import { ExamScope } from '../exam/ExamScope';
 import { formatDateTime } from '../study/types';
 import '../account.css';
 
@@ -14,8 +13,6 @@ export function AccountPage({ user }: { user: MeUser }) {
   return (
     <section className="moi-page moi-account" aria-label={copy.account.title}>
       <h1 className="moi-account-title">{copy.account.title}</h1>
-      {/* 시험 기준 라벨 — 계정 화면도 선택 시험을 보여준다(#239). */}
-      <ExamScope />
       <p className="moi-lead">{copy.account.loggedIn}</p>
 
       <section className="moi-account-section" aria-label={copy.account.infoTitle}>

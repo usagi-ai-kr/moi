@@ -127,7 +127,7 @@ describe('#212 학습 시작 selector/CTA', () => {
     );
     // 가짜 비활성 selector는 제거했다 — 시험 선택은 셸(헤더/드로어)의 실제 select 1곳이다.
     expect(screen.queryByRole('combobox', { name: copy.exam.label })).not.toBeInTheDocument();
-    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    expect(container.querySelector('.moi-exam-scope')).toBeNull();
     expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
     expect(screen.getByText(copy.study.examContext)).toBeInTheDocument();
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
@@ -170,8 +170,8 @@ describe('#212 학습 시작 selector/CTA', () => {
     expect(await screen.findByRole('button', { name: copy.study.cta })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.study.historyLink })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.study.continueStudy })).toBeInTheDocument();
-    // 현재 시험 라벨(배지)과 지원 안내를 보여준다(#239).
-    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    // 페이지별 시험 배지는 제거했다 — 상단 selector 단일화(#259).
+    expect(container.querySelector('.moi-exam-scope')).toBeNull();
     expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
   });
 });
