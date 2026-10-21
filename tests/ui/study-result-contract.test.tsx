@@ -1,9 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudySubmittedSet } from '../../src/ui/api/client';
 import { isSubmittedSet } from '../../src/ui/api/client';
+import { copy } from '../../src/ui/copy';
 import { ResultView } from '../../src/ui/study/ResultView';
 
 // #176 결과 계약 — 서버 제출 DTO 그대로(answerOptionIds 있음·answerCount 없음).
@@ -103,5 +105,120 @@ describe('결과 계약 (#176)', () => {
         </QueryClientProvider>,
       ),
     ).toThrow();
+  });
+});
+
+function threeItemSet(): StudySubmittedSet {
+  const items = [0, 1, 2].map((i) => ({
+    questionId: `q-${i}`,
+    questionVersionId: `qv-${i}`,
+    versionNo: 1,
+    optionOrder: [`q-${i}-a`, `q-${i}-b`],
+    stem: `문제 ${i} 본문`,
+    options: [
+      { optionId: `q-${i}-a`, text: '보기 A' },
+      { optionId: `q-${i}-b`, text: '보기 B' },
+    ],
+    answerOptionIds: [`q-${i}-a`],
+    response: { kind: 'answered' as const, optionIds: [`q-${i}-a`] },
+    explanation: `문제 ${i} 해설`,
+    sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
+  }));
+  return {
+    id: 'set-3',
+    userId: 'u-1',
+    examId: 'saa-c03',
+    mode: 'all',
+    status: 'submitted',
+    createdAt: 1700000000000,
+    submittedAt: 1700000001000,
+    items,
+    result: {
+      answeredCount: 3,
+      correctCount: 3,
+      accuracyPercent: 100,
+      passCount: 0,
+      unansweredCount: 0,
+      perItem: items.map((it) => ({
+        questionId: it.questionId,
+        responseKind: 'answered',
+        selectedOptionIds: [it.optionOrder[0]],
+        correctOptionIds: [it.optionOrder[0]],
+        correct: true,
+      })),
+    },
+  } as StudySubmittedSet;
+}
+
+function renderResult(set: StudySubmittedSet, client?: ApiClient) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/study/result']}>
+        <ResultView
+          client={client ?? fakeClient()}
+          set={set}
+          onRestart={() => {}}
+          onHistory={() => {}}
+        />
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
+describe('결과 CTA·마지막 문항 동선 (#232)', () => {
+  it('마지막 상세는 [이전][결과 요약으로]·다음 없음·재제출 없음', () => {
+    renderResult(threeItemSet());
+    const pager = () => screen.getByRole('group', { name: copy.study.resultPagerLabel });
+    // 1/3에서는 다음이 있다.
+    expect(screen.getByRole('button', { name: copy.study.nextItem })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: copy.study.nextItem }));
+    fireEvent.click(screen.getByRole('button', { name: copy.study.nextItem }));
+    expect(within(pager()).getByText('3/3')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: copy.study.nextItem })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: copy.study.backToSummary })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: copy.study.prevItem })).toBeEnabled();
+    // 재제출 버튼 없음 — 제출 문구 버튼이 결과 화면에 없다.
+    expect(screen.queryByRole('button', { name: /제출하기/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '제출 확인' })).not.toBeInTheDocument();
+  });
+
+  it('결과 요약으로 클릭 시 요약 h1로 포커스 이동·API 호출 없음', () => {
+    const client = fakeClient();
+    renderResult(threeItemSet(), client);
+    fireEvent.click(screen.getByRole('button', { name: copy.study.nextItem }));
+    fireEvent.click(screen.getByRole('button', { name: copy.study.nextItem }));
+    const summaryBtn = screen.getByRole('button', { name: copy.study.backToSummary });
+    // 44px 터치 타깃 (DESIGN.md 5절·ADR-0050).
+    for (const t of ['h-11', 'min-h-[44px]']) {
+      expect((summaryBtn.getAttribute('class') ?? '').split(/\s+/)).toContain(t);
+    }
+    fireEvent.click(summaryBtn);
+    const h1 = screen.getByRole('heading', { name: copy.study.resultTitle });
+    expect(h1).toHaveAttribute('id', 'moi-study-result-summary');
+    expect(document.activeElement).toBe(h1);
+    expect(client.post).not.toHaveBeenCalled();
+    expect(client.patch).not.toHaveBeenCalled();
+  });
+
+  it('버튼형 링크는 밑줄 없음·근거 링크는 밑줄 유지', () => {
+    renderResult(threeItemSet());
+    const css = readFileSync('src/ui/authenticated.css', 'utf8');
+    expect(css).toMatch(/\[data-slot='button'\][\s\S]*text-decoration:\s*none/);
+    expect(css).not.toMatch(/^\s*a\s*\{\s*text-decoration:\s*none/m);
+    const wrong = screen.getByRole('link', { name: /오답 복습/ });
+    expect(wrong).toHaveAttribute('data-slot', 'button');
+    // 실제 브라우저 계산 스타일 대신: 규칙 주입 후 computed가 none임을 확인한다.
+    const style = document.createElement('style');
+    style.textContent = `[data-slot='button'] { text-decoration: none; }`;
+    document.head.appendChild(style);
+    expect(getComputedStyle(wrong).textDecorationLine).toBe('none');
+    style.remove();
+    // 근거 링크는 버튼이 아니며 밑줄 규칙을 유지한다.
+    const sourceCss = readFileSync('src/ui/source-links.css', 'utf8');
+    expect(sourceCss).toMatch(/\.moi-source-links a[\s\S]*text-decoration:\s*underline/);
+    const card = screen.getByTestId('peritem-q-0');
+    const source = within(card).getByRole('link', { name: 'Q 0' });
+    expect(source).not.toHaveAttribute('data-slot');
   });
 });

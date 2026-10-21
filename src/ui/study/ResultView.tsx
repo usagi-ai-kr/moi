@@ -1,4 +1,4 @@
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { Link } from 'react-router';
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedItem, StudySubmittedSet } from '../api/client';
@@ -69,6 +69,8 @@ function ReviewShortcut({ mode, label }: { mode: 'wrong' | 'bookmark'; label: st
 // 정정 없음·조회 실패(undefined·0건) 시 기존 결과 화면 그대로 둔다.
 export function ResultView({ client, set, onRestart, onHistory, corrections }: Props) {
   const [page, setPage] = useState(0);
+  // 결과 요약 포커스 타깃 — 마지막 상세의 요약 이동용(#232). 제출·채점 호출 없음.
+  const summaryRef = useRef<HTMLHeadingElement | null>(null);
   const r = set.result;
   const total = set.items.length;
   const perItem = r.perItem;
@@ -87,8 +89,12 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
     setPage(0);
   }, [set.id]);
 
-  const goTo = (next: number) => {
-    setPage(Math.min(Math.max(next, 0), Math.max(pageCount - 1, 0)));
+  const goTo = (next: number) => setPage(Math.min(Math.max(next, 0), Math.max(pageCount - 1, 0)));
+  // 요약 이동 — 스크롤+포커스만, 제출·채점·attempt 저장 없음(#232).
+  const goToSummary = () => {
+    const el = summaryRef.current; if (!el) return;
+    try { el.scrollIntoView({ block: 'start' }); } catch { /* scroll 미지원 무시 */ }
+    el.focus({ preventScroll: true });
   };
 
   // 방향키 이동 — 포커스가 결과 영역(카드·이전/다음 버튼)에 있을 때만 처리한다(#189).
@@ -103,7 +109,9 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
 
   return (
     <section className="moi-study" aria-label={copy.study.resultTitle}>
-      <h1 className="moi-study-title">{copy.study.resultTitle}</h1>
+      <h1 ref={summaryRef} id="moi-study-result-summary" tabIndex={-1} className="moi-study-title">
+        {copy.study.resultTitle}
+      </h1>
       <p className="moi-note">
         {scopeLabel(set.mode)} · {STUDY_EXAM_LABEL} · 정답률 {r.accuracyPercent}%
       </p>
@@ -186,15 +194,21 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
             >
               {copy.study.prev}
             </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              aria-label={copy.study.nextItem}
-              disabled={currentIndex >= pageCount - 1}
-              onClick={() => goTo(currentIndex + 1)}
-            >
-              {copy.study.next}
-            </Button>
+            {currentIndex >= pageCount - 1 ? (
+              <Button type="button" variant="secondary" onClick={goToSummary}>
+                {copy.study.backToSummary}
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="secondary"
+                aria-label={copy.study.nextItem}
+                disabled={currentIndex >= pageCount - 1}
+                onClick={() => goTo(currentIndex + 1)}
+              >
+                {copy.study.next}
+              </Button>
+            )}
           </div>
         </div>
       )}

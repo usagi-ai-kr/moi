@@ -56,11 +56,15 @@ function responseLabel(r: ItemResponse): string {
 }
 
 // 문제 화면 — 시작 시점 스냅샷 본문·보기 텍스트 렌더, 이전/다음, 자동 저장 상태.
+// 마지막 문항은 하단 탐색을 [이전][제출하기]로 바꿔 비활성 다음을 남기지 않는다(#232).
+// 제출 CTA는 상태당 하나가 원칙이므로 마지막에서는 상단 제출을 숨기고 하단으로 옮긴다.
 export function QuestionView(p: Props) {
   const item = p.items[p.index];
   if (!item) return null;
   const total = p.items.length;
   const saveText = SAVE_TEXT[p.save];
+  const isLast = p.index >= total - 1;
+  const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
       <p className="moi-study-progress" aria-live="polite">
@@ -70,18 +74,20 @@ export function QuestionView(p: Props) {
         <span style={{ width: `${Math.round(((p.index + 1) / total) * 100)}%` }} />
       </div>
       {/* 상단 액션 — 제출·포기 (#186): 스크롤 없이 바로 닿도록 진행 표시 직후에 둔다. */}
+      {/* 마지막 문항에서는 상단 제출을 숨기고 하단 탐색으로 옮긴다 — 제출 CTA 상태당 하나(#232). */}
       <div className="moi-study-question-top">
-        <Button
-          type="button"
-          variant="primary"
-          size="sm"
-          disabled={p.submitting}
-          pending={p.submitting}
-          onClick={p.onSubmitRequest}
-        >
-          {copy.study.submit}
-          {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
-        </Button>
+        {!isLast && (
+          <Button
+            type="button"
+            variant="primary"
+            size="sm"
+            disabled={p.submitting}
+            pending={p.submitting}
+            onClick={p.onSubmitRequest}
+          >
+            {submitLabel}
+          </Button>
+        )}
         <Button asChild variant="outline" size="sm" className="text-destructive">
           <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest}>
             {copy.study.abandon}
@@ -137,19 +143,31 @@ export function QuestionView(p: Props) {
           )}
         </p>
       )}
-      {/* [이전][다음]은 같은 크기·같은 variant의 secondary. */}
+      {/* [이전][다음]은 같은 크기·같은 variant의 secondary. 마지막은 [이전][제출하기](#232). */}
       <div className="moi-study-nav">
         <Button type="button" variant="secondary" disabled={p.index === 0} onClick={() => p.onIndex(p.index - 1)}>
           {copy.study.prev}
         </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={p.index >= total - 1}
-          onClick={() => p.onIndex(p.index + 1)}
-        >
-          {copy.study.next}
-        </Button>
+        {isLast ? (
+          <Button
+            type="button"
+            variant="primary"
+            disabled={p.submitting}
+            pending={p.submitting}
+            onClick={p.onSubmitRequest}
+          >
+            {submitLabel}
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={p.index >= total - 1}
+            onClick={() => p.onIndex(p.index + 1)}
+          >
+            {copy.study.next}
+          </Button>
+        )}
       </div>
     </section>
   );

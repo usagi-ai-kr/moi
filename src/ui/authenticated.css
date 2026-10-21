@@ -12,3 +12,13 @@
 /* shadcn Button UA 테두리 리셋 (#182) — preflight 미도입 상태에서 남는 `2px outset`을 제거한다.
    `outline` variant는 `.border` 유틸리티로 1px 토큰 테두리를 그리므로 제외한다. */
 [data-slot='button']:not(.border) { border: 0; }
+
+/* 버튼형 링크 밑줄 제거 (#232·ADR-0065) — Button asChild + Link가 렌더하는
+   [data-slot='button'] 앵커의 UA 밑줄을 제거한다. hover/focus/active/disabled는
+   ADR-0064 버튼 규칙(hover 0.92·active 0.88·disabled 0.5·focus-visible 링)을 그대로
+   사용하고, 근거 링크(.moi-source-links a·.moi-note a·.moi-explanation a)의 밑줄은 유지한다.
+   전역 `a { text-decoration: none }` 금지. */
+[data-slot='button'],
+[data-slot='button']:hover,
+[data-slot='button']:active,
+[data-slot='button']:focus-visible { text-decoration: none; }

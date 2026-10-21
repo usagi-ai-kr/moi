@@ -94,6 +94,7 @@ export const copy = {
     resultPagerLabel: '문항 해설',
     prevItem: '이전 문항',
     nextItem: '다음 문항',
+    backToSummary: '결과 요약으로',
     explanation: '해설',
     sources: '근거',
     diagramLoading: '다이어그램을 불러오는 중입니다',

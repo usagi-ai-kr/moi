@@ -33,6 +33,9 @@ let failNextAnswer = false;
 // POST /abandon 호출 횟수 (#223 — 취소/Escape 0회·확정 1회 검증).
 let abandonCalls = 0;
 
+// POST /submit 호출 횟수 (#232 — 마지막 문항 제출 1회·결과 재제출 0회 검증).
+let submitCalls = 0;
+
 // 학습 현황 고정 응답 (#54) — saa-c03 요청에만 제공한다.
 const STATS_DTO = {
   examId: 'saa-c03',
@@ -148,6 +151,7 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
   active = null;
   failNextAnswer = false;
   abandonCalls = 0;
+  submitCalls = 0;
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
   });
@@ -260,6 +264,7 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
         return;
       }
       if (method === 'POST' && sub === 'submit') {
+        submitCalls += 1;
         let body: { confirmUnanswered?: boolean } | null = null;
         try {
           body = req.postDataJSON() as { confirmUnanswered?: boolean };
@@ -554,4 +559,65 @@ Then('결과 진행 표시가 {int}번째 문항이다', async ({ page }, positi
 
 Then('결과 이전 문항 버튼은 비활성 상태다', async ({ page }) => {
   await expect(page.getByRole('button', { name: copy.study.prevItem })).toBeDisabled();
+});
+
+// #232 풀이·결과 마지막 문항 동선 — 10문제 세트 끝까지 이동·요약 이동·제출 1회 검증.
+When('마지막 문항까지 이동하면', async ({ page }) => {
+  for (let i = 0; i < 9; i += 1) {
+    await page.getByRole('button', { name: '다음' }).click();
+  }
+  await expect(page.getByText('10/10')).toBeVisible();
+});
+
+When('하단 제출하기 버튼을 누르면', async ({ page }) => {
+  const nav = page.locator('.moi-study-nav');
+  await nav.getByRole('button', { name: /제출하기/ }).click();
+});
+
+When('결과 마지막 문항까지 이동하면', async ({ page }) => {
+  const pager = resultPager(page);
+  for (let i = 0; i < 9; i += 1) {
+    await pager.getByRole('button', { name: copy.study.nextItem }).click();
+  }
+  await expect(pager.locator('.moi-study-pager-status')).toHaveText(/10\/10/);
+});
+
+When('결과 요약으로 버튼을 누르면', async ({ page }) => {
+  await resultPager(page).getByRole('button', { name: copy.study.backToSummary }).click();
+});
+
+Then('풀이 다음 버튼이 보이지 않는다', async ({ page }) => {
+  await expect(page.locator('.moi-study-nav').getByRole('button', { name: '다음' })).toHaveCount(0);
+});
+
+Then('하단 제출하기 버튼이 보인다', async ({ page }) => {
+  await expect(page.locator('.moi-study-nav').getByRole('button', { name: /제출하기/ })).toBeVisible();
+});
+
+Then('결과 다음 문항 버튼이 보이지 않는다', async ({ page }) => {
+  await expect(resultPager(page).getByRole('button', { name: copy.study.nextItem })).toHaveCount(0);
+});
+
+Then('결과 요약으로 버튼이 보인다', async ({ page }) => {
+  await expect(resultPager(page).getByRole('button', { name: copy.study.backToSummary })).toBeVisible();
+});
+
+Then('결과 요약 제목에 포커스가 있다', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: copy.study.resultTitle })).toBeFocused();
+});
+
+Then('제출 요청이 {int}회 발생했다', async ({}, count: number) => {
+  expect(submitCalls).toBe(count);
+});
+
+Then('버튼형 링크에 밑줄이 없다', async ({ page }) => {
+  const link = page.getByRole('link', { name: /오답 복습/ });
+  await expect(link).toBeVisible();
+  expect(await link.evaluate((el) => getComputedStyle(el).textDecorationLine)).toBe('none');
+});
+
+Then('근거 링크에 밑줄이 있다', async ({ page }) => {
+  const source = resultPager(page).getByRole('link', { name: /Q / }).first();
+  await expect(source).toBeVisible();
+  expect(await source.evaluate((el) => getComputedStyle(el).textDecorationLine)).not.toBe('none');
 });
