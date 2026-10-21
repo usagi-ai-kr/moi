@@ -95,6 +95,7 @@ pre,
   font-size: var(--moi-size-h1);
   line-height: var(--moi-lh-tight);
   margin: 0;
+  margin-bottom: var(--moi-space-3);
 }
 
 .moi-lead {

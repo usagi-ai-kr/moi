@@ -33,6 +33,9 @@
   font-weight: 600;
   color: var(--moi-color-ink);
 }
+h1.moi-study-title {
+  margin-bottom: var(--moi-space-1);
+}
 .moi-study-field {
   display: flex;
   flex-direction: column;
