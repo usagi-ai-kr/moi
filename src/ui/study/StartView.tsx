@@ -11,12 +11,14 @@ const HistoryIcon = iconHistory.icon;
 interface Props {
   scope: StudyScope;
   domainId: string;
+  size?: number;
   pending: boolean;
   conflict: boolean;
   unauthorized: boolean;
   startError: string | null;
   onScope: (s: StudyScope) => void;
   onDomain: (id: string) => void;
+  onSize?: (n: number) => void;
   onStart: () => void;
   onResume: () => void;
   onHistory?: () => void;
@@ -67,6 +69,22 @@ export function StartView(p: Props) {
           />
           {copy.study.scopeWeak}
         </label>
+      </fieldset>
+      <fieldset className="moi-study-field" aria-label={copy.study.sizeLegend} disabled={p.pending}>
+        <legend className="moi-study-legend">{copy.study.sizeLegend}</legend>
+        {[4, 8].map((n) => (
+          <label key={n} className="moi-study-radio">
+            <input
+              type="radio"
+              name="study-size"
+              value={n}
+              checked={(p.size ?? 4) === n}
+              onChange={() => p.onSize?.(n)}
+              disabled={p.pending}
+            />
+            {copy.study.sizeOption(n)}
+          </label>
+        ))}
       </fieldset>
       {p.scope === 'domain' && (
         <label className="moi-study-label">

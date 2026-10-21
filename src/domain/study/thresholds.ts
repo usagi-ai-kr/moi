@@ -1,10 +1,25 @@
 /**
- * 학습 세트 상수·임계치와 근거 (이슈 #49, ADR-0020/0019).
+ * 학습 세트 상수·임계치와 근거 (이슈 #49, ADR-0020/0019/0046/0081).
  * 값 변경은 학습 계약 변경이므로 ADR로 기록한다.
  */
 
-/** 세트 크기 — 10문제(ADR-0020 결정 조항을 ADR-0046이 20→10으로 조정, #187). */
+/** 레거시 세트 크기 — 기존 10/20문제 세트 읽기·제출 호환용(ADR-0046/0081). */
 export const STUDY_SET_SIZE = 10;
+
+/** 새 학습 세트에서 선택 가능한 문제 수(ADR-0081). */
+export const STUDY_SET_SIZE_OPTIONS = [4, 8] as const;
+export type StudySetSize = (typeof STUDY_SET_SIZE_OPTIONS)[number];
+
+/** 새 학습 세트 기본 문제 수(ADR-0081). */
+export const DEFAULT_STUDY_SET_SIZE: StudySetSize = 4;
+
+/** 별칭 — 테스트·호환용. */
+export const STUDY_SET_SIZES = STUDY_SET_SIZE_OPTIONS;
+export const ALLOWED_STUDY_SET_SIZES = STUDY_SET_SIZE_OPTIONS;
+
+export function isStudySetSize(value: unknown): value is StudySetSize {
+  return value === 4 || value === 8;
+}
 
 /**
  * 공식 영역 비중(150/130/120/100) — 전체 범위 모드의 가중 무작위에 사용한다.

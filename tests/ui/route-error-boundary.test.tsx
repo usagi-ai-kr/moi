@@ -250,7 +250,7 @@ describe('RouteErrorBoundary (#148)', () => {
     );
 
     // 정상 홈 화면 확인
-    expect(await screen.findByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '학습 시작' })).toBeInTheDocument();
 
     consoleSpy.mockRestore();
   });

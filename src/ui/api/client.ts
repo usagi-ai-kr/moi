@@ -97,7 +97,7 @@ export function isSubmittedSet(s: StudyActiveSet | StudySubmittedSet): s is Stud
 
 export async function startStudySet(
   client: ApiClient,
-  input: { examId: string; mode: StudyMode; domainId?: string },
+  input: { examId: string; mode: StudyMode; domainId?: string; size?: number },
 ): Promise<StudyActiveSet> {
   return client.post('api/study/sets', { json: input }).json<StudyActiveSet>();
 }

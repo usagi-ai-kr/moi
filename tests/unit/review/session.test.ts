@@ -48,13 +48,13 @@ describe('buildReviewSession (대상·순서 스냅샷)', () => {
   });
 
   it('회차 내 중복 0 — 시작 시 고정된다', () => {
-    const session = buildReviewSession(draft(makeCandidates(6, { 0: 4 })));
-    expect(new Set(session.items.map((item) => item.questionId)).size).toBe(6);
+    const session = buildReviewSession(draft(makeCandidates(4, { 0: 4 })));
+    expect(new Set(session.items.map((item) => item.questionId)).size).toBe(4);
   });
 
   it('동일 시드면 같은 회차(결정적), 다른 시드면 순서가 달라질 수 있다', () => {
-    const a = buildReviewSession(draft(makeCandidates(5, { 0: 3 }), seededRng(2)));
-    const b = buildReviewSession(draft(makeCandidates(5, { 0: 3 }), seededRng(2)));
+    const a = buildReviewSession(draft(makeCandidates(4, { 0: 3 }), seededRng(2)));
+    const b = buildReviewSession(draft(makeCandidates(4, { 0: 3 }), seededRng(2)));
     expect(a.items.map((i) => i.questionId)).toEqual(b.items.map((i) => i.questionId));
     expect(a.items.map((i) => i.optionOrder)).toEqual(b.items.map((i) => i.optionOrder));
   });

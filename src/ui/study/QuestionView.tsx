@@ -1,4 +1,5 @@
 import type { RefObject } from 'react';
+import { DEFAULT_STUDY_SET_SIZE } from '@/domain/study/thresholds';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { OptionFieldset } from '../components/option-fieldset';
@@ -14,6 +15,7 @@ import {
 } from '../icons';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
+import { readRequestedSize, isRouterStudyPath } from './queries';
 import { ReportButton } from './ReportButton';
 import type { SaveState } from './types';
 
@@ -85,8 +87,21 @@ export function QuestionView(p: Props) {
   const saveText = SAVE_TEXT[p.save];
   const isLast = p.index >= total - 1;
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
+  // 부족 안내 — 라우트 변경으로 size가 기본값 리셋돼도 요청 size stash로 비교한다 (#275 F1).
+  // 실제 길이 < 기본값 구간은 StudyScreen이 이미 표시하므로 중복을 피한다.
+  const requestedSize = readRequestedSize(examId);
+  const showShortageNotice =
+    requestedSize !== null &&
+    isRouterStudyPath() &&
+    p.items.length >= DEFAULT_STUDY_SET_SIZE &&
+    p.items.length < requestedSize;
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
+      {showShortageNotice && (
+        <div className="moi-alert moi-alert-info" role="status">
+          <p className="moi-alert-text">{copy.study.sizeAvailableNotice(p.items.length)}</p>
+        </div>
+      )}
       {/* 상단 헤더 — 복습과 같은 border-b·justify-between, 진행→제출→포기 순서 유지(#186). */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
         <p className="moi-study-progress font-semibold text-primary" aria-live="polite">

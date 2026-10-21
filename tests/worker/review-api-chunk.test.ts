@@ -93,7 +93,7 @@ describe('복습 D1 바인드 상한 (120 후보)', () => {
     const startRes = await req('/api/review/sessions', { method: 'POST', token, body: { examId: 'saa-c03', mode: 'wrong' } });
     expect(startRes.status).toBe(201);
     const started = (await startRes.json()) as { total: number; current: { questionId: string } };
-    expect(started.total).toBe(10);
+    expect(started.total).toBe(4);
     const qid = started.current.questionId;
     const ans = await req('/api/review/sessions/current/answers', { method: 'POST', token, body: { examId: 'saa-c03', mode: 'wrong', questionId: qid, response: { kind: 'pass' } } });
     expect(ans.status).toBe(200);

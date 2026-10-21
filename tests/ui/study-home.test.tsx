@@ -42,9 +42,9 @@ beforeEach(() => {
 });
 
 describe('홈 학습 진입', () => {
-  it('로그인 시 10문제 학습 CTA와 이력 링크가 보인다', async () => {
+  it('로그인 시 학습 시작 CTA와 이력 링크가 보인다', async () => {
     renderApp(loggedInClient());
-    expect(await screen.findByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '학습 시작' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '학습 이력' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
     // 로그아웃은 계정 본문이 아니라 내비게이션 액션이다(#234)
@@ -54,8 +54,8 @@ describe('홈 학습 진입', () => {
 
   it('CTA를 누르면 학습 범위 화면이 열린다(지연 청크)', async () => {
     renderApp(loggedInClient());
-    await screen.findByRole('button', { name: '10문제 학습' });
-    fireEvent.click(screen.getByRole('button', { name: '10문제 학습' }));
+    await screen.findByRole('button', { name: '학습 시작' });
+    fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
     expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
   });
 

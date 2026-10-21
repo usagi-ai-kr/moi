@@ -77,4 +77,32 @@ describe('불변식', () => {
     const entry = makePoolEntry({ domainIndex: 2 });
     expect(entry.domainWeight).toBe(120);
   });
+
+  /** n문항 세트 — 10 초과분은 이어서 번호를 붙여 만든다. */
+  function buildSetWithSize(n: number): StudySet {
+    const base = buildSet();
+    const items = [...base.items];
+    for (let i = items.length; i < n; i += 1) {
+      const prev = items[0] as (typeof items)[number];
+      items.push({ ...prev, questionId: `q-${i}`, questionVersionId: `qv-${i}-v1`, stem: `문제 ${i} 본문` });
+    }
+    return { ...base, items: items.slice(0, n) };
+  }
+
+  it('1~8문항은 허용한다(새 세트 범위)', () => {
+    for (let n = 1; n <= 8; n += 1) {
+      expect(() => assertStudySetInvariants(buildSetWithSize(n))).not.toThrow();
+    }
+  });
+
+  it('0문항은 거부한다', () => {
+    expect(() => assertStudySetInvariants(buildSetWithSize(0))).toThrow();
+  });
+
+  it('9·19문항은 거부하고 기존 10·20문항은 허용한다', () => {
+    expect(() => assertStudySetInvariants(buildSetWithSize(9))).toThrow();
+    expect(() => assertStudySetInvariants(buildSetWithSize(19))).toThrow();
+    expect(() => assertStudySetInvariants(buildSetWithSize(10))).not.toThrow();
+    expect(() => assertStudySetInvariants(buildSetWithSize(20))).not.toThrow();
+  });
 });

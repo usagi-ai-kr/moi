@@ -156,9 +156,9 @@ describe('학습 시작', () => {
   it('범위 선택 + 영역 선택 + 시작 버튼을 렌더링한다', () => {
     renderStudy(fakeStudyClient());
     expect(screen.getByText('학습 범위 선택')).toBeInTheDocument();
-    expect(screen.getByText('전체 10문제')).toBeInTheDocument();
+    expect(screen.getByText('전체')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '학습 시작' })).toBeInTheDocument();
-    fireEvent.click(screen.getByText('영역별 10문제'));
+    fireEvent.click(screen.getByText('영역별'));
     expect(screen.getByLabelText('영역')).toBeInTheDocument();
   });
 

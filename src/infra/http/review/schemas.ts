@@ -15,6 +15,7 @@ export const candidatesQuerySchema = z.object({
 export const startSessionBodySchema = z.object({
   examId: z.string().min(1).max(128),
   mode: modeSchema,
+  size: z.union([z.literal(4), z.literal(8)]).default(4),
 });
 
 export const currentQuerySchema = z.object({

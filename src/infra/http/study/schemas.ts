@@ -11,6 +11,7 @@ export const startSetBodySchema = z.object({
   examId: z.string().min(1).max(128),
   mode: modeSchema,
   domainId: z.string().min(1).max(128).optional(),
+  size: z.union([z.literal(4), z.literal(8)]).default(4),
 });
 
 const responseSchema = z.discriminatedUnion('kind', [

@@ -52,13 +52,13 @@ function fakes(overrides?: { poolCount?: number; seed?: number }) {
 }
 
 describe('StartStudySet (활성 세트 1개·스냅샷)', () => {
-  it('활성 세트가 없으면 10문제 세트를 시작하고 스냅샷을 고정한다', async () => {
+  it('활성 세트가 없으면 4문제 세트를 시작하고 스냅샷을 고정한다', async () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
 
     expect(result.outcome).toBe('started');
     if (result.outcome === 'started') {
-      expect(result.set.items).toHaveLength(10);
+      expect(result.set.items).toHaveLength(4);
       expect(result.set.status).toBe('active');
       expect(result.set.createdAt).toBe(1700000000);
       for (const item of result.set.items) {
@@ -111,12 +111,12 @@ describe('StartStudySet (활성 세트 1개·스냅샷)', () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     if (result.outcome === 'started') {
-      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(10);
+      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(4);
     }
   });
 
-  it('풀이 가능한 문제가 10개 미만이면 거부한다(경계 9)', async () => {
-    const f = fakes({ poolCount: 9 });
+  it('풀이 가능한 문제가 0개면 거부한다(경계 0)', async () => {
+    const f = fakes({ poolCount: 0 });
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     expect(result).toMatchObject({ outcome: 'rejected', reason: 'pool_insufficient' });
   });
@@ -169,7 +169,7 @@ describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
     expect(f.sets.get(set.id)?.status).toBe('active');
   });
 
-  it('확인 후 제출: 전체 10문제 채점·결과 요약·이후 변경 불가', async () => {
+  it('확인 후 제출: 전체 4문제 채점·결과 요약·이후 변경 불가', async () => {
     const f = fakes();
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     const set = (result as { set?: StudySet }).set as StudySet;
@@ -246,7 +246,7 @@ describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
     const result_ = f.sets.get(set.id)?.result;
     expect(result_?.accuracyPercent).toBe(0);
     expect(result_?.passCount).toBe(1);
-    expect(result_?.unansweredCount).toBe(9);
+    expect(result_?.unansweredCount).toBe(3);
   });
 });
 
@@ -299,7 +299,7 @@ describe('ListCompletedSets (이력 페이지네이션·상세)', () => {
     await submitStudySet(f, { setId: set.id, userId: 'u1', confirmUnanswered: true });
     const detail = await f.repository.findById({ id: set.id }) as StudySet;
     expect(detail.status).toBe('submitted');
-    expect(detail.items).toHaveLength(10);
+    expect(detail.items).toHaveLength(4);
   });
 });
 
@@ -347,5 +347,33 @@ describe('LegacyCompat (기존 20문항 세트 읽기 호환, #187·ADR-0046)', 
     const submitted = await submitStudySet(f, { setId: legacy.id, userId: 'u1', confirmUnanswered: false });
     expect(submitted.outcome).toBe('submitted');
     expect(f.sets.get(legacy.id)?.result?.accuracyPercent).toBe(100);
+  });
+});
+
+describe('StartStudySet size 계약 (8문항·부분 출제·잘못된 값 거부, #275)', () => {
+  it('size 8 → 8문항·중복 0', async () => {
+    const f = fakes({ poolCount: 30 });
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all', size: 8 });
+    expect(result.outcome).toBe('started');
+    if (result.outcome === 'started') {
+      expect(result.set.items).toHaveLength(8);
+      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(8);
+    }
+  });
+
+  it('풀 5 + size 8 → 5문항·중복 0(가능한 만큼)', async () => {
+    const f = fakes({ poolCount: 5 });
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all', size: 8 });
+    expect(result.outcome).toBe('started');
+    if (result.outcome === 'started') {
+      expect(result.set.items).toHaveLength(5);
+      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(5);
+    }
+  });
+
+  it('size 9 → invalid_size 거부', async () => {
+    const f = fakes();
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all', size: 9 });
+    expect(result).toMatchObject({ outcome: 'rejected', reason: 'invalid_size' });
   });
 });

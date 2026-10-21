@@ -206,7 +206,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       items: Array<{ questionId: string; questionVersionId: string; stem?: unknown; options: Array<{ optionId: string }>; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }>;
     };
     expect(set.examId).toBe('e-1');
-    expect(set.items).toHaveLength(10);
+    expect(set.items).toHaveLength(4);
     for (const item of set.items) {
       expect(item.answerOptionIds).toBeUndefined();
       expect(item.explanation).toBeUndefined();
@@ -232,23 +232,23 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     expect(submit.status).toBe(200);
     const submitted = (await submit.json()) as { status: string; result: { correctCount: number; passCount: number; unansweredCount: number } };
     expect(submitted.status).toBe('submitted');
-    expect(submitted.result).toMatchObject({ correctCount: 3, passCount: 2, unansweredCount: 2 });
+    expect(submitted.result).toMatchObject({ correctCount: 1, passCount: 1, unansweredCount: 1 });
 
     const setAttempts = await db.prepare("SELECT outcome, source, source_id, user_id, exam_id, first_attempt FROM study_attempts WHERE source = 'set'").all<{
       outcome: string; source: string; source_id: string; user_id: string; exam_id: string; first_attempt: number;
     }>();
-    expect(setAttempts.results).toHaveLength(10);
+    expect(setAttempts.results).toHaveLength(4);
     expect(setAttempts.results.every((row) => row.source_id === set.id && row.user_id === U1 && row.exam_id === 'e-1')).toBe(true);
-    expect(setAttempts.results.filter((row) => row.first_attempt === 1)).toHaveLength(6);
+    expect(setAttempts.results.filter((row) => row.first_attempt === 1)).toHaveLength(2);
     expect(Object.fromEntries(['correct', 'wrong', 'pass', 'unanswered'].map((outcome) => [
       outcome, setAttempts.results.filter((row) => row.outcome === outcome).length,
-    ]))).toEqual({ correct: 3, wrong: 3, pass: 2, unanswered: 2 });
+    ]))).toEqual({ correct: 1, wrong: 1, pass: 1, unanswered: 1 });
 
     const candidatesRes = await req(`/api/review/candidates?examId=${EXAM_CODE}&mode=wrong`, { token });
     expect(candidatesRes.status).toBe(200);
     const candidates = (await candidatesRes.json()) as { total: number; items: Array<{ questionId: string; validWrongCount: number; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }> };
-    expect(candidates.total).toBe(7);
-    expect(candidates.items).toHaveLength(7);
+    expect(candidates.total).toBe(3);
+    expect(candidates.items).toHaveLength(3);
     expect(candidates.items.every((item) => item.validWrongCount === 1)).toBe(true);
     for (const item of candidates.items) {
       expect(item.answerOptionIds).toBeUndefined();
@@ -269,7 +269,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       current: { questionId: string; response: null; answerOptionIds?: unknown; explanation?: unknown; correctOptionIds?: unknown };
     };
     expect(review.cursor).toBe(0);
-    expect(review.total).toBe(7);
+    expect(review.total).toBe(3);
     expect(review.current.response).toBeNull();
     expect(review.current.answerOptionIds).toBeUndefined();
     expect(review.current.explanation).toBeUndefined();
@@ -466,7 +466,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       items: Array<{ questionId: string; response: null; answerCount?: unknown; id?: unknown; userId?: unknown }>;
     };
     expect(started.cursor).toBe(0);
-    expect(started.total).toBe(10);
+    expect(started.total).toBe(4);
     expect(started).not.toHaveProperty('id');
     expect(started).not.toHaveProperty('userId');
     expect(started.current.answerOptionIds).toBeUndefined();
@@ -553,7 +553,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     const endRes = await req('/api/review/sessions/current/end', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } });
     expect(endRes.status).toBe(200);
     const end = (await endRes.json()) as { summary: { total: number; graded: number; pending: number } };
-    expect(end.summary).toMatchObject({ total: 10, graded: 1, pending: 9 });
+    expect(end.summary).toMatchObject({ total: 4, graded: 1, pending: 3 });
     const after = await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source='review'").first<{ c: number }>();
     expect(after?.c).toBe(before?.c);
     expect((await req(`/api/review/sessions/current?examId=${EXAM_CODE}&mode=wrong`, { token })).status).toBe(404);
@@ -658,5 +658,81 @@ describe('복습 종료·답안 실효 경합 (ADR-0041)', () => {
     const row = await db.prepare("SELECT status, cursor FROM review_sessions WHERE user_id = ?1 AND mode = 'wrong'").bind(U1).first<{ status: string; cursor: number }>();
     expect(row).toEqual({ status: 'ended', cursor: 0 });
     expect((await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source = 'review'").first<{ c: number }>())?.c).toBe(0);
+  });
+});
+
+describe('복습 회차 크기 size 계약 (4/8·기본 4·부분 출제·422, #275)', () => {
+  const U8 = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d1';
+  const U4 = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d2';
+  const UDEF = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d3';
+  const UBAD = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d4';
+
+  /** seed20 문항(q-0~)에 오답 시도 count건을 심는다 — 후보가 정확히 count개가 된다. */
+  async function seedWrong(userId: string, count: number): Promise<void> {
+    const now = NOW();
+    await db.prepare('INSERT OR IGNORE INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)').bind(userId, now, now).run();
+    for (let i = 0; i < count; i += 1) {
+      const q = `q-${i}`;
+      await db
+        .prepare(
+          "INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) VALUES (?1, ?2, 'e-1', ?3, ?4, 'wrong', ?5, 'set', ?6, NULL, 0)",
+        )
+        .bind(`w-${userId.slice(-4)}-${i}`, userId, q, `${q}-v1`, now * 1000 + i, `set-w-${userId.slice(-4)}-${i}`)
+        .run();
+    }
+  }
+
+  it('후보 5 + size 8 → 실제 5문항(가능한 만큼·중복 0)', async () => {
+    const token = await mintSession(U8);
+    await seedWrong(U8, 5);
+    const res = await req('/api/review/sessions', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM_CODE, mode: 'wrong', size: 8 },
+    });
+    expect(res.status).toBe(201);
+    const session = (await res.json()) as { total: number; items: Array<{ questionId: string }>; current: { questionId: string } | null };
+    expect(session.total).toBe(5);
+    expect(session.items).toHaveLength(5);
+    expect(new Set(session.items.map((i) => i.questionId)).size).toBe(5);
+    expect(session.current).not.toBeNull();
+  });
+
+  it('size 4 → 4문항, size 생략 → 기본 4문항', async () => {
+    const t4 = await mintSession(U4);
+    await seedWrong(U4, 5);
+    const r4 = await req('/api/review/sessions', {
+      method: 'POST',
+      token: t4,
+      body: { examId: EXAM_CODE, mode: 'wrong', size: 4 },
+    });
+    expect(r4.status).toBe(201);
+    const s4 = (await r4.json()) as { total: number; items: unknown[] };
+    expect(s4.total).toBe(4);
+    expect(s4.items).toHaveLength(4);
+
+    const td = await mintSession(UDEF);
+    await seedWrong(UDEF, 5);
+    const rd = await req('/api/review/sessions', {
+      method: 'POST',
+      token: td,
+      body: { examId: EXAM_CODE, mode: 'wrong' },
+    });
+    expect(rd.status).toBe(201);
+    const sd = (await rd.json()) as { total: number; items: unknown[] };
+    expect(sd.total).toBe(4);
+    expect(sd.items).toHaveLength(4);
+  });
+
+  it('size 3·9·"4"·null → 422', async () => {
+    const token = await mintSession(UBAD);
+    for (const size of [3, 9, '4', null]) {
+      const res = await req('/api/review/sessions', {
+        method: 'POST',
+        token,
+        body: { examId: EXAM_CODE, mode: 'wrong', size },
+      });
+      expect(res.status).toBe(422);
+    }
   });
 });

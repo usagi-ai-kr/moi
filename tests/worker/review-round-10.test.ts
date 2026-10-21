@@ -84,14 +84,13 @@ describe('review round queue D1 (0013)', () => {
     expect(view.total).toBe(25);
     const s1 = await startReviewSession(deps, { userId: 'u-queue', examId: 'e-1', mode: 'wrong' });
     if (s1.outcome !== 'started') throw new Error('s1 failed');
-    expect(s1.session.items).toHaveLength(10);
-    expect(s1.session.remainingQuestionIds).toHaveLength(15);
-    // grading 없이 종료(pending 전원 복귀)하면 remaining은 10+15=25가 아니라 pending 10+15=25다.
-    // 여기서는 end만으로 pending 10이 복귀함을 본다.
+    expect(s1.session.items).toHaveLength(4);
+    expect(s1.session.remainingQuestionIds).toHaveLength(21);
+    // grading 없이 종료(pending 전원 복귀)하면 remaining은 4+21=25다.
     const ended = await endReviewSession(deps, { userId: 'u-queue', examId: 'e-1', mode: 'wrong' });
     expect(ended.outcome).toBe('ended');
     if (ended.outcome === 'ended') {
-      expect(ended.summary).toMatchObject({ total: 10, graded: 0, pending: 10 });
+      expect(ended.summary).toMatchObject({ total: 4, graded: 0, pending: 4 });
       expect(ended.session.remainingQuestionIds).toHaveLength(25);
     }
     void answerReviewItem;

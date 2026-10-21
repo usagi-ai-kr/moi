@@ -12,8 +12,10 @@ interface ReviewCandidatesProps {
   readonly isLoading: boolean;
   readonly isError: boolean;
   readonly mode: ReviewMode;
+  readonly size?: number;
   readonly isStarting: boolean;
   readonly onStart: () => void;
+  readonly onSize?: (n: number) => void;
   readonly onRetry: () => void;
   readonly onSelectMode?: (mode: ReviewMode) => void;
 }
@@ -23,8 +25,10 @@ export function ReviewCandidates({
   isLoading,
   isError,
   mode,
+  size,
   isStarting,
   onStart,
+  onSize,
   onRetry,
   onSelectMode,
 }: ReviewCandidatesProps) {
@@ -75,6 +79,7 @@ export function ReviewCandidates({
   }
 
   if (data && data.total > 0) {
+    const selectedSize = size ?? 4;
     return (
       <section aria-label="복습 대기 목록" className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -87,6 +92,17 @@ export function ReviewCandidates({
             {copy.review.startAction}
           </Button>
         </div>
+        <fieldset className="flex flex-wrap gap-2 border-0 p-0" aria-label={copy.review.sizeLegend} disabled={isStarting}>
+          {[4, 8].map((n) => (
+            <label key={n} className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-ring has-[input:focus-visible]:ring-offset-2">
+              <input type="radio" name="review-size" value={n} checked={selectedSize === n} onChange={() => onSize?.(n)} disabled={isStarting} className="h-5 w-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" />
+              {copy.review.sizeOption(n)}
+            </label>
+          ))}
+        </fieldset>
+        {data.total < selectedSize && (
+          <p className="text-sm text-muted-foreground">{copy.review.sizeAvailable(data.total)}</p>
+        )}
         <p className="text-sm text-muted-foreground">{copy.review.roundHint}</p>
       </section>
     );

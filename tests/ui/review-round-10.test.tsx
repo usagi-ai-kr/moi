@@ -48,7 +48,7 @@ describe('review 10문항 대기 UI (ADR-0059)', () => {
   it('후보 25 → 대기 25문제·stem 미노출·10문제 안내·시작 버튼 유지', async () => {
     renderScreen(clientWith(25));
     expect(await screen.findByText(/복습 대기 25문제/)).toBeInTheDocument();
-    expect(screen.getByText(/10문제씩 진행됩니다/)).toBeInTheDocument();
+    expect(screen.getByText(/선택한 문제 수만큼 진행됩니다/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /복습 시작/ })).toBeInTheDocument();
     expect(screen.queryByText('stem-0')).not.toBeInTheDocument();
     expect(screen.queryByText('q-0')).not.toBeInTheDocument();
@@ -61,5 +61,16 @@ describe('review 10문항 대기 UI (ADR-0059)', () => {
     const start = screen.queryByRole('button', { name: /복습 시작/ });
     expect(start).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('tab', { name: '북마크 복습' }));
+  });
+
+  it('문제 수 라디오는 44px 터치 타깃·키보드 포커스를 갖는다(#275 B1)', async () => {
+    renderScreen(clientWith(10));
+    const opt4 = await screen.findByLabelText('4문제');
+    const label = opt4.closest('label');
+    expect(label?.getAttribute('class')).toContain('min-h-[44px]');
+    expect(opt4.getAttribute('class')).toContain('h-5');
+    expect(opt4.getAttribute('class')).toContain('w-5');
+    opt4.focus();
+    expect(document.activeElement).toBe(opt4);
   });
 });
