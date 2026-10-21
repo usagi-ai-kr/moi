@@ -23,13 +23,16 @@ interface Props {
 }
 
 // 범위(전체/영역/취약) 선택 — AntD 없이 네이티브 라디오 + 토큰 CSS.
+// #269: 시험 안내(copy.exam.note) 제거 — 시험 선택은 셸 상단 selector 단일화(#259).
+// 설명(문제 수·안내)과 fieldset/legend(범위 라벨)·선택 항목의 위계를 분리한다.
 export function StartView(p: Props) {
   return (
     <section className="moi-study" aria-label={copy.study.startTitle}>
       <h1 className="moi-study-title">{copy.study.startTitle}</h1>
-      <p className="moi-note">{copy.exam.note}</p>
-      <p className="moi-note">{copy.study.examContext}</p>
-      <fieldset className="moi-study-field">
+      <p className="moi-note moi-study-desc" id="study-scope-desc">
+        {copy.study.examContext}
+      </p>
+      <fieldset className="moi-study-field" aria-describedby="study-scope-desc">
         <legend className="moi-study-legend">범위</legend>
         <label className="moi-study-radio">
           <input
