@@ -24,7 +24,7 @@ export function AccountPage({ user }: { user: MeUser }) {
           </div>
           <div className="moi-account-row">
             <dt className="moi-account-term">{copy.account.joinedAtLabel}</dt>
-            {/* 초/ms·0·null·손상 값은 formatDateTime이 '정보 없음'으로 되돌린다(1970 오표기 방지, #212). */}
+            {/* 초/ms·0·null·손상 값·하한 미만 값은 formatDateTime이 '정보 없음'으로 되돌린다(1970 오표기 방지, #212·#260). */}
             <dd className="moi-account-value">{formatDateTime(user.createdAt)}</dd>
           </div>
           <div className="moi-account-row">
