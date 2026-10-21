@@ -565,6 +565,19 @@ Then('결과 이전 문항 버튼은 비활성 상태다', async ({ page }) => {
   await expect(page.getByRole('button', { name: copy.study.prevItem })).toBeDisabled();
 });
 
+// #260 — 상세 카드와 이동(이전/다음) 영역 간격 24px 계약.
+Then('결과 상세 카드와 이동 영역 간격은 24px다', async ({ page }) => {
+  const gap = await page.evaluate(() => {
+    const card = document.querySelector('.moi-study-peritem > li');
+    const nav = document.querySelector('.moi-study-pager-nav');
+    if (!card || !nav) return null;
+    const c = card.getBoundingClientRect();
+    const n = nav.getBoundingClientRect();
+    return Math.round((n.top - c.bottom) * 10) / 10;
+  });
+  expect(gap).toBe(24);
+});
+
 // #232 풀이·결과 마지막 문항 동선 — 10문제 세트 끝까지 이동·요약 이동·제출 1회 검증.
 When('마지막 문항까지 이동하면', async ({ page }) => {
   for (let i = 0; i < 9; i += 1) {

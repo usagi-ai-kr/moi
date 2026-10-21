@@ -128,9 +128,40 @@ describe('#212 학습 시작 selector/CTA', () => {
     // 가짜 비활성 selector는 제거했다 — 시험 선택은 셸(헤더/드로어)의 실제 select 1곳이다.
     expect(screen.queryByRole('combobox', { name: copy.exam.label })).not.toBeInTheDocument();
     expect(container.querySelector('.moi-exam-scope')).toBeNull();
-    expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
+    // #269: "현재 지원하는 시험은 1개입니다." 안내 제거 — 셸 selector 단일화.
+    expect(screen.queryByText('현재 지원하는 시험은 1개입니다.')).not.toBeInTheDocument();
     expect(screen.getByText(copy.study.examContext)).toBeInTheDocument();
     expect(screen.queryByText(/saa-c03/)).not.toBeInTheDocument();
+  });
+
+  it('#269 범위 위계: 설명·fieldset/legend·선택 항목이 구분된다', () => {
+    const noop = vi.fn();
+    const { container } = renderWithClient(
+      <StartView
+        scope="all"
+        domainId="dom-security"
+        pending={false}
+        conflict={false}
+        unauthorized={false}
+        startError={null}
+        onScope={noop}
+        onDomain={noop}
+        onStart={noop}
+        onResume={noop}
+        onHistory={noop}
+      />,
+    );
+    const desc = screen.getByText(copy.study.examContext);
+    expect(desc).toHaveClass('moi-study-desc');
+    const group = screen.getByRole('group', { name: '범위' });
+    expect(group.tagName).toBe('FIELDSET');
+    expect(group).toHaveAttribute('aria-describedby', 'study-scope-desc');
+    expect(desc).toHaveAttribute('id', 'study-scope-desc');
+    // 설명은 범위 옵션을 반복하지 않는다 — 10문제 계약(#275)은 유지한다.
+    expect(copy.study.examContext).toMatch(/10문제/);
+    expect(copy.study.examContext).not.toMatch(/전체\/영역별\/취약/);
+    expect(container.querySelector('.moi-study-legend')?.textContent).toBe('범위');
+    expect(screen.getByRole('radio', { name: copy.study.scopeAll })).toBeChecked();
   });
 
   it('CTA 위계: primary 학습 시작·secondary 학습 이력을 보인다', () => {
@@ -172,7 +203,8 @@ describe('#212 학습 시작 selector/CTA', () => {
     expect(screen.getByRole('button', { name: copy.study.continueStudy })).toBeInTheDocument();
     // 페이지별 시험 배지는 제거했다 — 상단 selector 단일화(#259).
     expect(container.querySelector('.moi-exam-scope')).toBeNull();
-    expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
+    // #269: 홈의 시험 안내 문구 제거 — 시험 선택은 셸 상단 selector 하나다.
+    expect(screen.queryByText('현재 지원하는 시험은 1개입니다.')).not.toBeInTheDocument();
   });
 });
 
