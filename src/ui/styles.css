@@ -241,3 +241,6 @@ pre,
 /* 학습 현황 스타일은 stats/stats.css로 이동 (#182 — 사용하는 컴포넌트가 import). */
 /* 계정·이력 페이지 — 기존 토큰·카드 재사용, 320~1280 기본 반응형 */
 .moi-page { display: flex; flex-direction: column; gap: var(--moi-space-3); width: 100%; max-width: 100%; overflow-wrap: anywhere; }
+/* #244 랜딩 연속성 — 전역 .moi-container(960) 변경 없이 랜딩 스코프만 셸 읽기 열·page 리듬과 일치시킨다. */
+@media (min-width: 1024px) { .moi-landing-head, .moi-landing { max-width: var(--moi-reading-max); } }
+.moi-landing-page > .moi-accent { margin-bottom: var(--moi-space-3); }
