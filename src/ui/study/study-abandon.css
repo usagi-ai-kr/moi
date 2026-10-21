@@ -1,0 +1,23 @@
+/* 포기 확인 모달 — AbandonConfirmDialog 전용. study.css에서 분리 (#243 예산).
+   토큰 변수만 사용, 동작·시각 변경 없음. */
+.moi-abandon-actions {
+  margin-top: var(--moi-space-4);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--moi-space-2);
+}
+.moi-abandon-error {
+  margin: var(--moi-space-2) 0 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-danger);
+}
+/* 360px 이하 세로 적층 — DOM 순서(취소→확정)를 뒤집어 확정을 위, 취소를 아래에 둔다. */
+@media (max-width: 360px) {
+  .moi-abandon-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .moi-abandon-actions > * {
+    width: 100%;
+  }
+}
