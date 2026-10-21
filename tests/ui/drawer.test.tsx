@@ -1,7 +1,8 @@
 // #215 — 모바일 햄버거·우측 Drawer 계약 (RTL). jsdom에 showModal/close가 없어
 // feature-detect 폴백 경로로 실제 상태·포커스·스크롤 잠금 로직을 검증한다 (ADR-0057).
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { HTTPError } from 'ky';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
@@ -9,6 +10,15 @@ import { MOBILE_NAV_QUERY } from '../../src/ui/responsive';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
 
 const MENU_LABELS = /학습 시작|학습 현황\/이력|복습|계정/;
+
+/** 401 시뮬레이션용 ky HTTPError — getMe의 401→null 매핑을 그대로 검증한다. */
+function httpError(status: number, body: unknown): HTTPError {
+  return new HTTPError(
+    new Response(JSON.stringify(body), { status }),
+    new Request('http://localhost/api/me'),
+    {} as never,
+  );
+}
 
 function loggedInClient(): ApiClient {
   return {
@@ -161,7 +171,7 @@ describe('모바일 Drawer — 닫기·포커스·스크롤 잠금 (#215)', () =
     fireEvent.click(await screen.findByRole('link', { name: '계정' }));
 
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
-    expect(await screen.findByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: '계정' })).toBeInTheDocument();
   });
 
   it('경로가 바뀌면 Drawer가 자동으로 닫힌다', async () => {
@@ -198,5 +208,90 @@ describe('모바일 Drawer — 닫기·포커스·스크롤 잠금 (#215)', () =
 
     const items = Array.from(dialog.querySelectorAll('.moi-drawer-link')).map((el) => el.textContent);
     expect(items).toEqual(['학습 시작', '학습 현황/이력', '복습', '계정']);
+  });
+});
+
+describe('모바일 Drawer — 로그아웃 액션 (#234/ADR-0072)', () => {
+  it('Drawer 안의 로그아웃은 이동 링크가 아니라 액션 버튼이다', async () => {
+    useViewport(true);
+    renderAt('/');
+    fireEvent.click(await screen.findByRole('button', { name: '메뉴 열기' }));
+    const dialog = await screen.findByRole('dialog');
+
+    const button = within(dialog).getByRole('button', { name: '로그아웃' });
+    expect(button.tagName).toBe('BUTTON');
+    expect(button).not.toHaveAttribute('aria-current');
+    // 메뉴 링크 4개는 그대로 — 로그아웃은 링크로 세지지 않는다
+    expect(within(dialog).getAllByRole('link')).toHaveLength(4);
+  });
+
+  it('Drawer 로그아웃 성공: Drawer가 닫히고 비로그인 화면이 된다', async () => {
+    useViewport(true);
+    let loggedOut = false;
+    const client = {
+      get: vi.fn((path: string) => ({
+        json: async () => {
+          if (loggedOut) throw httpError(401, { error: 'unauthorized' });
+          if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
+          return { user: { id: '123e4567-e89b-12d3-a456-426614174000', createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } };
+        },
+      })),
+      post: vi.fn(async () => {
+        loggedOut = true;
+        return new Response(null, { status: 204 });
+      }),
+      patch: vi.fn(),
+    } as unknown as ApiClient;
+
+    window.history.replaceState(null, '', '/');
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <QueryClientProvider client={queryClient}>
+          <App client={client} />
+        </QueryClientProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: '메뉴 열기' }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: '로그아웃' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(await screen.findByRole('link', { name: '카카오 로그인' })).toBeInTheDocument();
+  });
+
+  it('Drawer 로그아웃 실패: role=alert 안내와 재시도 버튼이 보인다', async () => {
+    useViewport(true);
+    const client = {
+      get: vi.fn((path: string) => ({
+        json: async () => {
+          if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
+          return { user: { id: '123e4567-e89b-12d3-a456-426614174000', createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } };
+        },
+      })),
+      post: vi.fn(async () => {
+        throw new Error('network');
+      }),
+      patch: vi.fn(),
+    } as unknown as ApiClient;
+
+    window.history.replaceState(null, '', '/');
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <QueryClientProvider client={queryClient}>
+          <App client={client} />
+        </QueryClientProvider>
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(await screen.findByRole('button', { name: '메뉴 열기' }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.click(within(dialog).getByRole('button', { name: '로그아웃' }));
+
+    const alert = await within(dialog).findByRole('alert');
+    expect(alert).toHaveTextContent('로그아웃하지 못했습니다.');
+    expect(within(dialog).getByRole('button', { name: '다시 시도' })).toBeInTheDocument();
   });
 });

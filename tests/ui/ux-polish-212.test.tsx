@@ -199,7 +199,7 @@ describe('#212 헤더 브랜드 아이콘', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/']}>
         <Routes>
-          <Route element={<AppShell />}>
+          <Route element={<AppShell onLogout={async () => {}} pending={false} />}>
             <Route index element={<div>home</div>} />
             <Route path="history" element={<div>history</div>} />
             <Route path="review" element={<div>review</div>} />

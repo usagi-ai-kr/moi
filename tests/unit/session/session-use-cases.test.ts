@@ -1,9 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { authenticateSession, type AuthenticateSessionDeps } from '@/app/session/authenticate-session';
 import { completeLogin, type CompleteLoginDeps } from '@/app/session/complete-login';
+import { getAccountInfo } from '@/app/session/get-account-info';
 import { issueUserSession, type IssueUserSessionDeps } from '@/app/session/issue-user-session';
 import { revokeSession, type RevokeSessionDeps } from '@/app/session/revoke-session';
-import type { SessionEventLogger, SessionRepository, SessionTokenIssuer, SessionTokenVerifier } from '@/app/session/ports';
+import type {
+  AccountInfo,
+  AccountInfoRepository,
+  SessionEventLogger,
+  SessionRepository,
+  SessionTokenIssuer,
+  SessionTokenVerifier,
+} from '@/app/session/ports';
 import { SESSION_TTL_SECONDS, type SessionClaims } from '@/domain/session/session';
 
 // 이슈 #4 (ADR-0005/0006) use case 단위 테스트 — fake port로 발급/검증/폐기·
@@ -384,5 +392,57 @@ describe('로그 계약(whitelist) — SessionEventLogger', () => {
     };
     logger.info('session_issued', 'issued');
     expect(JSON.parse(events[0])).toEqual({ msg: 'session_issued', outcome: 'issued' });
+  });
+});
+
+describe('getAccountInfo use case (#234/ADR-0072)', () => {
+  function fakeAccountRepo(account: AccountInfo | null): {
+    repository: AccountInfoRepository;
+    calls: string[];
+  } {
+    const calls: string[] = [];
+    return {
+      calls,
+      repository: {
+        async findAccountInfo({ userId }) {
+          calls.push(userId);
+          return account;
+        },
+      },
+    };
+  }
+
+  it('가입일·최근 로그인을 그대로 돌려준다(쓰기·마이그레이션 없음)', async () => {
+    const repo = fakeAccountRepo({ createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 });
+
+    const result = await getAccountInfo({ accountRepository: repo.repository }, { userId: USER_A });
+
+    expect(result).toEqual({ outcome: 'found', account: { createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } });
+    expect(repo.calls).toEqual([USER_A]);
+  });
+
+  it('로그인 이력이 없으면 lastLoginAt은 null이다(값을 지어내지 않는다)', async () => {
+    const repo = fakeAccountRepo({ createdAt: 1_700_000_000, lastLoginAt: null });
+
+    const result = await getAccountInfo({ accountRepository: repo.repository }, { userId: USER_A });
+
+    expect(result).toEqual({ outcome: 'found', account: { createdAt: 1_700_000_000, lastLoginAt: null } });
+  });
+
+  it('계정을 못 찾으면 missing — 값을 지어내지 않는다', async () => {
+    const repo = fakeAccountRepo(null);
+
+    const result = await getAccountInfo({ accountRepository: repo.repository }, { userId: USER_A });
+
+    expect(result).toEqual({ outcome: 'missing' });
+  });
+
+  it('내부 UUID가 아니면 조회하지 않는다(외부 sub 차단)', async () => {
+    const repo = fakeAccountRepo({ createdAt: 1, lastLoginAt: null });
+
+    const result = await getAccountInfo({ accountRepository: repo.repository }, { userId: 'kakao-sub-1' });
+
+    expect(result).toEqual({ outcome: 'missing' });
+    expect(repo.calls).toEqual([]);
   });
 });

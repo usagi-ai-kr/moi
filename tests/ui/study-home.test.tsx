@@ -47,7 +47,9 @@ describe('홈 학습 진입', () => {
     expect(await screen.findByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '학습 이력' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
+    // 로그아웃은 계정 본문이 아니라 내비게이션 액션이다(#234)
+    expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '로그아웃' }).closest('.moi-account')).toBeNull();
   });
 
   it('CTA를 누르면 학습 범위 화면이 열린다(지연 청크)', async () => {

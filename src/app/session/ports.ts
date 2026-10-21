@@ -32,6 +32,23 @@ export interface SessionRepository {
   revoke(input: { jti: string; now: number }): Promise<boolean>;
 }
 
+/**
+ * 계정 정보 읽기 전용 포트 (이슈 #234, ADR-0072).
+ * 가입일·최근 로그인은 **파생 조회**다 — `users.created_at`과 `sessions.issued_at` 최대값을 읽기만 한다(쓰기·마이그레이션 0).
+ */
+export interface AccountInfoRepository {
+  /** 가입일·최근 로그인. 사용자를 찾지 못하면 null(존재하지 않는 계정). */
+  findAccountInfo(input: { userId: string }): Promise<AccountInfo | null>;
+}
+
+/** 계정 표시 정보 — 시간은 epoch seconds. `lastLoginAt`은 로그인 이력이 없으면 null. */
+export interface AccountInfo {
+  /** 가입일 — `users.created_at`. */
+  readonly createdAt: number;
+  /** 최근 로그인 — `MAX(sessions.issued_at)`. 이력이 없으면 null. */
+  readonly lastLoginAt: number | null;
+}
+
 /** ADR-0006 화이트리스트 로그 계약 — 토큰/쿠키/jti/userId 원문을 전달할 방법이 없다. */
 export interface SessionEventLogger {
   info(msg: string, outcome?: string): void;

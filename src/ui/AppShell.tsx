@@ -6,6 +6,7 @@ import { Drawer } from './components/ui/drawer';
 import { copy } from './copy';
 import { ExamSelector } from './exam/ExamSelector';
 import { prefetchRoute } from './lazy-routes';
+import { LogoutAction } from './LogoutAction';
 import { MOBILE_NAV_QUERY, useMediaQuery } from './responsive';
 import './shell.css';
 import './drawer.css';
@@ -24,7 +25,14 @@ function prefetchOnIntent(to: '/history' | '/review' | '/account') {
 
 // 로그인 후 셸 — header(브랜드+nav) + main(Outlet). NavLink가 aria-current="page"를 부여한다.
 // 모바일(≤767px)은 햄버거 + 우측 Drawer, 데스크톱은 가로 nav를 노출한다 (ADR-0057).
-export function AppShell() {
+// 로그아웃은 계정 본문이 아니라 이 셸의 독립 액션이다(#234/ADR-0072) — 비로그인 상태에서는 셸 자체가 렌더되지 않는다.
+export function AppShell({
+  onLogout,
+  pending,
+}: {
+  onLogout: () => Promise<void>;
+  pending: boolean;
+}) {
   const isMobile = useMediaQuery(MOBILE_NAV_QUERY);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
@@ -61,6 +69,7 @@ export function AppShell() {
               <NavLink to="/account" className="moi-nav-link" {...prefetchOnIntent('/account')}>
                 {copy.nav.account}
               </NavLink>
+              <LogoutAction className="moi-nav-action" pending={pending} onLogout={onLogout} />
             </nav>
             {/* 시험 선택 — 데스크톱은 헤더, 모바일은 Drawer. 동시에 마운트되지 않는다 (#239). */}
             {!isMobile ? <ExamSelector id="moi-exam-select-nav" className="moi-shell-exam" /> : null}
@@ -136,6 +145,13 @@ export function AppShell() {
               {copy.nav.account}
             </NavLink>
           </nav>
+          {/* 로그아웃 액션 — 성공하면 Drawer를 닫는다(#234/ADR-0072). */}
+          <LogoutAction
+            className="moi-drawer-action"
+            pending={pending}
+            onLogout={onLogout}
+            onSuccess={() => setDrawerOpen(false)}
+          />
         </div>
       </Drawer>
     </>

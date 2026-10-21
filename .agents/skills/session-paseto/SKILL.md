@@ -32,7 +32,7 @@ compatibility: openssl(키), wrangler(시크릿), curl(쿠키 검증) 필요.
 - 각 보호 요청에서 PASETO 유효성 + `jti` 활성 여부를 검사. 로그아웃/강제 폐기는 즉시 적용.
 
 ## API 동작
-- `GET /api/me`: 미로그인 401, 로그인 시 최소 사용자 정보, `Cache-Control: no-store`. 변조/만료/폐기 토큰 401.
+- `GET /api/me`: 미로그인 401, 로그인 시 `{user:{id,createdAt,lastLoginAt}}`(가입일·최근 로그인은 파생 조회), `Cache-Control: no-store`. 변조/만료/폐기 토큰 401.
 - `POST /auth/logout`: Origin + `Sec-Fetch-Site` 검증(실패 403) → 세션 revoke → Set-Cookie 삭제(`Max-Age=0`). 같은 PASETO 재사용 불가.
 - 앞으로 도입되는 모든 사용자 소유 데이터 접근은 서버 검증 `user_id` 기준으로 scope 제한.
 

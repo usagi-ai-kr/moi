@@ -33,6 +33,7 @@ Feature: #215 모바일 햄버거·우측 Drawer 및 반응형 검증
     And "/" 화면에 접속하면
     And 햄버거 메뉴를 누른다
     Then Drawer에 네 메뉴가 보인다
+    And Drawer에 로그아웃 액션이 보인다
     And 현재 위치 메뉴가 표시된다
     And Drawer 항목은 44px 이상이다
     And 가로 오버플로가 없다

@@ -150,7 +150,7 @@ describe('로그인 셸·Drawer — 동일 자산·홈 이동·포커스 (AC2)',
       <MemoryRouter initialEntries={['/review']}>
         <QueryClientProvider client={queryClient}>
           <Routes>
-            <Route element={<AppShell />}>
+            <Route element={<AppShell onLogout={async () => {}} pending={false} />}>
               <Route path="review" element={<div>review</div>} />
             </Route>
           </Routes>

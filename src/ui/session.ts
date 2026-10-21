@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
-import { getMe, logout, type ApiClient } from './api/client';
+import { getMe, logout, type ApiClient, type MeUser } from './api/client';
 import { clearDraftsForUser } from './study/drafts';
 import { clearTabStatesForUser } from './study/tab-state';
 
-export type { ApiClient };
+export type { ApiClient, MeUser };
 
 // 서버 진실 원천: TanStack Query 키 ['me'] (ADR-0018).
 export const ME_QUERY_KEY = ['me'] as const;
@@ -34,9 +34,10 @@ export function maskUserId(id: string): string {
 }
 
 // GET /api/me 구독 — 401은 비로그인(null), 그 외 오류는 throw.
-export function useSessionId(client: ApiClient): {
+// 반환값은 계정 DTO(내부 id·가입일·최근 로그인)다 — 화면은 id를 표시하지 않는다(#234/ADR-0072).
+export function useSessionUser(client: ApiClient): {
   status: 'loading' | 'logged-out' | 'logged-in' | 'error';
-  userId: string | null;
+  user: MeUser | null;
   retry: () => void;
 } {
   const query = useQuery({
@@ -45,10 +46,10 @@ export function useSessionId(client: ApiClient): {
     retry: false,
     staleTime: 30_000,
   });
-  if (query.isPending) return { status: 'loading', userId: null, retry: query.refetch };
-  if (query.isError) return { status: 'error', userId: null, retry: () => void query.refetch() };
-  if (query.data === null) return { status: 'logged-out', userId: null, retry: () => void query.refetch() };
-  return { status: 'logged-in', userId: query.data, retry: () => void query.refetch() };
+  if (query.isPending) return { status: 'loading', user: null, retry: query.refetch };
+  if (query.isError) return { status: 'error', user: null, retry: () => void query.refetch() };
+  if (query.data === null) return { status: 'logged-out', user: null, retry: () => void query.refetch() };
+  return { status: 'logged-in', user: query.data, retry: () => void query.refetch() };
 }
 
 // 로그아웃 — 성공 후 초안·탭 상태 정리 + 캐시 무효화·제거 (ADR-0018, 이슈 #52).

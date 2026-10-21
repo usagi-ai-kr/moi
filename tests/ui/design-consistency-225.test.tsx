@@ -70,7 +70,7 @@ describe('225 design-consistency: heading hierarchy', () => {
   });
 
   it('Account: h1 계정 1개', () => {
-    const { container } = render(<AccountPage pending={false} onLogout={async () => {}} />);
+    const { container } = render(<AccountPage user={{ id: 'u1', createdAt: 1, lastLoginAt: 2 }} />);
     expect(container.querySelectorAll('h1')).toHaveLength(1);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('계정');
   });
