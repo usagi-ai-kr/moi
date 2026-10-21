@@ -170,7 +170,6 @@ export function StudyScreen({
         />
         <QuestionView
           client={client}
-          examId={set.examId}
           items={set.items}
           index={Math.min(s.index, set.items.length - 1)}
           save={s.save}

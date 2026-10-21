@@ -2,13 +2,14 @@ import type { RefObject } from 'react';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { Button } from '../components/ui/button';
+import { ExamScope } from '../exam/ExamScope';
+import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { ReportButton } from './ReportButton';
-import { STUDY_EXAM_ID, type SaveState } from './types';
+import type { SaveState } from './types';
 
 interface Props {
   client: ApiClient;
-  examId?: string;
   items: StudyActiveItem[];
   index: number;
   save: SaveState;
@@ -61,12 +62,16 @@ function responseLabel(r: ItemResponse): string {
 export function QuestionView(p: Props) {
   const item = p.items[p.index];
   if (!item) return null;
+  // 북마크 시험 축은 선택 시험(공개 코드) — 하드코딩 없음 (#239).
+  const { examId } = useExamScope();
   const total = p.items.length;
   const saveText = SAVE_TEXT[p.save];
   const isLast = p.index >= total - 1;
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
+      {/* 시험 기준 라벨 — 풀이 화면도 선택 시험에 묶인다(#239). */}
+      <ExamScope />
       <p className="moi-study-progress" aria-live="polite">
         {p.index + 1}/{total} · {responseLabel(item.response)}
       </p>
@@ -106,7 +111,7 @@ export function QuestionView(p: Props) {
       </p>
       {/* 문항 액션 그룹 — 정보(제목·보기)와 분리된 독립 그룹, 탐색·최종 액션과도 분리(#232). */}
       <div className="moi-study-item-actions" role="group" aria-label={copy.study.itemActions}>
-        <BookmarkButton client={p.client} examId={p.examId ?? STUDY_EXAM_ID} questionId={item.questionId} />
+        <BookmarkButton client={p.client} examId={examId} questionId={item.questionId} />
         <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
       </div>
       <fieldset className="moi-study-field">

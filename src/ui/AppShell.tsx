@@ -4,6 +4,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { Brand } from './Brand';
 import { Drawer } from './components/ui/drawer';
 import { copy } from './copy';
+import { ExamSelector } from './exam/ExamSelector';
 import { prefetchRoute } from './lazy-routes';
 import { MOBILE_NAV_QUERY, useMediaQuery } from './responsive';
 import './shell.css';
@@ -46,20 +47,24 @@ export function AppShell() {
           <Link to="/" className="moi-brand-link" aria-label={copy.brand}>
             <Brand />
           </Link>
-          <nav className="moi-nav" aria-label={copy.nav.label} hidden={isMobile}>
-            <NavLink to="/" end className="moi-nav-link">
-              {copy.nav.study}
-            </NavLink>
-            <NavLink to="/history" className="moi-nav-link" {...prefetchOnIntent('/history')}>
-              {copy.nav.history}
-            </NavLink>
-            <NavLink to="/review" className="moi-nav-link" {...prefetchOnIntent('/review')}>
-              {copy.nav.review}
-            </NavLink>
-            <NavLink to="/account" className="moi-nav-link" {...prefetchOnIntent('/account')}>
-              {copy.nav.account}
-            </NavLink>
-          </nav>
+          <div className="moi-shell-nav-group">
+            <nav className="moi-nav" aria-label={copy.nav.label} hidden={isMobile}>
+              <NavLink to="/" end className="moi-nav-link">
+                {copy.nav.study}
+              </NavLink>
+              <NavLink to="/history" className="moi-nav-link" {...prefetchOnIntent('/history')}>
+                {copy.nav.history}
+              </NavLink>
+              <NavLink to="/review" className="moi-nav-link" {...prefetchOnIntent('/review')}>
+                {copy.nav.review}
+              </NavLink>
+              <NavLink to="/account" className="moi-nav-link" {...prefetchOnIntent('/account')}>
+                {copy.nav.account}
+              </NavLink>
+            </nav>
+            {/* 시험 선택 — 데스크톱은 헤더, 모바일은 Drawer. 동시에 마운트되지 않는다 (#239). */}
+            {!isMobile ? <ExamSelector id="moi-exam-select-nav" className="moi-shell-exam" /> : null}
+          </div>
           {isMobile ? (
             <button
               type="button"
@@ -98,6 +103,9 @@ export function AppShell() {
             >
               <X aria-hidden="true" focusable="false" />
             </button>
+          </div>
+          <div className="moi-drawer-exam">
+            <ExamSelector id="moi-exam-select-drawer" />
           </div>
           <nav className="moi-drawer-nav" aria-label={copy.nav.label}>
             <NavLink to="/" end className="moi-drawer-link" onClick={() => setDrawerOpen(false)}>

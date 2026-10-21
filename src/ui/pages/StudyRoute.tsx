@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router';
 import type { ApiClient } from '../api/client';
 import { RouteFallback } from '../RouteFallback';
+import { useExamScope } from '../exam/ExamScopeProvider';
 import { StudyScreen } from '../study/StudyScreen';
 import { useCurrentStudySet } from '../study/queries';
 import { useStudyUiStore } from '../study/store';
-import { STUDY_EXAM_ID } from '../study/types';
 import { LoadErrorAlert } from '../widgets';
 
 // 학습 라우트 래퍼 — 주소창의 세트 UUID 없이 route mode에 따라 store view를 설정한다 (#148).
@@ -23,7 +23,9 @@ export function StudyRoute({
   const location = useLocation();
   const view = useStudyUiStore((s) => s.view);
   const setView = useStudyUiStore((s) => s.setView);
-  const current = useCurrentStudySet(client, STUDY_EXAM_ID, userId, mode === 'current');
+  // 진행 중 세트 조회는 선택 시험(공개 코드) 기준 — 하드코딩 없음 (#239).
+  const { examId } = useExamScope();
+  const current = useCurrentStudySet(client, examId, userId, mode === 'current');
   const state = location.state as { setId?: unknown; startedSetId?: unknown } | null;
   const resultSetId = typeof state?.setId === 'string' ? state.setId : null;
   const startedSetId = typeof state?.startedSetId === 'string' ? state.startedSetId : null;

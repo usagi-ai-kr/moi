@@ -38,7 +38,6 @@ describe('정답 개수 안내 (#50)', () => {
     withQuery(
       <QuestionView
         client={fakeClient()}
-        examId="saa-c03"
         items={[item]}
         index={0}
         save="idle"

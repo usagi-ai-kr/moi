@@ -1,14 +1,9 @@
 import { copy } from '../copy';
 import type { StudyMode } from '../api/client';
 
-// SAA-C03 고정 — 단일 시험 selector만 제공한다 (이슈 #212, #50).
-export const STUDY_EXAM_ID = 'saa-c03';
-// 지원 시험 단일 상수 — 현재 SAA-C03 1개, 향후 추가 시 배열 확장 (ADR-0056).
-export const STUDY_EXAMS: ReadonlyArray<{ id: string; label: string }> = [
-  { id: 'saa-c03', label: 'AWS Certified Solutions Architect – Associate (SAA-C03)' },
-];
-// 화면 표시명 — 내부 examId 대신 사용자에게 보여준다 (#148).
-export const STUDY_EXAM_LABEL = 'AWS SAA-C03';
+// 시험 목록 단일 소스 — src/ui/exam/exam-catalog.ts (ADR-0068).
+// 시험 코드는 공개 코드만 쓰고 내부 ID는 노출하지 않는다.
+export { DEFAULT_EXAM_CODE, EXAM_CATALOG, examLabel, findExam } from '../exam/exam-catalog';
 
 // 이력 페이지 기본 크기 단일 상수 (이슈 #148)
 export const HISTORY_PAGE_SIZE = 20;

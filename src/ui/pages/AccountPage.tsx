@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { copy } from '../copy';
+import { ExamScope } from '../exam/ExamScope';
 import '../account.css';
 
 // 계정 — 로그인 상태 안내 + 로그아웃 버튼만. UUID/sub/jti/마스킹 ID를 표시하지 않는다.
@@ -23,6 +24,8 @@ export function AccountPage({
   return (
     <section className="moi-page moi-account" aria-label={copy.account.title}>
       <h1 className="moi-account-title">{copy.account.title}</h1>
+      {/* 시험 기준 라벨 — 계정 화면도 선택 시험을 보여준다(#239). */}
+      <ExamScope />
       <p className="moi-lead">{copy.account.loggedIn}</p>
       {failed && (
         <div className="moi-alert moi-alert-error" role="alert">

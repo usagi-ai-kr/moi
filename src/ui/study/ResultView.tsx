@@ -3,9 +3,10 @@ import { Link } from 'react-router';
 import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
 import { Button } from '../components/ui/button';
+import { ExamScope } from '../exam/ExamScope';
 import { ResultQuestionList } from './ResultQuestionList';
 import { ResultPager } from './ResultPager';
-import { scopeLabel, STUDY_EXAM_LABEL } from './types';
+import { scopeLabel } from './types';
 import './study-result.css';
 
 interface Props {
@@ -81,7 +82,7 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
         {copy.study.resultTitle}
       </h1>
       <p className="moi-note">
-        {scopeLabel(set.mode)} · {STUDY_EXAM_LABEL} · 정답률 {r.accuracyPercent}%
+        {scopeLabel(set.mode)} · <ExamScope code={set.examId} /> · 정답률 {r.accuracyPercent}%
       </p>
       <dl className="moi-study-result">
         <div>

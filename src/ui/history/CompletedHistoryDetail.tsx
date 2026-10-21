@@ -2,7 +2,7 @@ import { Link, useInRouterContext } from 'react-router';
 import type { StudySummary } from '../api/client';
 import { copy } from '../copy';
 import { domainLabel } from '../stats/labels';
-import { formatDateTime, scopeLabel, STUDY_EXAM_LABEL } from '../study/types';
+import { examLabel, formatDateTime, scopeLabel } from '../study/types';
 
 // 완료 이력 상세 — 요약 대화상자와 상세 보기 액션.
 // 학습 화면 이력(HistoryView 인라인 목록)과 학습 현황 완료 탭(컬럼 표)이 함께 쓴다 (#224).
@@ -59,10 +59,13 @@ export function HistoryDetailDialog({
   onOpenDetail?: (id: string) => void;
 }) {
   const dateText = formatDateTime(item.submittedAt);
+  // 시험 표시는 이력 항목이 소유한 시험 기준 — 선택 시험과 무관할 수 있다 (ADR-0068).
+  const examName = examLabel(item.examId);
   return (
     <div className="moi-study-detail" role="dialog" aria-label={copy.history.detailDialogLabel(dateText)}>
       <p className="moi-note">
-        {STUDY_EXAM_LABEL} · {scopeLabel(item.mode)}
+        {examName ? `${examName} · ` : ''}
+        {scopeLabel(item.mode)}
         {item.domainId ? ` · ${domainLabel(item.domainId)}` : ''} · {dateText}
       </p>
       <div className="moi-cta moi-study-cta-row">

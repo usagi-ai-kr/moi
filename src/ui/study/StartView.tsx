@@ -1,6 +1,6 @@
 import { copy } from '../copy';
-import { STUDY_SET_SIZE } from '@/domain/study/thresholds';
-import { STUDY_DOMAINS, STUDY_EXAMS, STUDY_EXAM_ID, STUDY_EXAM_LABEL } from './types';
+import { ExamScope } from '../exam/ExamScope';
+import { STUDY_DOMAINS } from './types';
 import type { StudyScope } from './types';
 
 interface Props {
@@ -22,25 +22,9 @@ export function StartView(p: Props) {
   return (
     <section className="moi-study" aria-label={copy.study.startTitle}>
       <h1 className="moi-study-title">{copy.study.startTitle}</h1>
-      <p className="moi-note">
-        {STUDY_EXAM_LABEL} · {STUDY_SET_SIZE}문제
-      </p>
-      <label className="moi-study-label">
-        {copy.study.examLabel}
-        <select
-          className="moi-study-select"
-          value={STUDY_EXAM_ID}
-          disabled
-          aria-label={copy.study.examLabel}
-        >
-          {STUDY_EXAMS.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p className="moi-note">{copy.study.examNote}</p>
+      {/* 시험 기준 라벨 — 시험 선택은 셸(헤더/드로어) 1곳에서 한다(#239). */}
+      <ExamScope />
+      <p className="moi-note">{copy.exam.note}</p>
       <p className="moi-note">{copy.study.examContext}</p>
       <fieldset className="moi-study-field">
         <legend className="moi-study-legend">범위</legend>
