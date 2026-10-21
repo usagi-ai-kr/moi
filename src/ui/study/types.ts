@@ -27,11 +27,19 @@ export function scopeLabel(scope: StudyScope): string {
   return '전체';
 }
 
+/**
+ * 표시 하한 — 1971-01-01(UTC) 이전 값은 '날짜 정보 없음'으로 되돌린다.
+ * 작은 양수(1~86399 등)는 1970 표기가 되므로 하한 아래는 모두 미표시 처리한다(#260, ADR-0074).
+ */
+const MIN_EPOCH_SECONDS = 31_536_000;
+
 export function formatDateTime(value: number | null | undefined): string {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
     return copy.study.unknownDate;
   }
+  // 저장 단위는 epoch seconds — 1e12 미만은 초, 그 이상은 ms로 정규화한다(ADR-0056).
   const ms = value < 1e12 ? value * 1000 : value;
+  if (ms / 1000 < MIN_EPOCH_SECONDS) return copy.study.unknownDate;
   const d = new Date(ms);
   if (Number.isNaN(d.getTime())) return copy.study.unknownDate;
   return new Intl.DateTimeFormat('ko-KR', {
