@@ -1,5 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
+import { DEFAULT_STUDY_SET_SIZE } from '@/domain/study/thresholds';
 import {
   abandonStudySet,
   answerStudyItem,
@@ -130,6 +131,18 @@ export function isRouterStudyPath(): boolean {
   } catch {
     return false;
   }
+}
+
+// 부족 안내 표시 여부 — 요청 size stash가 현재 세트와 일치할 때만 표시한다 (#275 F1·r5 B1).
+export function shouldShowShortageNotice(examId: string, setId: string | undefined, count: number): boolean {
+  const requested = readRequestedSize(examId);
+  return (
+    requested !== null &&
+    requested.setId === setId &&
+    isRouterStudyPath() &&
+    count >= DEFAULT_STUDY_SET_SIZE &&
+    count < requested.size
+  );
 }
 
 interface AnswerInput {

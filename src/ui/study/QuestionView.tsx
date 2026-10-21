@@ -1,7 +1,9 @@
 import type { RefObject } from 'react';
-import { DEFAULT_STUDY_SET_SIZE } from '@/domain/study/thresholds';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
+import { OptionFieldset } from '../components/option-fieldset';
+import { OptionRow } from '../components/option-row';
+import { QuestionCard } from '../components/question-card';
 import { Button } from '../components/ui/button';
 import {
   iconAbandon,
@@ -12,8 +14,9 @@ import {
 } from '../icons';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
-import { readRequestedSize, isRouterStudyPath } from './queries';
+import { shouldShowShortageNotice } from './queries';
 import { ReportButton } from './ReportButton';
+import { StudyShortageNotice } from './StudyShortageNotice';
 import type { SaveState } from './types';
 
 interface Props {
@@ -76,6 +79,7 @@ function responseLabel(r: ItemResponse): string {
 // 문제 화면 — 시작 시점 스냅샷 본문·보기 텍스트 렌더, 이전/다음, 자동 저장 상태.
 // 마지막 문항은 하단 탐색을 [이전][제출하기]로 바꿔 비활성 다음을 남기지 않는다(#232).
 // 제출 CTA는 상태당 하나가 원칙이므로 마지막에서는 상단 제출을 숨기고 하단으로 옮긴다.
+// 질문 카드·선택지 행은 복습과 공통(#274) — 모드별 로직(제출 시 채점)은 그대로 둔다.
 export function QuestionView(p: Props) {
   const item = p.items[p.index];
   if (!item) return null;
@@ -85,61 +89,51 @@ export function QuestionView(p: Props) {
   const saveText = SAVE_TEXT[p.save];
   const isLast = p.index >= total - 1;
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
-  // 부족 안내 — 라우트 변경으로 size가 기본값 리셋돼도 요청 size stash로 비교한다 (#275 F1).
-  // 실제 길이 < 기본값 구간은 StudyScreen이 이미 표시하므로 중복을 피한다.
-  // stash가 다른 세트 기록이면 표시하지 않는다 (#275 r5 B1).
-  const requested = readRequestedSize(examId);
-  const showShortageNotice =
-    requested !== null &&
-    requested.setId === p.setId &&
-    isRouterStudyPath() &&
-    p.items.length >= DEFAULT_STUDY_SET_SIZE &&
-    p.items.length < requested.size;
+  const showShortageNotice = shouldShowShortageNotice(examId, p.setId, p.items.length);
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
-      {showShortageNotice && (
-        <div className="moi-alert moi-alert-info" role="status">
-          <p className="moi-alert-text">{copy.study.sizeAvailableNotice(p.items.length)}</p>
+      {showShortageNotice && <StudyShortageNotice count={p.items.length} />}
+      {/* 상단 헤더 — 복습과 같은 border-b·justify-between, 진행→제출→포기 순서 유지(#186). */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+        <p className="moi-study-progress font-semibold text-primary" aria-live="polite">
+          {copy.study.questionLabel} {p.index + 1}/{total} · {responseLabel(item.response)}
+        </p>
+        {/* 상단 액션 — 제출·포기 (#186): 스크롤 없이 바로 닿도록 진행 표시 직후에 둔다. */}
+        {/* 마지막 문항에서는 상단 제출을 숨기고 하단 탐색으로 옮긴다 — 제출 CTA 상태당 하나(#232). */}
+        <div className="moi-study-question-top">
+          {!isLast && (
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              disabled={p.submitting}
+              pending={p.submitting}
+              onClick={p.onSubmitRequest}
+            >
+              <SubmitIcon
+                size={iconSubmit.size}
+                aria-hidden="true"
+                focusable="false"
+                className="moi-action-icon"
+              />
+              {submitLabel}
+            </Button>
+          )}
+          <Button asChild variant="outline" size="sm" className="text-destructive">
+            <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest} disabled={p.submitting} aria-busy={p.submitting}>
+              <AbandonIcon
+                size={iconAbandon.size}
+                aria-hidden="true"
+                focusable="false"
+                className="moi-action-icon"
+              />
+              {copy.study.abandon}
+            </button>
+          </Button>
         </div>
-      )}
-      <p className="moi-study-progress" aria-live="polite">
-        {p.index + 1}/{total} · {responseLabel(item.response)}
-      </p>
+      </div>
       <div className="moi-study-progressbar" aria-hidden="true">
         <span style={{ width: `${Math.round(((p.index + 1) / total) * 100)}%` }} />
-      </div>
-      {/* 상단 액션 — 제출·포기 (#186): 스크롤 없이 바로 닿도록 진행 표시 직후에 둔다. */}
-      {/* 마지막 문항에서는 상단 제출을 숨기고 하단 탐색으로 옮긴다 — 제출 CTA 상태당 하나(#232). */}
-      <div className="moi-study-question-top">
-        {!isLast && (
-          <Button
-            type="button"
-            variant="primary"
-            size="sm"
-            disabled={p.submitting}
-            pending={p.submitting}
-            onClick={p.onSubmitRequest}
-          >
-            <SubmitIcon
-              size={iconSubmit.size}
-              aria-hidden="true"
-              focusable="false"
-              className="moi-action-icon"
-            />
-            {submitLabel}
-          </Button>
-        )}
-        <Button asChild variant="outline" size="sm" className="text-destructive">
-          <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest} disabled={p.submitting} aria-busy={p.submitting}>
-            <AbandonIcon
-              size={iconAbandon.size}
-              aria-hidden="true"
-              focusable="false"
-              className="moi-action-icon"
-            />
-            {copy.study.abandon}
-          </button>
-        </Button>
       </div>
       {/* 제출 실패 알림 — 상단 액션 바로 아래에서 보인다 (#186). */}
       {p.submitError && (
@@ -147,34 +141,37 @@ export function QuestionView(p: Props) {
           <p className="moi-alert-text">{p.submitError}</p>
         </div>
       )}
-      <h1 className="moi-study-title">{item.stem}</h1>
-      <p className="moi-note" aria-live="polite">
-        {copy.study.answerCountHint(item.answerCount)}
-      </p>
-      {/* 문항 액션 그룹 — 정보(제목·보기)와 분리된 독립 그룹, 탐색·최종 액션과도 분리(#232). */}
-      <div className="moi-study-item-actions" role="group" aria-label={copy.study.itemActions}>
-        <BookmarkButton client={p.client} examId={examId} questionId={item.questionId} />
-        <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
-      </div>
-      <fieldset className="moi-study-field">
-        <legend className="moi-study-legend">보기 선택</legend>
-        {item.optionOrder.map((optionId, k) => (
-          <label key={optionId} className="moi-study-check">
-            <input
-              type="checkbox"
+      {/* 문항 액션 그룹 — 제목·힌트 바로 아래, 보기 위. 정보와 분리된 독립 그룹(#232).
+          before 순서(제출/포기 → 북마크/신고 → 보기) 복원. 복습 헤더 북마크는 기준 그대로 둔다. */}
+      <QuestionCard
+        stem={item.stem}
+        hint={copy.study.answerCountHint(item.answerCount)}
+        titleAs="h1"
+        titleClassName="moi-study-title"
+        headerActions={
+          <div className="moi-study-item-actions" role="group" aria-label={copy.study.itemActions}>
+            <BookmarkButton client={p.client} examId={examId} questionId={item.questionId} />
+            <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
+          </div>
+        }
+      >
+        <OptionFieldset className="moi-study-field">
+          {item.optionOrder.map((optionId, k) => (
+            <OptionRow
+              key={optionId}
               checked={isChecked(item, optionId)}
               disabled={p.submitting}
               onChange={() => p.onAnswer(item.questionId, toggleOption(item, optionId), item.response)}
-              aria-label={`보기 ${k + 1} ${optionText(item, optionId)}`}
+              ariaLabel={`보기 ${k + 1} ${optionText(item, optionId)}`}
+              index={k}
+              text={optionText(item, optionId)}
             />
-            <span>
-              {k + 1}. {optionText(item, optionId)}
-            </span>
-          </label>
-        ))}
-      </fieldset>
+          ))}
+        </OptionFieldset>
+      </QuestionCard>
       {/* 버튼 위계 — DESIGN.md 5절: Pass=secondary, 미응답으로 지우기=ghost (shadcn Button 공통 규격). */}
-      <div className="moi-study-actions">
+      {/* 복습 하단 액션과 같은 justify-between·gap-3·pt-2 배치(#274). */}
+      <div className="moi-study-actions flex flex-wrap items-center justify-between gap-3 pt-2">
         <Button type="button" variant="secondary" disabled={p.submitting} aria-busy={p.submitting} onClick={() => p.onPass(item.questionId, item.response)}>
           <PassIcon
             size={iconPass.size}
@@ -199,7 +196,8 @@ export function QuestionView(p: Props) {
         </p>
       )}
       {/* [이전][다음]은 같은 크기·같은 variant의 secondary. 마지막은 [이전][제출하기](#232). */}
-      <div className="moi-study-nav">
+      {/* 복습 하단과 같은 justify-between·gap-3·pt-2 배치(#274). */}
+      <div className="moi-study-nav flex flex-wrap items-center justify-between gap-3 pt-2">
         <Button type="button" variant="secondary" disabled={p.index === 0} onClick={() => p.onIndex(p.index - 1)}>
           <PrevIcon
             size={iconPrev.size}
