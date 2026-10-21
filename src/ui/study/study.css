@@ -55,17 +55,11 @@ h1.moi-study-title {
   line-height: var(--moi-lh-tight);
   color: var(--moi-color-ink);
 }
-.moi-study-radio,
-.moi-study-check {
+.moi-study-radio {
   display: flex;
   align-items: center;
   gap: var(--moi-space-2);
   cursor: pointer;
-}
-/* #274: 풀이 선택지는 공통 OptionRow(Tailwind 카드형)로 교체 — .moi-study-check는 호환용으로만 유지, 신규 사용 금지. */
-.moi-study-check {
-  min-height: var(--moi-space-8);
-  font-size: var(--moi-size-small);
 }
 /* 시작 화면 선택 행 — 44px 터치 타깃, 본문 16px(DESIGN.md 5항). */
 .moi-study-radio {
@@ -76,11 +70,6 @@ h1.moi-study-title {
 .moi-study-radio:has(input:checked) {
   font-weight: 600;
   color: var(--moi-color-ink);
-}
-.moi-study-check input {
-  width: var(--moi-icon-md);
-  height: var(--moi-icon-md);
-  accent-color: var(--moi-color-orange);
 }
 /* 네이티브 accent-color는 체크 색이 원 밖으로 번져 보여 직접 그린다 (#178). */
 .moi-study-radio input {
@@ -241,23 +230,6 @@ h1.moi-study-title {
   justify-content: flex-start;
   gap: var(--moi-space-2);
   max-width: 100%;
-}
-/* #274: 질문 카드 공통화 — 긴 AWS 문장·코드·URL에서 카드 밀도·줄바꿈·overflow 보장. */
-.moi-study [data-slot='card'] {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.moi-study [data-slot='card-title'],
-.moi-study [data-slot='card-content'] {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-/* 카드 안 학습 제목은 복습 카드와 같은 크기(18px)로 — .moi-study-title(h2)보다 카드 토큰이 우선.
-   클래스는 E2E 호환용으로 유지한다. */
-.moi-study [data-slot='card-title'].moi-study-title {
-  margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.625;
 }
 /* #233 Slice B — 액션 아이콘 20px 토큰(shadcn svg 16px보다 우선). 네이티브 버튼은 아이콘+라벨 정렬만 보완. */
 .moi-study [data-slot='button'] svg.moi-action-icon { width: 20px; height: 20px; flex: none; }

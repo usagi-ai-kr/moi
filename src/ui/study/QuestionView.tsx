@@ -14,6 +14,7 @@ import {
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { ReportButton } from './ReportButton';
+import './question-card.css';
 import type { SaveState } from './types';
 
 interface Props {
