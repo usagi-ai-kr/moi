@@ -40,8 +40,9 @@ function prefetchOnIntent(to: '/history' | '/review' | '/account') {
   };
 }
 
-// 로그인 후 셸 — header(브랜드+nav) + main(Outlet). NavLink가 aria-current="page"를 부여한다.
+// 로그인 후 셸 — header(브랜드+nav) + main(공통 시험 선택+Outlet). NavLink가 aria-current="page"를 부여한다.
 // 모바일(≤767px)은 햄버거 + 우측 Drawer, 데스크톱은 가로 nav를 노출한다 (ADR-0057).
+// 시험 selector는 nav/Drawer가 아니라 콘텐츠 최상단 공통 1개다 (#273).
 // 로그아웃은 계정 본문이 아니라 이 셸의 독립 액션이다(#234/ADR-0072) — 비로그인 상태에서는 셸 자체가 렌더되지 않는다.
 export function AppShell({
   onLogout,
@@ -72,29 +73,25 @@ export function AppShell({
           <Link to="/" className="moi-brand-link" aria-label={copy.brand}>
             <Brand />
           </Link>
-          <div className="moi-shell-nav-group">
-            <nav className="moi-nav" aria-label={copy.nav.label} hidden={isMobile}>
-              <NavLink to="/" end className="moi-nav-link">
-                <NavIcon spec={iconStart} />
-                {copy.nav.study}
-              </NavLink>
-              <NavLink to="/history" className="moi-nav-link" {...prefetchOnIntent('/history')}>
-                <NavIcon spec={iconHistory} />
-                {copy.nav.history}
-              </NavLink>
-              <NavLink to="/review" className="moi-nav-link" {...prefetchOnIntent('/review')}>
-                <NavIcon spec={iconBookmark} />
-                {copy.nav.review}
-              </NavLink>
-              <NavLink to="/account" className="moi-nav-link" {...prefetchOnIntent('/account')}>
-                <NavIcon spec={iconAccount} />
-                {copy.nav.account}
-              </NavLink>
-              <LogoutAction className="moi-nav-action" pending={pending} onLogout={onLogout} />
-            </nav>
-            {/* 시험 선택 — 데스크톱은 헤더, 모바일은 Drawer. 동시에 마운트되지 않는다 (#239). */}
-            {!isMobile ? <ExamSelector id="moi-exam-select-nav" className="moi-shell-exam" /> : null}
-          </div>
+          <nav className="moi-nav" aria-label={copy.nav.label} hidden={isMobile}>
+            <NavLink to="/" end className="moi-nav-link">
+              <NavIcon spec={iconStart} />
+              {copy.nav.study}
+            </NavLink>
+            <NavLink to="/history" className="moi-nav-link" {...prefetchOnIntent('/history')}>
+              <NavIcon spec={iconHistory} />
+              {copy.nav.history}
+            </NavLink>
+            <NavLink to="/review" className="moi-nav-link" {...prefetchOnIntent('/review')}>
+              <NavIcon spec={iconBookmark} />
+              {copy.nav.review}
+            </NavLink>
+            <NavLink to="/account" className="moi-nav-link" {...prefetchOnIntent('/account')}>
+              <NavIcon spec={iconAccount} />
+              {copy.nav.account}
+            </NavLink>
+            <LogoutAction className="moi-nav-action" pending={pending} onLogout={onLogout} />
+          </nav>
           {isMobile ? (
             <button
               type="button"
@@ -112,6 +109,10 @@ export function AppShell({
       </header>
       <main className="moi-main moi-shell-main">
         <div className="moi-container moi-main-inner moi-enter">
+          {/* 시험 선택 — 공통 콘텐츠 최상단(페이지 제목 위) 1개 (#273). nav/Drawer에는 두지 않는다. */}
+          <div className="moi-content-exam">
+            <ExamSelector id="moi-exam-select-content" />
+          </div>
           <Outlet />
         </div>
       </main>
@@ -133,9 +134,6 @@ export function AppShell({
             >
               <CloseIcon size={iconClose.size} aria-hidden="true" focusable="false" />
             </button>
-          </div>
-          <div className="moi-drawer-exam">
-            <ExamSelector id="moi-exam-select-drawer" />
           </div>
           <nav className="moi-drawer-nav" aria-label={copy.nav.label}>
             <NavLink to="/" end className="moi-drawer-link" onClick={() => setDrawerOpen(false)}>
