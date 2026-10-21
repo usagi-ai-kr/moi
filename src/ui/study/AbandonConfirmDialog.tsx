@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { copy } from '../copy';
+import './study-abandon.css';
 import { Button } from '../components/ui/button';
 import {
   AlertDialog,
