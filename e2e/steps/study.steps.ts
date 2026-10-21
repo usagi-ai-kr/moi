@@ -30,6 +30,9 @@ let active: {
 // 다음 PATCH /answers 1회만 실패시키는 플래그 (#52 오프라인 재연결 E2E).
 let failNextAnswer = false;
 
+// POST /abandon 호출 횟수 (#223 — 취소/Escape 0회·확정 1회 검증).
+let abandonCalls = 0;
+
 // 학습 현황 고정 응답 (#54) — saa-c03 요청에만 제공한다.
 const STATS_DTO = {
   examId: 'saa-c03',
@@ -144,6 +147,7 @@ function submittedDto(s: NonNullable<typeof active>) {
 Given('학습 API 모의가 준비되면', async ({ page }) => {
   active = null;
   failNextAnswer = false;
+  abandonCalls = 0;
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
   });
@@ -274,6 +278,7 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
         return;
       }
       if (method === 'POST' && sub === 'abandon') {
+        abandonCalls += 1;
         active.status = 'abandoned';
         await route.fulfill({ status: 200, json: toActiveDto(active) });
         return;
@@ -332,6 +337,80 @@ When('포기를 확인하면', async ({ page }) => {
   await page.getByRole('button', { name: '포기 확인' }).click();
 });
 
+When('포기 취소를 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: '취소' }).click();
+});
+
+When('Escape 키를 누르면', async ({ page }) => {
+  await page.keyboard.press('Escape');
+});
+
+When('텍스트를 200%로 확대하면', async ({ page }) => {
+  // #223 AC5 — 텍스트 200% 확대(브라우저 확대 모의, Chromium zoom).
+  await page.evaluate(() => {
+    document.documentElement.style.setProperty('zoom', '2');
+  });
+});
+
+Then('포기 요청이 {int}회 발생했다', async ({}, count: number) => {
+  expect(abandonCalls).toBe(count);
+});
+
+Then('포기 확인이 보인다', async ({ page }) => {
+  await expect(page.getByRole('alertdialog', { name: copy.study.abandonTitle })).toBeVisible();
+  await expect(page.getByText(copy.study.abandonDesc)).toBeVisible();
+});
+
+Then('포기 확인 레이아웃이 깨지지 않는다', async ({ page }) => {
+  // #223 AC5 — 실제 bbox로 문구/버튼 겹침·잘림·뷰포트 이탈을 검증한다(jsdom 금지).
+  const layout = await page.evaluate(() => {
+    const rect = (el: Element | null) => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return { x: r.x, y: r.y, w: r.width, h: r.height };
+    };
+    const dialog = document.querySelector('[role="alertdialog"]');
+    const boxes = {
+      dialog: rect(dialog),
+      title: rect(dialog?.querySelector('h2') ?? null),
+      desc: rect(dialog?.querySelector('p') ?? null),
+      cancel: null as { x: number; y: number; w: number; h: number } | null,
+      confirm: null as { x: number; y: number; w: number; h: number } | null,
+    };
+    for (const b of dialog?.querySelectorAll('button') ?? []) {
+      const name = b.textContent?.trim() ?? '';
+      if (name === '취소') boxes.cancel = rect(b);
+      if (name === '포기 확인') boxes.confirm = rect(b);
+    }
+    return { boxes, vw: window.innerWidth, vh: window.innerHeight };
+  });
+  const { boxes, vw, vh } = layout;
+  for (const [k, b] of Object.entries(boxes)) {
+    expect(b, k).not.toBeNull();
+    expect(b!.w, `${k} width`).toBeGreaterThan(0);
+    expect(b!.h, `${k} height`).toBeGreaterThan(0);
+    expect(b!.x, `${k} left`).toBeGreaterThanOrEqual(0);
+    expect(b!.x + b!.w, `${k} right`).toBeLessThanOrEqual(vw + 1);
+    expect(b!.y, `${k} top`).toBeGreaterThanOrEqual(0);
+    expect(b!.y + b!.h, `${k} bottom`).toBeLessThanOrEqual(vh + 1);
+  }
+  // 버튼은 44px 이상(#223 AC2·AC5).
+  expect(boxes.cancel!.h, 'cancel height').toBeGreaterThanOrEqual(44 - 1);
+  expect(boxes.confirm!.h, 'confirm height').toBeGreaterThanOrEqual(44 - 1);
+  const overlap = (
+    a: { x: number; y: number; w: number; h: number },
+    b: { x: number; y: number; w: number; h: number },
+  ) => Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) * Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+  expect(overlap(boxes.title!, boxes.desc!)).toBe(0);
+  expect(overlap(boxes.title!, boxes.cancel!)).toBe(0);
+  expect(overlap(boxes.title!, boxes.confirm!)).toBe(0);
+  expect(overlap(boxes.desc!, boxes.cancel!)).toBe(0);
+  expect(overlap(boxes.desc!, boxes.confirm!)).toBe(0);
+  expect(overlap(boxes.cancel!, boxes.confirm!)).toBe(0);
+  await expect(page.getByRole('button', { name: '취소' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '포기 확인' })).toBeEnabled();
+});
+
 When('학습 이력 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: '학습 이력' }).click();
 });
@@ -385,10 +464,6 @@ Then('해설과 근거가 보인다', async ({ page }) => {
   await expect(source).toBeVisible();
   await expect(source).toHaveAttribute('href', 'https://docs.aws.amazon.com/q-0');
   await expect(source).toHaveAttribute('title', 'https://docs.aws.amazon.com/q-0');
-});
-
-Then('포기 확인이 보인다', async ({ page }) => {
-  await expect(page.getByText(/정말 포기할까요/)).toBeVisible();
 });
 
 Then('완료 세트가 보인다', async ({ page }) => {

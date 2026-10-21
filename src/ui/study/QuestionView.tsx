@@ -1,3 +1,4 @@
+import type { RefObject } from 'react';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { Button } from '../components/ui/button';
@@ -21,6 +22,7 @@ interface Props {
   onRetry: (questionId: string) => void;
   onSubmitRequest: () => void;
   onAbandonRequest: () => void;
+  abandonTriggerRef?: RefObject<HTMLButtonElement | null>;
 }
 
 function isChecked(item: StudyActiveItem, optionId: string): boolean {
@@ -80,8 +82,10 @@ export function QuestionView(p: Props) {
           {copy.study.submit}
           {p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}
         </Button>
-        <Button type="button" variant="outline" size="sm" className="text-destructive" onClick={p.onAbandonRequest}>
-          {copy.study.abandon}
+        <Button asChild variant="outline" size="sm" className="text-destructive">
+          <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest}>
+            {copy.study.abandon}
+          </button>
         </Button>
       </div>
       {/* 제출 실패 알림 — 상단 액션 바로 아래에서 보인다 (#186). */}

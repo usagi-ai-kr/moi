@@ -3,6 +3,7 @@ import { HTTPError } from 'ky';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse } from '../api/client';
 import { isConflict, isUnauthorized, useAbandonStudy, useAnswerStudy, useStartStudy, useStudyHistory, useStudySet, useSubmitStudy } from './queries';
+import { useAbandonFlow } from './useAbandonFlow';
 import { useStudyUiStore } from './store';
 import { STUDY_EXAM_ID } from './types';
 import { clearSetDrafts, completeDraftSend, dropTabState, listDraftsForSet, openDraftStorage, recordDraft } from './draft-sync';
@@ -209,21 +210,15 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
     else doSubmit();
   }, [doSubmit, s, sync.busy, sync.conflicts, sync.unsynced, unanswered]);
 
-  const doAbandon = useCallback(() => {
-    if (!setId) return;
-    abandonMut.mutate(setId, {
-      onSuccess: () => {
-        s.setConfirmAbandon(false);
-        clearSetDrafts(openDraftStorage(), userId, setId);
-        dropTabState(userId, setId);
-        s.resetFlow();
-        setSetId(null);
-        s.setView('start');
-        if (opts?.onAbandoned) opts.onAbandoned();
-        else writeStudyParam(null);
-      },
-    });
-  }, [abandonMut, s, setId, userId, opts]);
+  const abandon = useAbandonFlow({
+    setId, userId, store: s, abandonMut,
+    onAbandoned: opts?.onAbandoned,
+    writeStudyParam,
+    clearSetId: () => setSetId(null),
+  });
+  const doAbandon = abandon.doAbandon;
+  const abandonError = abandon.abandonError;
+  const clearAbandonError = abandon.clearAbandonError;
 
   const restart = useCallback(() => {
     if (setId) {
@@ -242,7 +237,8 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
     startMut, answerMut, submitMut, abandonMut,
     startError, conflict, unauth, submitError, blocked,
     conflicts: sync.conflicts, syncBusy: sync.busy,
-    handleStart, handleAnswer, doSubmit, doAbandon, restart, handleRetry, handleSubmitRequest,
+    handleStart, handleAnswer, doSubmit, doAbandon, abandonError, clearAbandonError,
+    restart, handleRetry, handleSubmitRequest,
     resolveServer: sync.resolveServer, resolveMine: sync.resolveMine,
   };
 }

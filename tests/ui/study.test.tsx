@@ -287,7 +287,7 @@ describe('제출·결과·포기', () => {
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
     await screen.findByText(/1\/10/);
     fireEvent.click(screen.getByRole('button', { name: '포기하기' }));
-    expect(await screen.findByText(/정말 포기할까요/)).toBeInTheDocument();
+    expect(await screen.findByText('정말 학습을 포기하시겠습니까?')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '포기 확인' }));
     await waitFor(() => expect(screen.getByText('학습 범위 선택')).toBeInTheDocument());
   });

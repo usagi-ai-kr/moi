@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { copy } from '../copy';
 import { isSubmittedSet, type ApiClient } from '../api/client';
 import { Button } from '../components/ui/button';
 import { RouteFallback } from '../RouteFallback';
+import { AbandonConfirmDialog } from './AbandonConfirmDialog';
 import { ConflictPanel } from './ConflictPanel';
 import { HistoryView } from './HistoryView';
 import { QuestionView } from './QuestionView';
@@ -12,7 +13,8 @@ import { useStudyCorrections } from './queries';
 import { useStudyFlow } from './useStudyFlow';
 import './study.css';
 
-function ConfirmDialog({
+// 제출 확인용 인라인 대화상자 — 포기 확인(#223)은 모달 AbandonConfirmDialog를 사용한다.
+function InlineConfirmDialog({
   tone, label, text, confirm, pending, destructive, onConfirm, onCancel,
 }: {
   tone: string;
@@ -71,6 +73,8 @@ export function StudyScreen({
         }
       : {}),
   });
+  // 포기 트리거(QuestionView) — 취소/Escape 후 포커스 복귀용 (#223).
+  const abandonTriggerRef = useRef<HTMLButtonElement | null>(null);
   const { s, set, unanswered, setQuery, historyQuery } = f;
   // 제출 세트일 때만 정정 이력을 조회한다 — useStudyFlow는 수정하지 않는다 (#53).
   const correctionsQuery = useStudyCorrections(client, set && isSubmittedSet(set) ? set.id : null);
@@ -136,7 +140,7 @@ export function StudyScreen({
           />
         )}
         {s.confirmSubmit && (
-          <ConfirmDialog
+          <InlineConfirmDialog
             tone="moi-alert-warning"
             label={copy.study.confirmSubmit}
             text={unanswered > 0 ? copy.study.unansweredWarn : copy.study.confirmSubmit}
@@ -147,18 +151,17 @@ export function StudyScreen({
             onCancel={() => s.setConfirmSubmit(false)}
           />
         )}
-        {s.confirmAbandon && (
-          <ConfirmDialog
-            tone="moi-alert-error"
-            label={copy.study.confirmAbandon}
-            text={copy.study.abandonAsk}
-            confirm={copy.study.confirmAbandon}
-            pending={f.abandonMut.isPending}
-            destructive
-            onConfirm={f.doAbandon}
-            onCancel={() => s.setConfirmAbandon(false)}
-          />
-        )}
+        <AbandonConfirmDialog
+          open={s.confirmAbandon}
+          pending={f.abandonMut.isPending}
+          error={f.abandonError}
+          triggerRef={abandonTriggerRef}
+          onConfirm={f.doAbandon}
+          onRequestClose={() => {
+            f.clearAbandonError();
+            s.setConfirmAbandon(false);
+          }}
+        />
         <QuestionView
           client={client}
           examId={set.examId}
@@ -179,6 +182,7 @@ export function StudyScreen({
           onRetry={() => f.handleRetry()}
           onSubmitRequest={f.handleSubmitRequest}
           onAbandonRequest={() => s.setConfirmAbandon(true)}
+          abandonTriggerRef={abandonTriggerRef}
         />
       </div>
     );
