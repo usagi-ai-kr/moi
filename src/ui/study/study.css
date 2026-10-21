@@ -44,6 +44,7 @@ h1.moi-study-title {
   margin: var(--moi-space-1) 0 0;
   padding: 0;
   border: 0;
+  min-width: 0;
 }
 /* #269: 설명(.moi-note·small·muted)과 범위 라벨(legend·body·ink·600)을 위계 분리. */
 .moi-study-legend {
@@ -61,6 +62,7 @@ h1.moi-study-title {
   gap: var(--moi-space-2);
   cursor: pointer;
 }
+/* #274: 풀이 선택지는 공통 OptionRow(Tailwind 카드형)로 교체 — .moi-study-check는 호환용으로만 유지, 신규 사용 금지. */
 .moi-study-check {
   min-height: var(--moi-space-8);
   font-size: var(--moi-size-small);
@@ -229,7 +231,8 @@ h1.moi-study-title {
   height: 100%;
   background: var(--moi-color-orange);
 }
-/* 상단 제출·포기 액션 행 — 배경·테두리 없이 여백만, 좁은 화면은 줄바꿈 허용 (#186). */
+/* 상단 제출·포기 액션 행 — 복습 헤더 우측과 같은 gap, 좁은 화면은 줄바꿈 허용 (#186·#274).
+   헤더(flex justify-between) 안에서 우측에 붙도록 width:100%를 두지 않는다. */
 .moi-study-question-top {
   display: flex;
   flex-direction: row;
@@ -237,7 +240,24 @@ h1.moi-study-title {
   align-items: center;
   justify-content: flex-start;
   gap: var(--moi-space-2);
-  width: 100%;
+  max-width: 100%;
+}
+/* #274: 질문 카드 공통화 — 긴 AWS 문장·코드·URL에서 카드 밀도·줄바꿈·overflow 보장. */
+.moi-study [data-slot='card'] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.moi-study [data-slot='card-title'],
+.moi-study [data-slot='card-content'] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+/* 카드 안 학습 제목은 복습 카드와 같은 크기(18px)로 — .moi-study-title(h2)보다 카드 토큰이 우선.
+   클래스는 E2E 호환용으로 유지한다. */
+.moi-study [data-slot='card-title'].moi-study-title {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.625;
 }
 /* #233 Slice B — 액션 아이콘 20px 토큰(shadcn svg 16px보다 우선). 네이티브 버튼은 아이콘+라벨 정렬만 보완. */
 .moi-study [data-slot='button'] svg.moi-action-icon { width: 20px; height: 20px; flex: none; }

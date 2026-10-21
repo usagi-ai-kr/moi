@@ -1,8 +1,9 @@
 import type { ApiClient } from '../api/client';
 import type { ReviewPendingItem } from '../api/review-client';
+import { OptionRow } from '../components/option-row';
+import { QuestionCard } from '../components/question-card';
 import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { copy } from '../copy';
 import { BookmarkButton } from './BookmarkButton';
 import { iconPass, iconRefresh, iconSubmit } from '../icons';
@@ -66,44 +67,22 @@ export function ReviewQuestion({
         </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-semibold leading-relaxed md:text-lg">
-            {item.stem}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">{copy.review.answerCountHint(item.answerCount)}</p>
-        </CardHeader>
-        <CardContent>
-          <fieldset className="flex flex-col gap-2">
-            <legend className="sr-only">보기 선택</legend>
-            {item.options.map((opt, idx) => {
-              const checked = selectedOptions.includes(opt.optionId);
-              return (
-                <label
-                  key={opt.optionId}
-                  className={`flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md border p-3 text-base transition-colors ${
-                    checked
-                      ? 'border-primary bg-primary/5 font-medium text-foreground'
-                      : 'border-border bg-background text-foreground hover:bg-muted/50'
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    disabled={isSubmitting}
-                    onChange={() => onToggleOption(opt.optionId)}
-                    className="h-5 w-5 rounded border-border"
-                    aria-label={`보기 ${idx + 1} ${opt.text}`}
-                  />
-                  <span>
-                    {idx + 1}. {opt.text}
-                  </span>
-                </label>
-              );
-            })}
-          </fieldset>
-        </CardContent>
-      </Card>
+      <QuestionCard stem={item.stem} hint={copy.review.answerCountHint(item.answerCount)}>
+        <fieldset className="flex min-w-0 flex-col gap-2">
+          <legend className="sr-only">보기 선택</legend>
+          {item.options.map((opt, idx) => (
+            <OptionRow
+              key={opt.optionId}
+              checked={selectedOptions.includes(opt.optionId)}
+              disabled={isSubmitting}
+              onChange={() => onToggleOption(opt.optionId)}
+              ariaLabel={`보기 ${idx + 1} ${opt.text}`}
+              index={idx}
+              text={opt.text}
+            />
+          ))}
+        </fieldset>
+      </QuestionCard>
 
       {errorMsg && (
         <Alert variant="error" className="flex flex-col gap-2">
