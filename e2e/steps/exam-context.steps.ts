@@ -98,6 +98,20 @@ Then('시험 selector에 포커스를 둘 수 있다', async ({ page }) => {
   await expect(select).toBeFocused();
 });
 
+// #301 — 계정 화면에는 selector가 없고, 시험 범위 경로에는 1개다.
+Then('시험 selector가 없다', async ({ page }) => {
+  await expect(page.getByRole('combobox', { name: copy.exam.label })).toHaveCount(0);
+  await expect(page.locator('.moi-content-exam')).toHaveCount(0);
+});
+
+Then('계정 제목이 보인다', async ({ page }) => {
+  await expect(page.getByRole('heading', { level: 1, name: '계정' })).toBeVisible();
+});
+
+Then('시험 selector가 1개다', async ({ page }) => {
+  await expect(page.getByRole('combobox', { name: copy.exam.label })).toHaveCount(1);
+});
+
 Then('nav에 시험 selector가 없다', async ({ page }) => {
   await expect(page.locator('nav.moi-nav select.moi-exam-select')).toHaveCount(0);
 });

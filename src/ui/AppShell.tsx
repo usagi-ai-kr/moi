@@ -40,6 +40,21 @@ function prefetchOnIntent(to: '/history' | '/review' | '/account') {
   };
 }
 
+// 시험 범위 경로 — selector를 렌더하는 경로다 (#301).
+// `/`(exact), `/study`·`/history`·`/review`와 하위 경로만 해당한다.
+// `/account`·그 외 미지원 경로는 0개다. RTL에서 직접 검증한다.
+export function isExamScopedPath(pathname: string): boolean {
+  if (pathname === '/') return true;
+  return (
+    pathname === '/study' ||
+    pathname.startsWith('/study/') ||
+    pathname === '/history' ||
+    pathname.startsWith('/history/') ||
+    pathname === '/review' ||
+    pathname.startsWith('/review/')
+  );
+}
+
 // 로그인 후 셸 — header(브랜드+nav) + main(공통 시험 선택+Outlet). NavLink가 aria-current="page"를 부여한다.
 // 모바일(≤767px)은 햄버거 + 우측 Drawer, 데스크톱은 가로 nav를 노출한다 (ADR-0057).
 // 시험 selector는 nav/Drawer가 아니라 콘텐츠 최상단 공통 1개다 (#273).
@@ -109,10 +124,13 @@ export function AppShell({
       </header>
       <main className="moi-main moi-shell-main">
         <div className="moi-container moi-main-inner moi-enter">
-          {/* 시험 선택 — 공통 콘텐츠 최상단(페이지 제목 위) 1개 (#273). nav/Drawer에는 두지 않는다. */}
-          <div className="moi-content-exam">
-            <ExamSelector id="moi-exam-select-content" />
-          </div>
+          {/* 시험 선택 — 시험 범위 경로의 콘텐츠 최상단(페이지 제목 위) 1개 (#273·#301).
+              /account 등 범위 밖에서는 래퍼 자체를 만들지 않는다 (display:none 금지). nav/Drawer에는 두지 않는다. */}
+          {isExamScopedPath(location.pathname) ? (
+            <div className="moi-content-exam">
+              <ExamSelector id="moi-exam-select-content" />
+            </div>
+          ) : null}
           <Outlet />
         </div>
       </main>
