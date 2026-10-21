@@ -255,6 +255,18 @@ describe('내비게이션 로그아웃 액션 (#234/ADR-0072)', () => {
     expect(pending).toHaveAttribute('aria-busy', 'true');
   });
 
+  it('빠른 이중 클릭 시 로그아웃 POST는 1회만 호출된다 (#258 in-flight 가드)', async () => {
+    useDesktopViewport();
+    const client = logoutHangingClient();
+    renderAt(client, '/');
+    const button = await screen.findByRole('button', { name: '로그아웃' });
+    fireEvent.click(button);
+    fireEvent.click(button);
+
+    await screen.findByRole('button', { name: /로그아웃하고 있습니다/ });
+    expect(vi.mocked(client.post)).toHaveBeenCalledTimes(1);
+  });
+
   it('로그아웃 실패: role=alert 안내와 재시도 버튼이 같은 위치에 보인다', async () => {
     useDesktopViewport();
     renderAt(logoutFailingClient(), '/');
