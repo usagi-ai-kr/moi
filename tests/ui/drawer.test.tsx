@@ -109,17 +109,22 @@ describe('모바일 Drawer — 트리거·메뉴 노출 (#215)', () => {
     expect(screen.getByRole('link', { name: '계정' })).not.toHaveAttribute('aria-current');
   });
 
-  it('시험 selector는 Drawer에만 있다 — 열었을 때 1개, 접근 이름이 "시험"이다 (#239)', async () => {
+  it('시험 selector는 Drawer에 없고 콘텐츠 최상단에 있다 — 열어도 1개, 접근 이름이 "시험"이다 (#239·#273)', async () => {
     useViewport(true);
-    renderAt('/');
+    const { container } = renderAt('/');
     const trigger = await screen.findByRole('button', { name: '메뉴 열기' });
-    // 닫힌 상태에서는 헤더에도 Drawer에도 selector가 없다.
-    expect(screen.queryByRole('combobox', { name: '시험' })).not.toBeInTheDocument();
+    // 닫힌 상태에서도 콘텐츠 최상단 selector 1개가 있다.
+    expect(await screen.findByRole('combobox', { name: '시험' })).toBeInTheDocument();
+    expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
     fireEvent.click(trigger);
+    const dialog = await screen.findByRole('dialog');
     const select = await screen.findByRole('combobox', { name: '시험' });
     expect(select).toBeEnabled();
     expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
     expect(screen.getAllByRole('option')).toHaveLength(1);
+    // Drawer 안에는 selector가 없다.
+    expect(dialog.querySelector('select.moi-exam-select')).toBeNull();
+    expect(container.querySelector('dialog .moi-exam-select')).toBeNull();
   });
 });
 

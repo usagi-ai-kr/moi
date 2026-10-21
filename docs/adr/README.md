@@ -82,7 +82,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0065 | 결과 CTA 밑줄·마지막 문항 제출 위치·결과 종료 동선 | Accepted | 2026-10-21 | [0065-result-cta-last-question-submit.md](./0065-result-cta-last-question-submit.md) |
 | ADR-0066 | 완료한 학습 목록의 컬럼 표·숫자 서체와 모바일 라벨-값 카드 | Accepted | 2026-10-21 | [0066-completed-history-columns.md](./0066-completed-history-columns.md) |
 | ADR-0067 | 학습 시작 환영 문구 32종·1시간 유지 | Accepted | 2026-10-21 | [0067-hero-greeting.md](./0067-hero-greeting.md) |
-| ADR-0068 | 시험 연결 context·selector·URL 계약과 Phase 1/2 경계 | Accepted | 2026-10-21 | [0068-exam-context-selector.md](./0068-exam-context-selector.md) |
+| ADR-0068 | 시험 연결 context·selector·URL 계약과 Phase 1/2 경계 | Superseded by ADR-0077 | 2026-10-21 | [0068-exam-context-selector.md](./0068-exam-context-selector.md) |
 | ADR-0069 | nav 워드마크 Bricolage Grotesque 적용 | Accepted | 2026-10-21 | [0069-brand-wordmark-bricolage.md](./0069-brand-wordmark-bricolage.md) |
 | ADR-0070 | 정적 OG/X 메타와 1200×630 공유 이미지 계약 | Accepted | 2026-10-21 | [0070-og-static-meta-image.md](./0070-og-static-meta-image.md) |
 | ADR-0071 | 로그인 전후 화면 시각 통일성 | Accepted | 2026-10-21 | [0071-login-consistency.md](./0071-login-consistency.md) |
@@ -91,5 +91,6 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0074 | 북마크 상태 모양 구분·정답 표시 중복 제거·날짜 하한·페이저 간격 | Accepted | 2026-10-21 | [0074-ux-polish-bookmark-date-lower-bound.md](./0074-ux-polish-bookmark-date-lower-bound.md) |
 | ADR-0075 | 단위 묶음 완성 알림 — 공통 스크립트·스킬 기반 Discord webhook 1회 통지 | Accepted | 2026-10-21 | [0075-orchestrator-completion-notify.md](./0075-orchestrator-completion-notify.md) |
 | ADR-0076 | 학습 범위 안내 정리·fieldset 위계와 문제 수 분리 | Accepted | 2026-10-21 | [0076-study-scope-guidance-hierarchy.md](./0076-study-scope-guidance-hierarchy.md) |
+| ADR-0077 | 시험 선택을 콘텐츠 최상단으로 이동 | Accepted | 2026-10-21 | [0077-exam-content-top.md](./0077-exam-content-top.md) |
 | ADR-0079 | 근거 링크 칩 padding·wrap·상태·외부링크 semantics | Accepted | 2026-10-21 | [0079-source-link-chip-padding-wrap-state-semantics.md](./0079-source-link-chip-padding-wrap-state-semantics.md) |
 <!-- ADR_INDEX:END -->

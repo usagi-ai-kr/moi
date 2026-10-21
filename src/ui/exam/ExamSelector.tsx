@@ -1,5 +1,5 @@
 // 시험 선택 — 실제 <select>(가짜 비활성 selector 금지, 이슈 #239 AC 2).
-// 데스크톱 nav와 모바일 Drawer에 각각 1개씩 두며, 동시에 마운트되지 않는다.
+// 셸 콘텐츠 최상단 공통 1개(#273) — nav/Drawer에는 두지 않는다.
 import { copy } from '../copy';
 import { useExamScope } from './ExamScopeProvider';
 import './exam.css';
