@@ -17,6 +17,15 @@ export const STUDY_DOMAINS: ReadonlyArray<{ id: string; label: string }> = [
 ];
 
 export type StudyView = 'start' | 'active' | 'result' | 'history';
+
+// 학습 흐름 훅 옵션 (#148 라우트 분리) — useStudyFlow 계약.
+// useStudyFlow.ts 에서 추출했다(#268 Slice 2C — 모듈 250줄 상한 해소, ADR-0061 과 같은 목적). 필드·의미는 그대로다.
+export interface StudyFlowOptions {
+  initialSetId?: string | null;
+  onSetStarted?: (id: string) => void;
+  onSubmitted?: (id: string) => void;
+  onAbandoned?: () => void;
+}
 /** idle/saving/saved/error에 offline(재전송 대기)·conflict(사용자 선택 필요)를 추가 — 이슈 #52. */
 export type SaveState = 'idle' | 'saving' | 'saved' | 'error' | 'offline' | 'conflict';
 export type StudyScope = StudyMode;
