@@ -41,6 +41,33 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
     When "/" 화면에 접속하면
     Then 시험 selector에 포커스를 둘 수 있다
 
+  # ── #301: 계정 화면 selector 숨김 ───────────────────────────────
+  Scenario: 계정 화면에는 시험 selector가 없다
+    When "/account" 화면에 접속하면
+    Then 시험 selector가 없다
+    And 계정 제목이 보인다
+
+  Scenario Outline: 시험 범위 경로에는 selector가 1개다
+    When "<route>" 화면에 접속하면
+    Then 시험 selector가 1개다
+
+    Examples:
+      | route      |
+      | /          |
+      | /study/new |
+      | /history   |
+      | /review    |
+
+  Scenario Outline: 계정 화면에서 가로 오버플로가 없다
+    Given 뷰포트 너비가 <width>px이면
+    When "/account" 화면에 접속하면
+    Then 가로 오버플로가 없다
+
+    Examples:
+      | width |
+      | 320   |
+      | 1280  |
+
   # ── AC 3: URL 계약 ─────────────────────────────────────────────────
   Scenario: 올바른 시험 코드는 그대로 유지된다
     When 시험 코드가 포함된 주소로 이동한다
