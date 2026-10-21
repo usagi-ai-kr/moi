@@ -47,7 +47,12 @@ function loggedInClient(): ApiClient {
 /** 현재 주소(pathname+search)를 보여주는 probe — URL 계약을 관찰한다. */
 function LocationView() {
   const location = useLocation();
-  return <div data-testid="loc">{`${location.pathname}${location.search}`}</div>;
+  return (
+    <>
+      <div data-testid="loc">{`${location.pathname}${location.search}`}</div>
+      <div data-testid="loc-key">{location.key}</div>
+    </>
+  );
 }
 
 /** 뒤로가기 — push/replace를 구분한다. */
@@ -358,9 +363,11 @@ describe('#268 setExam 동일값 가드', () => {
       </ExamScopeProvider>,
       ['/history?tab=completed&exam=saa-c03'],
     );
+    const keyBefore = screen.getByTestId('loc-key').textContent;
     fireEvent.click(screen.getByRole('button', { name: '시험 전환' }));
     await new Promise((r) => setTimeout(r, 10));
     expect(screen.getByTestId('loc').textContent).toBe('/history?tab=completed&exam=saa-c03');
+    expect(screen.getByTestId('loc-key').textContent).toBe(keyBefore);
   });
 
   it('?exam 없음(기본값)에서 setExam("saa-c03")은 ?exam=saa-c03를 명시 기록한다', async () => {
