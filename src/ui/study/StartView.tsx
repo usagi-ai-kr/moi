@@ -70,8 +70,8 @@ export function StartView(p: Props) {
           {copy.study.scopeWeak}
         </label>
       </fieldset>
-      <fieldset className="moi-study-field" aria-label="문제 수" disabled={p.pending}>
-        <legend className="moi-study-legend">문제 수</legend>
+      <fieldset className="moi-study-field" aria-label={copy.study.sizeLegend} disabled={p.pending}>
+        <legend className="moi-study-legend">{copy.study.sizeLegend}</legend>
         {[4, 8].map((n) => (
           <label key={n} className="moi-study-radio">
             <input
@@ -82,7 +82,7 @@ export function StartView(p: Props) {
               onChange={() => p.onSize?.(n)}
               disabled={p.pending}
             />
-            {n}문제
+            {copy.study.sizeOption(n)}
           </label>
         ))}
       </fieldset>

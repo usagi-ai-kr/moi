@@ -484,3 +484,39 @@ describe('제출→attempt 저장 (#54)', () => {
     expect(body.overallAccuracy).not.toBeNull();
   });
 });
+
+describe('세트 크기 size 계약 (4/8·기본 4·잘못된 값 422, #275)', () => {
+  it('size 8 → 8문항, size 생략 → 기본 4문항', async () => {
+    const eight = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c1');
+    const r8 = await studyRequest('/api/study/sets', {
+      method: 'POST',
+      token: eight,
+      body: { examId: EXAM, mode: 'all', size: 8 },
+    });
+    expect(r8.status).toBe(201);
+    const set8 = (await r8.json()) as { items: unknown[] };
+    expect(set8.items).toHaveLength(8);
+
+    const def = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c2');
+    const r4 = await studyRequest('/api/study/sets', {
+      method: 'POST',
+      token: def,
+      body: { examId: EXAM, mode: 'all' },
+    });
+    expect(r4.status).toBe(201);
+    const set4 = (await r4.json()) as { items: unknown[] };
+    expect(set4.items).toHaveLength(4);
+  });
+
+  it('size 3·9·"4"·null → 422', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c3');
+    for (const size of [3, 9, '4', null]) {
+      const res = await studyRequest('/api/study/sets', {
+        method: 'POST',
+        token,
+        body: { examId: EXAM, mode: 'all', size },
+      });
+      expect(res.status).toBe(422);
+    }
+  });
+});

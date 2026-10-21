@@ -349,3 +349,31 @@ describe('LegacyCompat (기존 20문항 세트 읽기 호환, #187·ADR-0046)', 
     expect(f.sets.get(legacy.id)?.result?.accuracyPercent).toBe(100);
   });
 });
+
+describe('StartStudySet size 계약 (8문항·부분 출제·잘못된 값 거부, #275)', () => {
+  it('size 8 → 8문항·중복 0', async () => {
+    const f = fakes({ poolCount: 30 });
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all', size: 8 });
+    expect(result.outcome).toBe('started');
+    if (result.outcome === 'started') {
+      expect(result.set.items).toHaveLength(8);
+      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(8);
+    }
+  });
+
+  it('풀 5 + size 8 → 5문항·중복 0(가능한 만큼)', async () => {
+    const f = fakes({ poolCount: 5 });
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all', size: 8 });
+    expect(result.outcome).toBe('started');
+    if (result.outcome === 'started') {
+      expect(result.set.items).toHaveLength(5);
+      expect(new Set(result.set.items.map((item) => item.questionId)).size).toBe(5);
+    }
+  });
+
+  it('size 9 → invalid_size 거부', async () => {
+    const f = fakes();
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all', size: 9 });
+    expect(result).toMatchObject({ outcome: 'rejected', reason: 'invalid_size' });
+  });
+});

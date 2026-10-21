@@ -660,3 +660,79 @@ describe('복습 종료·답안 실효 경합 (ADR-0041)', () => {
     expect((await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source = 'review'").first<{ c: number }>())?.c).toBe(0);
   });
 });
+
+describe('복습 회차 크기 size 계약 (4/8·기본 4·부분 출제·422, #275)', () => {
+  const U8 = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d1';
+  const U4 = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d2';
+  const UDEF = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d3';
+  const UBAD = '0f9f1a3e-6f1a-4c2e-8f0b-0000000000d4';
+
+  /** seed20 문항(q-0~)에 오답 시도 count건을 심는다 — 후보가 정확히 count개가 된다. */
+  async function seedWrong(userId: string, count: number): Promise<void> {
+    const now = NOW();
+    await db.prepare('INSERT OR IGNORE INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)').bind(userId, now, now).run();
+    for (let i = 0; i < count; i += 1) {
+      const q = `q-${i}`;
+      await db
+        .prepare(
+          "INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) VALUES (?1, ?2, 'e-1', ?3, ?4, 'wrong', ?5, 'set', ?6, NULL, 0)",
+        )
+        .bind(`w-${userId.slice(-4)}-${i}`, userId, q, `${q}-v1`, now * 1000 + i, `set-w-${userId.slice(-4)}-${i}`)
+        .run();
+    }
+  }
+
+  it('후보 5 + size 8 → 실제 5문항(가능한 만큼·중복 0)', async () => {
+    const token = await mintSession(U8);
+    await seedWrong(U8, 5);
+    const res = await req('/api/review/sessions', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM_CODE, mode: 'wrong', size: 8 },
+    });
+    expect(res.status).toBe(201);
+    const session = (await res.json()) as { total: number; items: Array<{ questionId: string }>; current: { questionId: string } | null };
+    expect(session.total).toBe(5);
+    expect(session.items).toHaveLength(5);
+    expect(new Set(session.items.map((i) => i.questionId)).size).toBe(5);
+    expect(session.current).not.toBeNull();
+  });
+
+  it('size 4 → 4문항, size 생략 → 기본 4문항', async () => {
+    const t4 = await mintSession(U4);
+    await seedWrong(U4, 5);
+    const r4 = await req('/api/review/sessions', {
+      method: 'POST',
+      token: t4,
+      body: { examId: EXAM_CODE, mode: 'wrong', size: 4 },
+    });
+    expect(r4.status).toBe(201);
+    const s4 = (await r4.json()) as { total: number; items: unknown[] };
+    expect(s4.total).toBe(4);
+    expect(s4.items).toHaveLength(4);
+
+    const td = await mintSession(UDEF);
+    await seedWrong(UDEF, 5);
+    const rd = await req('/api/review/sessions', {
+      method: 'POST',
+      token: td,
+      body: { examId: EXAM_CODE, mode: 'wrong' },
+    });
+    expect(rd.status).toBe(201);
+    const sd = (await rd.json()) as { total: number; items: unknown[] };
+    expect(sd.total).toBe(4);
+    expect(sd.items).toHaveLength(4);
+  });
+
+  it('size 3·9·"4"·null → 422', async () => {
+    const token = await mintSession(UBAD);
+    for (const size of [3, 9, '4', null]) {
+      const res = await req('/api/review/sessions', {
+        method: 'POST',
+        token,
+        body: { examId: EXAM_CODE, mode: 'wrong', size },
+      });
+      expect(res.status).toBe(422);
+    }
+  });
+});

@@ -62,4 +62,15 @@ describe('review 10문항 대기 UI (ADR-0059)', () => {
     expect(start).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('tab', { name: '북마크 복습' }));
   });
+
+  it('문제 수 라디오는 44px 터치 타깃·키보드 포커스를 갖는다(#275 B1)', async () => {
+    renderScreen(clientWith(10));
+    const opt4 = await screen.findByLabelText('4문제');
+    const label = opt4.closest('label');
+    expect(label?.getAttribute('class')).toContain('min-h-[44px]');
+    expect(opt4.getAttribute('class')).toContain('h-5');
+    expect(opt4.getAttribute('class')).toContain('w-5');
+    opt4.focus();
+    expect(document.activeElement).toBe(opt4);
+  });
 });

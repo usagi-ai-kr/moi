@@ -171,7 +171,7 @@ export function StudyScreen({
         />
         {set && set.items.length < size && (
           <div className="moi-alert moi-alert-info" role="status">
-            <p className="moi-alert-text">{`사용 가능한 ${set.items.length}문제로 시작했습니다`}</p>
+            <p className="moi-alert-text">{copy.study.sizeAvailableNotice(set.items.length)}</p>
           </div>
         )}
         <QuestionView
