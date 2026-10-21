@@ -28,90 +28,59 @@ import {
 } from 'lucide-react';
 
 export type IconSize = 16 | 20 | 24;
-export type IconAria = 'hidden' | 'label';
 
-export interface IconSpec {
-  /** Lucide 아이콘 컴포넌트. */
-  icon: LucideIcon;
-  /** 별칭(하위 호환). */
-  component?: LucideIcon;
-  Icon?: LucideIcon;
-  /** 픽셀 크기 토큰. */
-  size: IconSize;
-  /** 접근성 모드. */
-  aria: IconAria;
-  /** aria='label'일 때 필수 라벨 키. */
-  labelKey?: string | null;
-  label?: string | null;
-  key?: string;
-}
+export type IconSpec =
+  | { icon: LucideIcon; size: IconSize; aria: 'hidden'; labelKey: null }
+  | { icon: LucideIcon; size: IconSize; aria: 'label'; labelKey: string };
 
-const spec = (
+function spec(
   icon: LucideIcon,
   size: IconSize,
-  aria: IconAria,
-  labelKey?: string | null,
-  key?: string,
-): IconSpec => ({
-  icon,
-  component: icon,
-  Icon: icon,
-  size,
-  aria,
-  labelKey: aria === 'label' ? (labelKey ?? key ?? null) : null,
-  label: aria === 'label' ? (labelKey ?? key ?? null) : null,
-  key: key ?? labelKey ?? undefined,
-});
+  aria: 'hidden',
+  labelKey?: null,
+): IconSpec;
+function spec(
+  icon: LucideIcon,
+  size: IconSize,
+  aria: 'label',
+  labelKey: string,
+): IconSpec;
+function spec(
+  icon: LucideIcon,
+  size: IconSize,
+  aria: 'hidden' | 'label',
+  labelKey: string | null = null,
+): IconSpec {
+  if (aria === 'label') {
+    if (!labelKey) throw new Error('aria=label requires labelKey');
+    return { icon, size, aria, labelKey };
+  }
+  return { icon, size, aria: 'hidden', labelKey: null };
+}
 
-export const iconMenu: IconSpec = spec(Menu, 24, 'label', 'menu', 'menu');
-export const iconClose: IconSpec = spec(X, 24, 'label', 'close', 'close');
-export const iconSelect: IconSpec = spec(ChevronDown, 16, 'hidden', null, 'select');
-export const iconStart: IconSpec = spec(Play, 20, 'hidden', null, 'start');
-export const iconResume: IconSpec = spec(PlayCircle, 20, 'hidden', null, 'resume');
-export const iconPrev: IconSpec = spec(ChevronLeft, 20, 'hidden', null, 'prev');
-export const iconNext: IconSpec = spec(ChevronRight, 20, 'hidden', null, 'next');
-export const iconSubmit: IconSpec = spec(Send, 20, 'hidden', null, 'submit');
-export const iconPass: IconSpec = spec(SkipForward, 20, 'hidden', null, 'pass');
-export const iconUnanswered: IconSpec = spec(CircleDashed, 20, 'hidden', null, 'unanswered');
-export const iconCorrect: IconSpec = spec(Check, 20, 'hidden', null, 'correct');
-export const iconWrong: IconSpec = spec(X, 20, 'hidden', null, 'wrong');
-export const iconBookmark: IconSpec = spec(Bookmark, 20, 'label', 'bookmark', 'bookmark');
-export const iconReport: IconSpec = spec(Flag, 20, 'hidden', null, 'report');
-export const iconAbandon: IconSpec = spec(XCircle, 20, 'hidden', null, 'abandon');
-export const iconCancel: IconSpec = spec(X, 16, 'hidden', null, 'cancel');
-export const iconConfirm: IconSpec = spec(Check, 16, 'hidden', null, 'confirm');
-export const iconResult: IconSpec = spec(ClipboardCheck, 20, 'hidden', null, 'result');
-export const iconHistory: IconSpec = spec(History, 20, 'hidden', null, 'history');
-export const iconAnalysis: IconSpec = spec(PieChart, 20, 'hidden', null, 'analysis');
-export const iconRefresh: IconSpec = spec(RefreshCw, 16, 'hidden', null, 'refresh');
-export const iconLoading: IconSpec = spec(Loader2, 16, 'hidden', null, 'loading');
-export const iconSaveSuccess: IconSpec = spec(CheckCircle2, 16, 'hidden', null, 'saveSuccess');
-export const iconSaveFailure: IconSpec = spec(AlertCircle, 16, 'hidden', null, 'saveFailure');
-export const iconLogout: IconSpec = spec(LogOut, 20, 'hidden', null, 'logout');
-export const iconAccount: IconSpec = spec(CircleUser, 20, 'hidden', null, 'account');
-
-// 별칭(호환) — 동일 명세를 공유한다.
-export const iconPlay = iconStart;
-export const iconPlayCircle = iconResume;
-export const iconChevronLeft = iconPrev;
-export const iconChevronRight = iconNext;
-export const iconSend = iconSubmit;
-export const iconSkip = iconPass;
-export const iconSkipForward = iconPass;
-export const iconCircleDashed = iconUnanswered;
-export const iconCheck = iconCorrect;
-export const iconFlag = iconReport;
-export const iconXCircle = iconAbandon;
-export const iconClipboardCheck = iconResult;
-export const iconPieChart = iconAnalysis;
-export const iconStats = iconAnalysis;
-export const iconRefreshCw = iconRefresh;
-export const iconSpinner = iconLoading;
-export const iconLoader = iconLoading;
-export const iconCheckCircle = iconSaveSuccess;
-export const iconCheckCircle2 = iconSaveSuccess;
-export const iconAlertCircle = iconSaveFailure;
-export const iconLogOut = iconLogout;
-export const iconUser = iconAccount;
-export const iconCircleUser = iconAccount;
-export const iconChevronDown = iconSelect;
+export const iconMenu = /*#__PURE__*/ spec(Menu, 24, 'label', 'menu');
+export const iconClose = /*#__PURE__*/ spec(X, 24, 'label', 'close');
+export const iconSelect = /*#__PURE__*/ spec(ChevronDown, 16, 'hidden', null);
+export const iconStart = /*#__PURE__*/ spec(Play, 20, 'hidden', null);
+export const iconResume = /*#__PURE__*/ spec(PlayCircle, 20, 'hidden', null);
+export const iconPrev = /*#__PURE__*/ spec(ChevronLeft, 20, 'hidden', null);
+export const iconNext = /*#__PURE__*/ spec(ChevronRight, 20, 'hidden', null);
+export const iconSubmit = /*#__PURE__*/ spec(Send, 20, 'hidden', null);
+export const iconPass = /*#__PURE__*/ spec(SkipForward, 20, 'hidden', null);
+export const iconUnanswered = /*#__PURE__*/ spec(CircleDashed, 20, 'hidden', null);
+export const iconCorrect = /*#__PURE__*/ spec(Check, 20, 'hidden', null);
+export const iconWrong = /*#__PURE__*/ spec(X, 20, 'hidden', null);
+export const iconBookmark = /*#__PURE__*/ spec(Bookmark, 20, 'label', 'bookmark');
+export const iconReport = /*#__PURE__*/ spec(Flag, 20, 'hidden', null);
+export const iconAbandon = /*#__PURE__*/ spec(XCircle, 20, 'hidden', null);
+export const iconCancel = /*#__PURE__*/ spec(X, 16, 'hidden', null);
+export const iconConfirm = /*#__PURE__*/ spec(Check, 16, 'hidden', null);
+export const iconResult = /*#__PURE__*/ spec(ClipboardCheck, 20, 'hidden', null);
+export const iconHistory = /*#__PURE__*/ spec(History, 20, 'hidden', null);
+export const iconAnalysis = /*#__PURE__*/ spec(PieChart, 20, 'hidden', null);
+export const iconRefresh = /*#__PURE__*/ spec(RefreshCw, 16, 'hidden', null);
+export const iconLoading = /*#__PURE__*/ spec(Loader2, 16, 'hidden', null);
+export const iconSaveSuccess = /*#__PURE__*/ spec(CheckCircle2, 16, 'hidden', null);
+export const iconSaveFailure = /*#__PURE__*/ spec(AlertCircle, 16, 'hidden', null);
+export const iconLogout = /*#__PURE__*/ spec(LogOut, 20, 'hidden', null);
+export const iconAccount = /*#__PURE__*/ spec(CircleUser, 20, 'hidden', null);
