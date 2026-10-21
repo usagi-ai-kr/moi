@@ -14,6 +14,7 @@ import { useStudyFlow } from './useStudyFlow';
 import './study.css';
 
 // 제출 확인용 인라인 대화상자 — 포기 확인(#223)은 모달 AbandonConfirmDialog를 사용한다.
+// mount 시 대화상자로 포커스+가시성 보장(#232 후속): tabIndex=-1·focus·scrollIntoView, role=alertdialog 유지.
 function InlineConfirmDialog({
   tone, label, text, confirm, pending, destructive, onConfirm, onCancel,
 }: {
@@ -26,8 +27,13 @@ function InlineConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    dialogRef.current?.focus({ preventScroll: true });
+    dialogRef.current?.scrollIntoView?.({ block: 'nearest' });
+  }, []);
   return (
-    <div className={`moi-alert moi-study-confirm ${tone}`} role="alertdialog" aria-label={label}>
+    <div ref={dialogRef} tabIndex={-1} className={`moi-alert moi-study-confirm ${tone}`} role="alertdialog" aria-label={label}>
       <p className="moi-alert-text">{text}</p>
       {/* 확정 버튼 위계 — 제출=primary, 포기=destructive 계열(강도 낮게). 취소=ghost. */}
       <Button

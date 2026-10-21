@@ -49,13 +49,13 @@
   outline-offset: 2px;
 }
 
-/* 경고·오류 안내 — 토큰 색상만 사용 (perf: AntD Alert 대체) */
+/* 경고·오류 안내 — 토큰 색상만 사용 (perf: AntD Alert 대체). 폭은 study 본문을 채운다 (#225·#232). */
 .moi-alert {
   display: flex;
   align-items: center;
   gap: var(--moi-space-2);
   width: 100%;
-  max-width: var(--moi-kakao-max-w);
+  max-width: 100%;
   padding: var(--moi-space-3) var(--moi-space-4);
   background: var(--moi-color-white);
   border: 1px solid var(--moi-color-border);

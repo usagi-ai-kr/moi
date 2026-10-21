@@ -119,8 +119,11 @@
   flex-wrap: wrap;
   gap: var(--moi-space-2);
 }
-/* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). */
-.moi-study-confirm { flex-wrap: wrap; }
+/* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). 진행 표시와 16/24px 간격, study 본문 폭과 동일(#232 후속). */
+.moi-study-confirm { flex-wrap: wrap; margin-top: var(--moi-space-4); margin-bottom: var(--moi-space-5); max-width: var(--moi-kakao-max-w); }
+.moi-study-confirm:focus, .moi-study-confirm:focus-visible { outline: 2px solid var(--moi-color-ink); outline-offset: 2px; }
+@media (min-width: 768px) and (max-width: 1023px) { .moi-study-confirm { max-width: 640px; margin-inline: auto; } }
+@media (min-width: 1024px) { .moi-study-confirm { max-width: 100%; } }
 /* 포기 확인 모달 액션 — 제목/본문/액션 분리, 취소 기본·확정 destructive (#223). */
 .moi-abandon-actions {
   margin-top: var(--moi-space-4);

@@ -19,14 +19,16 @@ related: ["#232", "ADR-0036", "ADR-0050", "ADR-0064"]
 - 레이아웃: 기존 `moi-study-nav/pager-nav` flex-wrap+gap 재사용, Button 44px(ADR-0050), 5폭·200%·focus/disabled/pending 검증.
 - 그룹 구조(#232 후속): 문항 상세는 정보(`dl.moi-study-meta` 번호·채점·응답·선택·정답)·액션(`.moi-study-item-actions` 북마크/신고)·탐색·해설/근거 그룹으로 분리. 그룹 사이 space-3(12px), 안은 space-2(8px). `ResultView`→`ResultPager`·`ResultItemDetail` 추출로 250줄 상한 준수.
 - 액션 버튼: 북마크 44px+`aria-pressed`+접근 이름(색만 구분 금지), 신고 44px 보조 액션(hover/active/disabled/focus, 밑줄 유지). 풀이·결과가 `study-feedback.css` 공유 그룹을 사용.
+- 확인 다이얼로그(#232 후속): `widgets.css` `.moi-alert` `max-width:100%`로 #225 전폭 회귀 수정(360px 제거). `.moi-study-confirm`에 위 `space-4`(16px)·아래 `space-5`(24px). `InlineConfirmDialog` mount 시 `focus`+`scrollIntoView`, `tabIndex=-1`·`role=alertdialog` 유지. 문구·제출1회·pending·API/도메인 변경 금지.
 
 ## 결과
 - 긍정: CTA 일관·마무리 동선 명확·재제출 위험 제거·토큰 단일 소스 유지.
 - 긍정(후속): 밀집 해소 — 정보/액션 겹침 0·간격 24px·버튼 44px 정렬, 5폭·200% overflow 0.
+- 긍정(확인): 다이얼로그가 study 본문 폭을 채우고 진행 표시와 gap≥16px, mount 포커스로 키보드 동선 유지.
 - 부정/제약: 마지막 상단 제출 DOM 미존재(테스트·BDD는 하단 기준), 요약 h1 `tabindex=-1` 예외.
 
 ## 대안과 금지 사항
 - 상단+하단 중복 제출(접근 이름 중복) 금지, 결과 화면 재제출·채점 API 금지, 신규 문구(`backToSummary`) 외 copy 추가 금지.
 
 ## 참고
-- #232·DESIGN §5·7·9·ADR-0036·0050·0064·`authenticated.css`·`QuestionView`·`ResultView`·`ResultPager`·`ResultItemDetail` 증거 `tmp/232-result-cta/`·`tmp/232-result-cta/grouping/`.
+- #232·DESIGN §5·7·9·ADR-0036·0050·0064·`authenticated.css`·`QuestionView`·`ResultView`·`ResultPager`·`ResultItemDetail` 증거 `tmp/232-result-cta/`·`tmp/232-result-cta/grouping/`·`tmp/232-result-cta/confirm-spacing/`.
