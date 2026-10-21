@@ -1,4 +1,14 @@
-/* 공통 브랜드 — 토큰 변수만 사용 (ADR-0012, #225). */
+/* 공통 브랜드 — 토큰 변수만 사용 (ADR-0012, #225, ADR-0069). */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  font-style: normal;
+  font-weight: 700;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/bricolage-grotesque-moi.woff2') format('woff2');
+  unicode-range: U+0069, U+006D, U+006F;
+}
+
 .moi-brand-cluster {
   display: inline-flex;
   align-items: center;
@@ -6,9 +16,12 @@
 }
 
 .moi-brand {
-  font-family: var(--moi-font-display);
+  font-family: var(--moi-font-brand);
   font-weight: 700;
   font-size: var(--moi-size-brand);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-optical-sizing: auto;
   color: var(--moi-color-ink);
 }
 

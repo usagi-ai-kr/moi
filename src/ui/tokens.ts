@@ -79,6 +79,14 @@ export const typography = {
     "'KoddiUDOngodic', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
   fontUi:
     "'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
+  // 브랜드 워드마크 전용 — Bricolage Grotesque(OFL-1.1) self-host m/o/i 서브셋.
+  // 폴백은 기존 display 스택 그대로라 로드 전·실패 시 이전 브랜드 표기와 동일(#225).
+  fontBrand:
+    "'Bricolage Grotesque', 'KoddiUDOngodic', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
+  brandFontFamily: 'Bricolage Grotesque',
+  // Google Fonts가 생성한 m/o/i 서브셋 woff2(1.6KB, OFL)를 동일 오리진에 self-host.
+  // KoddiUD 금지(ADR-0014)는 눈누 라이선스 한정이며 OFL self-host는 허용(ADR-0069).
+  brandFontUrl: '/fonts/bricolage-grotesque-moi.woff2',
   // 숫자 셀 고정폭 서체 — tabular-nums와 함께 자릿수 변화에도 열 정렬을 흔들리지 않게 한다 (ADR-0066).
   // 한글 글리프는 이 스택에 없어 시스템 한글 서체로 폴백하므로 숫자만 고정폭으로 정렬된다.
   fontMono:
@@ -143,6 +151,7 @@ export const cssVars: Record<string, string> = {
   '--moi-font-display': typography.fontDisplay,
   '--moi-font-ui': typography.fontUi,
   '--moi-font-mono': typography.fontMono,
+  '--moi-font-brand': typography.fontBrand,
   '--moi-size-body': px(typography.baseSize),
   ...Object.fromEntries(Object.entries(typography.sizes).map(([k, v]) => [`--moi-size-${k}`, v])),
   '--moi-kakao-container': kakao.container,
