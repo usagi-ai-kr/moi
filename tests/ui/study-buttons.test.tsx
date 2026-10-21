@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -317,5 +317,30 @@ describe('학습 화면 버튼 위계', () => {
     expect(submit).toBeDisabled();
     expect(submit).toHaveAttribute('aria-busy', 'true');
     expect(screen.queryByRole('button', { name: '다음' })).not.toBeInTheDocument();
+  });
+
+  it('풀이 화면 북마크·신고가 독립 액션 그룹으로 분리된다(#232 후속)', async () => {
+    renderStudy(fakeStudyClient());
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+
+    const actions = screen.getByRole('group', { name: '문항 액션' });
+    const bookmark = within(actions).getByRole('button', { name: /북마크/ });
+    const report = within(actions).getByRole('button', { name: '문제 신고' });
+    // 정보(h1·보기)와 탐색(nav) 사이에 독립 그룹으로 위치한다.
+    const stem = screen.getByRole('heading', { name: /문제 0 본문/ });
+    const navPrev = screen.getByRole('button', { name: '이전' });
+    expect(stem.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(actions.compareDocumentPosition(navPrev) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // 44px 토큰·키보드 포커스·상태 구분.
+    for (const t of ['min-h-[44px]', 'min-w-[44px]']) {
+      expect((bookmark.getAttribute('class') ?? '').split(/\s+/)).toContain(t);
+    }
+    expect(bookmark).toHaveAttribute('aria-pressed');
+    await waitFor(() => expect(bookmark).toBeEnabled());
+    bookmark.focus();
+    expect(document.activeElement).toBe(bookmark);
+    fireEvent.click(report);
+    expect(await screen.findByRole('dialog', { name: '문제 신고' })).toBeInTheDocument();
   });
 });

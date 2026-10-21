@@ -155,6 +155,10 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
   });
+  // 북마크 조회 — 풀이·결과 화면의 북마크 버튼이 settled 상태로 렌더되도록 (#232 후속).
+  await page.route('**/api/review/bookmarks*', async (route) => {
+    await route.fulfill({ status: 200, json: { examId: 'saa-c03', total: 0, items: [] } });
+  });
   await page.route('**/api/study/**', async (route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -515,7 +519,7 @@ Then('풀이 버튼은 44px 이상이고 북마크 버튼 테두리가 보인다
     const box = await page.getByRole('button', { name }).first().boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   }
-  const bookmark = page.getByRole('button', { name: /북마크/ }).first();
+  const bookmark = page.getByRole('button', { name: '북마크 추가' }).first();
   await expect(bookmark).toBeVisible();
   const width = await bookmark.evaluate((el) => getComputedStyle(el).borderTopWidth);
   expect(width).toBe('1px');
@@ -620,4 +624,89 @@ Then('근거 링크에 밑줄이 있다', async ({ page }) => {
   const source = resultPager(page).getByRole('link', { name: /Q / }).first();
   await expect(source).toBeVisible();
   expect(await source.evaluate((el) => getComputedStyle(el).textDecorationLine)).not.toBe('none');
+});
+
+// #232 후속 — 문항 정보·액션·탐색 그룹 분리. 풀이·결과 화면 공용 스텝.
+Then('풀이 문항 액션 그룹이 분리되어 있다', async ({ page }) => {
+  const actions = page.getByRole('group', { name: copy.study.itemActions });
+  await expect(actions).toBeVisible();
+  await expect(actions.getByRole('button', { name: '북마크 추가' })).toBeVisible();
+  await expect(actions.getByRole('button', { name: '문제 신고' })).toBeVisible();
+  const order = await page.evaluate(() => {
+    const r = (el: Element | null) => {
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height };
+    };
+    return {
+      stem: r(document.querySelector('.moi-study-title')),
+      actions: r(document.querySelector('.moi-study-item-actions')),
+      nav: r(document.querySelector('.moi-study-nav')),
+    };
+  });
+  expect(order.stem && order.actions && order.nav).toBeTruthy();
+  expect(order.stem!.y + order.stem!.h).toBeLessThanOrEqual(order.actions!.y + 1);
+  expect(order.actions!.y + order.actions!.h).toBeLessThanOrEqual(order.nav!.y + 1);
+});
+
+Then('결과 문항 정보와 액션 그룹이 분리되어 있다', async ({ page }) => {
+  const card = page.locator('[data-testid^="peritem-"]').first();
+  await expect(card).toBeVisible();
+  const info = card.locator('.moi-study-meta');
+  await expect(info).toBeVisible();
+  for (const label of ['문항', '채점', '응답', '선택', '정답']) {
+    await expect(info.locator('dt', { hasText: label })).toBeVisible();
+  }
+  const actions = card.getByRole('group', { name: copy.study.itemActions });
+  await expect(actions).toBeVisible();
+  const separate = await card.evaluate((el) => {
+    const i = el.querySelector('.moi-study-meta');
+    const a = el.querySelector('.moi-study-item-actions');
+    return !!i && !!a && i !== a && i.parentElement === el && a.parentElement === el;
+  });
+  expect(separate).toBe(true);
+});
+
+Then('북마크·신고 버튼이 44px 이상이다', async ({ page }) => {
+  const bookmark = page.getByRole('button', { name: '북마크 추가' }).first();
+  const report = page.locator('.moi-report-open').first();
+  await expect(bookmark).toBeVisible();
+  await expect(report).toBeVisible();
+  for (const el of [bookmark, report]) {
+    const box = await el.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
+  }
+});
+
+Then('문항 그룹 간 겹침이 없다', async ({ page }) => {
+  const overlap = await page.evaluate(() => {
+    const els = Array.from(
+      document.querySelectorAll(
+        '.moi-study-title, .moi-study-field, .moi-study-meta, .moi-study-item-actions, .moi-study-pager-nav, .moi-study-sources, .moi-study-question-top',
+      ),
+    ).filter((el) => {
+      const b = el.getBoundingClientRect();
+      return b.width > 0 && b.height > 0;
+    });
+    const rect = (el: Element) => {
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height };
+    };
+    let max = 0;
+    for (let i = 0; i < els.length; i += 1) {
+      for (let j = i + 1; j < els.length; j += 1) {
+        // 중첩 컨테이너(부모·자식)는 제외 — 형제 그룹 간 겹침만 본다.
+        if (els[i].contains(els[j]) || els[j].contains(els[i])) continue;
+        const a = rect(els[i]);
+        const b = rect(els[j]);
+        const area =
+          Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
+          Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+        if (area > max) max = area;
+      }
+    }
+    return max;
+  });
+  expect(overlap).toBe(0);
 });

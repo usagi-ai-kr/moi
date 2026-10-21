@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudySubmittedSet } from '../../src/ui/api/client';
@@ -220,5 +220,57 @@ describe('결과 CTA·마지막 문항 동선 (#232)', () => {
     const card = screen.getByTestId('peritem-q-0');
     const source = within(card).getByRole('link', { name: 'Q 0' });
     expect(source).not.toHaveAttribute('data-slot');
+  });
+});
+
+describe('결과 문항 정보·액션 그룹 구조 (#232 후속)', () => {
+  it('정보 dl과 액션 그룹이 별도 컨테이너로 분리된다', () => {
+    renderResult(threeItemSet());
+    const card = screen.getByTestId('peritem-q-0');
+    const info = card.querySelector('.moi-study-meta') as HTMLElement;
+    expect(info).not.toBeNull();
+    expect(info).toHaveAttribute('aria-label', copy.study.itemInfo);
+    const actions = within(card).getByRole('group', { name: copy.study.itemActions });
+    // 같은 li 안의 서로 다른 컨테이너 — 상태 문구가 액션과 같은 줄에 끼지 않는다.
+    expect(info).not.toBe(actions as unknown as HTMLElement);
+    expect(info.closest('li')).toBe(actions.closest('li'));
+    expect(info.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    for (const label of ['문항', '채점', '응답', '선택', '정답']) {
+      expect(within(info).getByText(label, { selector: 'dt' })).toBeInTheDocument();
+    }
+    // 탐색 그룹은 액션 그룹과 분리된다.
+    const pager = screen.getByRole('group', { name: copy.study.resultPagerLabel });
+    const nav = pager.querySelector('.moi-study-pager-nav') as HTMLElement;
+    expect(nav).not.toBeNull();
+    expect(nav.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+  });
+
+  it('북마크·신고 버튼이 44px·키보드 접근·상태 구분을 갖는다', async () => {
+    renderResult(threeItemSet());
+    const card = screen.getByTestId('peritem-q-0');
+    const actions = within(card).getByRole('group', { name: copy.study.itemActions });
+    const bookmark = within(actions).getByRole('button', { name: /북마크/ });
+    const report = within(actions).getByRole('button', { name: '문제 신고' });
+    // 북마크 쿼리 settled 후 enabled — 로딩 중 disabled는 DESIGN.md 7절 계약이다.
+    // 북마크: 44px 토큰·pressed 상태·접근 이름 유지(색만으로 구분 금지).
+    for (const t of ['min-h-[44px]', 'min-w-[44px]']) {
+      expect((bookmark.getAttribute('class') ?? '').split(/\s+/)).toContain(t);
+    }
+    expect(bookmark).toHaveAttribute('aria-pressed');
+    // 신고: 44px 터치·hover/active/disabled·focus-visible 규칙(CSS 계약).
+    const css = readFileSync('src/ui/study/study-feedback.css', 'utf8');
+    expect(css).toMatch(/\.moi-report-open[\s\S]*min-height:\s*var\(--moi-touch-min\)/);
+    expect(css).toMatch(/\.moi-report-open:hover/);
+    expect(css).toMatch(/\.moi-report-open:active/);
+    expect(css).toMatch(/\.moi-report-open:disabled/);
+    expect(css).toMatch(/\.moi-study-item-actions[\s\S]*gap:\s*var\(--moi-space-2\)/);
+    // 키보드: 두 버튼 모두 포커스 가능하고 신고는 dialog를 연다.
+    await waitFor(() => expect(bookmark).toBeEnabled());
+    bookmark.focus();
+    expect(document.activeElement).toBe(bookmark);
+    report.focus();
+    expect(document.activeElement).toBe(report);
+    fireEvent.click(report);
+    expect(screen.getByRole('dialog', { name: copy.report.title })).toBeInTheDocument();
   });
 });

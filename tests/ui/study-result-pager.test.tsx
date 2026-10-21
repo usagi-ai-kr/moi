@@ -148,9 +148,10 @@ describe('결과 해설 좌우 페이징 (#189)', () => {
     renderResult();
     expect(position()).toBe('1/3');
     expect(perItemIds()).toEqual(['peritem-q-0']);
-    // 요약은 상단에 그대로 둔다.
+    // 요약은 상단에 그대로 둔다 — 요약 dl 범위로 한정해 상세 dl(dt 정답)과 구분한다(#232).
+    const summaryDl = document.querySelector('.moi-study-result') as HTMLElement;
+    expect(within(summaryDl).getByText('정답', { selector: 'dt' })).toBeInTheDocument();
     expect(screen.getByText(/정답률 33%/)).toBeInTheDocument();
-    expect(screen.getByText('정답', { selector: 'dt' })).toBeInTheDocument();
   });
 
   it('다음·이전 버튼으로 문항을 넘기면 해설·근거 링크가 함께 바뀐다', () => {

@@ -27,19 +27,37 @@
   margin: 0;
   font-weight: 600;
 }
-/* 신고 버튼·dialog — 인라인 배치, 320~1280 오버플로 없음 (#53). */
+/* 문항 액션 그룹 — 북마크·신고를 정보·탐색과 분리된 독립 그룹으로(#232).
+   풀이·결과가 공유한다(study-feedback.css는 ReportButton 경유로 양쪽에 로드).
+   그룹 위는 space-3 여백, 안은 space-2 규칙 gap, 320/375 wrap으로 겹침 방지. */
+.moi-study-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moi-space-2);
+  margin-top: var(--moi-space-3);
+  min-width: 0;
+}
+/* 신고 버튼·dialog — 44px 보조 액션, 320~1280 오버플로 없음 (#53·#232). */
 .moi-report {
   display: inline-flex;
-  margin-inline-start: var(--moi-space-2);
+  min-width: 0;
 }
 .moi-report-open {
-  min-height: var(--moi-space-8);
+  min-height: var(--moi-touch-min);
+  min-width: var(--moi-touch-min);
+  padding-inline: var(--moi-space-2);
   background: transparent;
   border: 0;
+  border-radius: var(--moi-radius-sm);
   color: var(--moi-color-muted);
+  font-size: var(--moi-size-small);
   text-decoration: underline;
   cursor: pointer;
 }
+.moi-report-open:hover { background: var(--moi-color-surface); color: var(--moi-color-ink); }
+.moi-report-open:active { opacity: 0.88; }
+.moi-report-open:disabled { cursor: not-allowed; opacity: 0.5; }
 .moi-report-dialog {
   display: flex;
   flex-direction: column;

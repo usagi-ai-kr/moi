@@ -95,6 +95,8 @@ export const copy = {
     prevItem: '이전 문항',
     nextItem: '다음 문항',
     backToSummary: '결과 요약으로',
+    itemInfo: '문항 정보',
+    itemActions: '문항 액션',
     explanation: '해설',
     sources: '근거',
     diagramLoading: '다이어그램을 불러오는 중입니다',

@@ -155,18 +155,22 @@ describe('#148 원시 값 제거', () => {
       <ResultView client={fakeClient()} set={submittedSet} onRestart={vi.fn()} onHistory={vi.fn()} />,
     );
     const first = screen.getByTestId('peritem-q-1');
-    expect(within(first).getByText(/응답/)).toBeInTheDocument();
-    expect(within(first).getByText(/선택: 2, 3/)).toBeInTheDocument();
-    expect(within(first).getByText(/정답: 비공개/)).toBeInTheDocument();
+    // 정보 그룹 dl — 라벨(dt)과 값(dd)이 분리된다(#232).
+    expect(within(first).getByText('응답', { selector: 'dd' })).toBeInTheDocument();
+    expect(within(first).getByText('선택', { selector: 'dt' })).toBeInTheDocument();
+    expect(within(first).getByText('2, 3')).toBeInTheDocument();
+    expect(within(first).getByText('정답', { selector: 'dt' })).toBeInTheDocument();
+    expect(within(first).getByText('비공개')).toBeInTheDocument();
     expect(screen.queryByText(/answered|unanswered/)).not.toBeInTheDocument();
     // 해설은 한 문항씩만 보여준다(#189) — 다음 문항으로 넘겨 상태 라벨을 확인한다.
     const next = screen.getByRole('button', { name: copy.study.nextItem });
     fireEvent.click(next);
-    expect(within(screen.getByTestId('peritem-q-2')).getByText(/Pass/)).toBeInTheDocument();
+    expect(within(screen.getByTestId('peritem-q-2')).getByText('Pass', { selector: 'dd' })).toBeInTheDocument();
     fireEvent.click(next);
-    expect(within(screen.getByTestId('peritem-q-3')).getByText(/미응답/)).toBeInTheDocument();
+    expect(within(screen.getByTestId('peritem-q-3')).getByText('미응답', { selector: 'dd' })).toBeInTheDocument();
     fireEvent.click(next);
-    expect(within(screen.getByTestId('peritem-q-4')).getByText(/선택: \?/)).toBeInTheDocument();
+    expect(within(screen.getByTestId('peritem-q-4')).getByText('선택', { selector: 'dt' })).toBeInTheDocument();
+    expect(within(screen.getByTestId('peritem-q-4')).getByText('?')).toBeInTheDocument();
   });
 
   it('결과 상단은 examId 대신 시험 표시명을 보인다', () => {

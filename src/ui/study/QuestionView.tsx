@@ -104,10 +104,11 @@ export function QuestionView(p: Props) {
       <p className="moi-note" aria-live="polite">
         {copy.study.answerCountHint(item.answerCount)}
       </p>
-      <p className="moi-note">
+      {/* 문항 액션 그룹 — 정보(제목·보기)와 분리된 독립 그룹, 탐색·최종 액션과도 분리(#232). */}
+      <div className="moi-study-item-actions" role="group" aria-label={copy.study.itemActions}>
         <BookmarkButton client={p.client} examId={p.examId ?? STUDY_EXAM_ID} questionId={item.questionId} />
         <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
-      </p>
+      </div>
       <fieldset className="moi-study-field">
         <legend className="moi-study-legend">보기 선택</legend>
         {item.optionOrder.map((optionId, k) => (

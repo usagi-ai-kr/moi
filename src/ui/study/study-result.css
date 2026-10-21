@@ -84,6 +84,32 @@
   font-size: var(--moi-size-small);
   overflow-wrap: anywhere;
 }
+/* 문항 상세 카드 — 정보(dl)·액션(북마크/신고)·해설/근거를 세로 그룹으로 분리(#232).
+   그룹 사이는 space-3, 그룹 안은 space-2 규칙 gap. 320/375는 wrap으로 겹침 방지. */
+.moi-study-peritem > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  min-width: 0;
+}
+/* 문항 메타 정보 행 — 번호·채점·응답·선택·정답을 별도 dl로, 액션과 같은 줄에 끼우지 않는다. */
+.moi-study-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--moi-space-2) var(--moi-space-4);
+  margin: 0;
+  min-width: 0;
+  font-size: var(--moi-size-small);
+  overflow-wrap: anywhere;
+}
+.moi-study-meta > div {
+  display: flex;
+  align-items: baseline;
+  gap: var(--moi-space-1);
+  min-width: 0;
+}
+.moi-study-meta dt { color: var(--moi-color-muted); }
+.moi-study-meta dd { margin: 0; font-weight: 600; color: var(--moi-color-ink); }
 /* 결과 해설 페이저 — 한 문항씩 좌우 이동(#189). 320px에서 줄바꿈·가로 오버플로 0. */
 .moi-study-pager {
   display: flex;
