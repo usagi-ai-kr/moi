@@ -1,7 +1,7 @@
 ---
 id: ADR-0032
 title: 첫 화면 사실 문구·초기 렌더
-status: Accepted
+status: Superseded by ADR-0060
 date: 2026-10-19
 related: ["#132", "#58", "ADR-0012", "ADR-0014", "ADR-0018", "ADR-0022"]
 ---

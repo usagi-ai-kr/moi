@@ -46,7 +46,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0028 | 복습 회차 진행과 시도 기록 원자 저장 | Superseded by ADR-0038 | 2026-10-19 | [0028-review-grade-atomic.md](./0028-review-grade-atomic.md) |
 | ADR-0030 | 0.2 수업 실사용·디자인과 0.3 이관 | Superseded by ADR-0033 | 2026-10-19 | [0030-classroom-scope-and-design.md](./0030-classroom-scope-and-design.md) |
 | ADR-0031 | 새와 모이 SVG 마스터 기반 아이콘 자산 | Superseded by ADR-0054 | 2026-10-19 | [0031-bird-brand-icons.md](./0031-bird-brand-icons.md) |
-| ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Accepted | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
+| ADR-0032 | 첫 화면 사실 문구·초기 렌더 | Superseded by ADR-0060 | 2026-10-19 | [0032-classroom-home-first-screen.md](./0032-classroom-home-first-screen.md) |
 | ADR-0033 | 0.2 수업용 500문제 원복과 생성·검증 | Accepted | 2026-10-19 | [0033-500-question-classroom-scope.md](./0033-500-question-classroom-scope.md) |
 | ADR-0034 | 해설 마크다운·Mermaid 렌더링 | Superseded by ADR-0045 | 2026-10-19 | [0034-explanation-markdown-mermaid.md](./0034-explanation-markdown-mermaid.md) |
 | ADR-0035 | 학습 UI shadcn/ui·Tailwind 전환과 디자인 계약 | Accepted | 2026-10-19 | [0035-design-shadcn-tailwind.md](./0035-design-shadcn-tailwind.md) |
@@ -74,4 +74,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0057 | 모바일 햄버거·우측 Drawer 구현과 반응형 breakpoint 정책 | Accepted | 2026-10-20 | [0057-mobile-drawer-native-dialog.md](./0057-mobile-drawer-native-dialog.md) |
 | ADR-0058 | 복습 시험 식별자 공개 코드 정규화와 내부 ID 읽기 호환 | Accepted | 2026-10-21 | [0058-review-exam-id-code.md](./0058-review-exam-id-code.md) |
 | ADR-0059 | 복습 10문항 회차와 remaining/cycle 큐 | Accepted | 2026-10-21 | [0059-review-round-10-queue.md](./0059-review-round-10-queue.md) |
+| ADR-0060 | 홈 안내 문구 삭제 | Accepted | 2026-10-21 | [0060-home-note-removal.md](./0060-home-note-removal.md) |
 <!-- ADR_INDEX:END -->

@@ -13,9 +13,6 @@ export const copy = {
   login: {
     kakao: '카카오 로그인',
   },
-  home: {
-    note: `카카오 로그인 → ${STUDY_SET_SIZE}문제 풀이 → 저장·결과 확인. 현재 첫 학습 범위는 AWS SAA입니다.`,
-  },
   nav: {
     study: '학습 시작',
     history: '학습 현황/이력',

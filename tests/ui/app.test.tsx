@@ -80,7 +80,12 @@ describe('App (세션 상태 화면)', () => {
     expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('moi');
     expect(screen.getAllByText('문제 중심 시험 대비 플랫폼').length).toBeGreaterThanOrEqual(1);
     expect(document.querySelector('.moi-lead')).toHaveTextContent('문제 중심 시험 대비 플랫폼');
-    expect(screen.getByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).toBeInTheDocument();
+    // #56: 홈 안내 문구 삭제 — 문구와 빈 문단이 없어야 한다
+    expect(screen.queryByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).not.toBeInTheDocument();
+    expect(document.querySelector('.moi-main-inner')?.textContent).not.toMatch(/AWS SAA/);
+    for (const el of Array.from(document.querySelectorAll('.moi-main-inner p'))) {
+      expect(el.textContent?.trim().length).toBeGreaterThan(0);
+    }
     expect(screen.getByRole('status')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: '카카오 로그인' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
@@ -95,6 +100,8 @@ describe('App (세션 상태 화면)', () => {
     expect(link).toHaveAttribute('href', '/auth/kakao');
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('moi');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    // #56: 홈 안내 문구 삭제 — 비로그인 홈에 문구가 없어야 한다
+    expect(screen.queryByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).not.toBeInTheDocument();
   });
 
   it('로그인 홈: 계정/로그아웃을 상시 노출하지 않고 원본 id를 렌더하지 않는다', async () => {
