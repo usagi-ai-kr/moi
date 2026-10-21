@@ -1,7 +1,7 @@
 ---
 id: ADR-0046
 title: 학습 세트 10문제 조정
-status: Accepted
+status: Superseded by ADR-0081
 date: 2026-10-20
 related: ["#187", "#146", "ADR-0020"]
 ---

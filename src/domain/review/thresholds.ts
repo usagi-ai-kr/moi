@@ -1,5 +1,5 @@
 /**
- * 복습 도메인 상수·임계치와 근거 (이슈 #51, ADR-0020).
+ * 복습 도메인 상수·임계치와 근거 (이슈 #51, ADR-0020/0081).
  * 값 변경은 복습 계약 변경이므로 ADR로 기록한다.
  */
 
@@ -13,5 +13,20 @@ export const REVIEW_WEIGHT_STEP = 1;
 /** 회차 최소 후보 수 — 후보 0만 거부한다(ADR-0059도 유지). */
 export const REVIEW_MIN_CANDIDATES = 1;
 
-/** 한 회차 문제 수 — 대기 후보가 많으면 10문항씩 분할한다(ADR-0059). */
+/** 레거시 회차 크기 — 기존 10문항 회차 읽기 호환용(ADR-0059/0081). */
 export const REVIEW_ROUND_SIZE = 10;
+
+/** 새 복습 회차에서 선택 가능한 문제 수(ADR-0081). */
+export const REVIEW_ROUND_SIZE_OPTIONS = [4, 8] as const;
+export type ReviewRoundSize = (typeof REVIEW_ROUND_SIZE_OPTIONS)[number];
+
+/** 새 복습 회차 기본 문제 수(ADR-0081). */
+export const DEFAULT_REVIEW_ROUND_SIZE: ReviewRoundSize = 4;
+
+/** 별칭 — 테스트·호환용. */
+export const REVIEW_ROUND_SIZES = REVIEW_ROUND_SIZE_OPTIONS;
+export const ALLOWED_REVIEW_ROUND_SIZES = REVIEW_ROUND_SIZE_OPTIONS;
+
+export function isReviewRoundSize(value: unknown): value is ReviewRoundSize {
+  return value === 4 || value === 8;
+}

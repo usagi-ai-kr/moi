@@ -21,6 +21,8 @@ export function ReviewScreen({ client }: Props) {
   const { examId } = useExamScope();
   const {
     mode,
+    size,
+    setSize,
     isBusy,
     currentQuery,
     candidatesQuery,
@@ -143,8 +145,10 @@ export function ReviewScreen({ client }: Props) {
           isLoading={candidatesQuery.isLoading}
           isError={candidatesQuery.isError}
           mode={mode}
+          size={size}
           isStarting={startMutation.isPending}
           onStart={handleStart}
+          onSize={setSize}
           onRetry={() => void candidatesQuery.refetch()}
           onSelectMode={setTab}
         />

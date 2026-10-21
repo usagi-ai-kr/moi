@@ -158,7 +158,7 @@ describe('#212 학습 시작 selector/CTA', () => {
     expect(group).toHaveAttribute('aria-describedby', 'study-scope-desc');
     expect(desc).toHaveAttribute('id', 'study-scope-desc');
     // 설명은 범위 옵션을 반복하지 않는다 — 10문제 계약(#275)은 유지한다.
-    expect(copy.study.examContext).toMatch(/10문제/);
+    expect(copy.study.examContext).not.toMatch(/10문제/);
     expect(copy.study.examContext).not.toMatch(/전체\/영역별\/취약/);
     expect(container.querySelector('.moi-study-legend')?.textContent).toBe('범위');
     expect(screen.getByRole('radio', { name: copy.study.scopeAll })).toBeChecked();

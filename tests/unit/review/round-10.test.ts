@@ -33,36 +33,36 @@ describe('review 10문항 회차 queue (app fake)', () => {
     const view = await getReviewCandidatesView(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
     expect(view.total).toBe(25);
     expect(view.candidates).toHaveLength(25);
-    const started = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const started = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     expect(started.outcome).toBe('started');
-    if (started.outcome === 'started') expect(started.session.items).toHaveLength(10);
+    if (started.outcome === 'started') expect(started.session.items).toHaveLength(8);
   });
 
   it('2) 10씩 채점·종료하면 10→10→5→새 cycle 25', async () => {
     const f = fakes(25, 11);
-    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s1.outcome !== 'started') throw new Error('s1 failed');
-    await gradeAll(f.deps, s1.session, 10);
+    await gradeAll(f.deps, s1.session, 8);
     expect((await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' })).outcome).toBe('ended');
-    const s2 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s2 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s2.outcome !== 'started') throw new Error('s2 failed');
-    expect(s2.session.items).toHaveLength(10);
-    await gradeAll(f.deps, s2.session, 10);
+    expect(s2.session.items).toHaveLength(8);
+    await gradeAll(f.deps, s2.session, 8);
     expect((await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' })).outcome).toBe('ended');
-    const s3 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s3 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s3.outcome !== 'started') throw new Error('s3 failed');
-    expect(s3.session.items).toHaveLength(5);
-    await gradeAll(f.deps, s3.session, 5);
+    expect(s3.session.items).toHaveLength(8);
+    await gradeAll(f.deps, s3.session, 8);
     expect((await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' })).outcome).toBe('ended');
-    const s4 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s4 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s4.outcome !== 'started') throw new Error('s4 failed');
-    expect(s4.session.items).toHaveLength(10);
+    expect(s4.session.items).toHaveLength(1);
   });
 
   it('3) 후보 10개 이하는 전체 시작한다', async () => {
-    for (const n of [1, 7, 10]) {
+    for (const n of [1, 7, 8]) {
       const f = fakes(n, n + 1);
-      const r = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+      const r = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
       expect(r.outcome).toBe('started');
       if (r.outcome === 'started') expect(r.session.items).toHaveLength(n);
     }
@@ -70,14 +70,14 @@ describe('review 10문항 회차 queue (app fake)', () => {
 
   it('4) 회차 중 추가는 다음 plan에 append되고 제거는 빠진다', async () => {
     const f = fakes(12, 21);
-    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s1.outcome !== 'started') throw new Error('s1 failed');
-    expect(s1.session.items).toHaveLength(10);
-    await gradeAll(f.deps, s1.session, 10);
+    expect(s1.session.items).toHaveLength(8);
+    await gradeAll(f.deps, s1.session, 8);
     expect((await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' })).outcome).toBe('ended');
     f.src.state.wrong.push({ ...makeCandidates(1)[0], questionId: 'rq-new' });
     f.src.state.wrong = f.src.state.wrong.filter((c) => c.questionId !== 'rq-0');
-    const s2 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s2 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s2.outcome !== 'started') throw new Error('s2 failed');
     const ids2 = s2.session.items.map((i) => i.questionId);
     expect(ids2).toContain('rq-new');
@@ -86,13 +86,13 @@ describe('review 10문항 회차 queue (app fake)', () => {
 
   it('5) early end 미채점 3은 remaining에 복귀한다', async () => {
     const f = fakes(12, 31);
-    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s1.outcome !== 'started') throw new Error('s1 failed');
-    await gradeAll(f.deps, s1.session, 7);
+    await gradeAll(f.deps, s1.session, 5);
     const ended = await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
     expect(ended.outcome).toBe('ended');
-    if (ended.outcome === 'ended') expect(ended.summary).toMatchObject({ total: 10, graded: 7, pending: 3 });
-    const s2 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    if (ended.outcome === 'ended') expect(ended.summary).toMatchObject({ total: 8, graded: 5, pending: 3 });
+    const s2 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s2.outcome !== 'started') throw new Error('s2 failed');
     const pendingIds = ended.outcome === 'ended' ? ended.session.items.filter((i) => i.state.kind === 'pending').map((i) => i.questionId) : [];
     expect(pendingIds).toHaveLength(3);
@@ -101,7 +101,7 @@ describe('review 10문항 회차 queue (app fake)', () => {
 
   it('6) resume·소유권·시험 격리·bookmark 회귀', async () => {
     const f = fakes(12, 41);
-    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s1.outcome !== 'started') throw new Error('s1 failed');
     const resumed = await resumeReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
     expect(resumed.outcome).toBe('resumed');
@@ -138,7 +138,7 @@ describe('review 10문항 회차 queue (app fake)', () => {
     expect(ended.session.cycleQuestionIds ?? null).toBeNull();
     const view = await getReviewCandidatesView(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
     expect(view.total).toBe(2);
-    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (next.outcome !== 'started') throw new Error('next failed');
     expect(next.session.items).toHaveLength(2);
   });
@@ -167,7 +167,7 @@ describe('review 10문항 회차 queue (app fake)', () => {
     expect(ended.session.cycleQuestionIds).toHaveLength(3);
     const view = await getReviewCandidatesView(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
     expect(view.total).toBe(4);
-    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (next.outcome !== 'started') throw new Error('next failed');
     expect(next.session.items).toHaveLength(4);
     const pendingIds = ended.session.items.filter((i) => i.state.kind === 'pending').map((i) => i.questionId);

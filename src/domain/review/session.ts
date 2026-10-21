@@ -1,6 +1,6 @@
 import type { ReviewCandidate, ReviewItemState, ReviewMode, ReviewSession, ReviewSessionItem } from './types';
 import { pickOrder, shuffle } from './selection';
-import { REVIEW_ROUND_SIZE } from './thresholds';
+import { DEFAULT_REVIEW_ROUND_SIZE } from './thresholds';
 import { assertReviewSessionInvariants } from './invariants';
 
 /**
@@ -22,11 +22,14 @@ export interface ReviewSessionDraft {
   readonly candidates: readonly ReviewCandidate[];
   readonly createdAt: number;
   readonly rng: () => number;
+  /** 회차 문제 수(ADR-0081). 미지정 시 기본 4. */
+  readonly size?: number;
 }
 
 /** 시작 시 대상·순서 고정 — 소진 후 다음 회차는 queue plan으로 remaining에서 다시 뽑는다. */
-export function buildReviewSession(draft: ReviewSessionDraft): ReviewSession {
-  const ordered = pickOrder(draft.candidates, draft.mode, draft.rng).slice(0, REVIEW_ROUND_SIZE);
+export function buildReviewSession(draft: ReviewSessionDraft, size?: number): ReviewSession {
+  const roundSize = Math.max(1, size ?? draft.size ?? DEFAULT_REVIEW_ROUND_SIZE);
+  const ordered = pickOrder(draft.candidates, draft.mode, draft.rng).slice(0, roundSize);
   const items: ReviewSessionItem[] = ordered.map((candidate) => ({
     questionId: candidate.questionId,
     questionVersionId: candidate.version.questionVersionId,

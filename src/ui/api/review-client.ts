@@ -130,8 +130,9 @@ export async function startReviewSession(
   client: ApiClient,
   examId: string,
   mode: ReviewMode,
+  size?: number,
 ): Promise<ReviewSessionStartResponse> {
-  return client.post('api/review/sessions', { json: { examId, mode } }).json<ReviewSessionStartResponse>();
+  return client.post('api/review/sessions', { json: { examId, mode, size } }).json<ReviewSessionStartResponse>();
 }
 
 // GET /api/review/sessions/current?examId=...&mode=... (404는 활성 회차 없음으로 null 매핑)

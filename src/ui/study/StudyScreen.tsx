@@ -82,7 +82,7 @@ export function StudyScreen({
   });
   // 포기 트리거(QuestionView) — 취소/Escape 후 포커스 복귀용 (#223).
   const abandonTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const { s, set, unanswered, setQuery, historyQuery } = f;
+  const { s, set, unanswered, setQuery, historyQuery, size, setSize } = f;
   // 제출 세트일 때만 정정 이력을 조회한다 — useStudyFlow는 수정하지 않는다 (#53).
   const correctionsQuery = useStudyCorrections(client, set && isSubmittedSet(set) ? set.id : null);
 
@@ -169,6 +169,11 @@ export function StudyScreen({
             s.setConfirmAbandon(false);
           }}
         />
+        {set && set.items.length < size && (
+          <div className="moi-alert moi-alert-info" role="status">
+            <p className="moi-alert-text">{`사용 가능한 ${set.items.length}문제로 시작했습니다`}</p>
+          </div>
+        )}
         <QuestionView
           client={client}
           items={set.items}
@@ -201,12 +206,14 @@ export function StudyScreen({
     <StartView
       scope={s.scope}
       domainId={s.domainId}
+      size={size}
       pending={f.startMut.isPending}
       conflict={f.conflict}
       unauthorized={f.unauth || setQuery.isError}
       startError={f.startError ?? (setQuery.isError ? copy.session.loadError : null)}
       onScope={s.setScope}
       onDomain={s.setDomainId}
+      onSize={setSize}
       onStart={f.handleStart}
       onResume={() => {
         // 409(이미 진행 중)는 setId를 모르므로 /study의 current 복원으로 이동한다 (#148).

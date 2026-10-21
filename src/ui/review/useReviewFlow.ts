@@ -25,6 +25,7 @@ export function useReviewFlow(client: ApiClient, examId: string) {
   const queryClient = useQueryClient();
   const modeParam = searchParams.get('mode');
   const mode: ReviewMode = modeParam === 'bookmark' ? 'bookmark' : 'wrong';
+  const [size, setSize] = useState<number>(4);
 
   useEffect(() => {
     if (modeParam !== 'wrong' && modeParam !== 'bookmark') {
@@ -85,7 +86,7 @@ export function useReviewFlow(client: ApiClient, examId: string) {
   const handleStart = () => {
     if (!startLock.tryAcquire(startMutation.isPending)) return;
     startMutation.mutate(
-      { examId, mode },
+      { examId, mode, size },
       {
         onError: (err) => {
           if (err instanceof HTTPError && err.response.status === 409) {
@@ -170,6 +171,8 @@ export function useReviewFlow(client: ApiClient, examId: string) {
 
   return {
     mode,
+    size,
+    setSize,
     isBusy,
     currentQuery,
     candidatesQuery,

@@ -146,7 +146,7 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
     });
     expect(started.status).toBe(201);
     const set = (await started.json()) as { id: string; items: Array<{ questionId: string; answerOptionIds?: unknown; answerCount?: unknown; explanation?: unknown; sourceUrls?: unknown; stem?: unknown; options?: unknown }> };
-    expect(set.items).toHaveLength(10);
+    expect(set.items).toHaveLength(4);
     for (const item of set.items) {
       expect(item.answerOptionIds).toBeUndefined();
       expect(item.answerCount).toBe(1);
@@ -174,7 +174,7 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
       result: { accuracyPercent: number; passCount: number; unansweredCount: number; perItem: Array<{ correctOptionIds: string[] | null }> };
     };
     expect(result.result.passCount).toBe(1);
-    expect(result.result.unansweredCount).toBe(9);
+    expect(result.result.unansweredCount).toBe(3);
     expect(result.result.perItem[0]?.correctOptionIds).toHaveLength(1);
     for (const item of result.items) {
       expect(item.explanation.length).toBeGreaterThan(0);
@@ -241,7 +241,7 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
     expect(unconfirmed.status).toBe(422);
     const noDomain = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'domain' } });
     expect(noDomain.status).toBe(422);
-    await seedBank(3, SMALL_EXAM);
+    await seedBank(0, SMALL_EXAM);
     const small = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: SMALL_EXAM, mode: 'all' } });
     expect(small.status).toBe(422);
   });
@@ -363,7 +363,7 @@ describe('멱등성 (#52)', () => {
     const got = await studyRequest(`/api/study/sets/${set.id}`, { token });
     expect(got.status).toBe(200);
     const view = (await got.json()) as { items: Array<{ questionId: string; response: { kind: string } }> };
-    expect(view.items).toHaveLength(10);
+    expect(view.items).toHaveLength(4);
     expect(view.items.filter((i) => i.questionId === qid)).toHaveLength(1);
     expect(view.items.find((i) => i.questionId === qid)?.response).toMatchObject({ kind: 'pass' });
   });
@@ -396,7 +396,7 @@ describe('현재 활성 세트 조회 (#148)', () => {
     };
     // `current`가 `:id`로 잡히면 id가 'current'인 세트가 없어 404가 된다.
     expect(body.id).toBe(created.id);
-    expect(body.items).toHaveLength(10);
+    expect(body.items).toHaveLength(4);
     for (const item of body.items) {
       expect(typeof item.stem).toBe('string');
       expect(item.answerOptionIds).toBeUndefined();
@@ -443,7 +443,7 @@ describe('제출→attempt 저장 (#54)', () => {
       id: string;
       items: Array<{ questionId: string; optionOrder: string[] }>;
     };
-    expect(set.items).toHaveLength(10);
+    expect(set.items).toHaveLength(4);
     const first = set.items[0] as { questionId: string; optionOrder: string[] };
     const second = set.items[1] as { questionId: string };
     await studyRequest(`/api/study/sets/${set.id}/answers`, {
@@ -468,7 +468,7 @@ describe('제출→attempt 저장 (#54)', () => {
       )
       .bind(set.id)
       .all<{ questionId: string; source: string; sourceId: string; outcome: string; occurredAt: number; firstAttempt: number }>();
-    expect(rows.results).toHaveLength(10);
+    expect(rows.results).toHaveLength(4);
     for (const r of rows.results) {
       expect(r.source).toBe('set');
       expect(r.sourceId).toBe(set.id);

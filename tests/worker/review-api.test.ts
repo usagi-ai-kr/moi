@@ -206,7 +206,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       items: Array<{ questionId: string; questionVersionId: string; stem?: unknown; options: Array<{ optionId: string }>; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }>;
     };
     expect(set.examId).toBe('e-1');
-    expect(set.items).toHaveLength(10);
+    expect(set.items).toHaveLength(4);
     for (const item of set.items) {
       expect(item.answerOptionIds).toBeUndefined();
       expect(item.explanation).toBeUndefined();
@@ -232,23 +232,23 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     expect(submit.status).toBe(200);
     const submitted = (await submit.json()) as { status: string; result: { correctCount: number; passCount: number; unansweredCount: number } };
     expect(submitted.status).toBe('submitted');
-    expect(submitted.result).toMatchObject({ correctCount: 3, passCount: 2, unansweredCount: 2 });
+    expect(submitted.result).toMatchObject({ correctCount: 1, passCount: 1, unansweredCount: 1 });
 
     const setAttempts = await db.prepare("SELECT outcome, source, source_id, user_id, exam_id, first_attempt FROM study_attempts WHERE source = 'set'").all<{
       outcome: string; source: string; source_id: string; user_id: string; exam_id: string; first_attempt: number;
     }>();
-    expect(setAttempts.results).toHaveLength(10);
+    expect(setAttempts.results).toHaveLength(4);
     expect(setAttempts.results.every((row) => row.source_id === set.id && row.user_id === U1 && row.exam_id === 'e-1')).toBe(true);
-    expect(setAttempts.results.filter((row) => row.first_attempt === 1)).toHaveLength(6);
+    expect(setAttempts.results.filter((row) => row.first_attempt === 1)).toHaveLength(2);
     expect(Object.fromEntries(['correct', 'wrong', 'pass', 'unanswered'].map((outcome) => [
       outcome, setAttempts.results.filter((row) => row.outcome === outcome).length,
-    ]))).toEqual({ correct: 3, wrong: 3, pass: 2, unanswered: 2 });
+    ]))).toEqual({ correct: 1, wrong: 1, pass: 1, unanswered: 1 });
 
     const candidatesRes = await req(`/api/review/candidates?examId=${EXAM_CODE}&mode=wrong`, { token });
     expect(candidatesRes.status).toBe(200);
     const candidates = (await candidatesRes.json()) as { total: number; items: Array<{ questionId: string; validWrongCount: number; answerOptionIds?: unknown; explanation?: unknown; sourceUrls?: unknown }> };
-    expect(candidates.total).toBe(7);
-    expect(candidates.items).toHaveLength(7);
+    expect(candidates.total).toBe(3);
+    expect(candidates.items).toHaveLength(3);
     expect(candidates.items.every((item) => item.validWrongCount === 1)).toBe(true);
     for (const item of candidates.items) {
       expect(item.answerOptionIds).toBeUndefined();
@@ -269,7 +269,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       current: { questionId: string; response: null; answerOptionIds?: unknown; explanation?: unknown; correctOptionIds?: unknown };
     };
     expect(review.cursor).toBe(0);
-    expect(review.total).toBe(7);
+    expect(review.total).toBe(3);
     expect(review.current.response).toBeNull();
     expect(review.current.answerOptionIds).toBeUndefined();
     expect(review.current.explanation).toBeUndefined();
@@ -466,7 +466,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
       items: Array<{ questionId: string; response: null; answerCount?: unknown; id?: unknown; userId?: unknown }>;
     };
     expect(started.cursor).toBe(0);
-    expect(started.total).toBe(10);
+    expect(started.total).toBe(4);
     expect(started).not.toHaveProperty('id');
     expect(started).not.toHaveProperty('userId');
     expect(started.current.answerOptionIds).toBeUndefined();
@@ -553,7 +553,7 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     const endRes = await req('/api/review/sessions/current/end', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } });
     expect(endRes.status).toBe(200);
     const end = (await endRes.json()) as { summary: { total: number; graded: number; pending: number } };
-    expect(end.summary).toMatchObject({ total: 10, graded: 1, pending: 9 });
+    expect(end.summary).toMatchObject({ total: 4, graded: 1, pending: 3 });
     const after = await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source='review'").first<{ c: number }>();
     expect(after?.c).toBe(before?.c);
     expect((await req(`/api/review/sessions/current?examId=${EXAM_CODE}&mode=wrong`, { token })).status).toBe(404);

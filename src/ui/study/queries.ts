@@ -85,7 +85,7 @@ export function isUnauthorized(err: unknown): boolean {
 export function useStartStudy(client: ApiClient) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { examId: string; mode: StudyMode; domainId?: string }) => startStudySet(client, input),
+    mutationFn: (input: { examId: string; mode: StudyMode; domainId?: string; size?: number }) => startStudySet(client, input),
     onSuccess: (set: StudyActiveSet) => {
       queryClient.setQueryData(setQueryKey(set.id), set);
     },

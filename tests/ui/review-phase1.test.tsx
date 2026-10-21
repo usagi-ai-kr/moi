@@ -235,7 +235,7 @@ describe('Phase 1: Review Client & Candidate/Resume View', () => {
     expect(screen.getByRole('tab', { name: '북마크 복습' })).toBeInTheDocument();
 
     expect(await screen.findByText(/복습 대기 2문제/)).toBeInTheDocument();
-    expect(screen.getByText(/10문제씩 진행됩니다/)).toBeInTheDocument();
+    expect(screen.getByText(/선택한 문제 수만큼 진행됩니다/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /복습 시작/ })).toBeInTheDocument();
 
     expect(screen.queryByText(/Amazon S3 수명 주기 정책/)).not.toBeInTheDocument();
@@ -272,7 +272,7 @@ describe('Phase 1: Review Client & Candidate/Resume View', () => {
 
     await waitFor(() => {
       expect(client.post).toHaveBeenCalledWith('api/review/sessions', {
-        json: { examId: 'saa-c03', mode: 'wrong' },
+        json: { examId: 'saa-c03', mode: 'wrong', size: 4 },
       });
     });
 
