@@ -100,4 +100,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0083 | 시험 Select chevron 여백 — 네이티브 select 유지와 아이콘 배치 | Accepted | 2026-10-21 | [0083-exam-select-chevron.md](./0083-exam-select-chevron.md) |
 | ADR-0084 | 에이전트 코멘트와 사용자 승인 구분 — 우선순위·범위 변경 규칙 | Accepted | 2026-10-21 | [0084-agent-comment-approval.md](./0084-agent-comment-approval.md) |
 | ADR-0085 | 오케스트레이터 Discord 알림 이벤트 확장 — intervention·confirmation·deliverable | Accepted | 2026-10-21 | [0085-orch-discord-events.md](./0085-orch-discord-events.md) |
+| ADR-0086 | 학습 범위·문항 수 선택 그룹 컨테이너와 옵션 간격 축소 | Accepted | 2026-10-21 | [0086-selection-group-container.md](./0086-selection-group-container.md) |
 <!-- ADR_INDEX:END -->
