@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyActiveItem } from '../../src/ui/api/client';
 import type { ReviewPendingItem } from '../../src/ui/api/review-client';
+import { OptionFieldset } from '../../src/ui/components/option-fieldset';
 import { OptionRow } from '../../src/ui/components/option-row';
 import { QuestionCard } from '../../src/ui/components/question-card';
 import { copy } from '../../src/ui/copy';
@@ -177,5 +178,100 @@ describe('복습 시각 기준 회귀 (#274)', () => {
     expect(onToggle).toHaveBeenCalledWith('opt-a');
     // 미선택 제출 비활성(즉시 채점 모드 유지).
     expect(screen.getByRole('button', { name: copy.review.submit })).toBeDisabled();
+  });
+});
+
+describe('after 감사 잔여 수정 (#274 fix r2)', () => {
+  it('공통 fieldset은 UA 테두리·padding을 초기화한다', () => {
+    render(
+      <OptionFieldset>
+        <OptionRow checked={false} onChange={() => {}} ariaLabel="보기 1 A" index={0} text="A" />
+      </OptionFieldset>,
+    );
+    const fs = document.querySelector('fieldset');
+    expect(fs?.getAttribute('class')).toContain('border-0');
+    expect(fs?.getAttribute('class')).toContain('p-0');
+    expect(fs?.querySelector('legend')?.getAttribute('class')).toContain('sr-only');
+  });
+
+  it('학습 문항 액션은 카드 안 보기 위에 있고 stem→그룹→보기 순서다', () => {
+    withProviders(
+      <QuestionView
+        client={fakeClient()}
+        items={[studyItem()]}
+        index={0}
+        save="idle"
+        submitting={false}
+        unansweredCount={1}
+        submitError={null}
+        onIndex={vi.fn()}
+        onAnswer={vi.fn()}
+        onPass={vi.fn()}
+        onClear={vi.fn()}
+        onRetry={vi.fn()}
+        onSubmitRequest={vi.fn()}
+        onAbandonRequest={vi.fn()}
+      />,
+    );
+    const stem = screen.getByRole('heading', { level: 1, name: /VPC와 서브넷/ });
+    const actions = screen.getByRole('group', { name: copy.study.itemActions });
+    const opt = screen.getByLabelText(/보기 1/);
+    // 카드 안에 함께 렌더된다.
+    expect(actions.closest('[data-slot="card"]')).not.toBeNull();
+    const before = (a: Element, b: Element) =>
+      (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
+    expect(before(stem, actions)).toBe(true);
+    expect(before(actions, opt)).toBe(true);
+    expect(before(actions, screen.getByRole('button', { name: '이전' }))).toBe(true);
+  });
+
+  it('복습에도 학습과 같은 4px 진행 바가 있다', () => {
+    const { container } = withProviders(
+      <ReviewQuestion
+        client={fakeClient()}
+        examId="saa-c03"
+        item={reviewItem()}
+        cursor={0}
+        total={2}
+        selectedOptions={[]}
+        isSubmitting={false}
+        errorMsg={null}
+        onToggleOption={vi.fn()}
+        onSubmit={vi.fn()}
+        onPass={vi.fn()}
+        onEnd={vi.fn()}
+      />,
+    );
+    const bar = container.querySelector('.moi-study-progressbar');
+    expect(bar).not.toBeNull();
+    expect(bar?.getAttribute('aria-hidden')).toBe('true');
+    expect(bar?.querySelector('span')?.getAttribute('style')).toContain('50%');
+    // 복습 fieldset도 UA 테두리 초기화를 공유한다.
+    expect(container.querySelector('fieldset')?.getAttribute('class')).toContain('border-0');
+  });
+
+  it('신고 열기 버튼은 shadcn ring-2 포커스를 쓴다', () => {
+    withProviders(
+      <QuestionView
+        client={fakeClient()}
+        items={[studyItem()]}
+        index={0}
+        save="idle"
+        submitting={false}
+        unansweredCount={1}
+        submitError={null}
+        onIndex={vi.fn()}
+        onAnswer={vi.fn()}
+        onPass={vi.fn()}
+        onClear={vi.fn()}
+        onRetry={vi.fn()}
+        onSubmitRequest={vi.fn()}
+        onAbandonRequest={vi.fn()}
+      />,
+    );
+    const report = screen.getByRole('button', { name: copy.report.open });
+    for (const t of ['focus-visible:ring-2', 'focus-visible:ring-ring', 'focus-visible:outline-none']) {
+      expect((report.getAttribute('class') ?? '').split(/\s+/)).toContain(t);
+    }
   });
 });

@@ -1,4 +1,4 @@
-/* 질문 카드 공통화(#274) — study.css 예산 분할. QuestionView가 import한다. */
+/* 질문 카드 공통화(#274) — QuestionCard가 import하는 공유 스타일. */
 /* 긴 AWS 문장·코드·URL에서 카드 밀도·줄바꿈·overflow 보장. */
 .moi-study [data-slot='card'] {
   min-width: 0;
@@ -10,9 +10,21 @@
   overflow-wrap: anywhere;
 }
 /* 카드 안 학습 제목은 복습 카드와 같은 크기(18px)로 — .moi-study-title(h2)보다 카드 토큰이 우선.
-   클래스는 E2E 호환용으로 유지한다. */
+   클래스는 E2E·감사 호환용으로 유지한다. */
 .moi-study [data-slot='card-title'].moi-study-title {
   margin: 0;
   font-size: 1.125rem;
   line-height: 1.625;
+}
+/* 진행 바(4px) — 일반 학습·복습 공통. 클래스명은 감사 스크립트 호환용으로 유지한다. */
+.moi-study-progressbar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--moi-color-border);
+  overflow: hidden;
+}
+.moi-study-progressbar span {
+  display: block;
+  height: 100%;
+  background: var(--moi-color-orange);
 }

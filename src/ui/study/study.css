@@ -209,17 +209,6 @@ h1.moi-study-title {
   margin: 0;
   font-size: var(--moi-size-small);
 }
-.moi-study-progressbar {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--moi-color-border);
-  overflow: hidden;
-}
-.moi-study-progressbar span {
-  display: block;
-  height: 100%;
-  background: var(--moi-color-orange);
-}
 /* 상단 제출·포기 액션 행 — 복습 헤더 우측과 같은 gap, 좁은 화면은 줄바꿈 허용 (#186·#274).
    헤더(flex justify-between) 안에서 우측에 붙도록 width:100%를 두지 않는다. */
 .moi-study-question-top {

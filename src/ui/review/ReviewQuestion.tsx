@@ -1,5 +1,6 @@
 import type { ApiClient } from '../api/client';
 import type { ReviewPendingItem } from '../api/review-client';
+import { OptionFieldset } from '../components/option-fieldset';
 import { OptionRow } from '../components/option-row';
 import { QuestionCard } from '../components/question-card';
 import { Alert } from '../components/ui/alert';
@@ -67,9 +68,13 @@ export function ReviewQuestion({
         </div>
       </div>
 
+      {/* 진행 바(4px) — 학습과 같은 바로 통일(#274 fix r2). 장식용이므로 스크린리더에서 숨긴다. */}
+      <div className="moi-study-progressbar" aria-hidden="true">
+        <span style={{ width: `${Math.round(((cursor + 1) / total) * 100)}%` }} />
+      </div>
+
       <QuestionCard stem={item.stem} hint={copy.review.answerCountHint(item.answerCount)}>
-        <fieldset className="flex min-w-0 flex-col gap-2">
-          <legend className="sr-only">보기 선택</legend>
+        <OptionFieldset>
           {item.options.map((opt, idx) => (
             <OptionRow
               key={opt.optionId}
@@ -81,7 +86,7 @@ export function ReviewQuestion({
               text={opt.text}
             />
           ))}
-        </fieldset>
+        </OptionFieldset>
       </QuestionCard>
 
       {errorMsg && (

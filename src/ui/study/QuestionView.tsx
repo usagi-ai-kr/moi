@@ -1,6 +1,7 @@
 import type { RefObject } from 'react';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
+import { OptionFieldset } from '../components/option-fieldset';
 import { OptionRow } from '../components/option-row';
 import { QuestionCard } from '../components/question-card';
 import { Button } from '../components/ui/button';
@@ -14,7 +15,6 @@ import {
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { ReportButton } from './ReportButton';
-import './question-card.css';
 import type { SaveState } from './types';
 
 interface Props {
@@ -135,14 +135,21 @@ export function QuestionView(p: Props) {
           <p className="moi-alert-text">{p.submitError}</p>
         </div>
       )}
+      {/* 문항 액션 그룹 — 제목·힌트 바로 아래, 보기 위. 정보와 분리된 독립 그룹(#232).
+          before 순서(제출/포기 → 북마크/신고 → 보기) 복원. 복습 헤더 북마크는 기준 그대로 둔다. */}
       <QuestionCard
         stem={item.stem}
         hint={copy.study.answerCountHint(item.answerCount)}
         titleAs="h1"
         titleClassName="moi-study-title"
+        headerActions={
+          <div className="moi-study-item-actions" role="group" aria-label={copy.study.itemActions}>
+            <BookmarkButton client={p.client} examId={examId} questionId={item.questionId} />
+            <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
+          </div>
+        }
       >
-        <fieldset className="moi-study-field flex min-w-0 flex-col gap-2">
-          <legend className="sr-only">보기 선택</legend>
+        <OptionFieldset className="moi-study-field">
           {item.optionOrder.map((optionId, k) => (
             <OptionRow
               key={optionId}
@@ -154,13 +161,8 @@ export function QuestionView(p: Props) {
               text={optionText(item, optionId)}
             />
           ))}
-        </fieldset>
+        </OptionFieldset>
       </QuestionCard>
-      {/* 문항 액션 그룹 — 정보(제목·보기)와 분리된 독립 그룹, 탐색·최종 액션과도 분리(#232). */}
-      <div className="moi-study-item-actions" role="group" aria-label={copy.study.itemActions}>
-        <BookmarkButton client={p.client} examId={examId} questionId={item.questionId} />
-        <ReportButton client={p.client} questionId={item.questionId} questionVersionId={item.questionVersionId} />
-      </div>
       {/* 버튼 위계 — DESIGN.md 5절: Pass=secondary, 미응답으로 지우기=ghost (shadcn Button 공통 규격). */}
       {/* 복습 하단 액션과 같은 justify-between·gap-3·pt-2 배치(#274). */}
       <div className="moi-study-actions flex flex-wrap items-center justify-between gap-3 pt-2">

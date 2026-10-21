@@ -89,7 +89,11 @@
   font-size: var(--moi-size-small);
   min-height: var(--moi-space-8);
 }
-.moi-report-open:focus-visible,
+/* 신고 열기 버튼 포커스는 shadcn ring-2(box-shadow) 토큰으로 통일한다(#274 fix r2).
+   나머지 outline 혼용을 없애기 위해 UA outline을 끈다 — dialog 안 버튼은 기존 outline 유지. */
+.moi-report-open:focus-visible {
+  outline: none;
+}
 .moi-report-dialog button:focus-visible {
   outline: 2px solid var(--moi-color-ink);
   outline-offset: 2px;
