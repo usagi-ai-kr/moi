@@ -2,7 +2,7 @@
 
 **moi**는 문제 중심 시험 대비 플랫폼입니다. Cloudflare Workers 단일 배포 단위에서 React SPA(정적 자산) + Hono API를 함께 서빙합니다.
 UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판정하지 않는다. shadcn/Tailwind 전환 검토는 ADR-0035·#148.
-이 문서는 이 저장소에서 작업하는 모든 에이전트의 최상위 규칙입니다. 세부 실행 절차는 `.agents/skills/`의 스킬을 따르고, 기술적 판단의 기록은 `docs/adr/`에서 관리합니다.
+이 저장소에서 작업하는 모든 에이전트의 최상위 규칙이다. 세부 절차는 `.agents/skills/` 스킬, 기술적 판단은 `docs/adr/`가 관리한다.
 
 ## 작업 원칙
 - 이슈 기반으로 작업한다. 관련 이슈의 Acceptance Criteria(BDD)와 완료 정의를 구현·검증의 기준으로 삼는다.
@@ -11,22 +11,17 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 - 비밀값·토큰·인가 코드·개인정보를 이슈, 코드, 커밋, CI 로그에 남기지 않는다.
 - 계층 검사·테스트·타입 검사가 통과하지 않으면 완료로 표시하지 않는다.
 - 완료 정의: 모든 테스트/타입/lint/계층 검사 통과 + 1 Worker 배포 단위 동작 + 버전별 PR에 실행 결과·배포 URL·남은 blocker 보고.
+- 단위 묶음 완료(전 PR merge·배포·smoke·이슈 close) 통지는 **o만** 1회 보낸다(4개 에이전트 공통 스크립트). → `orchestrator-completion-notify`, ADR-0075
+- 단위별 알림은 금지한다. 알림 실패는 merge를 되돌리지 않고 blocker로 보고한다.
 
 ## 하네스·문서 관리
-구성 요소와 역할:
-
-| 구성 | 역할 | 위치 |
-| --- | --- | --- |
-| 룰 | 최상위 규칙 (이 문서) | `AGENTS.md` |
-| 스킬 | 실행 절차 + 자동화 스크립트 | `.agents/skills/` |
-| ADR | 기술적 판단·변경의 기록 | `docs/adr/` |
-| 이슈 | 작업 단위·추적 | GitHub Issues |
+구성: 룰 `AGENTS.md`(최상위 규칙) · 스킬 `.agents/skills/`(실행 절차+스크립트) · ADR `docs/adr/`(판단 기록) · 이슈 GitHub Issues(작업 단위·추적)
 
 관리 규칙:
 - **모든 기술적 추가 판단·변경은 ADR로 기록한다.** 기존 결정을 뒤집으면 기존 ADR을 `Superseded by ADR-NNNN`으로 바꾸고 새 ADR을 추가한다(본문 수정 금지, 오탈자 제외). 생성·인덱스 갱신은 `adr-management` 스킬의 스크립트를 사용한다.
 - **AGENTS.md 변경은 PR로만 반영한다.** 규칙이 바뀌면 같은 PR에서 관련 스킬·문서를 함께 갱신한다.
 - **모든 스킬은 `SKILL.md` + `scripts/` 구조를 가진다.** 반복적·결정적·출력이 큰 작업은 스크립트(sh/python/node)로 구현하고, 에이전트는 스크립트를 호출한 뒤 요약 출력만 읽는다(효율적 입출력·토큰 사용량 최적화). 새 스킬 추가 시 스크립트 1개 이상을 포함하고 아래 스킬 인덱스에 등록한다.
-- **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 길이는 모듈 예산(≤120줄, ADR-0015)을 따른다. 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
+- **스킬은 Agent Skills 표준(https://agentskills.io/specification)을 준수한다**: `name`은 디렉터리명과 일치하는 소문자 kebab-case(64자 이하), `description` 필수(트리거 키워드 포함, 1024자 이하), 본문 ≤120줄(ADR-0015). 스킬 수정 후 `node .agents/scripts/validate-skills.mjs`로 검증한다.
 - **모듈 길이 예산**: AGENTS.md·SKILL.md·ADR + `src/**/*.{ts,tsx,css}`(목표 150/상한 250줄·16KB, 위반 시 분할 신호) 길이는 `harness-budget` 스킬이 검사한다(CI 필수·초과 차단, ADR-0015). 초과 시 ① 중복 제거 ② 스크립트화 ③ 분리 순으로 해소하고, 예산 변경은 ADR 갱신과 함께한다.
 - 스킬 실행 명령은 repo root 기준 경로로 표기하고 CWD를 명시한다.
 - 이슈 완료 시 확정된 합의를 ADR/AGENTS.md/스킬에 반영(승격)한다. 이슈는 작업 추적용이고, 영속 규칙은 문서에 둔다.
@@ -68,7 +63,7 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 - 실행 환경 경계: 브라우저 번들에는 `ui`(+`ui/api`)·`bootstrap/web`과 사이드이펙트 없는 공유 타입/DTO만 — `infra`·Cloudflare 바인딩·Secret 유입 금지(번들 검사로 차단). → `architecture-boundaries`, ADR-0011
 - 의존 방향: 논리 흐름 `ui → app → domain`. Worker 호출은 `ui(타입 안전 API client) → infra(Hono) → app(use case)`. `app`/`domain`에서 `infra`/`ui`로의 역방향 import 금지.
 - API: `GET /auth/kakao`, `GET /auth/kakao/callback`, `GET /api/me`, `POST /auth/logout`
-- 상세(계층별 허용/금지 라이브러리): `architecture-boundaries` 스킬, ADR-0001.
+- 상세(계층별 허용/금지 라이브러리): ADR-0001.
 
 ## 보안·데이터 규칙 (요약)
 - 외부 인증: Kakao OAuth2 Authorization Code + OIDC, 서버 측 code 교환, state·브라우저 바인딩·nonce 검증(D1 `oauth_states` 원자적 일회성 소비, PKCE S256), ID token JWKS 서명 + iss/aud/exp 검증. → `kakao-oidc-auth`, ADR-0003
@@ -82,7 +77,7 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 - 브라우저 검증 viewport: 핵심 화면은 320 / 375 / 768 / 1024 / 1280 전부, 보조 시나리오는 375 / 768 / 1280. (모바일 320–767 / 태블릿 768–1199 / 데스크탑 1200+)
 - CI는 실제 Kakao 계정을 사용하지 않는다(deterministic mock). 실계정 smoke는 배포된 스테이징/실서비스에서 별도 수행한다.
 - CI 게이트: `.github/workflows/ci.yml` — 스킬 검증은 항상 실행한다. `package.json` 부재(0.1.0 이전)만 임시 예외로 건너뛰고, 이후에는 **미정의·스킵 게이트를 실패로 처리(fail-closed)**한다. → `tdd-bdd-testing`, #10
-- 상세: `tdd-bdd-testing`, `release-deploy-workers` 스킬, ADR-0007.
+- 상세: `release-deploy-workers` 스킬, ADR-0007.
 
 ## 버전 규칙
 - 0.1.x 단계(패치 재편): `0.1.0` 하네스 보강(#9~#12)·scaffold → `0.1.1` Kakao OIDC → `0.1.2` D1 사용자 매핑 → `0.1.3` 세션·인증 API → `0.1.4` BDD 통합·배포. GitHub Milestone `0.1.0`~`0.1.4`가 각 단계와 대응한다.
@@ -106,6 +101,7 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 | `tdd-bdd-testing` | 테스트 작성, BDD 시나리오, CI 게이트, PR 증거 |
 | `release-deploy-workers` | Workers 배포·D1 migration·Secrets·smoke |
 | `agent-orchestration` | 역할·콜백·산출물 검증 |
+| `orchestrator-completion-notify` | 단위 묶음 완료 Discord 알림 |
 | `harness-budget` | 모듈 길이 예산 검사·해소, 하네스 비대화 방지 |
 
-> 이 규칙과 스킬은 GitHub 이슈 #1–#13 및 사용자 확정 사항(2026-10-18)에서 추출했습니다. 초기 결정은 `docs/adr/` ADR-0001–0010으로 백필합니다(이슈 #1 첫 PR·#9 추적). 이슈 내용과 충돌하면 이슈의 최신 합의를 우선하고, 합의된 변경을 문서에 반영합니다.
+> 출처: GitHub 이슈 #1–#13·사용자 확정 사항(2026-10-18). 초기 결정은 `docs/adr/` ADR-0001–0010 백필(이슈 #1 첫 PR·#9 추적). 충돌 시 우선순위는 위 관리 규칙을 따른다.

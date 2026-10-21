@@ -26,6 +26,11 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 - `sh .agents/skills/agent-orchestration/scripts/notify.sh <o-pane> <unit> <status> <report>` — `<MOI_WORK_DIR|보고서 디렉터리>/callbacks.log`에 먼저 기록하고 `herdr agent prompt`로 전송한다. 전송 실패는 `delivered=pending`으로 남기고 종료 0이며, o가 재전송한다. `--dry-run`은 기록·전송 없이 출력만 한다.
 - o는 콜백을 받으면 보고서를 읽고 다음 단위를 디스패치한다. 같은 unit의 중복 콜백은 최신 status로 처리한다.
 
+## 완성 알림 (단위 묶음 완료)
+- o가 단위 묶음 완료(전 PR merge·배포·smoke·이슈 close)를 판단하면 `orchestrator-completion-notify` 스킬로 Discord 알림을 **1회** 보낸다. 단위별 알림은 금지한다.
+- 워커(w)·리뷰어(r)는 알림을 보내지 않는다. `--dry-run`으로 payload만 확인하고 실제 전송은 o가 한다.
+- 알림 실패(설정·HTTP 오류)는 merge를 되돌리지 않고 blocker로 보고한다. webhook 등 secret 은 출력·리포트에 남기지 않는다.
+
 ## 폴링·폴백 타이머
 - `herdr agent prompt --wait`·파일 폴링으로 완료를 추정하지 않는다. 완료 신호는 콜백뿐이다.
 - 단위 묶음당 폴백 타이머 **1개, 15분**. 만료 시 해당 패널 출력을 읽어 triage하고, 완료면 보고서 확인, 정지면 재프롬프트, 오류면 재배정한다.
