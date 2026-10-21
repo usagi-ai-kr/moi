@@ -44,7 +44,7 @@ export function ReportButton({ client, questionId, questionVersionId }: Props) {
     <span className="moi-report">
       <button
         type="button"
-        className="moi-report-open"
+        className="moi-report-open focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen(true)}
