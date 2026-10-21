@@ -36,18 +36,23 @@
 h1.moi-study-title {
   margin-bottom: var(--moi-space-1);
 }
+.moi-study-desc { margin: 0; }
 .moi-study-field {
   display: flex;
   flex-direction: column;
   gap: var(--moi-space-2);
-  margin: 0;
+  margin: var(--moi-space-1) 0 0;
   padding: 0;
   border: 0;
 }
+/* #269: 설명(.moi-note·small·muted)과 범위 라벨(legend·body·ink·600)을 위계 분리. */
 .moi-study-legend {
-  margin-bottom: var(--moi-space-2);
-  font-size: var(--moi-size-small);
-  color: var(--moi-color-muted);
+  margin-bottom: var(--moi-space-1);
+  padding: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
 }
 .moi-study-radio,
 .moi-study-check {
@@ -64,6 +69,11 @@ h1.moi-study-title {
 .moi-study-radio {
   min-height: var(--moi-touch-min);
   font-size: var(--moi-size-body);
+}
+/* #269: 선택 상태를 라벨 굵기로도 구분 (색·도트만 의존하지 않음). */
+.moi-study-radio:has(input:checked) {
+  font-weight: 600;
+  color: var(--moi-color-ink);
 }
 .moi-study-check input {
   width: var(--moi-icon-md);
