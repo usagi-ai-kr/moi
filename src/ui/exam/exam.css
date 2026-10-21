@@ -78,6 +78,7 @@
 }
 
 .moi-exam-select:focus-visible {
-  outline: 2px solid var(--moi-color-ink);
+  outline: 2px solid transparent;
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
 }

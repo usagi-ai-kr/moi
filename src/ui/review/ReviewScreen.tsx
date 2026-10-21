@@ -47,7 +47,7 @@ export function ReviewScreen({ client }: Props) {
   } = useReviewFlow(client, examId);
 
   return (
-    <div className="moi-page flex flex-col gap-4">
+    <div className="moi-page moi-review flex flex-col gap-4">
       <header className="flex flex-col gap-3">
         <h1 className="moi-title">{copy.review.title}</h1>
         <div role="tablist" aria-label={copy.review.title} className="flex flex-wrap gap-2 border-b border-border pb-3">
