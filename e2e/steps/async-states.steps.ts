@@ -303,6 +303,13 @@ When('대기 중 시작 버튼에 키보드 입력을 보내면', async ({ page 
   // 중복 방지의 실제 근거: 대기 중에는 disabled+aria-busy라 클릭·키 활성화가 발생하지 않는다.
   await expect(btn).toBeDisabled();
   await expect(btn).toHaveAttribute('aria-busy', 'true');
+  // 약한 검증 보완(#270-r2): 실제 시작 버튼에 포커스를 시도한 뒤 Enter/Space.
+  // disabled라 포커스가 가지 않아야 하며 키 입력으로도 활성화되지 않는다.
+  // Tab 순회 뒤 초점이 링크 등에 남아 있으면 Enter가 내비게이션을 유발하므로
+  // 포커스 시도·미포커스 확인 뒤 body로 blur하고 키를 보낸다.
+  await btn.focus().catch(() => {});
+  await expect(btn).not.toBeFocused();
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur?.());
   // disabled 버튼은 Enter/Space로도 활성화되지 않아야 한다(브라우저 기본 동작 확인).
   await page.keyboard.press('Enter');
   await page.keyboard.press('Space');
@@ -396,13 +403,58 @@ Then('시작 지연 중 범위 선택과 학습 이력이 비활성이다', asyn
   }
 });
 
+// #270-r2 잔여 1건 — pending 중 실제 Tab/Shift+Tab 순회. disabled 범위·이력·이어풀기·시작에는 포커스가 가지 않는다.
+When('대기 중 Tab 순회에서는 비활성 조작에 포커스가 가지 않는다', async ({ page }) => {
+  const region = page.getByRole('region', { name: copy.study.startTitle });
+  const startBtn = region.locator('button').first();
+  await expect(startBtn).toBeDisabled();
+  // disabled 요소는 Tab 순서에서 제외되므로 활성 요소에만 포커스가 가야 한다.
+  // "학습 시작" 문구는 활성 내비 링크에도 있어 문구 매칭이 아니라 :disabled 특정으로 검증한다.
+  // 순회 중에는 evaluate 1회로 판정해 지연 창을 초과하지 않는다.
+  const activeIsDisabled = () =>
+    page.evaluate(() => {
+      const el = document.activeElement as HTMLElement | null;
+      if (!el || el === document.body) return false;
+      return el.matches(':disabled');
+    });
+  for (let i = 0; i < 5; i++) {
+    await page.keyboard.press('Tab');
+    expect(await activeIsDisabled()).toBe(false);
+  }
+  for (let i = 0; i < 3; i++) {
+    await page.keyboard.press('Shift+Tab');
+    expect(await activeIsDisabled()).toBe(false);
+  }
+  // 비활성 시작·이력·범위·이어풀기에는 한 번도 포커스가 가지 않았음을 요소 특정으로 확인한다.
+  const historyBtn = region.getByRole('button', { name: copy.study.historyLink });
+  await expect(startBtn).not.toBeFocused();
+  await expect(historyBtn).not.toBeFocused();
+  const radios = region.getByRole('radio');
+  const n = await radios.count();
+  for (let r = 0; r < n; r++) {
+    await expect(radios.nth(r)).not.toBeFocused();
+  }
+  const resumeBtn = page.getByRole('button', { name: copy.study.continueStudy });
+  if ((await resumeBtn.count()) > 0) {
+    await expect(resumeBtn).not.toBeFocused();
+  }
+  // 순회 뒤에도 시작 버튼은 여전히 대기 상태여야 한다(지연 창 안에서 실행).
+  await expect(startBtn).toBeDisabled();
+});
+
+// #270-r2 완료 뒤 조작 복구 — 시작 성공 후 문제 화면에서 답안 조작이 가능해야 한다.
+Then('문제 화면에서 첫 보기가 조작 가능하다', async ({ page }) => {
+  const first = page.getByLabel(/보기 1/).first();
+  await expect(first).toBeEnabled();
+  await first.focus();
+  await expect(first).toBeFocused();
+});
+
 When('시작 버튼을 연속 클릭하면', async ({ page }) => {
   const btn = page.getByRole('region', { name: copy.study.startTitle }).locator('button').first();
   await btn.dispatchEvent('click');
   await btn.dispatchEvent('click');
   await btn.dispatchEvent('click');
-  await page.keyboard.press('Enter');
-  await page.keyboard.press('Space');
 });
 
 // #270 차단3 — 제출 지연 중 답안·포기·취소 차단. 확정 후 취소는 실제 요청 취소가 아니다.
