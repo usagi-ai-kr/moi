@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // #134 content/questions/<exam>/*.json 팩을 관리 API bulk로 등록한다.
 // - 토큰은 MOI_ADMIN_TOKEN 환경변수에서만 읽고 출력하지 않는다.
-// - 예시 팩(sample-pack.json)은 수업 등록 대상에서 제외한다.
+// - 예시 팩(sample-pack.json)은 학습 등록 대상에서 제외한다.
 // - 100개 이하 청크 + 청크별 Idempotency-Key로 재실행을 안전하게 한다.
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';

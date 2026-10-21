@@ -2,7 +2,7 @@
 // 단위 묶음 완성 알림 — Discord webhook 전송 (ADR-0075 · 이슈 #279).
 // 사용법(CWD = repo root):
 //   node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs \
-//     --status complete --title "0.2.4 수업 실사용" --summary "..." --milestone 0.2.4 \
+//     --status complete --title "0.2.4 학습 실사용" --summary "..." --milestone 0.2.4 \
 //     --version 0.2.4 --url https://moi.example.workers.dev --commit abc1234 \
 //     --issue 279 --issue 127 --test "lint·typecheck" --dry-run
 // 종료 코드: 0 성공, 1 설정/URL/필수값 누락, 2 사용법 오류, 3 HTTP/네트워크 오류.

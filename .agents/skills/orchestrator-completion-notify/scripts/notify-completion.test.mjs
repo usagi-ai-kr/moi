@@ -97,7 +97,7 @@ test('payload: 상태별 색·필드·timestamp·footer 를 채운다', async ()
       '--status',
       'complete',
       '--title',
-      '0.2.4 수업 실사용',
+      '0.2.4 학습 실사용',
       '--summary',
       '요약',
       '--milestone',
@@ -121,7 +121,7 @@ test('payload: 상태별 색·필드·timestamp·footer 를 채운다', async ()
   assert.equal(r.code, 0);
   const embed = parsePayload(r.stdout).embeds[0];
   assert.equal(embed.color, 0x2ecc71);
-  assert.equal(embed.title, '0.2.4 수업 실사용');
+  assert.equal(embed.title, '0.2.4 학습 실사용');
   assert.equal(embed.description, '요약');
   assert.ok(embed.timestamp);
   assert.match(embed.footer.text, /완료/);
