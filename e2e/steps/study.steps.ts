@@ -472,7 +472,10 @@ Then('해설과 근거가 보인다', async ({ page }) => {
 });
 
 Then('완료 세트가 보인다', async ({ page }) => {
-  await expect(page.getByText('완료한 학습')).toBeVisible({ timeout: 10_000 });
+  // #235: '완료한 학습' 문자열은 탭 버튼·히스토리 h2·표 캡션에 함께 있으므로
+  // 탭 역할 + 탭패널 role로 한정해 strict mode 중복 매칭을 막는다.
+  await expect(page.getByRole('tab', { name: '완료한 학습' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tabpanel').getByRole('table')).toBeVisible({ timeout: 10_000 });
 });
 
 When('이력 항목을 선택하면', async ({ page }) => {
