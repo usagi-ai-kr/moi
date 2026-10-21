@@ -401,7 +401,8 @@ describe('학습 라우트 분리 (#148)', () => {
       sets: { 'set-1': submittedSet() },
       history: { items: [summary], total: 1 },
     });
-    renderHistoryRoutes(client, '/history');
+    // #224: 기본 탭이 요약으로 바뀌어 목록 진입은 ?tab=completed로 수용한다.
+    renderHistoryRoutes(client, '/history?tab=completed');
 
     const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
     fireEvent.click(itemBtn);
@@ -465,7 +466,7 @@ describe('학습 라우트 분리 (#148)', () => {
     expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '이력으로 돌아가기' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?tab=completed&page=2'));
   });
 
   it('상세에서 목록 복귀 시 원래 페이지 번호(?page=N)를 유지한다', async () => {
@@ -473,7 +474,7 @@ describe('학습 라우트 분리 (#148)', () => {
     renderHistoryRoutes(client, { pathname: '/history/detail', state: { setId: 'set-1', page: 2 } });
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?tab=completed&page=2'));
   });
 
   it('목록에서 상세로 이동했다가 돌아오면 원래 페이지 번호(?page=N)를 유지한다', async () => {
@@ -489,7 +490,7 @@ describe('학습 라우트 분리 (#148)', () => {
       sets: { 'set-1': submittedSet() },
       history: { items: [summary], total: 21 },
     });
-    renderHistoryRoutes(client, '/history?page=2');
+    renderHistoryRoutes(client, '/history?tab=completed&page=2');
 
     const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
     fireEvent.click(itemBtn);
@@ -499,7 +500,7 @@ describe('학습 라우트 분리 (#148)', () => {
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history/detail'));
 
     fireEvent.click(screen.getByRole('button', { name: '이력으로 돌아가기' }));
-    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?page=2'));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/history?tab=completed&page=2'));
   });
 
   it('레거시 /history/:id 로딩 상태를 보인다', async () => {

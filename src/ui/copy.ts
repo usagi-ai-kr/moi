@@ -181,4 +181,12 @@ export const copy = {
     goToBookmarkReview: '북마크 복습 바로가기',
     goToStudy: '새 학습 시작',
   },
+  history: {
+    tablistLabel: '학습 현황 하위 탭',
+    tabSummary: '학습 현황',
+    tabDomains: '영역별 분석',
+    tabCompleted: '완료한 학습',
+    accuracyNote: '정답·오답으로 채점된 시도 기준이며, Pass·미응답은 제외합니다.',
+    noDomainHistory: '학습 이력 없음',
+  },
 } as const;

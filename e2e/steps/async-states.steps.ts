@@ -277,7 +277,8 @@ Given('제출 응답이 {int}ms 지연된다', async ({}, ms: number) => {
 });
 
 When('이력 화면으로 이동한다', async ({ page }) => {
-  await page.goto('/history');
+  // #224: 기본 탭이 요약으로 바뀌어 이력 시나리오는 완료 탭으로 진입한다.
+  await page.goto('/history?tab=completed');
 });
 
 When('대기 중 시작 버튼에 키보드 입력을 보내면', async ({ page }) => {

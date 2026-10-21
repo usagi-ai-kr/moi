@@ -3,7 +3,8 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
-import { StatsPanel } from '../../src/ui/stats/StatsPanel';
+import { StatsSummaryPanel } from '../../src/ui/stats/StatsSummaryPanel';
+import { StatsDomainsPanel } from '../../src/ui/stats/StatsDomainsPanel';
 import { useStudyUiStore } from '../../src/ui/study/store';
 import type { StudyStats } from '../../src/ui/api/client';
 
@@ -62,7 +63,16 @@ function renderPanel(client: ApiClient) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={qc}>
-      <StatsPanel client={client} examId="saa-c03" />
+      <StatsSummaryPanel client={client} examId="saa-c03" />
+    </QueryClientProvider>,
+  );
+}
+
+function renderDomainsPanel(client: ApiClient) {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(
+    <QueryClientProvider client={qc}>
+      <StatsDomainsPanel client={client} examId="saa-c03" />
     </QueryClientProvider>,
   );
 }
@@ -118,11 +128,15 @@ describe('학습 현황 패널', () => {
     expect(section.querySelector('[data-slot="skeleton"]')).toBeNull();
   });
 
-  it('성공: 진도/정답률/영역/취약을 표시한다', async () => {
+  it('성공: 진도/정답률을 표시한다 (AC 1 — 영역·취약은 분석 탭으로 분리)', async () => {
     renderPanel(clientWith(STATS));
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
     expect(screen.getByText(/70%/)).toBeInTheDocument();
-    expect(screen.getByText('영역별 현황')).toBeInTheDocument();
+  });
+
+  it('분석 패널: 영역 카드·취약 추천을 표시한다 (AC 1·AC 3)', async () => {
+    renderDomainsPanel(clientWith(STATS));
+    expect(await screen.findByText('영역별 현황')).toBeInTheDocument();
     expect(screen.getByText(/보안/)).toBeInTheDocument();
     expect(screen.getByText(/표본 충분/)).toBeInTheDocument();
     expect(screen.getByText('취약 추천')).toBeInTheDocument();
@@ -159,11 +173,11 @@ describe('학습 현황 패널', () => {
     expect(await screen.findByText(/아직 풀이 기록이 없습니다/)).toBeInTheDocument();
   });
 
-  it('App 학습 현황/이력 메뉴로 통계 패널이 열린다', async () => {
+  it('App 학습 현황/이력 메뉴로 요약 탭이 열린다 (AC 1 — 완료 탭은 하위 탭 라벨로 존재)', async () => {
     renderApp(clientWith(STATS));
     await screen.findByRole('link', { name: '학습 현황/이력' });
     fireEvent.click(screen.getByRole('link', { name: '학습 현황/이력' }));
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
-    expect(screen.getByText('완료한 학습')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: '완료한 학습' })).toBeInTheDocument();
   });
 });
