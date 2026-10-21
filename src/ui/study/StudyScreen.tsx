@@ -177,6 +177,7 @@ export function StudyScreen({
         <QuestionView
           client={client}
           items={set.items}
+          setId={set.id}
           index={Math.min(s.index, set.items.length - 1)}
           save={s.save}
           submitting={f.submitMut.isPending}

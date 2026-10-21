@@ -46,7 +46,7 @@ function makeItems(n: number): StudyActiveItem[] {
   }));
 }
 
-function renderQuestion(items: StudyActiveItem[]) {
+function renderQuestion(items: StudyActiveItem[], setId = 'set-cur') {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
@@ -54,6 +54,7 @@ function renderQuestion(items: StudyActiveItem[]) {
         <QuestionView
           client={fakeStudyClient()}
           items={items}
+          setId={setId}
           index={0}
           save="idle"
           submitting={false}
@@ -82,40 +83,52 @@ beforeEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('부족 안내 stash (queries)', () => {
+describe('부족 안내 stash (queries, #275 r5 B1)', () => {
   it('기억·조회 왕복, 다른 시험은 null', () => {
     expect(readRequestedSize('saa-c03')).toBeNull();
-    rememberRequestedSize('saa-c03', 8);
-    expect(readRequestedSize('saa-c03')).toBe(8);
+    rememberRequestedSize('saa-c03', 8, 'set-cur');
+    expect(readRequestedSize('saa-c03')).toEqual({ setId: 'set-cur', size: 8 });
     expect(readRequestedSize('other-exam')).toBeNull();
+  });
+
+  it('4|8 외 값은 null로 거부한다', () => {
+    rememberRequestedSize('saa-c03', 5, 'set-cur');
+    expect(readRequestedSize('saa-c03')).toBeNull();
   });
 });
 
 describe('부족 안내 표시 (QuestionView, #275 F1)', () => {
   it('풀5+8 → 안내를 표시한다', () => {
     atRouterStudyPath();
-    rememberRequestedSize('saa-c03', 8);
+    rememberRequestedSize('saa-c03', 8, 'set-cur');
     renderQuestion(makeItems(5));
     expect(screen.getByText(copy.study.sizeAvailableNotice(5))).toBeInTheDocument();
   });
 
   it('풀4+8 → 안내를 표시한다', () => {
     atRouterStudyPath();
-    rememberRequestedSize('saa-c03', 8);
+    rememberRequestedSize('saa-c03', 8, 'set-cur');
     renderQuestion(makeItems(4));
     expect(screen.getByText(copy.study.sizeAvailableNotice(4))).toBeInTheDocument();
   });
 
+  it('다른 setId 기록이면 안내가 없다(오안내 방지)', () => {
+    atRouterStudyPath();
+    rememberRequestedSize('saa-c03', 8, 'set-old');
+    renderQuestion(makeItems(5), 'set-cur');
+    expect(screen.queryByText(/사용 가능한 .*문제로 시작했습니다/)).not.toBeInTheDocument();
+  });
+
   it('풀4+4 → 안내가 없다', () => {
     atRouterStudyPath();
-    rememberRequestedSize('saa-c03', 4);
+    rememberRequestedSize('saa-c03', 4, 'set-cur');
     renderQuestion(makeItems(4));
     expect(screen.queryByText(/사용 가능한 .*문제로 시작했습니다/)).not.toBeInTheDocument();
   });
 
   it('풀8+8 → 안내가 없다', () => {
     atRouterStudyPath();
-    rememberRequestedSize('saa-c03', 8);
+    rememberRequestedSize('saa-c03', 8, 'set-cur');
     renderQuestion(makeItems(8));
     expect(screen.queryByText(/사용 가능한 .*문제로 시작했습니다/)).not.toBeInTheDocument();
   });
@@ -127,14 +140,14 @@ describe('부족 안내 표시 (QuestionView, #275 F1)', () => {
   });
 
   it('legacy 경로(/)에서는 표시하지 않는다(StudyScreen이 정확한 size로 표시)', () => {
-    rememberRequestedSize('saa-c03', 8);
+    rememberRequestedSize('saa-c03', 8, 'set-cur');
     renderQuestion(makeItems(5));
     expect(screen.queryByText(/사용 가능한 .*문제로 시작했습니다/)).not.toBeInTheDocument();
   });
 
   it('실제 길이 < 기본값 구간은 표시하지 않는다(StudyScreen과 중복 방지)', () => {
     atRouterStudyPath();
-    rememberRequestedSize('saa-c03', 4);
+    rememberRequestedSize('saa-c03', 4, 'set-cur');
     renderQuestion(makeItems(2));
     expect(screen.queryByText(/사용 가능한 .*문제로 시작했습니다/)).not.toBeInTheDocument();
   });

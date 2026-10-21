@@ -32,6 +32,8 @@ interface Props {
   onSubmitRequest: () => void;
   onAbandonRequest: () => void;
   abandonTriggerRef?: RefObject<HTMLButtonElement | null>;
+  /** 렌더 중인 세트 id — 부족 안내 stash가 다른 세트 기록일 때 오안내를 막는다 (#275 r5). 없으면 안내를 표시하지 않는다. */
+  setId?: string;
 }
 
 // #233 Slice B — 액션 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
@@ -85,12 +87,14 @@ export function QuestionView(p: Props) {
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
   // 부족 안내 — 라우트 변경으로 size가 기본값 리셋돼도 요청 size stash로 비교한다 (#275 F1).
   // 실제 길이 < 기본값 구간은 StudyScreen이 이미 표시하므로 중복을 피한다.
-  const requestedSize = readRequestedSize(examId);
+  // stash가 다른 세트 기록이면 표시하지 않는다 (#275 r5 B1).
+  const requested = readRequestedSize(examId);
   const showShortageNotice =
-    requestedSize !== null &&
+    requested !== null &&
+    requested.setId === p.setId &&
     isRouterStudyPath() &&
     p.items.length >= DEFAULT_STUDY_SET_SIZE &&
-    p.items.length < requestedSize;
+    p.items.length < requested.size;
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
       {showShortageNotice && (

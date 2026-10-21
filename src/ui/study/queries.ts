@@ -90,7 +90,7 @@ export function useStartStudy(client: ApiClient) {
       queryClient.setQueryData(setQueryKey(set.id), set);
       // 시작 성공 시 요청 size를 기록한다 — 라우트 변경(/study/new→/study)으로
       // useStudyFlow가 remount되어 size가 기본값으로 리셋돼도 부족 안내가 동작하게 한다 (#275 F1).
-      if (variables.size !== undefined) rememberRequestedSize(variables.examId, variables.size);
+      if (variables.size !== undefined) rememberRequestedSize(variables.examId, variables.size, set.id);
     },
   });
 }
@@ -99,21 +99,23 @@ export function useStartStudy(client: ApiClient) {
 // sessionStorage라 새로고침 후에도 유지되고 탭 간에는 격리된다. 시험별로 키를 나눈다.
 const REQUESTED_SIZE_KEY = 'moi.study.requestedSize.v1';
 
-export function rememberRequestedSize(examId: string, size: number): void {
+export function rememberRequestedSize(examId: string, size: number, setId: string): void {
   try {
-    sessionStorage.setItem(REQUESTED_SIZE_KEY, JSON.stringify({ examId, size, at: Date.now() }));
+    sessionStorage.setItem(REQUESTED_SIZE_KEY, JSON.stringify({ examId, setId, size }));
   } catch {
     // 저장 실패 무시 — 안내는 표시되지 않는다.
   }
 }
 
-export function readRequestedSize(examId: string): number | null {
+export function readRequestedSize(examId: string): { setId: string; size: number } | null {
   try {
     const raw = sessionStorage.getItem(REQUESTED_SIZE_KEY);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as { examId?: unknown; size?: unknown };
-    if (parsed.examId !== examId || typeof parsed.size !== 'number') return null;
-    return parsed.size;
+    const parsed = JSON.parse(raw) as { examId?: unknown; setId?: unknown; size?: unknown };
+    if (parsed.examId !== examId || typeof parsed.setId !== 'string' || (parsed.size !== 4 && parsed.size !== 8)) {
+      return null;
+    }
+    return { setId: parsed.setId, size: parsed.size };
   } catch {
     return null;
   }
