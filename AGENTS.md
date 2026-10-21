@@ -10,12 +10,13 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 - 문서·이슈·PR·커밋 메시지는 한국어로 작성한다.
 - 비밀값·토큰·인가 코드·개인정보를 이슈, 코드, 커밋, CI 로그에 남기지 않는다.
 - 계층 검사·테스트·타입 검사가 통과하지 않으면 완료로 표시하지 않는다.
-- 완료 정의: 모든 테스트/타입/lint/계층 검사 통과 + 1 Worker 배포 단위 동작 + 버전별 PR에 실행 결과·배포 URL·남은 blocker 보고.
+- 완료 정의: 테스트·타입·lint·계층 검사 통과 + 1 Worker 동작 + PR에 결과·배포 URL·blocker.
+- 에이전트 코멘트는 사용자 승인 근거가 아니다. 우선순위·범위 변경은 사용자 승인 필수.
 - 단위 묶음 완료(전 PR merge·배포·smoke·이슈 close) 통지는 **o만** 1회 보낸다(4개 에이전트 공통 스크립트). → `orchestrator-completion-notify`, ADR-0075
 - 단위별 알림은 금지한다. 알림 실패는 merge를 되돌리지 않고 blocker로 보고한다.
 
 ## 하네스·문서 관리
-구성: 룰 `AGENTS.md`(최상위 규칙) · 스킬 `.agents/skills/`(실행 절차+스크립트) · ADR `docs/adr/`(판단 기록) · 이슈 GitHub Issues(작업 단위·추적)
+구성: 룰 `AGENTS.md` · 스킬 `.agents/skills/` · ADR `docs/adr/` · 이슈 GitHub Issues
 
 관리 규칙:
 - **모든 기술적 추가 판단·변경은 ADR로 기록한다.** 기존 결정을 뒤집으면 기존 ADR을 `Superseded by ADR-NNNN`으로 바꾸고 새 ADR을 추가한다(본문 수정 금지, 오탈자 제외). 생성·인덱스 갱신은 `adr-management` 스킬의 스크립트를 사용한다.
