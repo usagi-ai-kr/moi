@@ -476,7 +476,8 @@ Then('완료 세트가 보인다', async ({ page }) => {
 });
 
 When('이력 항목을 선택하면', async ({ page }) => {
-  await page.locator('.moi-study-history-item').first().click();
+  // #224 추가 피드백: 완료 목록은 컬럼 표 — 행의 상세 보기 액션으로 상세를 연다.
+  await page.getByRole('button', { name: /상세 보기/ }).first().click();
 });
 
 When('상세 보기 링크를 누르면', async ({ page }) => {

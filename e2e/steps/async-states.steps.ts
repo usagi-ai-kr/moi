@@ -347,7 +347,9 @@ Then('이력 오류 안내와 재시도 버튼이 보인다', async ({ page }) =
 });
 
 Then('이력 목록이 보인다', async ({ page }) => {
-  await expect(page.getByText(/정답률 50%/)).toBeVisible();
+  // #224 추가 피드백: 완료 목록은 컬럼 표 — 정답률 값이 정답률 컬럼 셀에 보인다.
+  await expect(page.getByRole('table')).toBeVisible();
+  await expect(page.getByRole('cell').filter({ hasText: /^\d+%$/ }).first()).toBeVisible();
 });
 
 Then('제출 버튼이 대기 상태로 표시된다', async ({ page }) => {

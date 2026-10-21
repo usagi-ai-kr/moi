@@ -149,6 +149,7 @@ export function HistoryPage({ client }: { client: ApiClient }) {
             onOpenDetail={handleOpenDetail}
             onRetry={() => void query.refetch()}
             hidePagerWhenEmpty
+            variant="columns"
           />
         }
       />

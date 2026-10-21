@@ -404,7 +404,7 @@ describe('학습 라우트 분리 (#148)', () => {
     // #224: 기본 탭이 요약으로 바뀌어 목록 진입은 ?tab=completed로 수용한다.
     renderHistoryRoutes(client, '/history?tab=completed');
 
-    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    const [itemBtn] = await screen.findAllByRole('button', { name: /상세 보기/ });
     fireEvent.click(itemBtn);
 
     const detailLink = await screen.findByRole('link', { name: '상세 보기' });
@@ -492,7 +492,7 @@ describe('학습 라우트 분리 (#148)', () => {
     });
     renderHistoryRoutes(client, '/history?tab=completed&page=2');
 
-    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    const [itemBtn] = await screen.findAllByRole('button', { name: /상세 보기/ });
     fireEvent.click(itemBtn);
     fireEvent.click(await screen.findByRole('link', { name: '상세 보기' }));
 

@@ -17,13 +17,16 @@ function historyItems(page: number) {
   const count = Math.max(0, Math.min(PAGE_SIZE, TOTAL - start));
   return Array.from({ length: count }, (_, k) => {
     const i = start + k;
+    // 자리수(1/10/100)·0문제/0%·영역명을 섞어 열 정렬이 흔들리지 않는지 확인한다 (#224 추가 피드백).
+    const variant = i % 5;
     return {
       id: `set-e2e-${i}`,
       examId: 'saa-c03',
-      mode: 'all',
+      mode: variant === 3 ? 'domain' : 'all',
+      ...(variant === 3 ? { domainId: 'dom-cost-optimization' } : {}),
       submittedAt: 1700000000000 + i * 1000,
-      correctCount: 10,
-      accuracyPercent: 50,
+      correctCount: variant === 0 ? 0 : variant === 1 ? 1 : variant === 2 ? 100 : 10,
+      accuracyPercent: variant === 0 ? 0 : variant === 1 ? 1 : variant === 2 ? 100 : 50,
     };
   });
 }
@@ -208,7 +211,103 @@ Then('취약 추천이 보인다', async ({ page }) => {
 });
 
 Then('완료 목록이 보인다', async ({ page }) => {
-  await expect(page.getByText(/정답률 50%/).first()).toBeVisible({ timeout: 10_000 });
+  const table = page.getByRole('table');
+  await expect(table).toBeVisible({ timeout: 10_000 });
+  for (const label of [
+    copy.history.completedColumnDate,
+    copy.history.completedColumnScope,
+    copy.history.completedColumnAccuracy,
+    copy.history.completedColumnCount,
+    copy.study.detail,
+  ]) {
+    await expect(table.getByRole('columnheader', { name: label })).toBeVisible();
+  }
+  // 값은 각자 셀에 들어 있다 (한 줄 텍스트로 뭉개지지 않는다).
+  await expect(table.getByRole('cell').nth(2)).toHaveText(/^\d+%$/);
+  await expect(table.getByRole('cell').nth(3)).toHaveText(/^\d+문제$/);
+});
+
+// 헤더와 각 행의 셀은 같은 컬럼(같은 x 좌표·폭)에 정렬된다.
+Then('완료 목록의 헤더와 행 값이 같은 컬럼에 정렬된다', async ({ page }) => {
+  const table = page.getByRole('table');
+  await expect(table).toBeVisible({ timeout: 10_000 });
+  const headerLefts = await table
+    .locator('thead th')
+    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().left));
+  const rowLefts = await table
+    .locator('tbody tr')
+    .first()
+    .locator('td')
+    .evaluateAll((els) => els.map((el) => el.getBoundingClientRect().left));
+  expect(headerLefts).toHaveLength(5);
+  expect(rowLefts).toHaveLength(5);
+  for (let i = 0; i < 5; i += 1) {
+    expect(Math.abs(headerLefts[i] - rowLefts[i]), `${i}번째 컬럼 x 좌표`).toBeLessThanOrEqual(1);
+  }
+});
+
+// 숫자 셀은 tabular-nums + 고정폭 서체, 오른쪽 기준선이다.
+Then('숫자 셀은 고정폭 숫자 서체와 오른쪽 정렬을 쓴다', async ({ page }) => {
+  const table = page.getByRole('table');
+  await expect(table).toBeVisible({ timeout: 10_000 });
+  for (const index of [0, 2, 3]) {
+    const cell = table.getByRole('cell').nth(index);
+    const cellStyle = await cell.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { variant: cs.fontVariantNumeric, align: cs.textAlign };
+    });
+    expect(cellStyle.variant, 'font-variant-numeric').toContain('tabular-nums');
+    expect(cellStyle.align, '숫자 셀 정렬').toBe('right');
+    const numFont = await cell
+      .locator('.moi-history-num')
+      .evaluate((el) => getComputedStyle(el).fontFamily);
+    expect(numFont.toLowerCase(), '숫자 서체').toMatch(/mono/);
+  }
+  // 한국어 범위명은 본문 서체를 유지한다.
+  const scopeFont = await table
+    .getByRole('cell')
+    .nth(1)
+    .evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(scopeFont.toLowerCase(), '범위명 서체').not.toMatch(/mono/);
+});
+
+// 헤더와 셀의 정렬 기준이 컬럼마다 같다 (숫자 열은 둘 다 오른쪽).
+Then('완료 목록 헤더와 셀의 정렬 기준이 같다', async ({ page }) => {
+  const table = page.getByRole('table');
+  await expect(table).toBeVisible({ timeout: 10_000 });
+  const headerAligns = await table
+    .locator('thead th')
+    .evaluateAll((els) => els.map((el) => getComputedStyle(el).textAlign));
+  const cellAligns = await table
+    .locator('tbody tr')
+    .first()
+    .locator('td')
+    .evaluateAll((els) => els.map((el) => getComputedStyle(el).textAlign));
+  expect(headerAligns).toHaveLength(5);
+  expect(cellAligns).toHaveLength(5);
+  for (let i = 0; i < 5; i += 1) {
+    expect(headerAligns[i], `${i}번째 컬럼 정렬`).toBe(cellAligns[i]);
+  }
+  // 완료일·정답률·문항 수 열은 오른쪽 기준선이다.
+  expect(cellAligns[0]).toBe('right');
+  expect(cellAligns[2]).toBe('right');
+  expect(cellAligns[3]).toBe('right');
+});
+
+// 좁은 화면에서는 표를 억지 축소하지 않고 라벨-값 카드로 재구성한다.
+Then('좁은 화면에서는 라벨-값 카드가 보인다', async ({ page }) => {
+  await expect(page.getByRole('table')).toHaveCount(0);
+  const card = page.getByRole('listitem').first();
+  await expect(card).toBeVisible({ timeout: 10_000 });
+  for (const label of [
+    copy.history.completedColumnDate,
+    copy.history.completedColumnScope,
+    copy.history.completedColumnAccuracy,
+    copy.history.completedColumnCount,
+  ]) {
+    await expect(card.getByRole('term').filter({ hasText: label })).toHaveCount(1);
+  }
+  await expect(card.getByRole('button', { name: /상세 보기/ })).toBeVisible();
 });
 
 Then('주소창의 탭 값이 요약이다', async ({ page }) => {

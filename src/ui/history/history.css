@@ -46,3 +46,105 @@
     transition: background-color 120ms ease-out, color 120ms ease-out;
   }
 }
+
+/* 완료 목록 컬럼 표 — 데스크톱(≥768px). 헤더와 셀은 같은 열 위치·폭·정렬을 공유한다 (#224). */
+.moi-history-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-ink);
+}
+.moi-history-table th,
+.moi-history-table td {
+  padding: var(--moi-space-3);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--moi-color-border);
+  overflow-wrap: anywhere;
+}
+.moi-history-table thead th {
+  font-weight: 600;
+  color: var(--moi-color-muted);
+  border-bottom: 1px solid var(--moi-color-ink);
+}
+/* 정렬은 열·셀 클래스가 담당한다 — 헤더와 셀의 정렬을 같은 기준으로 맞춘다. */
+.moi-history-col-scope,
+.moi-history-col-detail,
+.moi-history-cell {
+  text-align: left;
+}
+.moi-history-col-date,
+.moi-history-col-accuracy,
+.moi-history-col-count {
+  text-align: right;
+}
+.moi-history-col-date { width: 26%; }
+.moi-history-col-scope { width: 23%; }
+.moi-history-col-accuracy { width: 12%; }
+.moi-history-col-count { width: 15%; }
+.moi-history-col-detail { width: 24%; }
+/* 숫자 셀 — 오른쪽 기준선 + tabular-nums로 자리수·시간대가 흔들리지 않는다. */
+.moi-history-cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.moi-history-num {
+  font-family: var(--moi-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+/* 날짜를 알 수 없는 경우 — 숫자 서체가 아닌 본문 서체를 유지한다. */
+.moi-history-unknown {
+  font-family: var(--moi-font-ui);
+}
+.moi-history-row:hover,
+.moi-history-row:focus-within {
+  background: var(--moi-color-surface);
+}
+.moi-history-detail-row td {
+  padding: 0 var(--moi-space-3) var(--moi-space-3);
+  background: var(--moi-color-surface);
+}
+.moi-history-detail-action {
+  font-size: var(--moi-size-small);
+}
+
+/* 완료 목록 카드 — 모바일(≤767px). 표를 억지 축소하지 않고 라벨-값 목록으로 재구성한다. */
+.moi-history-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+}
+.moi-history-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  padding: var(--moi-space-3);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  background: var(--moi-color-white);
+}
+.moi-history-card-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+}
+.moi-history-card-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--moi-space-1) var(--moi-space-3);
+  font-size: var(--moi-size-small);
+}
+.moi-history-card-label {
+  color: var(--moi-color-muted);
+}
+.moi-history-card-value {
+  margin: 0;
+  font-size: var(--moi-size-body);
+  overflow-wrap: anywhere;
+}

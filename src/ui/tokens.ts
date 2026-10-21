@@ -79,6 +79,10 @@ export const typography = {
     "'KoddiUDOngodic', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
   fontUi:
     "'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
+  // 숫자 셀 고정폭 서체 — tabular-nums와 함께 자릿수 변화에도 열 정렬을 흔들리지 않게 한다 (ADR-0066).
+  // 한글 글리프는 이 스택에 없어 시스템 한글 서체로 폴백하므로 숫자만 고정폭으로 정렬된다.
+  fontMono:
+    "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
   displayFontFamily: 'KoddiUDOngodic',
   // 눈누가 제공하는 공식 웹폰트 경로 — 형태 그대로·수정/재배포 금지라 저장소에 파일을 두지 않는다 (ADR-0014)
   displayFontUrl:
@@ -138,6 +142,7 @@ export const cssVars: Record<string, string> = {
   '--moi-touch-min': px(layout.touchTargetMin),
   '--moi-font-display': typography.fontDisplay,
   '--moi-font-ui': typography.fontUi,
+  '--moi-font-mono': typography.fontMono,
   '--moi-size-body': px(typography.baseSize),
   ...Object.fromEntries(Object.entries(typography.sizes).map(([k, v]) => [`--moi-size-${k}`, v])),
   '--moi-kakao-container': kakao.container,

@@ -391,7 +391,7 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
     const { client } = makeMockClient({ total: 5 });
     renderHistoryPage(client, '/history?tab=completed');
 
-    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    const [itemBtn] = await screen.findAllByRole('button', { name: /상세 보기/ });
     fireEvent.click(itemBtn);
 
     const dialog = await screen.findByRole('dialog');
@@ -404,7 +404,7 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
     const { client } = makeMockClient({ total: 45 });
     renderHistoryPage(client, '/history?tab=completed');
 
-    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    const [itemBtn] = await screen.findAllByRole('button', { name: /상세 보기/ });
     fireEvent.click(itemBtn);
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
 
@@ -421,7 +421,7 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
     renderHistoryPage(mock.client, '/history?tab=completed', { queryClient });
 
     expect(await screen.findByText('총 45건')).toBeInTheDocument();
-    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
+    const [itemBtn] = await screen.findAllByRole('button', { name: /상세 보기/ });
     fireEvent.click(itemBtn);
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
@@ -436,12 +436,27 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
     });
   });
 
-  it('이력 리스트 항목 버튼이 moi-study-history-item 클래스를 가진다', async () => {
+  it('완료 목록은 컬럼 표(th scope=col)로 렌더하고 행 상세 액션이 버튼이다', async () => {
     const { client } = makeMockClient({ total: 5 });
     renderHistoryPage(client, '/history?tab=completed');
 
-    const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
-    expect(itemBtn).toHaveClass('moi-study-history-item');
+    const table = await screen.findByRole('table');
+    // 헤더 5개는 모두 열 범위(scope=col)를 선언한다 — 접근 가능한 표 구조.
+    const headers = within(table).getAllByRole('columnheader');
+    expect(headers).toHaveLength(5);
+    for (const th of headers) {
+      expect(th).toHaveAttribute('scope', 'col');
+    }
+    expect(headers.map((th) => th.textContent)).toEqual([
+      copy.history.completedColumnDate,
+      copy.history.completedColumnScope,
+      copy.history.completedColumnAccuracy,
+      copy.history.completedColumnCount,
+      copy.study.detail,
+    ]);
+
+    const [itemBtn] = await screen.findAllByRole('button', { name: /상세 보기/ });
+    expect(itemBtn).toHaveClass('moi-history-detail-action');
   });
 });
 
