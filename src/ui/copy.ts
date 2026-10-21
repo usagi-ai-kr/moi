@@ -57,7 +57,9 @@ export const copy = {
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
     starting: '시작하는 중',
-    examContext: `한 회차에 ${STUDY_SET_SIZE}문제를 풉니다. 범위(전체/영역별/취약)를 선택하세요.`,
+    // #269: 범위 옵션(전체/영역별/취약)과 중복되는 괄호 안내를 걷어내고 개수 계약만 남긴다.
+    // 문제 수(4/8) 선택·10문제 계약 변경은 #275 소유라 이 문구의 개수 표기는 유지한다.
+    examContext: `한 회차에 ${STUDY_SET_SIZE}문제를 풉니다. 범위를 선택하세요.`,
     unknownDate: '날짜 정보 없음',
     resumeNote: '진행 중인 세트가 있습니다. 이어서 풀 수 있습니다.',
     activeExists: '이미 진행 중인 세트가 있습니다. 이어풀기를 계속하세요.',
@@ -220,9 +222,9 @@ export const copy = {
     detailDialogLabel: (dateText: string) => `${dateText} 학습 상세`,
   },
   // 시험 문구 — 시험 목록(라벨)은 src/ui/exam/exam-catalog.ts가 단일 소스다 (ADR-0068).
+  // #269: "현재 지원하는 시험은 1개입니다." 안내는 상단 selector 단일화로 제거했다.
   exam: {
     label: '시험',
     scopeLabel: '시험 기준',
-    note: '현재 지원하는 시험은 1개입니다.',
   },
 } as const;

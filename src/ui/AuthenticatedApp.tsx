@@ -74,10 +74,7 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
       <h1 className="moi-title">{greeting}</h1>
-      <section aria-label={copy.exam.label}>
-        <p className="moi-note">{copy.exam.note}</p>
-        <p className="moi-note">{copy.study.examContext}</p>
-      </section>
+      {/* #269: 시험 안내는 셸 상단 selector 단일화로 제거 — 홈에 중복 섹션을 두지 않는다. */}
       <div className="moi-cta moi-study-cta-row">
         <button type="button" className="moi-study-open" onClick={() => void navigate('/study/new')}>
           {copy.study.cta}

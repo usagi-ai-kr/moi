@@ -20,19 +20,22 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
     When "/history" 화면에 접속하면
     And 통계 요청이 선택 시험 코드를 보낸다
 
-  # ── AC 2: 실제 selector ───────────────────────────────────────────
-  Scenario: 데스크톱 헤더에 실제 시험 selector가 있다
+  # ── AC 2: 실제 selector (공통 콘텐츠 최상단, #273) ────────────────────
+  Scenario: 데스크톱 콘텐츠 최상단에 실제 시험 selector가 있다
     When "/" 화면에 접속하면
     Then 시험 selector는 비활성이 아니다
     And 시험 selector의 옵션은 1개다
     And 시험 selector의 접근 이름은 "시험"이다
+    And nav에 시험 selector가 없다
+    And 콘텐츠 최상단에 시험 selector가 있다
 
-  Scenario: 모바일 Drawer에 시험 selector가 있다
+  Scenario: 모바일에서도 Drawer 없이 콘텐츠 최상단에 시험 selector가 있다
     Given 뷰포트 너비가 375px이면
     When "/" 화면에 접속하면
-    And 햄버거 메뉴를 누른다
     Then 시험 selector는 비활성이 아니다
     And 시험 selector의 옵션은 1개다
+    And Drawer에 시험 selector가 없다
+    And 콘텐츠 최상단에 시험 selector가 있다
 
   Scenario: 시험 selector는 키보드로 접근할 수 있다
     When "/" 화면에 접속하면

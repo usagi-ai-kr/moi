@@ -104,22 +104,6 @@
   padding: var(--moi-space-3) var(--moi-space-2) var(--moi-space-4);
 }
 
-/* Drawer의 시험 선택 — 라벨 위·select 아래로 세로 적층하고 전체 폭을 쓴다 (#239). */
-.moi-drawer-exam {
-  padding: var(--moi-space-3) var(--moi-space-2) 0;
-}
-
-.moi-drawer-exam .moi-exam-selector {
-  width: 100%;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--moi-space-1);
-}
-
-.moi-drawer-exam .moi-exam-select {
-  width: 100%;
-}
-
 .moi-drawer-link {
   display: flex;
   align-items: center;

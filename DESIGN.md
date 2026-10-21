@@ -55,7 +55,7 @@
 | 미응답 | `CircleDashed` | 20 | hidden | 상태 |
 | 정답 | `Check` | 20 | hidden | 상태 |
 | 오답 | `X` | 20 | hidden | 상태 |
-| 북마크 추가/해제 | `Bookmark` | 20 | label | aria-pressed + 색/텍스트 병행 |
+| 북마크 추가/해제 | `Bookmark` | 20 | label | 설정=fill 채움/미설정=선형(모양 구분) + aria-pressed + 텍스트 병행 |
 | 문제 신고 | `Flag` | 20 | hidden | 보조 |
 | 포기 | `XCircle` | 20 | hidden | destructive |
 | 취소 | `X` | 16 | hidden | ghost |

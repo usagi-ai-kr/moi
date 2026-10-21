@@ -302,28 +302,35 @@ describe('#239 시험 selector — 실제 select·접근 이름·선택 연동 (
   });
 });
 
-describe('#239 셸 — selector 1개·중복 없음 (AC 1·2)', () => {
-  it('데스크톱은 헤더 selector 1개만 노출한다', async () => {
-    renderAppAt('/');
+describe('#239 셸 — selector 1개·중복 없음 (AC 1·2, #273 콘텐츠 최상단)', () => {
+  it('데스크톱은 콘텐츠 최상단 selector 1개만 노출한다 — nav에는 없다', async () => {
+    const { container } = renderAppAt('/');
     expect(await screen.findByRole('combobox', { name: '시험' })).toBeInTheDocument();
     expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
+    // nav/Drawer 영역에는 시험 selector가 없다 (#273).
+    expect(container.querySelector('nav.moi-nav select.moi-exam-select')).toBeNull();
+    expect(container.querySelector('.moi-shell-exam')).toBeNull();
   });
 
-  it('모바일은 헤더 selector를 내리고 Drawer를 열면 1개만 노출한다', async () => {
+  it('모바일도 Drawer를 열지 않고 콘텐츠 최상단 1개만 노출한다 — Drawer에는 없다', async () => {
     useMobileViewport();
-    renderAppAt('/');
+    const { container } = renderAppAt('/');
     expect(await screen.findByRole('button', { name: '메뉴 열기' })).toBeInTheDocument();
-    expect(screen.queryByRole('combobox', { name: '시험' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: '메뉴 열기' }));
-    await waitFor(() => expect(screen.getByRole('combobox', { name: '시험' })).toBeInTheDocument());
+    expect(await screen.findByRole('combobox', { name: '시험' })).toBeInTheDocument();
     expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: '메뉴 열기' }));
+    await screen.findByRole('dialog');
+    // Drawer를 열어도 selector는 1개이며 Drawer 안에 없다 (#273).
+    expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
+    expect(container.querySelector('dialog .moi-exam-select')).toBeNull();
   });
 
   it('홈 화면은 페이지별 시험 배지가 없다 (상단 selector 단일화, #259)', async () => {
     const { container } = renderAppAt('/');
     await screen.findByRole('button', { name: copy.study.cta });
     expect(container.querySelector('.moi-exam-scope')).toBeNull();
-    expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
+    // #269: 홈의 시험 안내 문구 제거 — 시험 선택은 셸 상단 selector 하나다.
+    expect(screen.queryByText('현재 지원하는 시험은 1개입니다.')).not.toBeInTheDocument();
   });
 
   it('카탈로그는 공개 코드만 담는다 — 내부 ID는 없다', () => {
