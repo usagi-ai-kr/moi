@@ -89,6 +89,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0072 | 계정 정보 DTO·파생 최근 로그인·내비게이션 로그아웃 배치 | Accepted | 2026-10-21 | [0072-account-info-dto-and-nav-logout.md](./0072-account-info-dto-and-nav-logout.md) |
 | ADR-0073 | 아이콘 체계 — Lucide 단일 계열·액션 매핑·접근성 계약 | Accepted | 2026-10-21 | [0073-icon-system-lucide-mapping-accessibility.md](./0073-icon-system-lucide-mapping-accessibility.md) |
 | ADR-0074 | 북마크 상태 모양 구분·정답 표시 중복 제거·날짜 하한·페이저 간격 | Accepted | 2026-10-21 | [0074-ux-polish-bookmark-date-lower-bound.md](./0074-ux-polish-bookmark-date-lower-bound.md) |
+| ADR-0075 | 단위 묶음 완성 알림 — 공통 스크립트·스킬 기반 Discord webhook 1회 통지 | Accepted | 2026-10-21 | [0075-orchestrator-completion-notify.md](./0075-orchestrator-completion-notify.md) |
 | ADR-0076 | 학습 범위 안내 정리·fieldset 위계와 문제 수 분리 | Accepted | 2026-10-21 | [0076-study-scope-guidance-hierarchy.md](./0076-study-scope-guidance-hierarchy.md) |
 | ADR-0077 | 시험 선택을 콘텐츠 최상단으로 이동 | Accepted | 2026-10-21 | [0077-exam-content-top.md](./0077-exam-content-top.md) |
 | ADR-0078 | 문제 신고 액션 버튼 표면/상태/44px 계약 | Accepted | 2026-10-21 | [0078-report-button-action-surface.md](./0078-report-button-action-surface.md) |
