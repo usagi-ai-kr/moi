@@ -23,9 +23,9 @@ export interface MeResponse {
 /**
  * 숫자 필드 정규화 — 서버가 못 준 값은 '없음(null)'으로 내린다(1970 오표기 방지).
  * 단위는 epoch **seconds** 고정(ADR-0056) — ms로 임의 해석하지 않는다.
- * 하한(1971 이전 값) 등 표시 판단은 `formatDateTime`이 담당한다(#260).
+ * 하한(1971 이전 값) 등 표시 판단은 `formatDateTime`이 담당한다(#260, ADR-0074).
  */
-function toEpochSeconds(value: unknown): number | null {
+function toEpochValue(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
@@ -36,8 +36,8 @@ export async function getMe(client: ApiClient): Promise<MeUser | null> {
     const data = await client.get('api/me').json<MeResponse>();
     return {
       id: data.user.id,
-      createdAt: toEpochSeconds(data.user.createdAt),
-      lastLoginAt: toEpochSeconds(data.user.lastLoginAt),
+      createdAt: toEpochValue(data.user.createdAt),
+      lastLoginAt: toEpochValue(data.user.lastLoginAt),
     };
   } catch (err) {
     if (err instanceof HTTPError && err.response.status === 401) return null;

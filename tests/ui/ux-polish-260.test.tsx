@@ -117,4 +117,11 @@ describe('#260 날짜 하한 — 작은 양수 1970 방지', () => {
     expect(formatDateTime(1_000_000_000)).toContain('2001');
     expect(formatDateTime(1_000_000_000)).toBe(formatDateTime(1_000_000_000_000));
   });
+
+  it('하한 경계: 31_535_999는 정보 없음, 31_536_000은 1971로 표시된다', () => {
+    expect(formatDateTime(31_535_999)).toBe(copy.study.unknownDate);
+    expect(formatDateTime(31_535_999)).not.toMatch(/1970|1971/);
+    expect(formatDateTime(31_536_000)).toContain('1971');
+    expect(formatDateTime(31_536_000)).not.toMatch(/1970/);
+  });
 });
