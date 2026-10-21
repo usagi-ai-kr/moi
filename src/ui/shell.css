@@ -44,19 +44,26 @@
   gap: var(--moi-space-1);
 }
 
-/* nav + 시험 선택 그룹 — 좁으면 2행으로 줄바꿈한다(오버플로 0, #239). */
-.moi-shell-nav-group {
+/* 콘텐츠 최상단 공통 시험 선택 — 페이지 제목 위 1개 (#273).
+   모든 학습·이력·복습 화면에서 위치/간격을 통일한다. 줄바꿈해도 overflow 0. */
+.moi-content-exam {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: var(--moi-space-2);
+  width: 100%;
+  max-width: 100%;
   min-width: 0;
+  margin-bottom: var(--moi-space-1);
 }
 
-/* 헤더의 시험 선택 — nav 옆. 넓을 때 한 줄, 좁으면 그룹 안에서 줄바꿈. */
-.moi-shell-exam {
-  flex: 0 1 auto;
+.moi-content-exam .moi-exam-selector {
+  max-width: 100%;
+}
+
+.moi-content-exam .moi-exam-select {
+  max-width: 100%;
 }
 
 /* 모바일(≤767px)에서는 가로 nav를 숨겨 햄버거 Drawer와 중복 노출하지 않는다 (ADR-0057).
@@ -182,9 +189,9 @@
   .moi-shell-head {
     flex-wrap: nowrap;
   }
-  /* nav는 한 줄을 유지하되, 시험 선택이 붙으면 그룹 안에서 2줄로 줄바꿈된다(#239). */
+  /* nav는 한 줄을 유지한다(#273 이후 시험 선택이 헤더에 없으므로 줄바꿈 불필요). */
   .moi-nav {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
 }
 

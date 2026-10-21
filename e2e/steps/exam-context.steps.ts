@@ -1,5 +1,5 @@
 // #239 시험 context·selector E2E — 실제 계정·D1 없이 결정적 route mock만 사용한다.
-// AC 번호를 각 스텝에 병기해 추적한다 (AC 1 라벨 · AC 2 selector · AC 3 URL · AC 4 반응형).
+// AC 번호를 각 스텝에 병기해 추적한다 (AC 1 라벨 · AC 2 selector(#273 콘텐츠 최상단) · AC 3 URL · AC 4 반응형).
 import { expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 import { copy } from '../../src/ui/copy';
@@ -96,6 +96,37 @@ Then('시험 selector에 포커스를 둘 수 있다', async ({ page }) => {
   const select = page.getByRole('combobox', { name: copy.exam.label });
   await select.focus();
   await expect(select).toBeFocused();
+});
+
+Then('nav에 시험 selector가 없다', async ({ page }) => {
+  await expect(page.locator('nav.moi-nav select.moi-exam-select')).toHaveCount(0);
+});
+
+Then('Drawer에 시험 selector가 없다', async ({ page }) => {
+  // Drawer를 열어도 그 안에 selector가 없어야 한다 (#273).
+  const trigger = page.getByRole('button', { name: '메뉴 열기' });
+  if (await trigger.isVisible().catch(() => false)) {
+    await trigger.click();
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await expect(page.locator('dialog select.moi-exam-select')).toHaveCount(0);
+    await page.keyboard.press('Escape');
+  } else {
+    await expect(page.locator('dialog select.moi-exam-select')).toHaveCount(0);
+  }
+});
+
+Then('콘텐츠 최상단에 시험 selector가 있다', async ({ page }) => {
+  const wrapper = page.locator('.moi-content-exam select.moi-exam-select');
+  await expect(wrapper).toHaveCount(1);
+  await expect(wrapper).toBeVisible();
+  // 페이지 제목보다 위에 있다 — 같은 main 안에서 selector wrapper가 h1보다 먼저다.
+  const order = await page.evaluate(() => {
+    const sel = document.querySelector('.moi-content-exam');
+    const h1 = document.querySelector('main h1');
+    if (!sel || !h1) return null;
+    return sel.compareDocumentPosition(h1) & Node.DOCUMENT_POSITION_FOLLOWING ? 'before' : 'after';
+  });
+  expect(order).toBe('before');
 });
 
 Then('주소창의 시험 값은 {string} 이다', async ({ page }, code: string) => {
