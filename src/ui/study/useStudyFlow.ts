@@ -5,6 +5,7 @@ import type { ApiClient, ItemResponse } from '../api/client';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { isConflict, isUnauthorized, useAbandonStudy, useAnswerStudy, useStartStudy, useStudyHistory, useStudySet, useSubmitStudy } from './queries';
 import { useAbandonFlow } from './useAbandonFlow';
+import { useInFlightGuard } from './useInteractionLock';
 import { useStudyUiStore } from './store';
 import { clearSetDrafts, completeDraftSend, dropTabState, listDraftsForSet, openDraftStorage, recordDraft } from './draft-sync';
 import { useDraftSync } from './useDraftSync';
@@ -29,8 +30,7 @@ export function writeStudyParam(id: string | null): void {
   }
 }
 
-// 시작·답안·제출·포기 흐름 (이슈 #52, ADR-0021). 라우트 분리(#148): route param 우선,
-// 콜백 있으면 라우터 이동, 없으면 writeStudyParam legacy fallback (직접 렌더 호환).
+// 시작·답안·제출·포기 흐름 (#52, ADR-0021). 라우트 분리(#148): param 우선, 콜백 없으면 legacy fallback.
 export interface StudyFlowOptions {
   initialSetId?: string | null;
   onSetStarted?: (id: string) => void;
@@ -40,7 +40,6 @@ export interface StudyFlowOptions {
 
 export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlowOptions) {
   const s = useStudyUiStore();
-  // 학습 세트 시작은 선택 시험(공개 코드) 기준 — 하드코딩 없음 (#239).
   const { examId } = useExamScope();
   const initialOpt = opts?.initialSetId;
   const [setId, setSetId] = useState<string | null>(() => (initialOpt !== undefined ? initialOpt : readStudyParam()));
@@ -55,6 +54,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   const answerMut = useAnswerStudy(client);
   const submitMut = useSubmitStudy(client);
   const abandonMut = useAbandonStudy(client);
+  const startLock = useInFlightGuard(), submitLock = useInFlightGuard();
   const sync = useDraftSync(client, userId, setId, setQuery, s.setSave);
   useTabState(userId, setId, setQuery.data ?? null, s);
 
@@ -70,6 +70,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   }, [blocked]);
 
   const handleStart = useCallback(() => {
+    if (!startLock.tryAcquire(startMut.isPending)) return;
     setStartError(null);
     setConflict(false);
     setUnauth(false);
@@ -97,13 +98,14 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
           }
           setStartError('시작하지 못했습니다. 다시 시도해 주세요.');
         },
+        onSettled: () => startLock.release(),
       },
     );
-  }, [s, setId, startMut, opts, examId]);
+  }, [s, setId, startMut, opts, examId, startLock]);
 
   const handleAnswer = useCallback(
     (questionId: string, response: ItemResponse, previous?: ItemResponse) => {
-      if (!setId) return;
+      if (!setId || submitMut.isPending) return;
       s.setSave('saving');
       const current = setQuery.data?.items.find((i) => i.questionId === questionId)?.response;
       const base = previous ?? current ?? { kind: 'unanswered' as const };
@@ -133,7 +135,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
         },
       );
     },
-    [answerMut, s, setId, setQuery.data, sync, userId],
+    [answerMut, s, setId, setQuery.data, submitMut.isPending, sync, userId],
   );
 
   // 저장 실패·오프라인 재시도 (이슈 #52).
@@ -185,7 +187,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   }, [answerMut, failed, s, setId, setQuery.data, sync, userId]);
 
   const doSubmit = useCallback(() => {
-    if (!setId) return;
+    if (!setId || !submitLock.tryAcquire(submitMut.isPending)) return;
     setSubmitError(null);
     submitMut.mutate(
       { setId, confirmUnanswered: true },
@@ -196,21 +198,23 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
           if (opts?.onSubmitted) opts.onSubmitted(submitted.id);
         },
         onError: (e) => setSubmitError(isUnauthorized(e) ? copy.study.needLogin : '제출하지 못했습니다.'),
+        onSettled: () => submitLock.release(),
       },
     );
-  }, [setId, submitMut, s, opts]);
+  }, [setId, submitMut, s, opts, submitLock]);
 
   const set = setQuery.data ?? null;
   const unanswered = set ? set.items.filter((i) => i.response.kind === 'unanswered').length : 0;
 
   const handleSubmitRequest = useCallback(() => {
+    if (submitMut.isPending) return;
     if (sync.conflicts.length > 0 || sync.unsynced.size > 0 || sync.busy) {
       setSubmitError(copy.study.syncBlocked);
       return;
     }
     if (unanswered > 0) s.setConfirmSubmit(true);
     else doSubmit();
-  }, [doSubmit, s, sync.busy, sync.conflicts, sync.unsynced, unanswered]);
+  }, [doSubmit, s, submitMut.isPending, sync.busy, sync.conflicts, sync.unsynced, unanswered]);
 
   const abandon = useAbandonFlow({
     setId, userId, store: s, abandonMut,

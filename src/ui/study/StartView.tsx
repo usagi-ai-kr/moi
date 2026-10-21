@@ -32,7 +32,7 @@ export function StartView(p: Props) {
       <p className="moi-note moi-study-desc" id="study-scope-desc">
         {copy.study.examContext}
       </p>
-      <fieldset className="moi-study-field" aria-describedby="study-scope-desc">
+      <fieldset className="moi-study-field" aria-describedby="study-scope-desc" disabled={p.pending}>
         <legend className="moi-study-legend">범위</legend>
         <label className="moi-study-radio">
           <input
@@ -41,6 +41,7 @@ export function StartView(p: Props) {
             value="all"
             checked={p.scope === 'all'}
             onChange={() => p.onScope('all')}
+            disabled={p.pending}
           />
           {copy.study.scopeAll}
         </label>
@@ -51,6 +52,7 @@ export function StartView(p: Props) {
             value="domain"
             checked={p.scope === 'domain'}
             onChange={() => p.onScope('domain')}
+            disabled={p.pending}
           />
           {copy.study.scopeDomain}
         </label>
@@ -61,6 +63,7 @@ export function StartView(p: Props) {
             value="weak"
             checked={p.scope === 'weak'}
             onChange={() => p.onScope('weak')}
+            disabled={p.pending}
           />
           {copy.study.scopeWeak}
         </label>
@@ -73,6 +76,7 @@ export function StartView(p: Props) {
             value={p.domainId}
             onChange={(e) => p.onDomain(e.target.value)}
             aria-label={copy.study.domainLabel}
+            disabled={p.pending}
           >
             {STUDY_DOMAINS.map((d) => (
               <option key={d.id} value={d.id}>
@@ -85,7 +89,7 @@ export function StartView(p: Props) {
       {p.conflict && (
         <div className="moi-alert moi-alert-warning" role="alert">
           <p className="moi-alert-text">{copy.study.activeExists}</p>
-          <button type="button" className="moi-alert-retry" onClick={p.onResume}>
+          <button type="button" className="moi-alert-retry" onClick={p.onResume} disabled={p.pending} aria-busy={p.pending}>
             <ResumeIcon size={iconResume.size} aria-hidden="true" focusable="false" />
             {copy.study.continueStudy}
           </button>
@@ -113,7 +117,7 @@ export function StartView(p: Props) {
           {p.pending ? copy.study.starting : copy.study.startAction}
         </button>
         {p.onHistory && (
-          <button type="button" className="moi-study-link" onClick={p.onHistory}>
+          <button type="button" className="moi-study-link" onClick={p.onHistory} disabled={p.pending} aria-busy={p.pending}>
             <HistoryIcon size={iconHistory.size} aria-hidden="true" focusable="false" />
             {copy.study.historyLink}
           </button>

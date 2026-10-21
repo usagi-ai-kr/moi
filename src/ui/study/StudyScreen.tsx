@@ -186,7 +186,10 @@ export function StudyScreen({
           onClear={(qid, prev) => f.handleAnswer(qid, { kind: 'unanswered' }, prev)}
           onRetry={() => f.handleRetry()}
           onSubmitRequest={f.handleSubmitRequest}
-          onAbandonRequest={() => s.setConfirmAbandon(true)}
+          onAbandonRequest={() => {
+            if (f.submitMut.isPending) return;
+            s.setConfirmAbandon(true);
+          }}
           abandonTriggerRef={abandonTriggerRef}
         />
       </div>
