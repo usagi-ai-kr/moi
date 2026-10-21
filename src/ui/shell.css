@@ -87,7 +87,7 @@
 .moi-shell-main {
   min-height: calc(100vh - var(--moi-shell-header-h));
   min-height: calc(100dvh - var(--moi-shell-header-h));
-  padding-top: var(--moi-space-4);
+  padding-top: var(--moi-space-6);
   padding-bottom: var(--moi-space-7);
   display: flex;
 }
