@@ -82,14 +82,25 @@ describe('#268 Slice 2A 셸 포커스 토큰 통일', () => {
     const shell = readFileSync('src/ui/shell.css', 'utf8');
     for (const sel of ['moi-brand-link', 'moi-nav-link', 'moi-logout-action', 'moi-logout-retry']) {
       const block = shell.match(new RegExp(`\\.${sel}:focus-visible\\s*\\{[^}]*\\}`, 's'))?.[0] ?? '';
-      expect(block, sel).toContain('outline: none');
+      expect(block, sel).not.toContain('outline: none');
       expect(block, sel).toContain('box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink))');
-      expect(block, sel).not.toContain('outline: 2px solid');
+      expect(block, sel).not.toMatch(/outline:\s*2px solid var\(--moi-color-ink\)/);
     }
     const exam = readFileSync('src/ui/exam/exam.css', 'utf8');
     const block = exam.match(/\.moi-exam-select:focus-visible\s*\{[^}]*\}/s)?.[0] ?? '';
-    expect(block).toContain('outline: none');
+    expect(block).not.toContain('outline: none');
     expect(block).toContain('box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink))');
+  });
+
+  it('고대비(forced-colors)에서도 포커스가 보이도록 투명 outline을 둔다', () => {
+    for (const path of ['src/ui/shell.css', 'src/ui/exam/exam.css']) {
+      const css = readFileSync(path, 'utf8');
+      for (const m of css.matchAll(/:focus-visible\s*\{[^}]*\}/gs)) {
+        if (!m[0].includes('box-shadow')) continue;
+        expect(m[0], path).toContain('outline: 2px solid transparent');
+        expect(m[0], path).toContain('outline-offset: 2px');
+      }
+    }
   });
 
   it('44px 터치 타깃은 그대로다', () => {
