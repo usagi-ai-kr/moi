@@ -1,4 +1,5 @@
 import { copy } from '../copy';
+import { iconHistory, iconRefresh } from '../icons';
 import type { StudySummary } from '../api/client';
 import { Pagination } from '../components/ui/pagination';
 import { HistorySkeleton } from '../Skeletons';
@@ -41,7 +42,10 @@ export function HistoryView(p: Props) {
       aria-label={copy.study.historyTitle}
       aria-busy={p.isFetching ? 'true' : undefined}
     >
-      <h2 className="moi-study-title">{copy.study.historyTitle}</h2>
+      <h2 className="moi-study-title inline-flex items-center gap-2">
+        <iconHistory.icon aria-hidden="true" size={iconHistory.size} />
+        {copy.study.historyTitle}
+      </h2>
       {p.pending && !p.loadError && (
         <div className="moi-history-pending" role="status" aria-busy="true">
           <span className="moi-sr-only">{copy.common.loading}</span>
@@ -52,6 +56,7 @@ export function HistoryView(p: Props) {
         <div className="moi-alert moi-alert-error" role="alert">
           <p className="moi-alert-text">{copy.session.loadError}</p>
           <button type="button" className="moi-alert-retry" onClick={p.onRetry}>
+            <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
             {copy.session.retry}
           </button>
         </div>

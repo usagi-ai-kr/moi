@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/ui/lib/utils';
+import { iconNext, iconPrev } from '@/ui/icons';
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
   total: number;
@@ -49,6 +50,7 @@ function Pagination({ total, page, pageSize, onPageChange, disabled = false, cla
         disabled={prevDisabled}
         onClick={() => onPageChange?.(page - 1)}
       >
+        <iconPrev.icon aria-hidden="true" size={iconPrev.size} className="mr-1" />
         이전
       </button>
       <button
@@ -59,6 +61,7 @@ function Pagination({ total, page, pageSize, onPageChange, disabled = false, cla
         disabled={nextDisabled}
         onClick={() => onPageChange?.(page + 1)}
       >
+        <iconNext.icon aria-hidden="true" size={iconNext.size} className="mr-1" />
         다음
       </button>
     </nav>

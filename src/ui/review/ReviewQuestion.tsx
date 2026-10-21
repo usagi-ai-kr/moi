@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { copy } from '../copy';
 import { BookmarkButton } from './BookmarkButton';
+import { iconPass, iconRefresh, iconSubmit } from '../icons';
 
 interface ReviewQuestionProps {
   readonly client: ApiClient;
@@ -110,6 +111,7 @@ export function ReviewQuestion({
           {onRetry && (
             <div>
               <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+                <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
                 {copy.review.retry}
               </Button>
             </div>
@@ -122,6 +124,7 @@ export function ReviewQuestion({
           <p className="text-sm font-medium">{endError}</p>
           <div>
             <Button type="button" size="sm" variant="outline" onClick={onEnd}>
+              <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
               {copy.review.retry}
             </Button>
           </div>
@@ -137,6 +140,7 @@ export function ReviewQuestion({
           aria-busy={isSubmitting}
           className="min-h-[44px] px-4 text-base"
         >
+          <iconPass.icon aria-hidden="true" size={iconPass.size} className="mr-1" />
           {copy.review.pass}
         </Button>
         <Button
@@ -147,6 +151,7 @@ export function ReviewQuestion({
           aria-busy={isSubmitting}
           className="min-h-[44px] px-6 text-base"
         >
+          <iconSubmit.icon aria-hidden="true" size={iconSubmit.size} className="mr-1" />
           {copy.review.submit}
         </Button>
       </div>

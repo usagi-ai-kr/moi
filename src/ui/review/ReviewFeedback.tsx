@@ -7,6 +7,7 @@ import { copy } from '../copy';
 import { SourceLinks } from '../SourceLinks';
 import { Explanation } from '../study/Explanation';
 import { BookmarkButton } from './BookmarkButton';
+import { iconCorrect, iconNext, iconPass, iconRefresh, iconWrong } from '../icons';
 
 interface ReviewFeedbackProps {
   readonly client: ApiClient;
@@ -45,15 +46,18 @@ export function ReviewFeedback({
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
         <div className="flex items-center gap-2">
           {isPass ? (
-            <span className="rounded bg-muted px-2.5 py-1 text-sm font-semibold text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded bg-muted px-2.5 py-1 text-sm font-semibold text-muted-foreground">
+              <iconPass.icon aria-hidden="true" size={iconPass.size} />
               {copy.review.passBadge}
             </span>
           ) : graded.correct ? (
-            <span className="rounded border border-primary/40 bg-primary/10 px-2.5 py-1 text-sm font-semibold text-foreground">
+            <span className="inline-flex items-center gap-1 rounded border border-primary/40 bg-primary/10 px-2.5 py-1 text-sm font-semibold text-foreground">
+              <iconCorrect.icon aria-hidden="true" size={iconCorrect.size} />
               {copy.review.correctBadge}
             </span>
           ) : (
-            <span className="rounded bg-destructive/15 px-2.5 py-1 text-sm font-semibold text-destructive">
+            <span className="inline-flex items-center gap-1 rounded bg-destructive/15 px-2.5 py-1 text-sm font-semibold text-destructive">
+              <iconWrong.icon aria-hidden="true" size={iconWrong.size} />
               {copy.review.incorrectBadge}
             </span>
           )}
@@ -95,7 +99,10 @@ export function ReviewFeedback({
                     {idx + 1}. {opt.text}
                   </span>
                   {isCorrectOption && (
-                    <span className="text-sm font-bold text-foreground">✓ 정답</span>
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-foreground">
+                      <iconCorrect.icon aria-hidden="true" size={iconCorrect.size} />
+                      ✓ 정답
+                    </span>
                   )}
                 </li>
               );
@@ -123,6 +130,7 @@ export function ReviewFeedback({
           <p className="text-sm font-medium">{endError}</p>
           <div>
             <Button type="button" size="sm" variant="outline" onClick={onEnd}>
+              <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
               {copy.review.retry}
             </Button>
           </div>
@@ -132,6 +140,7 @@ export function ReviewFeedback({
       <div className="flex justify-end pt-2">
         {hasNext ? (
           <Button type="button" variant="primary" onClick={onNext} className="min-h-[44px] px-6 text-base">
+            <iconNext.icon aria-hidden="true" size={iconNext.size} className="mr-1" />
             {copy.review.next}
           </Button>
         ) : (
