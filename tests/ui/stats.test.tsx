@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
+import { copy } from '../../src/ui/copy';
 import { StatsSummaryPanel } from '../../src/ui/stats/StatsSummaryPanel';
 import { StatsDomainsPanel } from '../../src/ui/stats/StatsDomainsPanel';
 import { useStudyUiStore } from '../../src/ui/study/store';
@@ -132,6 +133,59 @@ describe('학습 현황 패널', () => {
     renderPanel(clientWith(STATS));
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
     expect(screen.getByText(/70%/)).toBeInTheDocument();
+  });
+
+  it('결과 영역은 polite live region 이 알리고 로딩 status 와 중복 announce 되지 않는다', async () => {
+    let release: (value: unknown) => void = () => {};
+    const pending = new Promise((resolve) => {
+      release = resolve;
+    });
+    const client = {
+      get: vi.fn(() => ({ json: () => pending })),
+    } as unknown as ApiClient;
+    renderPanel(client);
+
+    const section = screen.getByRole('region', { name: '학습 현황' });
+    // 섹션 전체가 live region 이면 로딩 role="status" 와 이중 announce 된다.
+    expect(section).not.toHaveAttribute('aria-live');
+    const statusRegion = screen.getByRole('status');
+    const liveRegion = section.querySelector('[aria-live="polite"]');
+    expect(liveRegion).not.toBeNull();
+    expect(liveRegion?.contains(statusRegion)).toBe(false);
+    expect(statusRegion.contains(liveRegion)).toBe(false);
+
+    await act(async () => {
+      release(STATS);
+    });
+
+    const loaded = await screen.findByText(/20\/500/);
+    const liveAfter = section.querySelector('[aria-live="polite"]');
+    expect(liveAfter).not.toBeNull();
+    expect(liveAfter?.contains(loaded)).toBe(true);
+  });
+
+  it('분석 패널 결과 갱신을 polite live region 이 알린다', async () => {
+    renderDomainsPanel(clientWith(STATS));
+    await screen.findByText('영역별 현황');
+
+    const section = screen.getByRole('region', { name: '영역별 분석' });
+    expect(section).not.toHaveAttribute('aria-live');
+    const liveRegion = section.querySelector('[aria-live="polite"]');
+    expect(liveRegion).not.toBeNull();
+    expect(liveRegion?.textContent).toContain('영역별 분석 결과');
+    // 로딩 status 와 분리 — 이중 announce 방지.
+    expect(liveRegion?.contains(screen.queryByRole('status'))).toBe(false);
+  });
+
+  it('영역 카드 지표 라벨·단위는 copy.stats.metrics 단일 소스를 쓴다 (ADR-0012)', async () => {
+    renderDomainsPanel(clientWith(STATS));
+    await screen.findByText('영역별 현황');
+
+    // 4고정 카드 + 응답에 없는 영역 카드까지 각 지표 라벨이 반복된다.
+    expect(screen.getAllByText(copy.stats.metrics.progress).length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText(copy.stats.metrics.cumulative).length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText(copy.stats.metrics.recent).length).toBeGreaterThanOrEqual(4);
+    expect(screen.getByText('8문제')).toBeInTheDocument();
   });
 
   it('분석 패널: 영역 카드·취약 추천을 표시한다 (AC 1·AC 3)', async () => {

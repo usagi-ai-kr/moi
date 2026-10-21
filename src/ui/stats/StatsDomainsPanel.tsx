@@ -9,6 +9,36 @@ import './stats.css';
 // 영역·취약 패널 — STUDY_DOMAINS 4개 고정 카드 (#224, o 결정 2).
 // 값은 응답에 있는 것만 쓰고, 없는 영역은 데이터 부족·학습 이력 없음·— (0%·0문제 발명 금지).
 // 집계·API·DTO·D1 무변경 — 카드 수는 UI 표시 모델에서만 고정한다.
+// 결과 갱신은 짧은 상태 문구 live region 으로 알린다 (카드 전체를 읽어주지 않는다).
+
+// 영역 카드 지표 3칸 — 라벨은 copy.stats.metrics 단일 소스 (ADR-0012).
+function DomainMetrics({
+  solved,
+  cumulative,
+  recent,
+}: {
+  solved: number | null;
+  cumulative: string;
+  recent: string;
+}) {
+  return (
+    <dl className="moi-domain-metrics">
+      <div>
+        <dt>{copy.stats.metrics.progress}</dt>
+        <dd>{solved === null ? '—' : `${solved}${copy.stats.metrics.problemUnit}`}</dd>
+      </div>
+      <div>
+        <dt>{copy.stats.metrics.cumulative}</dt>
+        <dd>{cumulative}</dd>
+      </div>
+      <div>
+        <dt>{copy.stats.metrics.recent}</dt>
+        <dd>{recent}</dd>
+      </div>
+    </dl>
+  );
+}
+
 export function StatsDomainsPanel({
   client,
   examId = STUDY_EXAM_ID,
@@ -54,6 +84,12 @@ export function StatsDomainsPanel({
           </button>
         </div>
       )}
+      {/* 결과 전용 live region — 로딩 role="status" 와 분리해 이중 announce 를 막는다. */}
+      <p className="moi-sr-only" aria-live="polite" aria-atomic="true">
+        {data
+          ? copy.stats.domainsStatus(STUDY_DOMAINS.length + extras.length, data.weakDomains.length)
+          : ''}
+      </p>
       {data && (
         <>
           {data.uniqueFirstSolved === 0 && <p className="moi-note">{copy.stats.empty}</p>}
@@ -68,20 +104,11 @@ export function StatsDomainsPanel({
                       <span className="moi-domain-name">{domainLabel(s.id)}</span>
                       <span className="moi-domain-badge">{statusLabel(stats.status)}</span>
                     </div>
-                    <dl className="moi-domain-metrics">
-                      <div>
-                        <dt>진도</dt>
-                        <dd>{stats.uniqueFirstSolved}문제</dd>
-                      </div>
-                      <div>
-                        <dt>누적</dt>
-                        <dd>{pct(stats.cumulativeAccuracy)}</dd>
-                      </div>
-                      <div>
-                        <dt>최근</dt>
-                        <dd>{pct(stats.recentAccuracy)}</dd>
-                      </div>
-                    </dl>
+                    <DomainMetrics
+                      solved={stats.uniqueFirstSolved}
+                      cumulative={pct(stats.cumulativeAccuracy)}
+                      recent={pct(stats.recentAccuracy)}
+                    />
                   </li>
                 );
               }
@@ -92,20 +119,7 @@ export function StatsDomainsPanel({
                     <span className="moi-domain-badge">{statusLabel('insufficient-data')}</span>
                   </div>
                   <p className="moi-note">{copy.history.noDomainHistory}</p>
-                  <dl className="moi-domain-metrics">
-                    <div>
-                      <dt>진도</dt>
-                      <dd>—</dd>
-                    </div>
-                    <div>
-                      <dt>누적</dt>
-                      <dd>—</dd>
-                    </div>
-                    <div>
-                      <dt>최근</dt>
-                      <dd>—</dd>
-                    </div>
-                  </dl>
+                  <DomainMetrics solved={null} cumulative="—" recent="—" />
                 </li>
               );
             })}
@@ -115,20 +129,11 @@ export function StatsDomainsPanel({
                   <span className="moi-domain-name">{domainLabel(d.domainId)}</span>
                   <span className="moi-domain-badge">{statusLabel(d.status)}</span>
                 </div>
-                <dl className="moi-domain-metrics">
-                  <div>
-                    <dt>진도</dt>
-                    <dd>{d.uniqueFirstSolved}문제</dd>
-                  </div>
-                  <div>
-                    <dt>누적</dt>
-                    <dd>{pct(d.cumulativeAccuracy)}</dd>
-                  </div>
-                  <div>
-                    <dt>최근</dt>
-                    <dd>{pct(d.recentAccuracy)}</dd>
-                  </div>
-                </dl>
+                <DomainMetrics
+                  solved={d.uniqueFirstSolved}
+                  cumulative={pct(d.cumulativeAccuracy)}
+                  recent={pct(d.recentAccuracy)}
+                />
               </li>
             ))}
           </ul>

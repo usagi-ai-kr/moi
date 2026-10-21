@@ -149,6 +149,15 @@ function activePanel(): HTMLElement {
   return screen.getByRole('tabpanel');
 }
 
+// 포커스가 선택된 탭과 일치하는지 (최종 상태) 확인한다.
+function expectFocusOnSelectedTab(): void {
+  const selected = screen
+    .getAllByRole('tab')
+    .find((t) => t.getAttribute('aria-selected') === 'true');
+  expect(selected).toBeDefined();
+  expect(document.activeElement).toBe(selected);
+}
+
 beforeEach(() => {
   vi.restoreAllMocks();
 });
@@ -216,12 +225,18 @@ describe('history 탭 직접 진입·정규화 (AC-2·AC-3)', () => {
 
   it('요약 탭에서 잘못된 page는 URL을 건드리지 않는다 (숨은 탭 격리)', async () => {
     let currentLoc = { pathname: '', search: '' };
-    const { client } = makeMockClient({ total: 5 });
-    renderHistory(client, '/history?tab=summary&page=abc', { onLocation: (loc) => { currentLoc = loc; } });
+    const mock = makeMockClient({ total: 5 });
+    renderHistory(mock.client, '/history?tab=summary&page=abc', { onLocation: (loc) => { currentLoc = loc; } });
 
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
-    await new Promise((r) => setTimeout(r, 50));
+    // page 보정 효과의 입력(서버 total)은 completed 탭의 이력 조회에만 존재한다.
+    // 이력 조회가 발생하지 않았음을 양수 조건으로 확인하면 대기 없이 격리를 증명할 수 있다.
+    await waitFor(() => {
+      expect(mock.setsCalls()).toBe(0);
+      expect(tab(copy.history.tabSummary)).toHaveAttribute('aria-selected', 'true');
+    });
     expect(currentLoc.search).toContain('page=abc');
+    expect(currentLoc.search).toContain('tab=summary');
   });
 });
 
@@ -310,10 +325,17 @@ describe('history 숨은 탭 effect 격리 (AC-6)', () => {
     // 요약 탭으로 전환 후 서버 축소 + 캐시 무효화 — 숨은 탭이 URL을 바꾸면 안 된다.
     fireEvent.click(tab(copy.history.tabSummary));
     expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
+    const statsBefore = mock.statsCalls();
+    const setsBefore = mock.setsCalls();
     mock.setTotal(15);
     await queryClient.invalidateQueries();
 
-    await new Promise((r) => setTimeout(r, 100));
+    // 무효화 후 통계 재조회가 끝났음을 양수 조건으로 확인한다 (음성 대기 제거).
+    await waitFor(() => {
+      expect(mock.statsCalls()).toBe(statsBefore + 1);
+    });
+    // 이력 조회는 완료 탭에서만 일어나므로 out-of-range 보정 입력 자체가 생기지 않는다.
+    expect(mock.setsCalls()).toBe(setsBefore);
     expect(currentLoc.search).toContain('page=2');
     expect(currentLoc.search).not.toContain('page=1');
 
@@ -342,16 +364,46 @@ describe('history 탭 키보드·접근성 (AC-7)', () => {
     fireEvent.keyDown(summary, { key: 'ArrowRight' });
     expect(domains).toHaveAttribute('aria-selected', 'true');
     expect(domains).toHaveAttribute('tabindex', '0');
+    // 포커스는 선택 커밋 뒤로 이동한다 — 최종 상태에서 focus == aria-selected.
     expect(document.activeElement).toBe(domains);
+    expectFocusOnSelectedTab();
 
     fireEvent.keyDown(domains, { key: 'ArrowLeft' });
     expect(summary).toHaveAttribute('aria-selected', 'true');
+    expectFocusOnSelectedTab();
 
     fireEvent.keyDown(summary, { key: 'End' });
     expect(completed).toHaveAttribute('aria-selected', 'true');
+    expectFocusOnSelectedTab();
 
     fireEvent.keyDown(completed, { key: 'Home' });
     expect(summary).toHaveAttribute('aria-selected', 'true');
+    expectFocusOnSelectedTab();
+  });
+
+  it('비활성 탭은 dangling aria-controls를 갖지 않는다 (모든 참조가 실제 패널을 가리킨다)', async () => {
+    const { client } = makeMockClient({ total: 5 });
+    renderHistory(client, '/history');
+    expect(await screen.findByText(/20\/500/)).toBeInTheDocument();
+
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs).toHaveLength(3);
+    // 활성 패널만 마운트되므로 aria-controls 는 선택 탭에만 존재한다.
+    const withControls = tabs.filter((t) => t.getAttribute('aria-controls') !== null);
+    expect(withControls).toHaveLength(1);
+    expect(withControls[0]).toHaveAttribute('aria-selected', 'true');
+
+    for (const t of tabs) {
+      const controls = t.getAttribute('aria-controls');
+      if (controls === null) {
+        expect(t).toHaveAttribute('aria-selected', 'false');
+        continue;
+      }
+      const panel = document.getElementById(controls);
+      expect(panel).not.toBeNull();
+      expect(panel).toHaveAttribute('role', 'tabpanel');
+      expect(panel).toHaveAttribute('aria-labelledby', t.id);
+    }
   });
 
   it('tabpanel은 tabIndex 0이며 aria-controls·aria-labelledby가 연결된다', async () => {

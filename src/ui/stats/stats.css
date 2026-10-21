@@ -33,6 +33,15 @@
   border-radius: var(--moi-radius-md);
   padding: var(--moi-space-4);
 }
+/* 결과 live region 래퍼 — 카드 폭·간격을 그대로 유지한다. */
+.moi-stats-result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
 .moi-stats-progress {
   margin: 0;
   max-width: 100%;

@@ -9,6 +9,8 @@ const { Given, When, Then } = createBdd();
 let statsGetCount = 0;
 const TOTAL = 45;
 const PAGE_SIZE = 20;
+// 늦게 도착하는 재요청까지 검출하기 위한 통계 요청 정착 시간(ms).
+const STATS_SETTLE_MS = 1500;
 
 function historyItems(page: number) {
   const start = (page - 1) * PAGE_SIZE;
@@ -63,6 +65,27 @@ const STATS_DTO = {
 
 Given('학습 현황 탭 API 모의가 준비되면', async ({ page }) => {
   statsGetCount = 0;
+  // 포커스가 선택 탭과 어긋난 순간을 기록한다 (선택 커밋 전 포커스 이동 검출 — §6-2).
+  await page.addInitScript(() => {
+    const w = window as unknown as { __moiFocusMismatch?: string[] };
+    w.__moiFocusMismatch = [];
+    const original = HTMLElement.prototype.focus;
+    HTMLElement.prototype.focus = function patched(
+      this: HTMLElement,
+      ...args: Parameters<HTMLElement['focus']>
+    ) {
+      original.apply(this, args);
+      const active = document.activeElement;
+      if (!(active instanceof HTMLElement) || active.getAttribute('role') !== 'tab') return;
+      const selected = document.querySelector('[role="tab"][aria-selected="true"]');
+      if (selected !== active) {
+        const selectedId = selected instanceof HTMLElement ? selected.id : 'none';
+        w.__moiFocusMismatch?.push(
+          `focused=${active.id || active.textContent?.trim() || '?'} selected=${selectedId}`,
+        );
+      }
+    };
+  });
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
   });
@@ -200,6 +223,29 @@ Then('2페이지 목록이 보인다', async ({ page }) => {
   await expect(page.getByText('현재 2 / 전체 3')).toBeVisible({ timeout: 10_000 });
 });
 
-Then('통계 요청이 1회만 전송된다', async () => {
+Then('통계 요청이 1회만 전송된다', async ({ page }) => {
   await expect.poll(() => statsGetCount).toBe(1);
+  // 단순 poll 통과가 아니라 정착 시간 뒤에도 1회인지 확인한다 (2회 이상이면 실패).
+  await page.waitForTimeout(STATS_SETTLE_MS);
+  expect(statsGetCount).toBe(1);
+});
+
+Then('포커스는 항상 선택된 탭과 일치한다', async ({ page }) => {
+  // 선택 커밋 전에 포커스가 옮겨진 순간이 하나라도 있으면 실패다.
+  const mismatches = await page.evaluate(() => {
+    const w = window as unknown as { __moiFocusMismatch?: string[] };
+    return w.__moiFocusMismatch ?? [];
+  });
+  expect(mismatches).toEqual([]);
+
+  // 최종 상태에서도 focus == aria-selected 여야 한다.
+  const state = await page.evaluate(() => {
+    const active = document.activeElement;
+    const selected = document.querySelector('[role="tab"][aria-selected="true"]');
+    return {
+      active: active instanceof HTMLElement ? active.id : null,
+      selected: selected instanceof HTMLElement ? selected.id : null,
+    };
+  });
+  expect(state.active).toBe(state.selected);
 });

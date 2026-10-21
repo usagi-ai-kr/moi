@@ -15,7 +15,6 @@ import { QuestionView } from '../../src/ui/study/QuestionView';
 import { ResultView } from '../../src/ui/study/ResultView';
 import { StartView } from '../../src/ui/study/StartView';
 import { STUDY_DOMAINS } from '../../src/ui/study/types';
-import { DomainStatusList } from '../../src/ui/stats/DomainStatusList';
 import { StatsDomainsPanel } from '../../src/ui/stats/StatsDomainsPanel';
 import { domainLabel } from '../../src/ui/stats/labels';
 
@@ -286,22 +285,35 @@ describe('#148 domain-label canonical 정합', () => {
     expect(within(dialog).queryByText(/dom-cost/)).not.toBeInTheDocument();
   });
 
-  it('DomainStatusList·취약 영역은 canonical을 비용 최적화로 보인다', async () => {
+  it('분석 패널은 legacy dom-cost 를 canonical 비용 최적화로 보이고 raw 를 숨긴다', async () => {
+    const stats = {
+      examId: 'saa-c03',
+      totalQuestions: 500,
+      uniqueFirstSolved: 20,
+      coverage: 0.04,
+      overallAccuracy: 0.7,
+      domains: [
+        {
+          domainId: 'dom-cost',
+          uniqueFirstSolved: 8,
+          gradedAttempts: 15,
+          cumulativeAccuracy: 0.5,
+          recentAccuracy: 0.4,
+          status: 'insufficient-data' as const,
+        },
+      ],
+      weakDomains: [],
+    };
+    const client = {
+      get: vi.fn(() => ({ json: async () => stats })),
+    } as unknown as ApiClient;
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
-      <DomainStatusList
-        domains={[
-          {
-            domainId: 'dom-cost-optimization',
-            uniqueFirstSolved: 8,
-            gradedAttempts: 15,
-            cumulativeAccuracy: 0.5,
-            recentAccuracy: 0.4,
-            status: 'insufficient-data',
-          },
-        ]}
-      />,
+      <QueryClientProvider client={queryClient}>
+        <StatsDomainsPanel client={client} examId="saa-c03" />
+      </QueryClientProvider>,
     );
-    expect(screen.getByText('비용 최적화')).toBeInTheDocument();
+    expect((await screen.findAllByText('비용 최적화')).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryByText(/dom-cost/)).not.toBeInTheDocument();
   });
 
