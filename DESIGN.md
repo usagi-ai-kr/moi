@@ -27,12 +27,52 @@
 - shadcn 컴포넌트는 코드를 프로젝트가 보유하므로 버전/접근성 패치 추적을 담당한다. Tailwind 클래스는 조합 함수·variant로 중앙 관리.
 
 ## 4. GitHub Primer를 참고한 조작 아이콘
-- GitHub/Primer의 **간결한 선형 시스템 아이콘**을 시각 기준으로 삼는다. 조작용 기본 세트는 Lucide 또는 라이선스 확인된 Octicons 중 **한 계열로 통일**한다. 화면마다 서로 다른 아이콘 소스 혼합 금지.
-- 16/20/24px 등 사전에 정한 사이즈와 한결같은 선 굵기·광학적 크기·간격을 사용한다. 복잡한 삽화형/얇아 사라지는 아이콘·색만으로 뜻 전달 금지. 아이콘 대비 최소 3:1, 텍스트 일반 대비 4.5:1 목표.
-- 아이콘만 달린 버튼은 기능을 알기 어려우므로 **텍스트 라벨 우선**, 단독 아이콘은 aria-label·tooltip 및 44×44px 클릭 영역 필수. 장식은 aria-hidden.
-- 네비게이션/뒤로/다음/로그아웃/프로필/북마크/신고/체크/오류/로딩의 의미와 아이콘을 지정하여 일관성을 검사한다.
+- GitHub/Primer의 **간결한 선형 시스템 아이콘**을 시각 기준으로 삼는다. 조작용 기본 세트는 **Lucide 단일 계열**로 통일한다(ADR-0073). 화면마다 서로 다른 아이콘 소스 혼합 금지. 신규 계열(Octicons 등)은 ADR + `generate-third-party-notices.mjs --check` 갱신 없이 추가하지 않는다.
+- 크기 토큰은 **16/20/24px**만 사용하고 Lucide 기본 stroke-width(2)를 통일한다. 광학 보정·임의 override·복잡한 삽화형/얇아 사라지는 아이콘 금지. 아이콘 대비 최소 3:1, 텍스트 일반 대비 4.5:1 목표.
+- 기본은 **아이콘+텍스트 라벨**. 아이콘 단독은 aria-label·tooltip 및 44×44px 클릭 영역 필수. 장식 아이콘은 aria-hidden. **색만으로 뜻 전달 금지**(텍스트/아이콘 병행).
+- 네비게이션/뒤로/다음/로그아웃/프로필/북마크/신고/체크/오류/로딩의 의미와 아이콘은 아래 매핑표를 정본으로 한다. `src/ui/icons.ts`의 `IconSpec` named export가 이 표를 코드로 반영한다.
 - **브랜드 새와 모이 favicon(#70)은 조작 아이콘과 별도**. 16px 식별성·명암·배경·maskable 안전영역 테스트. GitHub의 브랜드 로고 복제가 아니라 Primer의 UI 명료성을 벤치마킹.
 - **워드마크 `moi` 전용 영문 글꼴: Bricolage Grotesque 700** — 상단 nav·모바일 Drawer의 소문자 `moi`에만 적용(데스크톱·Drawer 동일). 한국어 본문·버튼·문항·숫자·전역 font-family 변경 금지. 토큰 `--moi-font-brand`(폴백 display 스택)·self-host m/o/i 서브셋(1.6KB, OFL-1.1, `public/fonts/`)·`swap`·preload로 FOIT·CLS 저감. weight·letter-spacing(-0.01em)·22px 아이콘 정렬 유지(#225, ADR-0069).
+
+### 4.1 금지 사례
+- 혼합 라이브러리(Octicons/heroicons/이모지/임의 SVG) 사용.
+- aria-label 없는 아이콘 전용 버튼, 44px 미만 터치 타깃.
+- 아이콘을 단일 집계 객체로 묶어 tree-shaking 저해.
+- 색만으로 상태 표현, 텍스트 잘림이 발생하는 밀집 배치.
+
+### 4.2 매핑표 (Lucide, ADR-0073)
+| 동작 | 아이콘 | px | aria | 비고 |
+| --- | --- | --- | --- | --- |
+| 상단 메뉴(모바일) | `Menu` | 24 | label | Drawer 열기 |
+| Drawer 닫기 | `X` | 24 | label | |
+| 시험 selector | `ChevronDown` | 16 | hidden | select 보조 |
+| 학습 시작 | `Play` | 20 | hidden | primary CTA, 라벨 병행 |
+| 이어풀기 | `PlayCircle` | 20 | hidden | |
+| 이전 | `ChevronLeft` | 20 | hidden | |
+| 다음 | `ChevronRight` | 20 | hidden | |
+| 제출 | `Send` | 20 | hidden | primary |
+| Pass | `SkipForward` | 20 | hidden | secondary |
+| 미응답 | `CircleDashed` | 20 | hidden | 상태 |
+| 정답 | `Check` | 20 | hidden | 상태 |
+| 오답 | `X` | 20 | hidden | 상태 |
+| 북마크 추가/해제 | `Bookmark` | 20 | label | aria-pressed + 색/텍스트 병행 |
+| 문제 신고 | `Flag` | 20 | hidden | 보조 |
+| 포기 | `XCircle` | 20 | hidden | destructive |
+| 취소 | `X` | 16 | hidden | ghost |
+| 확인 | `Check` | 16 | hidden | primary |
+| 결과 | `ClipboardCheck` | 20 | hidden | 요약 |
+| 이력 | `History` | 20 | hidden | 목록 |
+| 영역 분석 | `PieChart` | 20 | hidden | 통계 |
+| 새로고침/재시도 | `RefreshCw` | 16 | hidden | 로딩 연계 |
+| 로딩 | `Loader2` | 16 | hidden | 스피너 |
+| 저장 성공 | `CheckCircle2` | 16 | hidden | 상태 문구 병행 |
+| 저장 실패 | `AlertCircle` | 16 | hidden | 상태 문구 병행 |
+| 로그아웃 | `LogOut` | 20 | hidden | destructive |
+| 계정 | `CircleUser` | 20 | hidden | nav/계정 |
+
+### 4.3 검수
+- 5폭(320/375/768/1024/1280) + 200% 확대에서 overflow/겹침/44px 터치 확인.
+- 아이콘 전용 버튼 aria-label·tooltip, 장식 aria-hidden, 키보드 포커스.
 
 ## 5. 가독성·레이아웃·버튼
 - 모바일 우선: 320·375·768·1024·1280px. 콘텐츠는 중앙 정렬 max-width(풀이 본문 약 760–900px, 목록/대시보드 약 1100–1200px부터 검토); 데스크톱 왼쪽 360px 칼럼만 차지하는 화면 금지.

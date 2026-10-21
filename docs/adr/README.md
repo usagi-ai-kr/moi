@@ -86,4 +86,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0069 | nav 워드마크 Bricolage Grotesque 적용 | Accepted | 2026-10-21 | [0069-brand-wordmark-bricolage.md](./0069-brand-wordmark-bricolage.md) |
 | ADR-0070 | 정적 OG/X 메타와 1200×630 공유 이미지 계약 | Accepted | 2026-10-21 | [0070-og-static-meta-image.md](./0070-og-static-meta-image.md) |
 | ADR-0071 | 로그인 전후 화면 시각 통일성 | Accepted | 2026-10-21 | [0071-login-consistency.md](./0071-login-consistency.md) |
+| ADR-0073 | 아이콘 체계 — Lucide 단일 계열·액션 매핑·접근성 계약 | Accepted | 2026-10-21 | [0073-icon-system-lucide-mapping-accessibility.md](./0073-icon-system-lucide-mapping-accessibility.md) |
 <!-- ADR_INDEX:END -->
