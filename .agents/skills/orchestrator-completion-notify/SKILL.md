@@ -13,6 +13,7 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 - **보내지 않는 경우**: 워커 단위 중간 보고, 리뷰 1건, 단위별 완료, 재시도 반복, merge 전 확인, `--dry-run` 확인. **단위별 알림은 금지** — 자주 오면 Discord를 끄게 되어 알림의 가치가 사라진다.
 - **보내는 주체**: o만. 워커(w)·리뷰어(r)는 `--dry-run`으로 payload만 확인하고 실제 전송하지 않는다.
 - **상태**: `complete`(완료) · `blocked`(차단) · `failed`(실패). 완료가 아니면 status를 사실대로 쓴다.
+- **이벤트**: `completion`(기본, 기존 상태 유지) · `intervention`(사용자 개입 필요) · `confirmation`(사용자 확인 요청) · `deliverable`(요청 산출물 도달). ADR-0085. o 전용 알림이며 워커는 `--dry-run`만 사용한다.
 
 ## 호출 (CWD = repo root)
 1. 먼저 payload만 확인한다(전송 없음):
@@ -35,8 +36,10 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 ## 인자
 | 옵션 | 설명 |
 | --- | --- |
-| `--status` | `complete` \| `blocked` \| `failed` (필수) |
-| `--title` | 알림 제목 (필수) |
+| `--event` | `completion`(기본) \| `intervention` \| `confirmation` \| `deliverable` |
+| `--from-hook` | stdin JSON `message` 필드 사용 (훅 전용) |
+| `--status` | `complete` \| `blocked` \| `failed` (completion 이벤트에서 필수) |
+| `--title` | 알림 제목 (필수, 훅 모드에서는 기본값) |
 | `--summary` | 본문 요약 (embed description) |
 | `--milestone` / `--version` | 마일스톤·버전 표기 |
 | `--url` | 배포 URL |
@@ -52,6 +55,8 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 | 1 | 설정 오류(webhook 누락·형식 오류·필수값 누락) | `.env`의 `DISCORD_WEBHOOK` 확인 후 재시도 |
 | 2 | 사용법 오류(알 수 없는 옵션·잘못된 status) | 인자 확인 |
 | 3 | HTTP·네트워크 오류 | 상태 코드 확인, 재시도(429는 스크립트가 1회 재시도) |
+
+- **`--from-hook` 훅 모드는 모든 실패 경로(인자·설정·HTTP·stdin)에서 0으로 종료한다** — PreToolUse 훅 exit 2가 `AskUserQuestion` 호출을 막지 않게 한다(ADR-0085 B1). 오류는 stderr 한 줄 요약만, webhook 원문은 비노출.
 
 - **알림 실패는 merge를 되돌리지 않는다.** blocker로 보고(o·이슈·PR에 남김)하고 수동 재전송한다.
 - stderr·stdout에는 webhook 원문·토큰이 절대 나오지 않는다. 오류 메시지를 그대로 PR에 붙여도 안전하다.

@@ -4,18 +4,19 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SCRIPT = join(dirname(fileURLToPath(import.meta.url)), 'notify-completion.mjs');
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..');
 const SECRET = 'super-secret-token-value';
 // 테스트는 실제 Discord 로 나가지 않는다 — 로컬(연결 불가) 주소만 쓴다.
 const UNREACHABLE = 'http://127.0.0.1:1/webhook/test-token';
 
 /** 스크립트 실행 — stdout/stderr/종료 코드를 그대로 돌려준다. */
-function run(args, { env = {}, cwd } = {}) {
+function run(args, { env = {}, cwd, stdin } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [SCRIPT, ...args], {
       cwd: cwd ?? mkdtempSync(join(tmpdir(), 'moi-notify-')),
@@ -36,6 +37,8 @@ function run(args, { env = {}, cwd } = {}) {
       stderr += d;
     });
     child.on('error', reject);
+    // stdin 은 항상 닫아 준다 — 훅 모드가 EOF 를 기다리며 멈추지 않게.
+    child.stdin.end(stdin ?? '');
     child.on('close', (code) => resolve({ code, stdout, stderr }));
   });
 }
@@ -319,4 +322,73 @@ test('필수값 누락(--title)은 exit 1 이다', async () => {
     env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
   });
   assert.equal(r.code, 1);
+});
+
+// ── ADR-0085 B1: 훅 모드는 모든 실패 경로에서 exit 0 (PreToolUse exit 2 는 AskUserQuestion 을 막는다) ──
+
+test('훅 모드: webhook 미설정이어도 exit 0 + stderr 한 줄 요약', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'moi-notify-hook-'));
+  const r = await run(['--event', 'confirmation', '--from-hook'], {
+    cwd: dir,
+    stdin: '{"message":"확인 요청"}',
+  });
+  assert.equal(r.code, 0, '훅 모드는 설정 오류에도 exit 0 이어야 한다');
+  assert.match(r.stderr, /DISCORD_WEBHOOK/);
+  assert.equal(r.stderr.trim().split('\n').length, 1, 'stderr 는 한 줄 요약이어야 한다');
+  assert.ok(!r.stdout.includes('super-secret'));
+});
+
+test('훅 모드: 잘못된 --event 값이어도 exit 0 (인자 오류)', async () => {
+  const r = await run(['--event', 'bogus', '--from-hook', '--dry-run'], {
+    stdin: '{"message":"x"}',
+  });
+  assert.equal(r.code, 0, '훅 모드는 사용법 오류에도 exit 0 이어야 한다');
+  assert.match(r.stderr, /--event 값 오류/);
+  assert.equal(r.stderr.trim().split('\n').length, 1, 'stderr 는 한 줄 요약이어야 한다');
+});
+
+test('훅 모드: 전송 HTTP 500 이어도 exit 0 + 비밀 비노출', async () => {
+  const mock = await startMock(() => ({ status: 500, body: 'Internal Server Error' }));
+  try {
+    const r = await run(['--event', 'confirmation', '--from-hook'], {
+      env: { DISCORD_WEBHOOK: mock.url, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+      stdin: '{"message":"x"}',
+    });
+    assert.equal(r.code, 0, '훅 모드는 전송 실패에도 exit 0 이어야 한다');
+    assert.match(r.stderr, /HTTP 500/);
+    assert.equal(r.stderr.trim().split('\n').length, 1, 'stderr 는 한 줄 요약이어야 한다');
+    assert.ok(!r.stderr.includes(SECRET), 'stderr 에 webhook 토큰이 없어야 한다');
+    assert.ok(!r.stdout.includes(SECRET));
+    assert.equal(mock.requests.length, 1);
+  } finally {
+    await mock.close();
+  }
+});
+
+test('훅 모드 판별: --from-hook=... 형태도 exit 0 (인자가 잘못돼도 차단 금지)', async () => {
+  const r = await run(['--event', 'confirmation', '--from-hook=true'], {
+    stdin: '{"message":"x"}',
+  });
+  assert.equal(r.code, 0, '--from-hook= 형태도 훅 모드로 판별해야 한다');
+  assert.match(r.stderr, /--from-hook 은 값을 받지 않습니다/);
+});
+
+// ── ADR-0085 B2: 훅 스니펫은 $CLAUDE_PROJECT_DIR 기준 경로를 쓴다 ──
+
+test('문서 훅 스니펫: $CLAUDE_PROJECT_DIR 경로 + --env-path 를 쓰고 JSON 이 유효하다', () => {
+  const doc = readFileSync(join(REPO_ROOT, 'docs/harness/completion-notify.md'), 'utf8');
+  const blocks = [...doc.matchAll(/```json\n([\s\S]*?)```/g)].map((m) => m[1]);
+  assert.ok(blocks.length > 0, '문서에 JSON 스니펫이 있어야 한다');
+  const parsed = blocks.map((b) => JSON.parse(b)); // JSON 이스케이프 오류면 여기서 예외
+  const hook = parsed.find((obj) => obj && obj.hooks);
+  assert.ok(hook, '훅 스니펫 JSON 블록이 있어야 한다');
+  const commands = Object.values(hook.hooks)
+    .flat()
+    .map((group) => group.hooks?.[0]?.command ?? '');
+  assert.equal(commands.length, 2, 'Notification·PreToolUse 훅이 각각 1개여야 한다');
+  for (const command of commands) {
+    assert.match(command, /"\$CLAUDE_PROJECT_DIR\/\.agents\/skills\/orchestrator-completion-notify\/scripts\/notify-completion\.mjs"/);
+    assert.match(command, /--env-path "\$CLAUDE_PROJECT_DIR\/\.env"/);
+    assert.ok(!command.includes('node .agents/'), '상대 경로 스크립트 호출 금지');
+  }
 });

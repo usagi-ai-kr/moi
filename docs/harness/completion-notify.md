@@ -8,6 +8,19 @@
 - 알림 실패는 merge를 되돌리지 않는다. blocker로 보고하고 재전송한다.
 - 워커(w)·리뷰어(r)는 `--dry-run`으로 payload만 확인한다. 실제 전송은 o만 한다.
 
+## 이벤트 (ADR-0085)
+스크립트는 `--event`로 이벤트 종류를 구분한다. 기본값은 `completion`(하위호환).
+
+| 이벤트 | 의미 | 색 | 트리거 |
+| --- | --- | --- | --- |
+| `completion` | 단위 묶음 완료 (기존 complete/blocked/failed) | 상태별 | o 명시 호출 |
+| `intervention` | 사용자 개입 필요 | 주황(0xf39c12) | Notification 훅 `permission_prompt\|idle_prompt` |
+| `confirmation` | 사용자 확인 요청 | 파랑(0x3498db) | PreToolUse 훅 `AskUserQuestion` |
+| `deliverable` | 요청 산출물 도달 | 보라(0x9b59b6) | o 명시 호출 |
+
+- `--status`는 `completion` 이벤트에서만 사용한다 (`complete`/`blocked`/`failed`).
+- `--from-hook` 모드는 stdin JSON의 `message` 필드를 본문으로 사용한다. 필드가 없거나 파싱 실패 시 일반 문구로 대체한다 (PreToolUse 입력 구조는 가정하지 않는다).
+
 ## 환경 설정
 | 항목 | 설명 |
 | --- | --- |
@@ -85,6 +98,8 @@ node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs
 | 2 | 사용법 오류(알 수 없는 옵션·잘못된 status) | 인자 확인 |
 | 3 | HTTP·네트워크 오류 | 상태 코드 확인(429는 스크립트가 1회 재시도) |
 
+- **`--from-hook` 훅 모드는 모든 실패 경로(인자·설정·HTTP·stdin 읽기)에서 0으로 종료한다** — PreToolUse 훅 exit 2가 `AskUserQuestion` 호출을 막지 않도록 하는 규칙(ADR-0085 B1). 오류는 stderr 한 줄 요약만 남기고 redaction을 유지한다. 훅 모드 판별은 `--from-hook`·`--from-hook=...` 두 형태를 모두 포함한다.
+
 ## 보안
 - webhook URL·토큰은 stdout/stderr·이슈·PR·CI 로그에 남기지 않는다. 오류 메시지는 그대로 붙여도 안전하다.
 - `.env`는 커밋 금지(`.gitignore` 대상). `.env.example`에는 `DISCORD_WEBHOOK=` 키만 둔다.
@@ -101,6 +116,48 @@ node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs
 | exit 3 + `HTTP 401/404` | webhook 삭제·토큰 회전 여부 확인. 채널 설정에서 새 URL 발급 |
 | exit 3 + `HTTP 429` | 1회 자동 재시도됨. 계속 실패하면 몇 초 뒤 재전송(중복 알림은 단위별 알림이 아님) |
 | exit 3 + 네트워크 오류 | 사내 프록시·방화벽 확인. `--env-path` 경로가 다른 환경의 값을 가리키는지 확인 |
+
+## o 전용 훅 설정 (ADR-0085)
+공유 `.claude/settings.json`에는 넣지 않는다. o 전용 `.claude/settings.local.json`(비추적, `.gitignore`)에만 둔다. 아래 스니펫을 그대로 사용한다.
+
+```json
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs\" --event intervention --from-hook --env-path \"$CLAUDE_PROJECT_DIR/.env\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs\" --event confirmation --from-hook --env-path \"$CLAUDE_PROJECT_DIR/.env\""
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+- `deliverable`은 훅으로 보내지 않는다. o가 명시 호출한다:
+  ```bash
+  node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs \
+    --event deliverable --title "<산출물>" --summary "<요약>" --dry-run
+  ```
+- 훅 샘플:
+  ```bash
+  echo '{"message":"테스트"}' | node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs --event intervention --from-hook --dry-run
+  ```
 
 ## 검증
 ```bash

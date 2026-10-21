@@ -6,6 +6,7 @@
 //     --version 0.2.4 --url https://moi.example.workers.dev --commit abc1234 \
 //     --issue 279 --issue 127 --test "lint·typecheck" --dry-run
 // 종료 코드: 0 성공, 1 설정/URL/필수값 누락, 2 사용법 오류, 3 HTTP/네트워크 오류.
+//   단, `--from-hook` 모드는 모든 실패 경로에서 0으로 종료한다(훅 exit 2가 도구 호출을 막지 않도록 — ADR-0085 B1).
 // 보안: webhook 원문은 어떤 출력에도 남기지 않는다. 환경변수 > --env-path > MOI_ENV_FILE > .env 순으로
 //       **실행 없이 파싱**해 읽는다(셸 평가·command substitution 없음).
 import { existsSync, readFileSync } from 'node:fs';
@@ -14,8 +15,11 @@ const EXIT = { ok: 0, config: 1, usage: 2, http: 3 };
 
 const STATUS_COLOR = { complete: 0x2ecc71, blocked: 0xf1c40f, failed: 0xe74c3c };
 const STATUS_LABEL = { complete: '완료', blocked: '차단', failed: '실패' };
+const EVENT_COLOR = { intervention: 0xf39c12, confirmation: 0x3498db, deliverable: 0x9b59b6 };
+const EVENT_LABEL = { intervention: '개입 필요', confirmation: '확인 요청', deliverable: '산출물 도달' };
+const EVENTS = new Set(['completion', 'intervention', 'confirmation', 'deliverable']);
 const LIMIT = { title: 256, description: 4096, fieldName: 256, fieldValue: 1024, embed: 6000, fields: 25 };
-const VALUE_FLAGS = new Set(['status', 'title', 'summary', 'milestone', 'version', 'url', 'commit', 'issue', 'test', 'env-path']);
+const VALUE_FLAGS = new Set(['event', 'status', 'title', 'summary', 'milestone', 'version', 'url', 'commit', 'issue', 'test', 'env-path']);
 const REPEATABLE = new Set(['issue', 'test']);
 const DISCORD_WEBHOOK_RE = /^https:\/\/discord\.com\/api\/webhooks\/\d+\/[A-Za-z0-9_-]+$/;
 const LOCAL_WEBHOOK_RE = /^http:\/\/(127\.0\.0\.1|localhost|\[::1\])(:\d+)?(\/[^\s]*)?$/;
@@ -82,7 +86,7 @@ function parseEnvFile(text) {
 
 /** CLI 파싱 — `--flag value` / `--flag=value` 지원, --issue/--test는 반복 가능. */
 function parseArgs(argv) {
-  const opts = { dryRun: false, issues: [], tests: [] };
+  const opts = { event: 'completion', dryRun: false, fromHook: false, issues: [], tests: [] };
   const seen = new Set();
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
@@ -93,6 +97,11 @@ function parseArgs(argv) {
     if (name === 'dry-run') {
       if (value !== undefined) throw usageError('--dry-run 은 값을 받지 않습니다');
       opts.dryRun = true;
+      continue;
+    }
+    if (name === 'from-hook') {
+      if (value !== undefined) throw usageError('--from-hook 은 값을 받지 않습니다');
+      opts.fromHook = true;
       continue;
     }
     if (!VALUE_FLAGS.has(name)) throw usageError(`알 수 없는 옵션: --${name}`);
@@ -156,15 +165,26 @@ function validateWebhookUrl(url) {
   throw configError('webhook URL 형식 오류 — https://discord.com/api/webhooks/{id}/{token} 형식이어야 합니다');
 }
 
+/** 이벤트별 색·라벨 해석. completion 은 status, 그 외는 event 기준. */
+function resolveEventStyle(opts) {
+  const event = opts.event ?? 'completion';
+  if (event === 'completion') {
+    const status = opts.status;
+    return { color: STATUS_COLOR[status], label: STATUS_LABEL[status] };
+  }
+  return { color: EVENT_COLOR[event], label: EVENT_LABEL[event] };
+}
+
 /** Discord embed payload 구성 — 색·필드·timestamp·footer, 한도 자동 절단. */
 function buildPayload(opts) {
+  const style = resolveEventStyle(opts);
   const embed = {
     title: truncate(opts.title, LIMIT.title),
     description: truncate(opts.summary, LIMIT.description),
-    color: STATUS_COLOR[opts.status],
+    color: style.color,
     fields: [],
     timestamp: new Date().toISOString(),
-    footer: { text: `moi · ${STATUS_LABEL[opts.status]}` },
+    footer: { text: `moi · ${style.label}` },
   };
 
   const fields = [];
@@ -229,11 +249,51 @@ async function sendWebhook(url, payload, redact) {
   throw httpError('전송 실패 — HTTP 오류');
 }
 
+/** stdin 전체 읽기 (--from-hook 용). TTY면 빈 문자열. */
+async function readStdin() {
+  if (process.stdin.isTTY) return '';
+  const chunks = [];
+  for await (const chunk of process.stdin) chunks.push(chunk);
+  return Buffer.concat(chunks).toString('utf8');
+}
+
+/** 훅 입력에서 message 필드를 안전하게 추출한다. */
+function extractHookMessage(raw) {
+  const text = String(raw ?? '').trim();
+  if (!text) return '';
+  try {
+    const parsed = JSON.parse(text);
+    if (parsed && typeof parsed.message === 'string') return parsed.message.trim();
+  } catch {
+    // PreToolUse 등 구조가 다를 수 있으므로 조용히 무시하고 일반 문구로 대체한다.
+  }
+  return '';
+}
+
+const HOOK_GENERIC_MESSAGE = {
+  intervention: '사용자 개입이 필요합니다.',
+  confirmation: '사용자 확인이 필요합니다.',
+  deliverable: '요청한 산출물이 도달했습니다.',
+  completion: '알림이 도착했습니다.',
+};
+
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
 
-  if (!opts.status) throw configError('--status 가 필요합니다 (complete|blocked|failed)');
-  if (!STATUS_COLOR[opts.status]) throw usageError(`--status 값 오류: ${opts.status} (complete|blocked|failed)`);
+  if (!EVENTS.has(opts.event)) throw usageError(`--event 값 오류: ${opts.event} (completion|intervention|confirmation|deliverable)`);
+
+  if (opts.event === 'completion') {
+    if (!opts.status) throw configError('--status 가 필요합니다 (complete|blocked|failed)');
+    if (!STATUS_COLOR[opts.status]) throw usageError(`--status 값 오류: ${opts.status} (complete|blocked|failed)`);
+  }
+
+  if (opts.fromHook) {
+    const raw = await readStdin();
+    const msg = extractHookMessage(raw);
+    if (!opts.summary) opts.summary = msg || HOOK_GENERIC_MESSAGE[opts.event] || '알림이 도착했습니다.';
+    if (!opts.title) opts.title = EVENT_LABEL[opts.event] || STATUS_LABEL[opts.status] || '알림';
+  }
+
   if (!opts.title) throw configError('--title 이 필요합니다');
   if (opts.summary === undefined) opts.summary = '';
 
@@ -248,7 +308,7 @@ async function main() {
   if (opts.dryRun) {
     const target = webhook ? 'discord-webhook (masked)' : 'discord-webhook (unset)';
     console.log(`target=${target}`);
-    console.log(`mode=dry-run status=${opts.status} source=${source ?? 'unset'}`);
+    console.log(`mode=dry-run event=${opts.event} status=${opts.status ?? '-'} source=${source ?? 'unset'}`);
     console.log('payload:');
     console.log(JSON.stringify(payload, null, 2));
     return EXIT.ok;
@@ -260,11 +320,19 @@ async function main() {
   return EXIT.ok;
 }
 
+// 훅 모드 판별 — `--from-hook` 과 `--from-hook=...` 형태를 모두 훅으로 본다.
+//   인자가 잘못돼도(예: 값이 붙은 형태) 훅이면 exit 0 이어야 PreToolUse 가 막히지 않는다 (ADR-0085 B1).
+const FROM_HOOK = process.argv.slice(2).some((a) => a === '--from-hook' || a.startsWith('--from-hook='));
+
 try {
   process.exitCode = await main();
 } catch (err) {
   const code = err instanceof CliError ? err.code : EXIT.http;
-  const message = err instanceof CliError ? err.message : `알 수 없는 오류: ${err?.message ?? ''}`;
+  // 환경변수 webhook 원문은 어떤 오류 경로에서도 새지 않도록 마지막에 한 번 더 마스킹한다.
+  const redact = makeRedactor((process.env.DISCORD_WEBHOOK ?? '').trim() || null);
+  const raw = err instanceof CliError ? err.message : `알 수 없는 오류: ${err?.message ?? ''}`;
+  const message = redact(raw).split('\n')[0];
   console.error(`notify-completion: ${message}`);
-  process.exitCode = code;
+  // 훅 모드에서는 실패해도 exit 0 — PreToolUse exit 2가 도구 호출을 차단하는 것을 방지한다 (ADR-0085 B1).
+  process.exitCode = FROM_HOOK ? EXIT.ok : code;
 }
