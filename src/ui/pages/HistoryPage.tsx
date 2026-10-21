@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import type { ApiClient } from '../api/client';
 import { copy } from '../copy';
-import { ExamScope } from '../exam/ExamScope';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { HistoryTabs } from '../history/HistoryTabs';
 import { resolveHistoryTab, type HistoryTab } from '../history/history-tab-state';
@@ -133,8 +132,6 @@ export function HistoryPage({ client }: { client: ApiClient }) {
   return (
     <div className="moi-page">
       <h1 className="moi-title">{copy.nav.history}</h1>
-      {/* 시험 기준 라벨 — 3탭 모두 이 기준으로 조회된다(#239). */}
-      <ExamScope />
       <HistoryTabs
         value={activeTab}
         onChange={handleTabChange}

@@ -3,10 +3,10 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
   Background:
     Given 시험 화면 API 모의가 준비되면
 
-  # ── AC 1: 주요 화면마다 현재 시험 라벨 ───────────────────────────────
-  Scenario Outline: 주요 화면에 현재 시험 기준 라벨이 보인다
+  # ── AC 1: 페이지별 시험 배지 중복 없음 (#259) ─────────────────────────
+  Scenario Outline: 페이지별 시험 배지가 보이지 않는다
     When "<route>" 화면에 접속하면
-    Then 시험 기준 라벨이 보인다
+    Then 페이지별 시험 배지가 보이지 않는다
 
     Examples:
       | route      |
@@ -18,7 +18,6 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
 
   Scenario: 데이터 요청도 선택 시험을 사용한다
     When "/history" 화면에 접속하면
-    Then 시험 기준 라벨이 보인다
     And 통계 요청이 선택 시험 코드를 보낸다
 
   # ── AC 2: 실제 selector ───────────────────────────────────────────
@@ -43,7 +42,6 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
   Scenario: 올바른 시험 코드는 그대로 유지된다
     When 시험 코드가 포함된 주소로 이동한다
     Then 주소창의 시험 값은 "saa-c03" 이다
-    And 시험 기준 라벨이 보인다
 
   Scenario: 잘못된 시험 값은 기본값으로 교체되고 내부 ID가 노출되지 않는다
     When 잘못된 시험 주소로 이동한다
@@ -53,14 +51,12 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
   Scenario: 시험 값이 없으면 기본 시험으로 동작하고 주소가 오염되지 않는다
     When 시험 값 없는 주소로 이동한다
     Then 주소창에 시험 값이 없다
-    And 시험 기준 라벨이 보인다
 
   # ── AC 4: 반응형 ───────────────────────────────────────────────────
   Scenario Outline: 시험 selector·라벨이 오버플로 없이 보인다
     Given 뷰포트 너비가 <width>px이면
     When "<route>" 화면에 접속하면
     Then 가로 오버플로가 없다
-    And 시험 기준 라벨이 보인다
 
     Examples:
       | route      | width |
@@ -81,4 +77,3 @@ Feature: 시험 연결 context·selector — 라벨·선택·URL 계약 (#239)
     When 200% 확대를 흉내내면
     And "/" 화면에 접속하면
     Then 가로 오버플로가 없다
-    And 시험 기준 라벨이 보인다

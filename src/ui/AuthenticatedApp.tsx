@@ -12,7 +12,6 @@ import {
 } from 'react-router';
 import { copy } from './copy';
 import { useLogout, useUiStore, type ApiClient, type MeUser } from './session';
-import { ExamScope } from './exam/ExamScope';
 import { ExamScopeProvider } from './exam/ExamScopeProvider';
 import './authenticated.css';
 import { AppShell } from './AppShell';
@@ -76,7 +75,6 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
       {showAuthError && <AuthErrorAlert />}
       <h1 className="moi-title">{greeting}</h1>
       <section aria-label={copy.exam.label}>
-        <ExamScope />
         <p className="moi-note">{copy.exam.note}</p>
         <p className="moi-note">{copy.study.examContext}</p>
       </section>

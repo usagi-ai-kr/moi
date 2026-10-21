@@ -68,6 +68,11 @@ Then('시험 기준 라벨이 보인다', async ({ page }) => {
   await expect(badge).toContainText('AWS SAA-C03');
 });
 
+Then('페이지별 시험 배지가 보이지 않는다', async ({ page }) => {
+  const badge = page.locator('.moi-exam-scope');
+  await expect(badge).toHaveCount(0);
+});
+
 Then('시험 selector는 비활성이 아니다', async ({ page }) => {
   const select = page.getByRole('combobox', { name: copy.exam.label });
   await expect(select).toBeVisible();

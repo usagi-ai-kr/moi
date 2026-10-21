@@ -1,5 +1,4 @@
 import { copy } from '../copy';
-import { ExamScope } from '../exam/ExamScope';
 import { iconHistory, iconResume, iconStart } from '../icons';
 import { STUDY_DOMAINS } from './types';
 import type { StudyScope } from './types';
@@ -28,8 +27,6 @@ export function StartView(p: Props) {
   return (
     <section className="moi-study" aria-label={copy.study.startTitle}>
       <h1 className="moi-study-title">{copy.study.startTitle}</h1>
-      {/* 시험 기준 라벨 — 시험 선택은 셸(헤더/드로어) 1곳에서 한다(#239). */}
-      <ExamScope />
       <p className="moi-note">{copy.exam.note}</p>
       <p className="moi-note">{copy.study.examContext}</p>
       <fieldset className="moi-study-field">

@@ -319,10 +319,10 @@ describe('#239 셸 — selector 1개·중복 없음 (AC 1·2)', () => {
     expect(screen.getAllByRole('combobox', { name: '시험' })).toHaveLength(1);
   });
 
-  it('홈 화면은 현재 시험 라벨을 보여준다 (AC 1)', async () => {
+  it('홈 화면은 페이지별 시험 배지가 없다 (상단 selector 단일화, #259)', async () => {
     const { container } = renderAppAt('/');
     await screen.findByRole('button', { name: copy.study.cta });
-    expect(container.querySelector('.moi-exam-scope-name')?.textContent).toBe('AWS SAA-C03');
+    expect(container.querySelector('.moi-exam-scope')).toBeNull();
     expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
   });
 
