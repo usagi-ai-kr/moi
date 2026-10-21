@@ -78,4 +78,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0061 | 학습 포기 확인을 인라인 경고에서 AlertDialog 모달로 전환 | Accepted | 2026-10-21 | [0061-abandon-confirm-alert-dialog.md](./0061-abandon-confirm-alert-dialog.md) |
 | ADR-0062 | 공통 브랜드·헤더 토큰 계약 | Accepted | 2026-10-21 | [0062-brand-header-tokens.md](./0062-brand-header-tokens.md) |
 | ADR-0063 | 학습 현황 하위 탭의 URL 상태·패널 분할·Tabs 구현 결정 | Accepted | 2026-10-21 | [0063-history-sub-tabs-url-state.md](./0063-history-sub-tabs-url-state.md) |
+| ADR-0064 | 화면 간 디자인 계약: 헤딩·버튼·폭·상태/아이콘 | Accepted | 2026-10-21 | [0064-design-consistency-headings-buttons-width.md](./0064-design-consistency-headings-buttons-width.md) |
 <!-- ADR_INDEX:END -->

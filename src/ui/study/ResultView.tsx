@@ -103,7 +103,7 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
 
   return (
     <section className="moi-study" aria-label={copy.study.resultTitle}>
-      <h2 className="moi-study-title">{copy.study.resultTitle}</h2>
+      <h1 className="moi-study-title">{copy.study.resultTitle}</h1>
       <p className="moi-note">
         {scopeLabel(set.mode)} · {STUDY_EXAM_LABEL} · 정답률 {r.accuracyPercent}%
       </p>
@@ -200,7 +200,7 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
       )}
       {showCorrections && corrected && (
         <section className="moi-study-detail" aria-label={copy.study.correctionTitle}>
-          <h3>{copy.study.correctionTitle}</h3>
+          <h2 className="moi-study-detail-title">{copy.study.correctionTitle}</h2>
           <p className="moi-note">
             {`${copy.study.correctionOriginal} ${r.accuracyPercent}% → ${copy.study.correctionCorrected} ${
               corrected.accuracyPercent !== null

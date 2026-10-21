@@ -21,7 +21,7 @@ interface Props {
 export function StartView(p: Props) {
   return (
     <section className="moi-study" aria-label={copy.study.startTitle}>
-      <h2 className="moi-study-title">{copy.study.startTitle}</h2>
+      <h1 className="moi-study-title">{copy.study.startTitle}</h1>
       <p className="moi-note">
         {STUDY_EXAM_LABEL} · {STUDY_SET_SIZE}문제
       </p>

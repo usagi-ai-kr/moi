@@ -103,7 +103,7 @@ export function ReviewFeedback({
           </ul>
 
           <div className="flex flex-col gap-2 border-t border-border pt-4">
-            <h3 className="text-sm font-semibold text-foreground">{copy.study.explanation}</h3>
+            <h2 className="text-sm font-semibold text-foreground">{copy.study.explanation}</h2>
             <div className="text-base leading-relaxed text-muted-foreground">
               <Explanation markdown={graded.explanation || '—'} />
             </div>
@@ -111,7 +111,7 @@ export function ReviewFeedback({
 
           {graded.sourceUrls && graded.sourceUrls.length > 0 && (
             <div className="flex flex-col gap-1 border-t border-border pt-3">
-              <h4 className="text-sm font-semibold text-muted-foreground">{copy.review.sources}</h4>
+              <h3 className="text-sm font-semibold text-muted-foreground">{copy.review.sources}</h3>
               <SourceLinks urls={graded.sourceUrls} />
             </div>
           )}

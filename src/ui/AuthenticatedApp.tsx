@@ -71,7 +71,7 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
   return (
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
-      <p className="moi-lead">{copy.session.welcome}</p>
+      <h1 className="moi-title">{copy.session.welcome}</h1>
       <section aria-label={copy.study.examLabel}>
         <p className="moi-note">{STUDY_EXAMS[0].label}</p>
         <p className="moi-note">{copy.study.examNote}</p>

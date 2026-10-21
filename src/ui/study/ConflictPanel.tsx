@@ -28,7 +28,7 @@ export function ConflictPanel({ conflicts, items, pending, onUseServer, onUseMin
   if (conflicts.length === 0) return null;
   return (
     <section className="moi-conflict" role="alert" aria-label={copy.study.conflictTitle}>
-      <h3 className="moi-conflict-title">{copy.study.conflictTitle}</h3>
+      <h2 className="moi-conflict-title">{copy.study.conflictTitle}</h2>
       <p className="moi-note">{copy.study.conflictHint}</p>
       <ul className="moi-conflict-list">
         {conflicts.map((c) => {
