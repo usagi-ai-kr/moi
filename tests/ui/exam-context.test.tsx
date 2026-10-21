@@ -329,7 +329,8 @@ describe('#239 셸 — selector 1개·중복 없음 (AC 1·2, #273 콘텐츠 최
     const { container } = renderAppAt('/');
     await screen.findByRole('button', { name: copy.study.cta });
     expect(container.querySelector('.moi-exam-scope')).toBeNull();
-    expect(screen.getByText(copy.exam.note)).toBeInTheDocument();
+    // #269: 홈의 시험 안내 문구 제거 — 시험 선택은 셸 상단 selector 하나다.
+    expect(screen.queryByText('현재 지원하는 시험은 1개입니다.')).not.toBeInTheDocument();
   });
 
   it('카탈로그는 공개 코드만 담는다 — 내부 ID는 없다', () => {

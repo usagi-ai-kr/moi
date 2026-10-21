@@ -101,7 +101,7 @@ export function ReviewFeedback({
                   {isCorrectOption && (
                     <span className="inline-flex items-center gap-1 text-sm font-bold text-foreground">
                       <iconCorrect.icon aria-hidden="true" size={iconCorrect.size} />
-                      ✓ 정답
+                      {copy.review.correctBadge}
                     </span>
                   )}
                 </li>
