@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
-import { HTTPError } from 'ky';
+import { HTTPError, TimeoutError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyActiveSet } from '../../src/ui/api/client';
 import { copy } from '../../src/ui/copy';
@@ -209,7 +209,7 @@ describe('#270 Red — 제출 pending 중 경합 차단', () => {
     expect(postCount.submit).toBe(1);
   });
 
-  it('제출 요청 중 답안 입력·포기하기가 비활성이다', async () => {
+  it('제출 요청 중 답안 입력·포기하기·취소가 비활성이다', async () => {
     let resolveSubmit: (v: StudyActiveSet) => void = () => {};
     const gate = new Promise<StudyActiveSet>((resolve) => {
       resolveSubmit = resolve;
@@ -219,23 +219,31 @@ describe('#270 Red — 제출 pending 중 경합 차단', () => {
     fireEvent.click(screen.getByRole('button', { name: copy.study.confirmSubmit }));
     const submitting = await screen.findByRole('button', { name: copy.study.confirmSubmit });
     expect(submitting).toBeDisabled();
-    // Red 기대: 제출 중에는 답안 체크박스와 포기하기가 막혀야 한다.
+    // 제출 중에는 답안 체크박스와 포기하기가 막혀야 한다. 확정 후 취소는 실제 요청 취소가
+    // 아니므로 pending 중 취소도 잠근다(포기 다이얼로그와 동일 정책, ADR-0080).
     expect(screen.getByLabelText(/보기 1/)).toBeDisabled();
     expect(screen.getByRole('button', { name: copy.study.pass })).toBeDisabled();
     expect(screen.getByRole('button', { name: copy.study.abandon })).toBeDisabled();
+    expect(screen.getByRole('button', { name: copy.study.cancel })).toBeDisabled();
     await act(async () => {
       resolveSubmit(submittedSet());
     });
   });
 });
 
-describe('#270 Red — timeout 후 409 복구', () => {
-  it('시작 timeout 후 재시도가 409면 이어풀기 안내를 보인다', async () => {
+describe('#270 차단2 — 응답 유실 후 409 라우터 복구', () => {
+  it('첫 응답 유실(서버는 생성 성공, TimeoutError) 후 재시도 409면 이어풀기로 /study 복원한다', async () => {
     let calls = 0;
+    let serverActive: StudyActiveSet | null = null;
+    const onNavigate = vi.fn();
     const client = {
       get: vi.fn((_p: string) => ({
         json: async () => {
           if (String(_p).includes('api/review/bookmarks')) return { examId: 'saa-c03', total: 0, items: [] };
+          if (String(_p).includes('api/study/sets/current')) {
+            if (serverActive) return serverActive;
+            throw httpError(404, { error: 'no_active_set' });
+          }
           throw httpError(404, { error: 'not_found' });
         },
       })),
@@ -243,7 +251,14 @@ describe('#270 Red — timeout 후 409 복구', () => {
         json: async () => {
           if (String(_p) === 'api/study/sets') {
             calls += 1;
-            if (calls === 1) throw new TypeError('fetch failed');
+            if (calls === 1) {
+              // 응답 유실: 서버에는 세트가 생성됐지만 클라이언트는 TimeoutError로 실패한다.
+              // 일반 fetch TypeError와 구별한다 — ky TimeoutError를 사용한다.
+              serverActive = makeSet();
+              throw new TimeoutError(new Request('http://localhost/api/study/sets'));
+            }
+            // 서버에 활성 세트가 남아 있으므로 409. mock 상태를 시작 성공으로 유지한다.
+            if (!serverActive) throw httpError(500, { error: 'mock_no_server_set' });
             throw httpError(409, { error: 'active_set_exists' });
           }
           throw httpError(404, { error: 'not_found' });
@@ -251,11 +266,20 @@ describe('#270 Red — timeout 후 409 복구', () => {
       })),
       patch: vi.fn(() => ({ json: async () => ({ outcome: 'answered' }) })),
     } as unknown as ApiClient;
-    renderStudy(client);
+    renderStudy(client, onNavigate);
     fireEvent.click(screen.getByRole('button', { name: copy.study.startAction }));
     expect(await screen.findByRole('alert')).toHaveTextContent('시작하지 못했습니다');
+    // 서버에는 세트가 남았음을 mock 상태로 증명한다.
+    expect(serverActive).not.toBeNull();
+    expect(calls).toBe(1);
     fireEvent.click(screen.getByRole('button', { name: copy.study.startAction }));
     expect(await screen.findByText(/이미 진행 중인 세트/)).toBeInTheDocument();
     expect(calls).toBe(2);
+    // setId=null이므로 직접 렌더 resume은 no-op이다. 라우터가 있으면 /study current 복원으로 이동한다.
+    fireEvent.click(screen.getByRole('button', { name: copy.study.continueStudy }));
+    expect(onNavigate).toHaveBeenCalledWith('/study');
+    // /study current 복원: 서버 활성 세트가 그대로 조회된다.
+    const current = await client.get('api/study/sets/current?examId=saa-c03').json<StudyActiveSet>();
+    expect(current.id).toBe(serverActive!.id);
   });
 });

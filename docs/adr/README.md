@@ -91,5 +91,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0074 | 북마크 상태 모양 구분·정답 표시 중복 제거·날짜 하한·페이저 간격 | Accepted | 2026-10-21 | [0074-ux-polish-bookmark-date-lower-bound.md](./0074-ux-polish-bookmark-date-lower-bound.md) |
 | ADR-0076 | 학습 범위 안내 정리·fieldset 위계와 문제 수 분리 | Accepted | 2026-10-21 | [0076-study-scope-guidance-hierarchy.md](./0076-study-scope-guidance-hierarchy.md) |
 | ADR-0079 | 근거 링크 칩 padding·wrap·상태·외부링크 semantics | Accepted | 2026-10-21 | [0079-source-link-chip-padding-wrap-state-semantics.md](./0079-source-link-chip-padding-wrap-state-semantics.md) |
-| ADR-0080 | 중복 인터랙션 잠금 — 시작·제출 동기 가드와 충돌 CTA 차단 | Proposed | 2026-10-21 | [0080-interaction-lock.md](./0080-interaction-lock.md) |
+| ADR-0080 | 중복 인터랙션 잠금 — 시작·제출 동기 가드와 충돌 CTA 차단 | Accepted | 2026-10-21 | [0080-interaction-lock.md](./0080-interaction-lock.md) |
 <!-- ADR_INDEX:END -->

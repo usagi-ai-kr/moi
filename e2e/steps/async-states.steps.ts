@@ -49,6 +49,8 @@ let meDelayMs = 0;
 let startDelayMs = 0;
 let startFailStatus: number | null = null;
 let startFailArmed = false;
+// #270 차단3 응답 유실 모드: 첫 POST는 서버에 세트를 남기고 응답을 유실(abort)한다. 재시도는 409.
+let startLoseArmed = false;
 let historyDelayMs = 0;
 let historyFailStatus: number | null = null;
 let historyFailArmed = false;
@@ -142,6 +144,7 @@ Given('비동기 상태 API 모의가 준비되면', async ({ page }) => {
   startDelayMs = 0;
   startFailStatus = null;
   startFailArmed = false;
+  startLoseArmed = false;
   historyDelayMs = 0;
   historyFailStatus = null;
   historyFailArmed = false;
@@ -168,6 +171,16 @@ Given('비동기 상태 API 모의가 준비되면', async ({ page }) => {
     }
     if (method === 'POST' && path === '/api/study/sets') {
       startPostCount += 1;
+      // #270 차단3 응답 유실: 첫 요청은 서버에 세트를 남기고 응답을 유실한다. 재시도는 409.
+      if (startLoseArmed) {
+        if (startPostCount === 1) {
+          activeSet = freshSet();
+          await route.abort('connectionaborted');
+          return;
+        }
+        await route.fulfill({ status: 409, json: { error: 'active_set_exists' } });
+        return;
+      }
       if (startDelayMs > 0) await sleep(startDelayMs);
       if (startFailStatus !== null && startFailArmed) {
         startFailArmed = false;
@@ -261,6 +274,10 @@ Given('세트 시작 응답이 {int}ms 지연된다', async ({}, ms: number) => 
 Given('세트 시작 응답이 {int} 상태로 한 번 실패한다', async ({}, status: number) => {
   startFailStatus = status;
   startFailArmed = true;
+});
+
+Given('세트 시작 첫 응답이 유실되고 서버에는 활성 세트가 남는다', async ({}) => {
+  startLoseArmed = true;
 });
 
 Given('이력 응답이 {int}ms 지연된다', async ({}, ms: number) => {
@@ -367,4 +384,47 @@ Then('결과 화면 전 해설과 문항별 결과가 노출되지 않는다', a
   // 제출 전 DTO에 해설·문항별 정오답이 없어야 한다(정답 문구 자체는 DTO에 없어 자명하므로 제외).
   await expect(page.getByText(/해설: 정답은/)).toHaveCount(0);
   await expect(page.locator('[data-testid^="peritem-"]')).toHaveCount(0);
+});
+
+// #270 차단3 — 시작 지연 중 충돌 CTA 차단. 범위·이력·Enter·연속 클릭을 함께 검증한다.
+Then('시작 지연 중 범위 선택과 학습 이력이 비활성이다', async ({ page }) => {
+  const region = page.getByRole('region', { name: copy.study.startTitle });
+  await expect(region.getByRole('button', { name: copy.study.historyLink })).toBeDisabled();
+  await expect(region.getByRole('button', { name: copy.study.historyLink })).toHaveAttribute('aria-busy', 'true');
+  for (const radio of await region.getByRole('radio').all()) {
+    await expect(radio).toBeDisabled();
+  }
+});
+
+When('시작 버튼을 연속 클릭하면', async ({ page }) => {
+  const btn = page.getByRole('region', { name: copy.study.startTitle }).locator('button').first();
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Space');
+});
+
+// #270 차단3 — 제출 지연 중 답안·포기·취소 차단. 확정 후 취소는 실제 요청 취소가 아니다.
+Then('제출 지연 중 답안 입력과 포기하기와 취소가 비활성이다', async ({ page }) => {
+  await expect(page.getByLabel(/보기 1/).first()).toBeDisabled();
+  await expect(page.getByRole('button', { name: copy.study.pass })).toBeDisabled();
+  await expect(page.getByRole('button', { name: copy.study.abandon })).toBeDisabled();
+  await expect(page.getByRole('button', { name: copy.study.cancel })).toBeDisabled();
+});
+
+When('제출 확인 버튼을 연속 클릭하면', async ({ page }) => {
+  const btn = page.getByRole('button', { name: copy.study.confirmSubmit });
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+  await btn.dispatchEvent('click');
+});
+
+// #270 차단3 — 응답 유실→409→이어풀기. fetch 실패를 timeout이라 부르지 않는다.
+Then('이미 진행 중인 세트 안내가 보인다', async ({ page }) => {
+  await expect(page.getByText(/이미 진행 중인 세트/)).toBeVisible();
+});
+
+When('이어풀기를 누르면', async ({ page }) => {
+  await page.getByRole('button', { name: copy.study.continueStudy }).click();
 });
