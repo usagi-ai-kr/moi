@@ -48,38 +48,30 @@ pre,
 }
 
 .moi-header {
-  position: fixed;
-  inset: 0 0 auto 0;
+  position: sticky;
+  top: 0;
+  inset: auto;
   z-index: 10;
-  height: var(--moi-header-h);
+  min-height: var(--moi-shell-header-h);
+  height: auto;
   display: flex;
   align-items: center;
+  padding-block: var(--moi-space-2);
   background: var(--moi-color-white);
   border-bottom: 1px solid var(--moi-color-border);
 }
 
 .moi-header-inner {
   display: flex;
-  align-items: baseline;
-  gap: var(--moi-space-3);
-}
-
-.moi-brand {
-  font-family: var(--moi-font-display);
-  font-weight: 700;
-  font-size: var(--moi-size-brand);
-  color: var(--moi-color-ink);
-}
-
-.moi-brand-sub {
-  font-size: var(--moi-size-small);
-  color: var(--moi-color-muted);
+  align-items: center;
+  gap: var(--moi-space-2);
+  width: 100%;
 }
 
 .moi-main {
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-top: calc(var(--moi-header-h) + var(--moi-space-7));
+  min-height: calc(100vh - var(--moi-shell-header-h));
+  min-height: calc(100dvh - var(--moi-shell-header-h));
+  padding-top: var(--moi-space-4);
   padding-bottom: var(--moi-space-7);
   display: flex;
 }
@@ -246,4 +238,3 @@ pre,
 /* 학습 현황 스타일은 stats/stats.css로 이동 (#182 — 사용하는 컴포넌트가 import). */
 /* 계정·이력 페이지 — 기존 토큰·카드 재사용, 320~1280 기본 반응형 */
 .moi-page { display: flex; flex-direction: column; gap: var(--moi-space-3); width: 100%; max-width: 100%; overflow-wrap: anywhere; }
-@media (max-width: 360px) { .moi-header-inner { gap: var(--moi-space-2); } }

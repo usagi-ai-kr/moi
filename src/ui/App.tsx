@@ -1,4 +1,5 @@
 import { Suspense, lazy } from 'react';
+import { Brand } from './Brand';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
@@ -31,8 +32,7 @@ function LoggedOutView({
     <>
       <header className="moi-header">
         <div className="moi-container moi-header-inner">
-          <span className="moi-brand">{copy.brand}</span>
-          <span className="moi-brand-sub">{copy.tagline}</span>
+          <Brand />
         </div>
       </header>
       <main className="moi-main">

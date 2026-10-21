@@ -59,7 +59,7 @@
   min-height: 100%;
 }
 
-/* landscape에서 닫기 버튼이 항상 보이도록 상단 고정 (헤더 61px 대체). */
+/* landscape에서 닫기 버튼이 항상 보이도록 상단 고정 (#225 공통 헤더 단일 규격). */
 .moi-drawer-head {
   position: sticky;
   top: 0;
@@ -67,6 +67,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--moi-space-2);
+  min-height: var(--moi-shell-header-h);
   padding: var(--moi-space-2) var(--moi-space-3);
   background: var(--moi-color-white);
   border-bottom: 1px solid var(--moi-color-border);

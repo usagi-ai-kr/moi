@@ -32,13 +32,6 @@
   text-decoration: none;
 }
 
-.moi-brand-icon {
-  display: block;
-  flex: none;
-  width: 22px;
-  height: 22px;
-}
-
 .moi-brand-link:focus-visible {
   outline: 2px solid var(--moi-color-ink);
   outline-offset: 2px;
