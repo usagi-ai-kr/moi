@@ -415,6 +415,11 @@ When('학습 이력 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: '학습 이력' }).click();
 });
 
+// #224: /history 기본 탭이 요약이므로 완료 목록은 탭 클릭 후에만 보인다 (AC-4).
+When('완료한 학습 탭을 누르면', async ({ page }) => {
+  await page.getByRole('tab', { name: '완료한 학습' }).click();
+});
+
 When('학습 현황 버튼을 누르면', async ({ page }) => {
   await page.getByRole('link', { name: '학습 현황/이력' }).click();
 });
@@ -479,10 +484,12 @@ When('상세 보기 링크를 누르면', async ({ page }) => {
 });
 
 Then('학습 현황이 보인다', async ({ page }) => {
+  // #224: 요약 탭(기본)에 지표를, 분석 탭에 취약 추천을 보인다.
   const panel = page.locator('section.moi-stats');
   await expect(panel.getByText('20/500')).toBeVisible({ timeout: 10_000 });
   await expect(panel.getByText(/70%/)).toBeVisible();
-  await expect(panel.getByText('취약 추천')).toBeVisible();
+  await page.getByRole('tab', { name: '영역별 분석' }).click();
+  await expect(page.getByRole('tabpanel').getByText('취약 추천')).toBeVisible();
 });
 
 Then('정정 반영이 보인다', async ({ page }) => {

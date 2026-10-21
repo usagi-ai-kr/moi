@@ -130,8 +130,8 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     expect(screen.getByRole('link', { name: '계정' })).toHaveAttribute('aria-current', 'page');
   });
 
-  it('/history 0건: 빈 상태를 보이고 페이지 표기를 숨긴다', async () => {
-    renderAt(loggedInClientWithHistory(0), '/history');
+  it('/history 0건: 완료 탭에서 빈 상태를 보이고 페이지 표기를 숨긴다 (#224 AC 1 — 기본 탭 변경)', async () => {
+    renderAt(loggedInClientWithHistory(0), '/history?tab=completed');
     expect(await screen.findByText(/아직 완료한 학습이 없습니다/)).toBeInTheDocument();
     expect(screen.queryByText(/전체/)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '이전' })).not.toBeInTheDocument();
@@ -142,11 +142,11 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     );
   });
 
-  it('nav 링크로 /history 이동이 동작한다', async () => {
+  it('nav 링크로 /history 이동 시 요약 탭이 열린다 (#224 AC 1 — 목록은 완료 탭)', async () => {
     renderAt(loggedInClientWithHistory(0), '/');
     const link = await screen.findByRole('link', { name: '학습 현황/이력' });
     fireEvent.click(link);
-    expect(await screen.findByText(/아직 완료한 학습이 없습니다/)).toBeInTheDocument();
+    expect(await screen.findByRole('tab', { name: '학습 현황' })).toBeInTheDocument();
   });
 
   it('로그아웃 상태에서는 nav를 숨기고 카카오 로그인을 보인다', async () => {

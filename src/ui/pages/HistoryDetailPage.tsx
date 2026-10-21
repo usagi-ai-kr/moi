@@ -18,7 +18,8 @@ export function HistoryDetailPage({ client }: { client: ApiClient }) {
   const state = (location.state as HistoryDetailState | null) ?? null;
   const setId = state?.setId ?? null;
   const page = state?.page;
-  const backUrl = typeof page === 'number' && page > 1 ? `/history?page=${page}` : '/history';
+  const backUrl =
+    typeof page === 'number' && page > 1 ? `/history?tab=completed&page=${page}` : '/history?tab=completed';
 
   const query = useStudySet(client, setId);
   const data = query.data ?? null;

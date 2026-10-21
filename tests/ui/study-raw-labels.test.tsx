@@ -16,7 +16,7 @@ import { ResultView } from '../../src/ui/study/ResultView';
 import { StartView } from '../../src/ui/study/StartView';
 import { STUDY_DOMAINS } from '../../src/ui/study/types';
 import { DomainStatusList } from '../../src/ui/stats/DomainStatusList';
-import { StatsPanel } from '../../src/ui/stats/StatsPanel';
+import { StatsDomainsPanel } from '../../src/ui/stats/StatsDomainsPanel';
 import { domainLabel } from '../../src/ui/stats/labels';
 
 function fakeClient(): ApiClient {
@@ -305,7 +305,7 @@ describe('#148 domain-label canonical 정합', () => {
     expect(screen.queryByText(/dom-cost/)).not.toBeInTheDocument();
   });
 
-  it('StatsPanel은 canonical 영역·취약을 비용 최적화로 보이고 raw를 숨긴다', async () => {
+  it('분석 패널은 canonical 영역·취약을 비용 최적화로 보이고 raw를 숨긴다 (#224 AC 1 — StatsPanel 분해)', async () => {
     const stats = {
       examId: 'saa-c03',
       totalQuestions: 500,
@@ -338,7 +338,7 @@ describe('#148 domain-label canonical 정합', () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={queryClient}>
-        <StatsPanel client={client} examId="saa-c03" />
+        <StatsDomainsPanel client={client} examId="saa-c03" />
       </QueryClientProvider>,
     );
     expect((await screen.findAllByText('비용 최적화')).length).toBeGreaterThanOrEqual(2);

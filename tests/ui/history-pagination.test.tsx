@@ -138,9 +138,10 @@ beforeEach(() => {
 });
 
 describe('이력 페이지네이션 핵심 동작 (AC 1, AC 4)', () => {
+  // #224: 기본 탭이 요약으로 바뀌어 완료 목록 테스트는 ?tab=completed 진입으로 수용한다.
   it('0건이면 nav(페이지네이션)를 렌더링하지 않고 빈 안내를 보인다', async () => {
     const { client } = makeMockClient({ total: 0 });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     expect(await screen.findByText(/아직 완료한 학습이 없습니다/)).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: '페이지네이션' })).not.toBeInTheDocument();
@@ -150,7 +151,7 @@ describe('이력 페이지네이션 핵심 동작 (AC 1, AC 4)', () => {
 
   it('1페이지(<= 20건)면 총건수만 노출되고 이전/다음 버튼과 현재/전체 표기는 없다', async () => {
     const { client } = makeMockClient({ total: 15 });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     expect(await screen.findByText('총 15건')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: '이전' })).not.toBeInTheDocument();
@@ -162,7 +163,7 @@ describe('이력 페이지네이션 핵심 동작 (AC 1, AC 4)', () => {
   it('45건에서 다음 클릭 시 서버 요청 page 2와 URL page=2가 일치한다', async () => {
     let currentLoc = { pathname: '', search: '' };
     const { client, requestedPages } = makeMockClient({ total: 45 });
-    renderHistoryPage(client, '/history', {
+    renderHistoryPage(client, '/history?tab=completed', {
       onLocation: (loc) => {
         currentLoc = loc;
       },
@@ -187,7 +188,7 @@ describe('이력 페이지네이션 핵심 동작 (AC 1, AC 4)', () => {
       total: 5,
       itemsOverride: { 1: [] },
     });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     expect(await screen.findByText('총 5건')).toBeInTheDocument();
     expect(screen.queryByText(/아직 완료한 학습이 없습니다/)).not.toBeInTheDocument();
@@ -197,7 +198,7 @@ describe('이력 페이지네이션 핵심 동작 (AC 1, AC 4)', () => {
 describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
   it('초기 로딩 시 nav를 숨기고 스켈레톤과 sr-only 로딩 문구를 표시한다', async () => {
     const { client } = makeMockClient({ total: 45, delayMs: 150 });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     const history = screen.getByRole('region', { name: copy.study.historyTitle });
     expect(within(history).getByText(copy.common.loading)).toHaveClass('moi-sr-only');
@@ -211,7 +212,7 @@ describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
 
   it('조회 실패 시 nav를 숨기고 오류와 다시 시도를 노출하며, 재시도 시 복구된다', async () => {
     const mock = makeMockClient({ total: 45, fail: true });
-    renderHistoryPage(mock.client, '/history');
+    renderHistoryPage(mock.client, '/history?tab=completed');
 
     expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: '페이지네이션' })).not.toBeInTheDocument();
@@ -239,7 +240,7 @@ describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
       };
     }) as unknown as ApiClient['get'];
 
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
     expect(await screen.findByText('총 45건')).toBeInTheDocument();
 
     delay = 200;
@@ -267,7 +268,7 @@ describe('비동기 상태 및 오류/재시도 (AC 3)', () => {
 describe('URL 동기화, 뒤로가기 및 잘못된 파라미터 보정 (AC 1, AC 2)', () => {
   it('URL page 직접 진입 시 해당 페이지 데이터를 요청한다', async () => {
     const { client, requestedPages } = makeMockClient({ total: 45 });
-    renderHistoryPage(client, '/history?page=2');
+    renderHistoryPage(client, '/history?tab=completed&page=2');
 
     expect(await screen.findByText('총 45건')).toBeInTheDocument();
     expect(screen.getByText('현재 2 / 전체 3')).toBeInTheDocument();
@@ -279,7 +280,7 @@ describe('URL 동기화, 뒤로가기 및 잘못된 파라미터 보정 (AC 1, A
     let controls: { back: () => void; forward: () => void } | undefined;
     const { client, requestedPages } = makeMockClient({ total: 45 });
 
-    renderHistoryPage(client, '/history?page=1', {
+    renderHistoryPage(client, '/history?tab=completed&page=1', {
       onLocation: (loc) => {
         currentLoc = loc;
       },
@@ -318,7 +319,7 @@ describe('URL 동기화, 뒤로가기 및 잘못된 파라미터 보정 (AC 1, A
     let currentLoc = { pathname: '', search: '' };
     const { client } = makeMockClient({ total: 45 });
 
-    renderHistoryPage(client, '/history?filter=active', {
+    renderHistoryPage(client, '/history?tab=completed&filter=active', {
       onLocation: (loc) => {
         currentLoc = loc;
       },
@@ -345,7 +346,7 @@ describe('URL 동기화, 뒤로가기 및 잘못된 파라미터 보정 (AC 1, A
   ])('잘못된 page=%s 유입 시 page=%s로 replace하고 타 param을 보존한다', async (rawPage, expectedPage) => {
     let currentLoc = { pathname: '', search: '' };
     const { client } = makeMockClient({ total: 45 });
-    renderHistoryPage(client, `/history?filter=active&page=${rawPage}`, {
+    renderHistoryPage(client, `/history?tab=completed&filter=active&page=${rawPage}`, {
       onLocation: (loc) => {
         currentLoc = loc;
       },
@@ -364,7 +365,7 @@ describe('URL 동기화, 뒤로가기 및 잘못된 파라미터 보정 (AC 1, A
     const mock = makeMockClient({ total: 45 });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
-    renderHistoryPage(mock.client, '/history?page=2', {
+    renderHistoryPage(mock.client, '/history?tab=completed&page=2', {
       onLocation: (loc) => {
         currentLoc = loc;
       },
@@ -388,7 +389,7 @@ describe('URL 동기화, 뒤로가기 및 잘못된 파라미터 보정 (AC 1, A
 describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => {
   it('상세 열기 시 UUID가 아닌 날짜 의미 라벨을 dialog에 노출한다', async () => {
     const { client } = makeMockClient({ total: 5 });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
     fireEvent.click(itemBtn);
@@ -401,7 +402,7 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
 
   it('페이지 변경 시 열려 있던 상세가 자동으로 닫힌다', async () => {
     const { client } = makeMockClient({ total: 45 });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
     fireEvent.click(itemBtn);
@@ -417,7 +418,7 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
     const mock = makeMockClient({ total: 45 });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
-    renderHistoryPage(mock.client, '/history', { queryClient });
+    renderHistoryPage(mock.client, '/history?tab=completed', { queryClient });
 
     expect(await screen.findByText('총 45건')).toBeInTheDocument();
     const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
@@ -437,7 +438,7 @@ describe('상세 열림 및 페이지 전환/오류 격리 (AC 3, AC 5)', () => 
 
   it('이력 리스트 항목 버튼이 moi-study-history-item 클래스를 가진다', async () => {
     const { client } = makeMockClient({ total: 5 });
-    renderHistoryPage(client, '/history');
+    renderHistoryPage(client, '/history?tab=completed');
 
     const [itemBtn] = await screen.findAllByRole('button', { name: /정답률 50%/ });
     expect(itemBtn).toHaveClass('moi-study-history-item');
