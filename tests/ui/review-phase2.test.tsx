@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient } from '../../src/ui/api/client';
 import { ReviewScreen } from '../../src/ui/review/ReviewScreen';
 import { BookmarkButton } from '../../src/ui/review/BookmarkButton';
+import { reviewKeys } from '../../src/ui/review/queries';
 import { ResultView } from '../../src/ui/study/ResultView';
 
 function httpError(status: number, body: unknown): HTTPError {
@@ -68,6 +69,9 @@ interface FakeReviewClientPhase2Options {
   };
   bookmarks?: string[];
   failBookmark?: boolean;
+  failBookmarkOnce?: boolean;
+  bookmarkDelayMs?: number;
+  userId?: string;
 }
 
 function createFakePhase2Client(opts: FakeReviewClientPhase2Options = {}): {
@@ -78,11 +82,15 @@ function createFakePhase2Client(opts: FakeReviewClientPhase2Options = {}): {
   const postCalls: Array<{ path: string; json: unknown }> = [];
   const patchCalls: Array<{ path: string; json: unknown }> = [];
   const currentBookmarks = new Set(opts.bookmarks ?? ['q-bm1']);
+  let failedBookmark = false;
 
   const client = {
     get: vi.fn((path: string) => ({
       json: async () => {
         const u = new URL(String(path), 'http://localhost/');
+        if (u.pathname === '/api/me') {
+          return { user: { id: opts.userId ?? 'u-1', createdAt: null, lastLoginAt: null } };
+        }
         if (u.pathname === '/api/review/sessions/current') {
           if (opts.currentError) {
             throw httpError(opts.currentError, { error: 'internal' });
@@ -190,7 +198,11 @@ function createFakePhase2Client(opts: FakeReviewClientPhase2Options = {}): {
     patch: vi.fn((path: string, options?: { json?: unknown }) => ({
       json: async () => {
         patchCalls.push({ path: String(path), json: options?.json });
-        if (opts.failBookmark) {
+        if (opts.bookmarkDelayMs) {
+          await new Promise((resolve) => setTimeout(resolve, opts.bookmarkDelayMs));
+        }
+        if (opts.failBookmark || (opts.failBookmarkOnce && !failedBookmark)) {
+          failedBookmark = true;
           throw httpError(500, { error: 'internal' });
         }
         const body = options?.json as { examId: string; questionId: string; bookmarked: boolean };
@@ -414,6 +426,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
 
     const btn = await screen.findByRole('button', { name: /북마크 해제|북마크 취소/ });
     expect(btn).toBeInTheDocument();
+    await waitFor(() => expect(btn).not.toBeDisabled());
 
     fireEvent.click(btn);
 
@@ -424,6 +437,77 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
       questionId: 'q-bm1',
       bookmarked: false,
     });
+  });
+
+  it('Given 서버 응답 지연 When 북마크를 빠르게 두 번 누르면 Then pending 표시 중 요청을 하나만 보내고 확정 상태로 바뀐다', async () => {
+    const { client, patchCalls } = createFakePhase2Client({ bookmarks: [], bookmarkDelayMs: 40 });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BookmarkButton client={client} examId="saa-c03" questionId="q-bm1" />
+      </QueryClientProvider>,
+    );
+
+    const button = await screen.findByRole('button', { name: /북마크 추가/ });
+    await waitFor(() => expect(button).not.toBeDisabled());
+    fireEvent.click(button);
+    fireEvent.click(button);
+
+    expect(await screen.findByRole('button', { name: /북마크 저장 중/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /북마크 저장 중/ })).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByRole('button', { name: /북마크 저장 중/ }).querySelector('svg.animate-spin')).toBeInTheDocument();
+    await waitFor(() => expect(patchCalls).toHaveLength(1));
+    const saved = await screen.findByRole('button', { name: /북마크 해제/ });
+    expect(saved).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('status')).toHaveTextContent(/북마크가 추가되었습니다/);
+  });
+
+
+  it('같은 시험 북마크 목록은 로그인 사용자별 캐시에 저장된다', async () => {
+    const { client } = createFakePhase2Client({ bookmarks: [], userId: 'u-1' });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const otherAccountKey = reviewKeys.bookmarks('saa-c03', 'u-2');
+    const otherAccountData = { examId: 'saa-c03', total: 0, items: [] };
+    queryClient.setQueryData(otherAccountKey, otherAccountData);
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BookmarkButton client={client} examId="saa-c03" questionId="q-bm1" />
+      </QueryClientProvider>,
+    );
+
+    const button = await screen.findByRole('button', { name: /북마크 추가/ });
+    await waitFor(() => expect(button).not.toBeDisabled());
+    fireEvent.click(button);
+    await screen.findByRole('button', { name: /북마크 해제/ });
+
+    expect(queryClient.getQueryData(otherAccountKey)).toEqual(otherAccountData);
+    expect(queryClient.getQueryData(reviewKeys.bookmarks('saa-c03', 'u-1'))).toMatchObject({
+      items: [expect.objectContaining({ questionId: 'q-bm1' })],
+    });
+  });
+
+  it('Given 첫 저장 실패 When 다시 시도하면 Then 기존 상태를 유지하고 목표 상태 저장을 재시도한다', async () => {
+    const { client, patchCalls } = createFakePhase2Client({ bookmarks: [], failBookmarkOnce: true });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BookmarkButton client={client} examId="saa-c03" questionId="q-bm1" />
+      </QueryClientProvider>,
+    );
+
+    const button = await screen.findByRole('button', { name: /북마크 추가/ });
+    await waitFor(() => expect(button).not.toBeDisabled());
+    fireEvent.click(button);
+    expect(await screen.findByRole('alert')).toHaveTextContent(/북마크 저장에 실패했습니다/);
+    expect(screen.getByRole('button', { name: /북마크 추가/ })).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(screen.getByRole('button', { name: /다시 시도/ }));
+    const saved = await screen.findByRole('button', { name: /북마크 해제/ });
+    expect(patchCalls).toHaveLength(2);
+    expect(saved).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('8. currentQuery가 500 오류인 경우 활성 회차 없음으로 넘어가지 않고 오류 및 재시도를 표시한다', async () => {
