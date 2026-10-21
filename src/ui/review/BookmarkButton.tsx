@@ -80,7 +80,13 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
         className={`min-h-[44px] min-w-[44px] px-3 text-sm ${className ?? ''}`}
         onClick={handleToggle}
       >
-        <iconBookmark.icon aria-hidden="true" size={iconBookmark.size} className="mr-1" />
+        {/* 설정/미설정을 아이콘 모양(채움 fill)으로 구분한다 — 색만으로 상태를 알리지 않는다(#260). */}
+        <iconBookmark.icon
+          aria-hidden="true"
+          size={iconBookmark.size}
+          fill={isBookmarked ? 'currentColor' : 'none'}
+          className="mr-1"
+        />
         {label}
       </Button>
       {errorMsg && (

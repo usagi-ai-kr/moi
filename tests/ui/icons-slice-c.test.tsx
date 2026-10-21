@@ -79,9 +79,12 @@ describe('icons slice C — ReviewFeedback 상태 텍스트', () => {
         />
       </QueryClientProvider>,
     );
-    expect(screen.getByText('정답')).toBeInTheDocument();
-    const badge = screen.getByText('정답');
-    expect(badge.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    // 상단 배지와 정답 보기 표시가 같은 문구를 쓴다(#260 — '✓' 문자 중복 제거).
+    const marks = screen.getAllByText('정답');
+    expect(marks).toHaveLength(2);
+    for (const mark of marks) {
+      expect(mark.querySelector('svg')).toHaveAttribute('aria-hidden', 'true');
+    }
   });
 });
 

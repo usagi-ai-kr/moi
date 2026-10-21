@@ -88,4 +88,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0071 | 로그인 전후 화면 시각 통일성 | Accepted | 2026-10-21 | [0071-login-consistency.md](./0071-login-consistency.md) |
 | ADR-0072 | 계정 정보 DTO·파생 최근 로그인·내비게이션 로그아웃 배치 | Accepted | 2026-10-21 | [0072-account-info-dto-and-nav-logout.md](./0072-account-info-dto-and-nav-logout.md) |
 | ADR-0073 | 아이콘 체계 — Lucide 단일 계열·액션 매핑·접근성 계약 | Accepted | 2026-10-21 | [0073-icon-system-lucide-mapping-accessibility.md](./0073-icon-system-lucide-mapping-accessibility.md) |
+| ADR-0074 | 북마크 상태 모양 구분·정답 표시 중복 제거·날짜 표시 하한 | Accepted | 2026-10-21 | [0074-ux-polish-bookmark-date-lower-bound.md](./0074-ux-polish-bookmark-date-lower-bound.md) |
 <!-- ADR_INDEX:END -->

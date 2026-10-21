@@ -20,7 +20,11 @@ export interface MeResponse {
   user: MeUser;
 }
 
-/** 숫자 필드 정규화 — 서버가 못 준 값은 '없음(null)'으로 내린다(1970 오표기 방지). */
+/**
+ * 숫자 필드 정규화 — 서버가 못 준 값은 '없음(null)'으로 내린다(1970 오표기 방지).
+ * 단위는 epoch **seconds** 고정(ADR-0056) — ms로 임의 해석하지 않는다.
+ * 하한(1971 이전 값) 등 표시 판단은 `formatDateTime`이 담당한다(#260).
+ */
 function toEpochSeconds(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }

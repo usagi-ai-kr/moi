@@ -649,8 +649,10 @@ Then('복습 문제 화면이 보인다', async ({ page }) => {
 });
 
 Then('즉시 채점 결과와 해설과 공식 근거가 보인다', async ({ page }) => {
-  await expect(page.getByRole('region', { name: '채점 피드백' })).toBeVisible();
-  await expect(page.getByText(copy.review.correctBadge, { exact: true })).toBeVisible();
+  const feedback = page.getByRole('region', { name: '채점 피드백' });
+  await expect(feedback).toBeVisible();
+  // 상단 상태 배지와 정답 보기 표시가 같은 문구다 — 배지(첫 매칭)를 본다(#260).
+  await expect(feedback.getByText(copy.review.correctBadge, { exact: true }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: copy.study.explanation })).toBeVisible();
   await expect(page.getByRole('heading', { name: copy.review.sources })).toBeVisible();
   const source = page.locator('.moi-source-links a').first();
@@ -711,7 +713,7 @@ Then('복습 종료 요약 화면이 보인다', async ({ page }) => {
 Then('제출 전에는 정답과 해설과 공식 근거가 노출되지 않는다', async ({ page }) => {
   await expect(page.getByRole('heading', { name: copy.study.explanation })).not.toBeVisible();
   await expect(page.getByRole('heading', { name: copy.review.sources })).not.toBeVisible();
-  await expect(page.getByText('✓ 정답')).not.toBeVisible();
+  // 정답 보기 표시는 아이콘 + '정답' 텍스트다(#260 — '✓' 문자 제거).
   await expect(page.getByText(copy.review.correctBadge, { exact: true })).not.toBeVisible();
   await expect(page.getByText(copy.review.incorrectBadge, { exact: true })).not.toBeVisible();
 });
