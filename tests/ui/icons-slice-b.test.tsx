@@ -69,7 +69,7 @@ describe('AppShell nav 아이콘', () => {
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={['/']}>
           <Routes>
-            <Route element={<AppShell />}>
+            <Route element={<AppShell onLogout={async () => {}} pending={false} />}>
               <Route index element={<div>본문</div>} />
             </Route>
           </Routes>
