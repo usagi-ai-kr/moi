@@ -36,55 +36,62 @@ export function StartView(p: Props) {
       </p>
       <fieldset className="moi-study-field" aria-describedby="study-scope-desc" disabled={p.pending}>
         <legend className="moi-study-legend">범위</legend>
-        <label className="moi-study-radio">
-          <input
-            type="radio"
-            name="study-scope"
-            value="all"
-            checked={p.scope === 'all'}
-            onChange={() => p.onScope('all')}
-            disabled={p.pending}
-          />
-          {copy.study.scopeAll}
-        </label>
-        <label className="moi-study-radio">
-          <input
-            type="radio"
-            name="study-scope"
-            value="domain"
-            checked={p.scope === 'domain'}
-            onChange={() => p.onScope('domain')}
-            disabled={p.pending}
-          />
-          {copy.study.scopeDomain}
-        </label>
-        <label className="moi-study-radio">
-          <input
-            type="radio"
-            name="study-scope"
-            value="weak"
-            checked={p.scope === 'weak'}
-            onChange={() => p.onScope('weak')}
-            disabled={p.pending}
-          />
-          {copy.study.scopeWeak}
-        </label>
+        {/* #303: 옵션을 하나의 컨테이너로 묶어 하나의 선택 그룹처럼 보이게 한다.
+            마크업은 div 한 겹만 추가 — 네이티브 radio name·값·checked는 그대로다. */}
+        <div className="moi-study-options">
+          <label className="moi-study-radio">
+            <input
+              type="radio"
+              name="study-scope"
+              value="all"
+              checked={p.scope === 'all'}
+              onChange={() => p.onScope('all')}
+              disabled={p.pending}
+            />
+            {copy.study.scopeAll}
+          </label>
+          <label className="moi-study-radio">
+            <input
+              type="radio"
+              name="study-scope"
+              value="domain"
+              checked={p.scope === 'domain'}
+              onChange={() => p.onScope('domain')}
+              disabled={p.pending}
+            />
+            {copy.study.scopeDomain}
+          </label>
+          <label className="moi-study-radio">
+            <input
+              type="radio"
+              name="study-scope"
+              value="weak"
+              checked={p.scope === 'weak'}
+              onChange={() => p.onScope('weak')}
+              disabled={p.pending}
+            />
+            {copy.study.scopeWeak}
+          </label>
+        </div>
       </fieldset>
       <fieldset className="moi-study-field" aria-label={copy.study.sizeLegend} disabled={p.pending}>
         <legend className="moi-study-legend">{copy.study.sizeLegend}</legend>
-        {[4, 8].map((n) => (
-          <label key={n} className="moi-study-radio">
-            <input
-              type="radio"
-              name="study-size"
-              value={n}
-              checked={(p.size ?? 4) === n}
-              onChange={() => p.onSize?.(n)}
-              disabled={p.pending}
-            />
-            {copy.study.sizeOption(n)}
-          </label>
-        ))}
+        {/* #303: 문항 수 그룹도 같은 컨테이너로 묶는다(범위↔문항 수 그룹 간격은 그대로). */}
+        <div className="moi-study-options">
+          {[4, 8].map((n) => (
+            <label key={n} className="moi-study-radio">
+              <input
+                type="radio"
+                name="study-size"
+                value={n}
+                checked={(p.size ?? 4) === n}
+                onChange={() => p.onSize?.(n)}
+                disabled={p.pending}
+              />
+              {copy.study.sizeOption(n)}
+            </label>
+          ))}
+        </div>
       </fieldset>
       {p.scope === 'domain' && (
         <label className="moi-study-label">

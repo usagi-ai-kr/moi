@@ -92,7 +92,9 @@ export function ReviewCandidates({
             {copy.review.startAction}
           </Button>
         </div>
-        <fieldset className="flex flex-wrap gap-2 border-0 p-0" aria-label={copy.review.sizeLegend} disabled={isStarting}>
+        {/* #303: 가로형 문항 수 그룹 — 옵션 사이 gap 축소(8px→4px) + 하나의 그룹 컨테이너.
+            학습 시작 화면의 범위·문항 수 그룹과 같은 규칙(테두리·radius·패딩·작은 gap)을 쓴다. */}
+        <fieldset className="flex flex-wrap gap-1 rounded-md border border-border bg-background p-2" aria-label={copy.review.sizeLegend} disabled={isStarting}>
           {[4, 8].map((n) => (
             <label key={n} className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-ring has-[input:focus-visible]:ring-offset-2">
               <input type="radio" name="review-size" value={n} checked={selectedSize === n} onChange={() => onSize?.(n)} disabled={isStarting} className="h-5 w-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" />

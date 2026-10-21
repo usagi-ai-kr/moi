@@ -46,6 +46,17 @@ h1.moi-study-title {
   border: 0;
   min-width: 0;
 }
+/* #303: 범위·문제 수 선택 그룹 — 옵션 사이 gap 축소(8px→4px) + 하나의 그룹 컨테이너.
+   그룹이 "하나의 선택 그룹"으로 보이게 하되 세로 높이·글자 크기·44px 터치 타깃은 그대로다. */
+.moi-study-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-1);
+  padding: var(--moi-space-2);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  background: var(--moi-color-white);
+}
 /* #269: 설명(.moi-note·small·muted)과 범위 라벨(legend·body·ink·600)을 위계 분리. */
 .moi-study-legend {
   margin-bottom: var(--moi-space-1);
