@@ -17,6 +17,7 @@ related: ["#273", "#259", "#239", "ADR-0068"]
 - desktop nav·모바일 Drawer에서 `ExamSelector`를 제거한다. 헤더 nav는 이동(학습 시작/현황·이력/복습/계정)·로그아웃만 담당한다.
 - 공통 콘텐츠 최상단(페이지 제목 위, `AppShell` main-inner 첫 자식)에 실제 `<select>` 1개를 배치한다. 학습 시작·풀이·결과·이력/현황·복습 모두 같은 위치·간격·접근 이름(`시험`)을 공유한다.
 - URL `?exam=` 단일 진실 원천·현재 선택 상태·허용목록(`EXAM_CATALOG`)·지원하지 않는 시험 옵션 추가 금지는 ADR-0068 그대로 유지한다.
+- **ADR-0068 대체 범위(부분 대체)**: ADR-0068 중 `ExamSelector`의 **배치(셸 1곳: 데스크톱 nav·모바일 Drawer) 항목만** 이 ADR이 대체한다. 시험 카탈로그 단일 소스(`EXAM_CATALOG`)·URL 계약(`?exam=` 단일 진실 원천·기본값 `saa-c03`·무효값 `replace`·변경 시 `push`)·표시 위치 목록·Phase 1/2 경계는 ADR-0068의 결정이 **계속 유효**하다. ADR-0068은 `Superseded by ADR-0077`로 상태만 이관하고 본문은 보존한다.
 - select는 라벨·셀렉트 간격 `space-2`, 오른쪽 padding `space-5`로 chevron 여유를 확보하고 44px 터치·키보드·스크린리더를 유지한다. 320/375/768/1024/1280·200%에서 overflow 0이다.
 
 ## 결과
@@ -29,4 +30,4 @@ related: ["#273", "#259", "#239", "ADR-0068"]
 - #269 소유 파일(copy/StartView/study.css) 변경 금지 — 셸에서만 해결한다.
 
 ## 참고
-- `src/ui/AppShell.tsx`·`src/ui/shell.css`·`src/ui/drawer.css`·`src/ui/exam/*`, 이슈 #273·#259·#239, DESIGN.md §1·§2·§5.
+- `src/ui/AppShell.tsx`·`src/ui/shell.css`·`src/ui/drawer.css`·`src/ui/exam/*`, 이슈 #273·#259·#239, ADR-0068(시험 카탈로그·URL 계약 — 계속 유효), DESIGN.md §1·§2·§5.

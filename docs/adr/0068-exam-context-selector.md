@@ -1,7 +1,7 @@
 ---
 id: ADR-0068
 title: 시험 연결 context·selector·URL 계약과 Phase 1/2 경계
-status: Accepted
+status: Superseded by ADR-0077
 date: 2026-10-21
 related: ["#239", "ADR-0056", "ADR-0058", "ADR-0063"]
 ---
