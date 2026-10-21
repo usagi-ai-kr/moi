@@ -774,3 +774,21 @@ describe('로그 redaction (ADR-0006)', () => {
     console.log(`REDACTION_EVIDENCE:${JSON.stringify(lines)}`);
   });
 });
+
+describe('/api/me DTO 키 집합 (#268 Slice 2B)', () => {
+  it('세션/토큰 내부 키(sub·jti·token)를 노출하지 않는다', async () => {
+    const app = createAppWithSpy();
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const token = await performLogin(app, testEnv);
+    const res = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${token}` } }), testEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(Object.keys(body)).toEqual(['user']);
+    const user = body.user as Record<string, unknown>;
+    expect(Object.keys(user).sort()).toEqual(['createdAt', 'id', 'lastLoginAt']);
+    const serialized = JSON.stringify(body);
+    for (const forbidden of ['sub', 'jti', 'token', 'paseto']) {
+      expect(serialized).not.toContain(forbidden);
+    }
+  });
+});

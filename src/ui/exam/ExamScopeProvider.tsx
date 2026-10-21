@@ -69,6 +69,9 @@ export function ExamScopeProvider({ children }: { children: ReactNode }) {
     (next: string) => {
       // 허용목록 밖 값(내부 ID 포함)은 받지 않는다.
       if (!isExamCode(next)) return;
+      // 동일 시험 재선택은 URL을 다시 쓰지 않는다(불필요한 히스토리/렌더 방지).
+      // URL에 명시된 값과 같을 때만 건너뛴다 — 기본값으로 해석된 경우에도 명시적으로 바꿀 수 있다.
+      if (next === searchParams.get('exam')) return;
       setSearchParams((prev) => {
         const params = new URLSearchParams(prev);
         params.set('exam', next);
@@ -77,7 +80,7 @@ export function ExamScopeProvider({ children }: { children: ReactNode }) {
         return params;
       });
     },
-    [setSearchParams],
+    [searchParams, setSearchParams],
   );
 
   const value = useMemo<ExamScopeValue>(
