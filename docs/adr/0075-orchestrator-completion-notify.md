@@ -17,7 +17,7 @@ related: ["#279", "ADR-0010", "ADR-0015", "ADR-0023", "ADR-0042", "ADR-0051", "A
 - **단위 묶음 완료(전 PR merge + 배포 + smoke + 이슈 close) 판단 시 1회**만 Discord webhook embed로 통지한다. 단위별 알림은 금지한다.
 - 통지는 **공통 스크립트 1개**로 한다: `.agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs` (Node 내장 fetch만 사용, 의존성 0). 4개 에이전트가 같은 명령을 호출한다(에이전트별 분기 코드 금지).
 - 스킬은 Agent Skills 표준(`SKILL.md` + `scripts/`)을 따르고, 규칙은 `AGENTS.md`·`agent-orchestration` 스킬·`docs/harness/completion-notify.md`에 동기화한다. OpenCode·Claude Code는 프로젝트 명령(`.opencode/commands/complete.md`, `.claude/commands/complete.md`)으로 노출한다.
-- webhook 해석 순서: 환경변수 `DISCORD_WEBHOOK` → `--env-file` → `MOI_ENV_FILE` → `.env`. env 파일은 **실행 없이 파싱**한다(셸 평가·command substitution 금지).
+- webhook 해석 순서: 환경변수 `DISCORD_WEBHOOK` → `--env-path` → `MOI_ENV_FILE` → `.env`. env 파일은 **실행 없이 파싱**한다(셸 평가·command substitution 금지). `--env-file`은 Node 24 내장 옵션과 충돌하므로 `--env-path`를 사용한다. `--dry-run`은 webhook 미설정 상태에서도 payload 검토가 가능하다(target=`discord-webhook (unset)`).
 - 실제 전송 URL은 `https://discord.com/api/webhooks/...`만 허용한다. 루프백 주소는 `MOI_NOTIFY_ALLOW_LOCAL=1`일 때만(테스트 전용) 허용한다.
 - payload는 Discord embed 1개: 상태별 색(complete=green / blocked=yellow / failed=red), 필드(마일스톤·버전·커밋·배포 URL·이슈·검증), timestamp, footer. description 4096자·field 1024자·embed 6000자 한도를 넘으면 절단한다.
 - 종료 코드로 원인을 구분한다: 0 성공, 1 설정·URL·필수값 누락, 2 사용법 오류, 3 HTTP·네트워크 오류. 429는 1회 재시도한다.

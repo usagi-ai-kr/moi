@@ -248,7 +248,7 @@ test('env 파일 파싱: 따옴표·공백을 읽고 환경변수가 우선한�
   const envFile = join(dir, '.env.test');
   writeFileSync(envFile, `# 주석\nexport DISCORD_WEBHOOK="${mock.url}"\nOTHER=1\n`);
   try {
-    const r = await run(['--status', 'complete', '--title', 'env 파일', '--env-file', envFile], {
+    const r = await run(['--status', 'complete', '--title', 'env 파일', '--env-path', envFile], {
       env: { MOI_NOTIFY_ALLOW_LOCAL: '1' },
       cwd: dir,
     });
@@ -257,7 +257,7 @@ test('env 파일 파싱: 따옴표·공백을 읽고 환경변수가 우선한�
 
     // 환경변수가 env 파일보다 우선 — env 파일은 연결 불가 URL, 환경변수는 mock URL.
     writeFileSync(envFile, `DISCORD_WEBHOOK=${UNREACHABLE}\n`);
-    const prev = await run(['--status', 'complete', '--title', '우선순위', '--env-file', envFile], {
+    const prev = await run(['--status', 'complete', '--title', '우선순위', '--env-path', envFile], {
       env: { DISCORD_WEBHOOK: mock.url, MOI_NOTIFY_ALLOW_LOCAL: '1' },
       cwd: dir,
     });
@@ -274,6 +274,44 @@ test('MOI_ENV_FILE 이 지정됐는데 파일이 없으면 fail-closed(exit 1)',
   });
   assert.equal(r.code, 1);
   assert.match(r.stderr, /환경 파일을 찾을 수 없습니다/);
+});
+
+test('명시 env 파일(--env-path) 누락: exit 1', async () => {
+  const r = await run(['--status', 'complete', '--title', 't', '--env-path', '/nonexistent/moi-notify/.env']);
+  assert.equal(r.code, 1);
+  assert.match(r.stderr, /환경 파일을 찾을 수 없습니다/);
+});
+
+test('dry-run: webhook 미설정이어도 payload 검토 가능 (unset)', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'moi-notify-unset-'));
+  const r = await run(['--status', 'complete', '--title', 't', '--dry-run'], { cwd: dir });
+  assert.equal(r.code, 0);
+  assert.match(r.stdout, /target=discord-webhook \(unset\)/);
+  assert.ok(!r.stdout.includes('super-secret'));
+  const payload = parsePayload(r.stdout);
+  assert.equal(payload.embeds[0].title, 't');
+});
+
+test('빈 issue/test 값은 필드를 만들지 않는다', async () => {
+  const r = await run(['--status', 'complete', '--title', 't', '--issue', '', '--test', '  ', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+  });
+  assert.equal(r.code, 0);
+  const embed = parsePayload(r.stdout).embeds[0];
+  assert.ok(!embed.fields.some((f) => f.name === '이슈'), '빈 이슈 필드가 없어야 한다');
+  assert.ok(!embed.fields.some((f) => f.name === '검증'), '빈 검증 필드가 없어야 한다');
+});
+
+test('trim: issue/test 값의 공백을 제거한다', async () => {
+  const r = await run(['--status', 'complete', '--title', 't', '--issue', ' 279 ', '--test', ' lint ', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+  });
+  assert.equal(r.code, 0);
+  const embed = parsePayload(r.stdout).embeds[0];
+  const issue = embed.fields.find((f) => f.name === '이슈');
+  const testField = embed.fields.find((f) => f.name === '검증');
+  assert.equal(issue.value, '279');
+  assert.equal(testField.value, 'lint');
 });
 
 test('필수값 누락(--title)은 exit 1 이다', async () => {

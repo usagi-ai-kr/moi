@@ -6,7 +6,7 @@
 //     --version 0.2.4 --url https://moi.example.workers.dev --commit abc1234 \
 //     --issue 279 --issue 127 --test "lint·typecheck" --dry-run
 // 종료 코드: 0 성공, 1 설정/URL/필수값 누락, 2 사용법 오류, 3 HTTP/네트워크 오류.
-// 보안: webhook 원문은 어떤 출력에도 남기지 않는다. 환경변수 > --env-file > MOI_ENV_FILE > .env 순으로
+// 보안: webhook 원문은 어떤 출력에도 남기지 않는다. 환경변수 > --env-path > MOI_ENV_FILE > .env 순으로
 //       **실행 없이 파싱**해 읽는다(셸 평가·command substitution 없음).
 import { existsSync, readFileSync } from 'node:fs';
 
@@ -15,7 +15,7 @@ const EXIT = { ok: 0, config: 1, usage: 2, http: 3 };
 const STATUS_COLOR = { complete: 0x2ecc71, blocked: 0xf1c40f, failed: 0xe74c3c };
 const STATUS_LABEL = { complete: '완료', blocked: '차단', failed: '실패' };
 const LIMIT = { title: 256, description: 4096, fieldName: 256, fieldValue: 1024, embed: 6000, fields: 25 };
-const VALUE_FLAGS = new Set(['status', 'title', 'summary', 'milestone', 'version', 'url', 'commit', 'issue', 'test', 'env-file']);
+const VALUE_FLAGS = new Set(['status', 'title', 'summary', 'milestone', 'version', 'url', 'commit', 'issue', 'test', 'env-path']);
 const REPEATABLE = new Set(['issue', 'test']);
 const DISCORD_WEBHOOK_RE = /^https:\/\/discord\.com\/api\/webhooks\/\d+\/[A-Za-z0-9_-]+$/;
 const LOCAL_WEBHOOK_RE = /^http:\/\/(127\.0\.0\.1|localhost|\[::1\])(:\d+)?(\/[^\s]*)?$/;
@@ -104,22 +104,26 @@ function parseArgs(argv) {
     }
     if (!REPEATABLE.has(name) && seen.has(name)) throw usageError(`--${name} 는 한 번만 지정할 수 있습니다`);
     seen.add(name);
-    if (name === 'issue') opts.issues.push(value);
-    else if (name === 'test') opts.tests.push(value);
-    else opts[name === 'env-file' ? 'envFile' : name] = value;
+    if (name === 'issue') {
+      const v = String(value ?? '').trim();
+      if (v) opts.issues.push(v);
+    } else if (name === 'test') {
+      const v = String(value ?? '').trim();
+      if (v) opts.tests.push(v);
+    } else opts[name === 'env-path' ? 'envPath' : name] = value;
   }
   return opts;
 }
 
 /** webhook 해석 — 환경변수 우선, 그다음 env 파일(실행 없이 파싱). */
-function resolveWebhook(opts) {
+function resolveWebhook(opts, { allowUnset = false } = {}) {
   const fromEnv = (process.env.DISCORD_WEBHOOK ?? '').trim();
   if (fromEnv) return { value: fromEnv, source: 'env:DISCORD_WEBHOOK' };
 
   // 명시 지정된 env 파일은 fail-closed — 없으면 조용히 다른 파일로 fallback 하지 않는다.
-  const explicit = Boolean(opts.envFile) || Boolean((process.env.MOI_ENV_FILE ?? '').trim());
+  const explicit = Boolean(opts.envPath) || Boolean((process.env.MOI_ENV_FILE ?? '').trim());
   const candidates = [];
-  if (opts.envFile) candidates.push(opts.envFile);
+  if (opts.envPath) candidates.push(opts.envPath);
   else {
     const moiEnvFile = (process.env.MOI_ENV_FILE ?? '').trim();
     if (moiEnvFile) candidates.push(moiEnvFile);
@@ -134,10 +138,11 @@ function resolveWebhook(opts) {
     const parsed = parseEnvFile(readFileSync(path, 'utf8'));
     const value = (parsed.DISCORD_WEBHOOK ?? '').trim();
     if (value) return { value, source: path };
-    if (opts.envFile || path === (process.env.MOI_ENV_FILE ?? '').trim()) {
+    if (opts.envPath || path === (process.env.MOI_ENV_FILE ?? '').trim()) {
       throw configError(`환경 파일에 DISCORD_WEBHOOK 이 없습니다: ${path}`);
     }
   }
+  if (allowUnset) return { value: null, source: null };
   throw configError('DISCORD_WEBHOOK 설정이 없습니다 (환경변수 또는 .env/MOI_ENV_FILE)');
 }
 
@@ -167,8 +172,10 @@ function buildPayload(opts) {
   if (opts.version) fields.push({ name: '버전', value: truncate(opts.version, LIMIT.fieldValue), inline: true });
   if (opts.commit) fields.push({ name: '커밋', value: truncate(opts.commit, LIMIT.fieldValue), inline: true });
   if (opts.url) fields.push({ name: '배포 URL', value: truncate(opts.url, LIMIT.fieldValue), inline: false });
-  if (opts.issues.length) fields.push({ name: '이슈', value: truncate(opts.issues.join(', '), LIMIT.fieldValue), inline: false });
-  if (opts.tests.length) fields.push({ name: '검증', value: truncate(opts.tests.join('\n'), LIMIT.fieldValue), inline: false });
+  const issues = (opts.issues ?? []).map((v) => String(v ?? '').trim()).filter(Boolean);
+  const tests = (opts.tests ?? []).map((v) => String(v ?? '').trim()).filter(Boolean);
+  if (issues.length) fields.push({ name: '이슈', value: truncate(issues.join(', '), LIMIT.fieldValue), inline: false });
+  if (tests.length) fields.push({ name: '검증', value: truncate(tests.join('\n'), LIMIT.fieldValue), inline: false });
   embed.fields = fields.slice(0, LIMIT.fields).map((f) => ({
     name: truncate(f.name, LIMIT.fieldName),
     value: f.value,
@@ -230,20 +237,24 @@ async function main() {
   if (!opts.title) throw configError('--title 이 필요합니다');
   if (opts.summary === undefined) opts.summary = '';
 
-  const { value: webhook, source } = resolveWebhook(opts);
-  validateWebhookUrl(webhook);
+  const resolved = resolveWebhook(opts, { allowUnset: Boolean(opts.dryRun) });
+  const webhook = resolved.value;
+  const source = resolved.source;
+  if (webhook) validateWebhookUrl(webhook);
   const redact = makeRedactor(webhook);
 
   const payload = buildPayload(opts);
 
   if (opts.dryRun) {
-    console.log('target=discord-webhook (masked)');
-    console.log(`mode=dry-run status=${opts.status} source=${source}`);
+    const target = webhook ? 'discord-webhook (masked)' : 'discord-webhook (unset)';
+    console.log(`target=${target}`);
+    console.log(`mode=dry-run status=${opts.status} source=${source ?? 'unset'}`);
     console.log('payload:');
     console.log(JSON.stringify(payload, null, 2));
     return EXIT.ok;
   }
 
+  if (!webhook) throw configError('DISCORD_WEBHOOK 설정이 없습니다 (환경변수 또는 .env/MOI_ENV_FILE)');
   await sendWebhook(webhook, payload, redact);
   console.log(`sent: status=${opts.status} title=${opts.title} target=discord-webhook (masked)`);
   return EXIT.ok;

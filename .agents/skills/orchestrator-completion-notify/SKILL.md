@@ -29,7 +29,7 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
      --milestone 0.2.4 --version 0.2.4 --url https://moi.example.workers.dev --commit abc1234 \
      --issue 279 --test "lint·typecheck·test:unit"
    ```
-   - `--issue` · `--test`는 반복 지정 가능. `--env-file <path>`로 env 파일을 바꿀 수 있다(기본 `.env`).
+   - `--issue` · `--test`는 반복 지정 가능. `--env-path <path>`로 env 파일을 바꿀 수 있다(기본 `.env`). 빈 값은 무시한다.
    - 4개 에이전트(Claude Code·Codex·Agy·OpenCode) 모두 **같은 스크립트**를 호출한다. 전용 분기 코드를 만들지 않는다.
 
 ## 인자
@@ -43,7 +43,7 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 | `--commit` | 커밋 SHA |
 | `--issue` / `--test` | 이슈 번호·검증 항목 (반복 가능) |
 | `--dry-run` | 전송 없이 payload만 출력 |
-| `--env-file` | env 파일 경로(기본 `.env`) |
+| `--env-path` | env 파일 경로(기본 `.env`) |
 
 ## 종료 코드와 실패 처리
 | 코드 | 의미 | 대응 |
@@ -57,7 +57,7 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 - stderr·stdout에는 webhook 원문·토큰이 절대 나오지 않는다. 오류 메시지를 그대로 PR에 붙여도 안전하다.
 
 ## 보안
-- `DISCORD_WEBHOOK`은 **실행 없이 파싱**한다(셸 평가·command substitution 없음). 해석 순서: 환경변수 → `--env-file` → `MOI_ENV_FILE` → `.env`. 지정한 env 파일이 없으면 fail-closed(exit 1)다.
+- `DISCORD_WEBHOOK`은 **실행 없이 파싱**한다(셸 평가·command substitution 없음). 해석 순서: 환경변수 → `--env-path` → `MOI_ENV_FILE` → `.env`. 지정한 env 파일이 없으면 fail-closed(exit 1)다. `--dry-run`은 webhook 미설정이어도 payload 검토가 가능하다(`target=discord-webhook (unset)`).
 - 실제 전송 URL은 `https://discord.com/api/webhooks/...`만 허용. 로컬 주소는 `MOI_NOTIFY_ALLOW_LOCAL=1`일 때만(테스트 전용).
 - `.env`는 커밋하지 않는다(`.env.example`에 키만 둔다). webhook 값은 이슈·PR·CI 로그에 남기지 않는다.
 

@@ -14,7 +14,7 @@
 | `DISCORD_WEBHOOK` | `https://discord.com/api/webhooks/{id}/{token}` — **secret**. 채팅 채널 설정 → Integrations → Webhooks → Copy URL |
 | 저장 위치 | repo root `.env` (gitignore 대상). `.env.example`에는 키만 둔다 |
 | 다른 파일 | `MOI_ENV_FILE=/path/to/env` 로 대체 가능 |
-| 우선순위 | 환경변수 `DISCORD_WEBHOOK` → `--env-file` → `MOI_ENV_FILE` → `.env` |
+| 우선순위 | 환경변수 `DISCORD_WEBHOOK` → `--env-path` → `MOI_ENV_FILE` → `.env` |
 
 env 파일은 **실행 없이 파싱**한다(`KEY=VALUE`만 읽고, 셸 평가·command substitution 없음).
 
@@ -95,12 +95,12 @@ node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs
 | 증상 | 원인·대응 |
 | --- | --- |
 | exit 1 + `DISCORD_WEBHOOK 설정이 없습니다` | `.env` 위치(CWD=repo root) 또는 `MOI_ENV_FILE` 확인. 환경변수 우선이므로 stale 환경변수를 지운다 |
-| exit 1 + `환경 파일을 찾을 수 없습니다` | `--env-file`/`MOI_ENV_FILE` 경로 오류 — 지정한 파일이 없으면 fail-closed(다른 파일로 fallback 하지 않음) |
+| exit 1 + `환경 파일을 찾을 수 없습니다` | `--env-path`/`MOI_ENV_FILE` 경로 오류 — 지정한 파일이 없으면 fail-closed(다른 파일로 fallback 하지 않음) |
 | exit 1 + `webhook URL 형식 오류` | `https://discord.com/api/webhooks/{id}/{token}` 형식 확인(구 도메인 `discordapp.com`은 불가) |
 | exit 1 + `로컬 webhook은 MOI_NOTIFY_ALLOW_LOCAL=1 일 때만` | 테스트 전용 플래그 필요. 운영에서는 루프백 URL 금지 |
 | exit 3 + `HTTP 401/404` | webhook 삭제·토큰 회전 여부 확인. 채널 설정에서 새 URL 발급 |
 | exit 3 + `HTTP 429` | 1회 자동 재시도됨. 계속 실패하면 몇 초 뒤 재전송(중복 알림은 단위별 알림이 아님) |
-| exit 3 + 네트워크 오류 | 사내 프록시·방화벽 확인. `--env-file` 경로가 다른 환경의 값을 가리키는지 확인 |
+| exit 3 + 네트워크 오류 | 사내 프록시·방화벽 확인. `--env-path` 경로가 다른 환경의 값을 가리키는지 확인 |
 
 ## 검증
 ```bash
