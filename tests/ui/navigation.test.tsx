@@ -4,6 +4,7 @@ import { HTTPError } from 'ky';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
+import { LogoutAction } from '../../src/ui/LogoutAction';
 import { useUiStore, type ApiClient } from '../../src/ui/session';
 import { MOBILE_NAV_QUERY } from '../../src/ui/responsive';
 
@@ -255,16 +256,19 @@ describe('내비게이션 로그아웃 액션 (#234/ADR-0072)', () => {
     expect(pending).toHaveAttribute('aria-busy', 'true');
   });
 
-  it('빠른 이중 클릭 시 로그아웃 POST는 1회만 호출된다 (#258 in-flight 가드)', async () => {
-    useDesktopViewport();
-    const client = logoutHangingClient();
-    renderAt(client, '/');
+  it('이중 클릭 시 onLogout은 1회만 호출된다 — pending 고정 단독 렌더 (#258 in-flight 가드)', async () => {
+    // App 수준에서는 첫 클릭 후 pending 렌더로 버튼이 disabled되어 ref 가드를 증명할 수 없으므로,
+    // LogoutAction을 pending={false}로 단독 렌더해 가드 자체를 고정한다.
+    // 가드 줄을 주석 처리하면 onLogout 2회로 실패한다(mutation 확인).
+    const onLogout = vi.fn(async () => {
+      await new Promise(() => {});
+    });
+    render(<LogoutAction pending={false} onLogout={onLogout} />);
     const button = await screen.findByRole('button', { name: '로그아웃' });
     fireEvent.click(button);
     fireEvent.click(button);
 
-    await screen.findByRole('button', { name: /로그아웃하고 있습니다/ });
-    expect(vi.mocked(client.post)).toHaveBeenCalledTimes(1);
+    expect(onLogout).toHaveBeenCalledTimes(1);
   });
 
   it('로그아웃 실패: role=alert 안내와 재시도 버튼이 같은 위치에 보인다', async () => {
