@@ -80,4 +80,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0063 | 학습 현황 하위 탭의 URL 상태·패널 분할·Tabs 구현 결정 | Accepted | 2026-10-21 | [0063-history-sub-tabs-url-state.md](./0063-history-sub-tabs-url-state.md) |
 | ADR-0064 | 화면 간 디자인 계약: 헤딩·버튼·폭·상태/아이콘 | Accepted | 2026-10-21 | [0064-design-consistency-headings-buttons-width.md](./0064-design-consistency-headings-buttons-width.md) |
 | ADR-0066 | 완료한 학습 목록의 컬럼 표·숫자 서체와 모바일 라벨-값 카드 | Accepted | 2026-10-21 | [0066-completed-history-columns.md](./0066-completed-history-columns.md) |
+| ADR-0067 | 학습 시작 환영 문구 32종·1시간 유지 | Accepted | 2026-10-21 | [0067-hero-greeting.md](./0067-hero-greeting.md) |
 <!-- ADR_INDEX:END -->

@@ -19,6 +19,7 @@ import { importAccount, importHistory, importReview } from './lazy-routes';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { RouteFallback } from './RouteFallback';
 import { AuthErrorAlert } from './widgets';
+import { useHeroGreeting } from './greetings';
 
 // 학습 화면은 lazy 청크로 홈 초기 번들/LCP에 포함하지 않는다 (이슈 #50, #148).
 const StudyRoute = lazy(() => import('./pages/StudyRoute').then((m) => ({ default: m.StudyRoute })));
@@ -59,6 +60,7 @@ function RouteBoundaryLayout() {
 function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiClient }) {
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const greeting = useHeroGreeting();
   const legacyStudy = params.get('study');
   // legacy: /?study=<UUID> 북마크도 서버 소유권 확인 후 새 주소로 replace (#148).
   if (legacyStudy) {
@@ -71,7 +73,7 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
   return (
     <div className="moi-page">
       {showAuthError && <AuthErrorAlert />}
-      <h1 className="moi-title">{copy.session.welcome}</h1>
+      <h1 className="moi-title">{greeting}</h1>
       <section aria-label={copy.study.examLabel}>
         <p className="moi-note">{STUDY_EXAMS[0].label}</p>
         <p className="moi-note">{copy.study.examNote}</p>
