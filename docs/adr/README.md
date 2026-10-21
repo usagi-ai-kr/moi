@@ -92,5 +92,6 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0075 | 단위 묶음 완성 알림 — 공통 스크립트·스킬 기반 Discord webhook 1회 통지 | Accepted | 2026-10-21 | [0075-orchestrator-completion-notify.md](./0075-orchestrator-completion-notify.md) |
 | ADR-0076 | 학습 범위 안내 정리·fieldset 위계와 문제 수 분리 | Accepted | 2026-10-21 | [0076-study-scope-guidance-hierarchy.md](./0076-study-scope-guidance-hierarchy.md) |
 | ADR-0077 | 시험 선택을 콘텐츠 최상단으로 이동 | Accepted | 2026-10-21 | [0077-exam-content-top.md](./0077-exam-content-top.md) |
+| ADR-0078 | 문제 신고 액션 버튼 표면/상태/44px 계약 | Accepted | 2026-10-21 | [0078-report-button-action-surface.md](./0078-report-button-action-surface.md) |
 | ADR-0079 | 근거 링크 칩 padding·wrap·상태·외부링크 semantics | Accepted | 2026-10-21 | [0079-source-link-chip-padding-wrap-state-semantics.md](./0079-source-link-chip-padding-wrap-state-semantics.md) |
 <!-- ADR_INDEX:END -->
