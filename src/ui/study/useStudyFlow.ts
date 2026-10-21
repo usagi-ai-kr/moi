@@ -13,7 +13,7 @@ import { useTabState } from './useTabState';
 import { readStudyParam, writeStudyParam } from './study-url';
 import type { StudyFlowOptions } from './types';
 
-// URL 동기화 헬퍼와 옵션 타입은 새 모듈로 추출했다(#268 Slice 2C — 250줄 상한 해소, ADR-0061 과 같은 목적).
+// URL 동기화 헬퍼와 옵션 타입은 새 모듈로 추출했다(#268 Slice 2C — 250줄 상한 해소, ADR-0015 모듈 길이 예산).
 // 기존 import 경로를 유지하려고 여기서 다시 내보낸다.
 export { readStudyParam, writeStudyParam } from './study-url';
 export type { StudyFlowOptions } from './types';

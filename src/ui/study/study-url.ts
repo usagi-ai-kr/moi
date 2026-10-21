@@ -1,5 +1,5 @@
 // 학습 세트 URL 동기화 — ?study=<setId> 파라미터 읽기/쓰기 (#148 라우트 분리).
-// useStudyFlow 에서 추출했다(#268 Slice 2C — 모듈 250줄 상한 해소, ADR-0061 과 같은 목적).
+// useStudyFlow 에서 추출했다(#268 Slice 2C — 모듈 250줄 상한 해소, ADR-0015 모듈 길이 예산).
 // 동작·서명은 그대로다.
 
 export function readStudyParam(): string | null {
