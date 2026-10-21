@@ -148,9 +148,10 @@ describe('결과 해설 좌우 페이징 (#189)', () => {
     renderResult();
     expect(position()).toBe('1/3');
     expect(perItemIds()).toEqual(['peritem-q-0']);
-    // 요약은 상단에 그대로 둔다.
+    // 요약은 상단에 그대로 둔다 — 요약 dl 범위로 한정해 상세 dl(dt 정답)과 구분한다(#232).
+    const summaryDl = document.querySelector('.moi-study-result') as HTMLElement;
+    expect(within(summaryDl).getByText('정답', { selector: 'dt' })).toBeInTheDocument();
     expect(screen.getByText(/정답률 33%/)).toBeInTheDocument();
-    expect(screen.getByText('정답', { selector: 'dt' })).toBeInTheDocument();
   });
 
   it('다음·이전 버튼으로 문항을 넘기면 해설·근거 링크가 함께 바뀐다', () => {
@@ -171,7 +172,7 @@ describe('결과 해설 좌우 페이징 (#189)', () => {
     expect(within(screen.getByTestId('peritem-q-0')).getByRole('link', { name: 'Q 0' })).toBeInTheDocument();
   });
 
-  it('첫 문항에서 이전, 마지막 문항에서 다음 버튼이 disabled다', () => {
+  it('첫 문항에서 이전 disabled·마지막은 다음 대신 결과 요약으로(#232)', () => {
     renderResult();
     expect(screen.getByRole('button', { name: copy.study.prevItem })).toBeDisabled();
     expect(screen.getByRole('button', { name: copy.study.nextItem })).toBeEnabled();
@@ -179,7 +180,9 @@ describe('결과 해설 좌우 페이징 (#189)', () => {
     fireEvent.click(screen.getByRole('button', { name: copy.study.nextItem }));
     fireEvent.click(screen.getByRole('button', { name: copy.study.nextItem }));
     expect(position()).toBe('3/3');
-    expect(screen.getByRole('button', { name: copy.study.nextItem })).toBeDisabled();
+    // #232 마지막 상세는 비활성 다음 대신 결과 요약으로 — 재제출 없음.
+    expect(screen.queryByRole('button', { name: copy.study.nextItem })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: copy.study.backToSummary })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: copy.study.prevItem })).toBeEnabled();
   });
 

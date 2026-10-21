@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { HTTPError } from 'ky';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ApiClient, StudyActiveSet } from '../../src/ui/api/client';
+import { QuestionView } from '../../src/ui/study/QuestionView';
 import { StudyScreen } from '../../src/ui/study/StudyScreen';
 import { useStudyUiStore } from '../../src/ui/study/store';
 
@@ -160,7 +161,7 @@ describe('학습 화면 버튼 위계', () => {
     for (const el of [submit, abandon]) expect(tokens(el)).toContain(TOP_ACTION_PADDING);
   });
 
-  it('풀이 화면: 이전/다음 disabled 상태가 유지된다', async () => {
+  it('풀이 화면: 첫 문항 이전 disabled·마지막은 다음 대신 하단 제출 1개(#232)', async () => {
     renderStudy(fakeStudyClient());
     fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
     await screen.findByText(/1\/3/);
@@ -170,8 +171,33 @@ describe('학습 화면 버튼 위계', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '다음' }));
     fireEvent.click(screen.getByRole('button', { name: '다음' }));
-    expect(screen.getByRole('button', { name: '다음' })).toBeDisabled();
+    await screen.findByText(/3\/3/);
+    // 마지막: 비활성 다음 대신 하단 제출 1개, 상단 제출은 숨겨 중복 접근 이름 없음.
+    expect(screen.queryByRole('button', { name: '다음' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /제출하기/ })).toHaveLength(1);
     expect(screen.getByRole('button', { name: '이전' })).not.toBeDisabled();
+  });
+
+  it('마지막 문항 하단 제출 클릭 시 확인→제출 1회·미응답 수 유지(#232)', async () => {
+    const client = fakeStudyClient();
+    renderStudy(client);
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+    fireEvent.click(screen.getByRole('button', { name: '다음' }));
+    fireEvent.click(screen.getByRole('button', { name: '다음' }));
+    await screen.findByText(/3\/3/);
+
+    const bottomSubmit = screen.getByRole('button', { name: /제출하기 \(3 미응답\)/ });
+    expect(tokens(bottomSubmit)).toContain('bg-primary');
+    for (const t of SIZE_TOKENS) expect(tokens(bottomSubmit)).toContain(t);
+    fireEvent.click(bottomSubmit);
+    expect(await screen.findByRole('alertdialog', { name: '제출 확인' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '제출 확인' }));
+    await waitFor(() => expect(screen.getByText('학습 결과')).toBeInTheDocument());
+    const posts = (client.post as ReturnType<typeof vi.fn>).mock.calls.filter((c) =>
+      String(c[0]).endsWith('/submit'),
+    );
+    expect(posts).toHaveLength(1);
   });
 
   it('Pass 클릭 시 즉시 다음 문제로 이동한다(#185)', async () => {
@@ -255,5 +281,66 @@ describe('학습 화면 버튼 위계', () => {
     for (const el of [restart, history, wrong]) {
       for (const t of SIZE_TOKENS) expect(tokens(el)).toContain(t);
     }
+    // #232 버튼형 링크는 밑줄 없음 — data-slot + CSS 규칙으로 보장, 근거 링크와 구분.
+    for (const el of [wrong, screen.getByRole('link', { name: /북마크 복습/ })]) {
+      expect(el).toHaveAttribute('data-slot', 'button');
+    }
+  });
+
+  it('마지막 문항 하단 제출은 pending 시 disabled·aria-busy(#232·DESIGN.md 7절)', () => {
+    const base = makeSet();
+    const client = fakeStudyClient();
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>
+          <QuestionView
+            client={client}
+            items={base.items}
+            index={2}
+            save="idle"
+            submitting
+            unansweredCount={2}
+            submitError={null}
+            onIndex={() => {}}
+            onAnswer={() => {}}
+            onPass={() => {}}
+            onClear={() => {}}
+            onRetry={() => {}}
+            onSubmitRequest={() => {}}
+            onAbandonRequest={() => {}}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+    const submit = screen.getByRole('button', { name: /제출하기 \(2 미응답\)/ });
+    expect(submit).toBeDisabled();
+    expect(submit).toHaveAttribute('aria-busy', 'true');
+    expect(screen.queryByRole('button', { name: '다음' })).not.toBeInTheDocument();
+  });
+
+  it('풀이 화면 북마크·신고가 독립 액션 그룹으로 분리된다(#232 후속)', async () => {
+    renderStudy(fakeStudyClient());
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/3/);
+
+    const actions = screen.getByRole('group', { name: '문항 액션' });
+    const bookmark = within(actions).getByRole('button', { name: /북마크/ });
+    const report = within(actions).getByRole('button', { name: '문제 신고' });
+    // 정보(h1·보기)와 탐색(nav) 사이에 독립 그룹으로 위치한다.
+    const stem = screen.getByRole('heading', { name: /문제 0 본문/ });
+    const navPrev = screen.getByRole('button', { name: '이전' });
+    expect(stem.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(actions.compareDocumentPosition(navPrev) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // 44px 토큰·키보드 포커스·상태 구분.
+    for (const t of ['min-h-[44px]', 'min-w-[44px]']) {
+      expect((bookmark.getAttribute('class') ?? '').split(/\s+/)).toContain(t);
+    }
+    expect(bookmark).toHaveAttribute('aria-pressed');
+    await waitFor(() => expect(bookmark).toBeEnabled());
+    bookmark.focus();
+    expect(document.activeElement).toBe(bookmark);
+    fireEvent.click(report);
+    expect(await screen.findByRole('dialog', { name: '문제 신고' })).toBeInTheDocument();
   });
 });

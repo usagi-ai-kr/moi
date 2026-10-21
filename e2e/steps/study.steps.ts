@@ -33,6 +33,9 @@ let failNextAnswer = false;
 // POST /abandon 호출 횟수 (#223 — 취소/Escape 0회·확정 1회 검증).
 let abandonCalls = 0;
 
+// POST /submit 호출 횟수 (#232 — 마지막 문항 제출 1회·결과 재제출 0회 검증).
+let submitCalls = 0;
+
 // 학습 현황 고정 응답 (#54) — saa-c03 요청에만 제공한다.
 const STATS_DTO = {
   examId: 'saa-c03',
@@ -148,8 +151,13 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
   active = null;
   failNextAnswer = false;
   abandonCalls = 0;
+  submitCalls = 0;
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
+  });
+  // 북마크 조회 — 풀이·결과 화면의 북마크 버튼이 settled 상태로 렌더되도록 (#232 후속).
+  await page.route('**/api/review/bookmarks*', async (route) => {
+    await route.fulfill({ status: 200, json: { examId: 'saa-c03', total: 0, items: [] } });
   });
   await page.route('**/api/study/**', async (route) => {
     const req = route.request();
@@ -260,6 +268,7 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
         return;
       }
       if (method === 'POST' && sub === 'submit') {
+        submitCalls += 1;
         let body: { confirmUnanswered?: boolean } | null = null;
         try {
           body = req.postDataJSON() as { confirmUnanswered?: boolean };
@@ -510,7 +519,7 @@ Then('풀이 버튼은 44px 이상이고 북마크 버튼 테두리가 보인다
     const box = await page.getByRole('button', { name }).first().boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   }
-  const bookmark = page.getByRole('button', { name: /북마크/ }).first();
+  const bookmark = page.getByRole('button', { name: '북마크 추가' }).first();
   await expect(bookmark).toBeVisible();
   const width = await bookmark.evaluate((el) => getComputedStyle(el).borderTopWidth);
   expect(width).toBe('1px');
@@ -554,4 +563,150 @@ Then('결과 진행 표시가 {int}번째 문항이다', async ({ page }, positi
 
 Then('결과 이전 문항 버튼은 비활성 상태다', async ({ page }) => {
   await expect(page.getByRole('button', { name: copy.study.prevItem })).toBeDisabled();
+});
+
+// #232 풀이·결과 마지막 문항 동선 — 10문제 세트 끝까지 이동·요약 이동·제출 1회 검증.
+When('마지막 문항까지 이동하면', async ({ page }) => {
+  for (let i = 0; i < 9; i += 1) {
+    await page.getByRole('button', { name: '다음' }).click();
+  }
+  await expect(page.getByText('10/10')).toBeVisible();
+});
+
+When('하단 제출하기 버튼을 누르면', async ({ page }) => {
+  const nav = page.locator('.moi-study-nav');
+  await nav.getByRole('button', { name: /제출하기/ }).click();
+});
+
+When('결과 마지막 문항까지 이동하면', async ({ page }) => {
+  const pager = resultPager(page);
+  for (let i = 0; i < 9; i += 1) {
+    await pager.getByRole('button', { name: copy.study.nextItem }).click();
+  }
+  await expect(pager.locator('.moi-study-pager-status')).toHaveText(/10\/10/);
+});
+
+When('결과 요약으로 버튼을 누르면', async ({ page }) => {
+  await resultPager(page).getByRole('button', { name: copy.study.backToSummary }).click();
+});
+
+Then('풀이 다음 버튼이 보이지 않는다', async ({ page }) => {
+  await expect(page.locator('.moi-study-nav').getByRole('button', { name: '다음' })).toHaveCount(0);
+});
+
+Then('하단 제출하기 버튼이 보인다', async ({ page }) => {
+  await expect(page.locator('.moi-study-nav').getByRole('button', { name: /제출하기/ })).toBeVisible();
+});
+
+Then('결과 다음 문항 버튼이 보이지 않는다', async ({ page }) => {
+  await expect(resultPager(page).getByRole('button', { name: copy.study.nextItem })).toHaveCount(0);
+});
+
+Then('결과 요약으로 버튼이 보인다', async ({ page }) => {
+  await expect(resultPager(page).getByRole('button', { name: copy.study.backToSummary })).toBeVisible();
+});
+
+Then('결과 요약 제목에 포커스가 있다', async ({ page }) => {
+  await expect(page.getByRole('heading', { name: copy.study.resultTitle })).toBeFocused();
+});
+
+Then('제출 요청이 {int}회 발생했다', async ({}, count: number) => {
+  expect(submitCalls).toBe(count);
+});
+
+Then('버튼형 링크에 밑줄이 없다', async ({ page }) => {
+  const link = page.getByRole('link', { name: /오답 복습/ });
+  await expect(link).toBeVisible();
+  expect(await link.evaluate((el) => getComputedStyle(el).textDecorationLine)).toBe('none');
+});
+
+Then('근거 링크에 밑줄이 있다', async ({ page }) => {
+  const source = resultPager(page).getByRole('link', { name: /Q / }).first();
+  await expect(source).toBeVisible();
+  expect(await source.evaluate((el) => getComputedStyle(el).textDecorationLine)).not.toBe('none');
+});
+
+// #232 후속 — 문항 정보·액션·탐색 그룹 분리. 풀이·결과 화면 공용 스텝.
+Then('풀이 문항 액션 그룹이 분리되어 있다', async ({ page }) => {
+  const actions = page.getByRole('group', { name: copy.study.itemActions });
+  await expect(actions).toBeVisible();
+  await expect(actions.getByRole('button', { name: '북마크 추가' })).toBeVisible();
+  await expect(actions.getByRole('button', { name: '문제 신고' })).toBeVisible();
+  const order = await page.evaluate(() => {
+    const r = (el: Element | null) => {
+      if (!el) return null;
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height };
+    };
+    return {
+      stem: r(document.querySelector('.moi-study-title')),
+      actions: r(document.querySelector('.moi-study-item-actions')),
+      nav: r(document.querySelector('.moi-study-nav')),
+    };
+  });
+  expect(order.stem && order.actions && order.nav).toBeTruthy();
+  expect(order.stem!.y + order.stem!.h).toBeLessThanOrEqual(order.actions!.y + 1);
+  expect(order.actions!.y + order.actions!.h).toBeLessThanOrEqual(order.nav!.y + 1);
+});
+
+Then('결과 문항 정보와 액션 그룹이 분리되어 있다', async ({ page }) => {
+  const card = page.locator('[data-testid^="peritem-"]').first();
+  await expect(card).toBeVisible();
+  const info = card.locator('.moi-study-meta');
+  await expect(info).toBeVisible();
+  for (const label of ['문항', '채점', '응답', '선택', '정답']) {
+    await expect(info.locator('dt', { hasText: label })).toBeVisible();
+  }
+  const actions = card.getByRole('group', { name: copy.study.itemActions });
+  await expect(actions).toBeVisible();
+  const separate = await card.evaluate((el) => {
+    const i = el.querySelector('.moi-study-meta');
+    const a = el.querySelector('.moi-study-item-actions');
+    return !!i && !!a && i !== a && i.parentElement === el && a.parentElement === el;
+  });
+  expect(separate).toBe(true);
+});
+
+Then('북마크·신고 버튼이 44px 이상이다', async ({ page }) => {
+  const bookmark = page.getByRole('button', { name: '북마크 추가' }).first();
+  const report = page.locator('.moi-report-open').first();
+  await expect(bookmark).toBeVisible();
+  await expect(report).toBeVisible();
+  for (const el of [bookmark, report]) {
+    const box = await el.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
+  }
+});
+
+Then('문항 그룹 간 겹침이 없다', async ({ page }) => {
+  const overlap = await page.evaluate(() => {
+    const els = Array.from(
+      document.querySelectorAll(
+        '.moi-study-title, .moi-study-field, .moi-study-meta, .moi-study-item-actions, .moi-study-pager-nav, .moi-study-sources, .moi-study-question-top',
+      ),
+    ).filter((el) => {
+      const b = el.getBoundingClientRect();
+      return b.width > 0 && b.height > 0;
+    });
+    const rect = (el: Element) => {
+      const b = el.getBoundingClientRect();
+      return { x: b.x, y: b.y, w: b.width, h: b.height };
+    };
+    let max = 0;
+    for (let i = 0; i < els.length; i += 1) {
+      for (let j = i + 1; j < els.length; j += 1) {
+        // 중첩 컨테이너(부모·자식)는 제외 — 형제 그룹 간 겹침만 본다.
+        if (els[i].contains(els[j]) || els[j].contains(els[i])) continue;
+        const a = rect(els[i]);
+        const b = rect(els[j]);
+        const area =
+          Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)) *
+          Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+        if (area > max) max = area;
+      }
+    }
+    return max;
+  });
+  expect(overlap).toBe(0);
 });
