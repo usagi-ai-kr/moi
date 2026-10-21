@@ -24,3 +24,6 @@ test-results/
 # 임시 문서·인수인계 (ADR-0051)
 tmp/*
 !tmp/.gitkeep
+
+# o 전용 Claude Code 설정 (ADR-0085)
+.claude/settings.local.json
