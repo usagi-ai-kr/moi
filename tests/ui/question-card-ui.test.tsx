@@ -107,6 +107,23 @@ describe('공통 질문 카드·선택지 행 (#274)', () => {
     expect(span.getAttribute('class')).toContain('break-words');
     expect(span.getAttribute('class')).toContain('flex-1');
   });
+
+  it('선택지 포커스 ring 은 input 에만 있다 — label ring 은 제거되어 한 겹만 보인다 (#268)', () => {
+    render(
+      <OptionRow checked={false} onChange={() => {}} ariaLabel="보기 1 보기 A" index={0} text="보기 A" />,
+    );
+    const input = screen.getByLabelText('보기 1 보기 A');
+    const label = input.closest('label');
+    const inputClasses = (input.getAttribute('class') ?? '').split(/\s+/);
+    const labelClasses = (label?.getAttribute('class') ?? '').split(/\s+/);
+    // input 만 ring 을 갖는다.
+    for (const token of ['focus-visible:ring-2', 'focus-visible:ring-ring', 'focus-visible:outline-none']) {
+      expect(inputClasses).toContain(token);
+    }
+    // label 의 has-[input:focus-visible]:ring-* 중복은 없다.
+    expect(labelClasses.filter((c) => c.includes('has-[input:focus-visible]'))).toEqual([]);
+    expect(labelClasses.some((c) => c.startsWith('focus-visible:ring'))).toBe(false);
+  });
 });
 
 describe('일반 학습 카드 통일 회귀 (#274)', () => {
@@ -170,7 +187,9 @@ describe('복습 시각 기준 회귀 (#274)', () => {
       />,
     );
     expect(document.querySelector('[data-slot="card"]')).not.toBeNull();
-    expect(screen.getByText('문제 1 / 2')).toBeInTheDocument();
+    // 진행 표기는 학습과 같은 "문제 n/m" 형식(#268).
+    expect(screen.getByText('문제 1/2')).toBeInTheDocument();
+    expect(screen.queryByText('문제 1 / 2')).toBeNull();
     expect(screen.getByText(copy.review.answerCountHint(1))).toBeInTheDocument();
     const section = screen.getByLabelText('복습 문항 1/2');
     expect(within(section).getByLabelText(/보기 1/)).toBeInTheDocument();

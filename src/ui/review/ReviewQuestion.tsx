@@ -50,7 +50,7 @@ export function ReviewQuestion({
     <section aria-label={`복습 문항 ${cursor + 1}/${total}`} className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
         <span className="font-semibold text-primary" aria-live="polite">
-          문제 {cursor + 1} / {total}
+          문제 {cursor + 1}/{total}
         </span>
         <div className="flex items-center gap-2">
           <BookmarkButton client={client} examId={examId} questionId={item.questionId} />

@@ -74,6 +74,12 @@ describe('StartReviewSession (모드별 독립 회차·스냅샷)', () => {
     expect(result).toMatchObject({ outcome: 'rejected', reason: 'no_candidates' });
     expect(await f.repo.repository.findActive({ userId: 'u1', examId: 'saa-c03', mode: 'wrong' })).toBeNull();
   });
+
+  it('회차 크기가 4·8 이 아니면 invalid_size 로 거부한다(no_candidates 와 구분된다, #268)', async () => {
+    const f = fakes({ wrong: makeCandidates(3) });
+    const result = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 9 });
+    expect(result).toMatchObject({ outcome: 'rejected', reason: 'invalid_size' });
+  });
 });
 
 describe('AnswerReviewItem (즉시 채점·이력 보존)', () => {

@@ -276,7 +276,7 @@ describe('Phase 1: Review Client & Candidate/Resume View', () => {
       });
     });
 
-    expect(await screen.findByText('문제 1 / 2')).toBeInTheDocument();
+    expect(await screen.findByText('문제 1/2')).toBeInTheDocument();
   });
 
   it('기존 활성 회차가 있으면 서버 GET current 결과로 복습을 재개한다', async () => {
@@ -302,7 +302,7 @@ describe('Phase 1: Review Client & Candidate/Resume View', () => {
 
     renderReviewScreen(client, '/review?mode=wrong');
 
-    expect(await screen.findByText('문제 2 / 2')).toBeInTheDocument();
+    expect(await screen.findByText('문제 2/2')).toBeInTheDocument();
     expect(screen.getByText(/VPC 간 안전한 전송/)).toBeInTheDocument();
     expect(screen.queryByText('q-w2')).not.toBeInTheDocument();
   });

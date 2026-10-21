@@ -11,12 +11,13 @@ interface OptionRowProps {
 
 // 카드형 선택지 행 — 복습 기준 스타일을 일반 학습·복습이 공유한다 (#274).
 // label 클릭·키보드 포커스·44px 터치·checkbox semantics를 유지한다.
+// 포커스 ring은 input에만 둔다(#268) — label 의 has-[input:focus-visible]:ring 과 겹치면
+// 선택지 행과 체크박스에 ring 이 두 겹으로 보인다.
 export function OptionRow({ checked, disabled, onChange, ariaLabel, index, text }: OptionRowProps) {
   return (
     <label
       className={cn(
         'flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md border p-3 text-base transition-colors',
-        'has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-ring has-[input:focus-visible]:ring-offset-2',
         checked
           ? 'border-primary bg-primary/5 font-medium text-foreground'
           : 'border-border bg-background text-foreground hover:bg-muted/50',

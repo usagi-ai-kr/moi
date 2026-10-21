@@ -645,7 +645,7 @@ Then('복습 대기 목록이 보인다', async ({ page }) => {
 });
 
 Then('복습 문제 화면이 보인다', async ({ page }) => {
-  await expect(page.locator('text=/문제 \\d+ \\/ \\d+/')).toBeVisible();
+  await expect(page.locator('text=/문제 \\d+\/\\d+/')).toBeVisible();
 });
 
 Then('즉시 채점 결과와 해설과 공식 근거가 보인다', async ({ page }) => {
@@ -689,12 +689,12 @@ Then('오답 복습과 북마크 대상이 독립적이다', async ({ page }) =>
 });
 
 Then('북마크 복습 문제가 보인다', async ({ page }) => {
-  await expect(page.locator('text=/문제 \\d+ \\/ \\d+/')).toBeVisible();
+  await expect(page.locator('text=/문제 \\d+\/\\d+/')).toBeVisible();
   await expect(page.getByText(/북마크된 학습 문항/)).toBeVisible();
 });
 
 Then('두 번째 복습 문제 위치로 재개된다', async ({ page }) => {
-  await expect(page.getByText('문제 2 / 2')).toBeVisible();
+  await expect(page.getByText('문제 2/2')).toBeVisible();
 });
 
 Then('빈 복습 목록 안내가 보인다', async ({ page }) => {

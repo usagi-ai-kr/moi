@@ -58,6 +58,8 @@ export function registerReviewCandidateRoutes(app: Hono<{ Bindings: Env }>, opti
       const result = await startReviewSession(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode, size: parsed.data.size });
       if (result.outcome === 'rejected') {
         if (result.reason === 'active_session_exists') return c.json({ error: 'active_session_exists' }, 409);
+        // invalid_size 는 사유를 그대로 노출한다(#268) — 후보 부족(no_candidates)과 구분된다.
+        if (result.reason === 'invalid_size') return c.json({ error: 'invalid_size' }, 422);
         return c.json({ error: 'no_candidates' }, 422);
       }
       const contents = await loadVersionContents(c.env.DB, result.session.items.map((item) => item.questionVersionId));
