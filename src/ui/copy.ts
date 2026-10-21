@@ -131,19 +131,26 @@ export const copy = {
     close: '닫기',
   },
   stats: {
-    toggle: '학습 현황',
-    title: '학습 현황',
     loading: '학습 현황을 불러오고 있습니다',
     error: '학습 현황을 불러오지 못했습니다',
     retry: '다시 시도',
     empty: `아직 풀이 기록이 없습니다. ${STUDY_SET_SIZE}문제 학습을 시작해 보세요.`,
-    progress: '진도',
     accuracy: '전체 정답률',
     noAccuracy: '데이터 부족 — 채점 기록이 쌓이면 표시됩니다',
     domainsTitle: '영역별 현황',
     weakTitle: '취약 추천',
     weakEmpty: '추천할 취약 영역이 없습니다',
     unknownDomain: '기타 영역',
+    // 영역 카드 지표 이름 — 컴포넌트 하드코딩 금지 (ADR-0012).
+    metrics: {
+      progress: '진도',
+      cumulative: '누적',
+      recent: '최근',
+      problemUnit: '문제',
+    },
+    // 분석 결과 갱신을 스크린리더에 알리는 짧은 상태 문구.
+    domainsStatus: (domainCount: number, weakCount: number) =>
+      `영역별 분석 결과 ${domainCount}개 영역, 추천 ${weakCount}건을 표시합니다`,
   },
   review: {
     title: '복습',

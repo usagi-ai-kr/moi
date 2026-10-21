@@ -8,6 +8,7 @@ import './stats.css';
 
 // 요약 패널 — 진도·커버리지·정답률 + 모집단 설명 (#224).
 // 마운트된 탭에서만 조회한다 (완료 탭에서는 마운트되지 않아 API 미발생).
+// 결과 영역만 aria-live="polite" — 로딩 role="status" 와 중복 announce 되지 않게 분리한다.
 export function StatsSummaryPanel({
   client,
   examId = STUDY_EXAM_ID,
@@ -38,19 +39,24 @@ export function StatsSummaryPanel({
           </button>
         </div>
       )}
-      {query.data && query.data.uniqueFirstSolved === 0 && <p className="moi-note">{copy.stats.empty}</p>}
-      {query.data && query.data.uniqueFirstSolved > 0 && (
-        <div className="moi-stats-summary">
-          <p className="moi-stats-progress">
-            {copy.stats.progress} {query.data.uniqueFirstSolved}/{query.data.totalQuestions} ·{' '}
-            {Math.round(query.data.coverage * 100)}% · {copy.stats.accuracy} {pct(query.data.overallAccuracy)}
-          </p>
-          <div className="moi-stats-coverage" aria-hidden="true">
-            <span style={{ width: `${Math.round(query.data.coverage * 100)}%` }} />
+      {/* 결과 전용 live region — 로딩·오류 알림과 분리해 이중 announce 를 막는다. */}
+      <div className="moi-stats-result" aria-live="polite" aria-atomic="true">
+        {query.data && query.data.uniqueFirstSolved === 0 && (
+          <p className="moi-note">{copy.stats.empty}</p>
+        )}
+        {query.data && query.data.uniqueFirstSolved > 0 && (
+          <div className="moi-stats-summary">
+            <p className="moi-stats-progress">
+              {copy.stats.metrics.progress} {query.data.uniqueFirstSolved}/{query.data.totalQuestions} ·{' '}
+              {Math.round(query.data.coverage * 100)}% · {copy.stats.accuracy} {pct(query.data.overallAccuracy)}
+            </p>
+            <div className="moi-stats-coverage" aria-hidden="true">
+              <span style={{ width: `${Math.round(query.data.coverage * 100)}%` }} />
+            </div>
+            <p className="moi-note">{copy.history.accuracyNote}</p>
           </div>
-          <p className="moi-note">{copy.history.accuracyNote}</p>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 }
