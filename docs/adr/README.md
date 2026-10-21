@@ -97,4 +97,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0080 | 중복 인터랙션 잠금 — 시작·제출 동기 가드와 충돌 CTA 차단 | Accepted | 2026-10-21 | [0080-interaction-lock.md](./0080-interaction-lock.md) |
 | ADR-0081 | 학습·복습 회차 문제 수 4/8 선택 | Accepted | 2026-10-21 | [0081-set-size-4-8.md](./0081-set-size-4-8.md) |
 | ADR-0082 | 학습·복습 문제 풀이 카드 UI 공통화 | Accepted | 2026-10-21 | [0082-question-card-ui-unification.md](./0082-question-card-ui-unification.md) |
+| ADR-0083 | 시험 Select chevron 여백 — 네이티브 select 유지와 아이콘 배치 | Accepted | 2026-10-21 | [0083-exam-select-chevron.md](./0083-exam-select-chevron.md) |
 <!-- ADR_INDEX:END -->
