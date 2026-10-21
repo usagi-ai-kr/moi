@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers';
 import { decrypt, encrypt } from 'paseto-ts/v4';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createKakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
+import { createSessionRuntime } from '@/infra/auth/session/runtime';
 import { normalizePasetoLocalKey } from '@/infra/auth/session/keyring';
 import { createApp } from '@/infra/http/app';
 import { createD1AccountRepository } from '@/infra/persistence/d1-account-repository';
@@ -790,5 +791,32 @@ describe('/api/me DTO 키 집합 (#268 Slice 2B)', () => {
     for (const forbidden of ['sub', 'jti', 'token', 'paseto']) {
       expect(serialized).not.toContain(forbidden);
     }
+  });
+});
+
+describe('/api/me 계정 조회 실패 격리 (#268 Slice 2B)', () => {
+  it('계정 저장소가 throw해도 /api/me는 200이고 createdAt/lastLoginAt은 null이다', async () => {
+    const app = createApp({
+      createSessionRuntime: (workerEnv, requestId) => {
+        const runtime = createSessionRuntime(workerEnv, requestId);
+        return {
+          ...runtime,
+          account: {
+            accountRepository: {
+              findAccountInfo: async () => {
+                throw new Error('account lookup failed');
+              },
+            },
+          },
+        };
+      },
+    });
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const token = await performLogin(app, testEnv);
+    const res = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${token}` } }), testEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { user: { id: string; createdAt: unknown; lastLoginAt: unknown } };
+    expect(body.user.createdAt).toBeNull();
+    expect(body.user.lastLoginAt).toBeNull();
   });
 });

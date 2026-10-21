@@ -340,3 +340,51 @@ describe('#239 셸 — selector 1개·중복 없음 (AC 1·2, #273 콘텐츠 최
     }
   });
 });
+
+describe('#268 setExam 동일값 가드', () => {
+  function SetExamButton({ code }: { code: string }) {
+    const { setExam } = useExamScope();
+    return (
+      <button type="button" onClick={() => setExam(code)}>
+        시험 전환
+      </button>
+    );
+  }
+
+  it('?exam=saa-c03에서 setExam("saa-c03")은 URL·history를 바꾸지 않는다', async () => {
+    renderAt(
+      <ExamScopeProvider>
+        <SetExamButton code="saa-c03" />
+      </ExamScopeProvider>,
+      ['/history?tab=completed&exam=saa-c03'],
+    );
+    fireEvent.click(screen.getByRole('button', { name: '시험 전환' }));
+    await new Promise((r) => setTimeout(r, 10));
+    expect(screen.getByTestId('loc').textContent).toBe('/history?tab=completed&exam=saa-c03');
+  });
+
+  it('?exam 없음(기본값)에서 setExam("saa-c03")은 ?exam=saa-c03를 명시 기록한다', async () => {
+    renderAt(
+      <ExamScopeProvider>
+        <SetExamButton code="saa-c03" />
+      </ExamScopeProvider>,
+      ['/history?tab=completed'],
+    );
+    fireEvent.click(screen.getByRole('button', { name: '시험 전환' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('loc').textContent).toBe('/history?tab=completed&exam=saa-c03'),
+    );
+  });
+
+  it('허용목록 밖 값 setExam("dva-c02")은 URL을 바꾸지 않는다', async () => {
+    renderAt(
+      <ExamScopeProvider>
+        <SetExamButton code="dva-c02" />
+      </ExamScopeProvider>,
+      ['/history?tab=completed&exam=saa-c03'],
+    );
+    fireEvent.click(screen.getByRole('button', { name: '시험 전환' }));
+    await new Promise((r) => setTimeout(r, 10));
+    expect(screen.getByTestId('loc').textContent).toBe('/history?tab=completed&exam=saa-c03');
+  });
+});
