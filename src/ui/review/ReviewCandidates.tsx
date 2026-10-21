@@ -92,10 +92,10 @@ export function ReviewCandidates({
             {copy.review.startAction}
           </Button>
         </div>
-        <fieldset className="flex flex-wrap gap-2" aria-label={copy.review.sizeLegend} disabled={isStarting}>
+        <fieldset className="flex flex-wrap gap-2 border-0 p-0" aria-label={copy.review.sizeLegend} disabled={isStarting}>
           {[4, 8].map((n) => (
-            <label key={n} className="inline-flex min-h-[44px] cursor-pointer items-center gap-1">
-              <input type="radio" name="review-size" value={n} checked={selectedSize === n} onChange={() => onSize?.(n)} disabled={isStarting} className="h-5 w-5" />
+            <label key={n} className="inline-flex min-h-[44px] cursor-pointer items-center gap-1 has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-ring has-[input:focus-visible]:ring-offset-2">
+              <input type="radio" name="review-size" value={n} checked={selectedSize === n} onChange={() => onSize?.(n)} disabled={isStarting} className="h-5 w-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" />
               {copy.review.sizeOption(n)}
             </label>
           ))}
