@@ -32,6 +32,7 @@
 - 아이콘만 달린 버튼은 기능을 알기 어려우므로 **텍스트 라벨 우선**, 단독 아이콘은 aria-label·tooltip 및 44×44px 클릭 영역 필수. 장식은 aria-hidden.
 - 네비게이션/뒤로/다음/로그아웃/프로필/북마크/신고/체크/오류/로딩의 의미와 아이콘을 지정하여 일관성을 검사한다.
 - **브랜드 새와 모이 favicon(#70)은 조작 아이콘과 별도**. 16px 식별성·명암·배경·maskable 안전영역 테스트. GitHub의 브랜드 로고 복제가 아니라 Primer의 UI 명료성을 벤치마킹.
+- **워드마크 `moi` 전용 영문 글꼴: Bricolage Grotesque 700** — 상단 nav·모바일 Drawer의 소문자 `moi`에만 적용(데스크톱·Drawer 동일). 한국어 본문·버튼·문항·숫자·전역 font-family 변경 금지. 토큰 `--moi-font-brand`(폴백 display 스택)·self-host m/o/i 서브셋(1.6KB, OFL-1.1, `public/fonts/`)·`swap`·preload로 FOIT·CLS 저감. weight·letter-spacing(-0.01em)·22px 아이콘 정렬 유지(#225, ADR-0069).
 
 ## 5. 가독성·레이아웃·버튼
 - 모바일 우선: 320·375·768·1024·1280px. 콘텐츠는 중앙 정렬 max-width(풀이 본문 약 760–900px, 목록/대시보드 약 1100–1200px부터 검토); 데스크톱 왼쪽 360px 칼럼만 차지하는 화면 금지.
