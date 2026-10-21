@@ -1,4 +1,5 @@
 import type { StudySummary } from '../api/client';
+import { iconHistory } from '../icons';
 import { copy } from '../copy';
 import { domainLabel } from '../stats/labels';
 import { formatDateTime, scopeLabel } from '../study/types';
@@ -53,6 +54,7 @@ export function DetailAction({ row, onDetail }: { row: RowModel; onDetail: (id: 
       aria-label={`${row.dateText} ${copy.study.detail}`}
       onClick={() => onDetail(row.id)}
     >
+      <iconHistory.icon aria-hidden="true" size={iconHistory.size} className="mr-1" />
       {copy.study.detail}
     </button>
   );

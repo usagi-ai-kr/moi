@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { ApiClient } from '../api/client';
 import { Button } from '../components/ui/button';
 import { copy } from '../copy';
+import { iconBookmark, iconRefresh } from '../icons';
 import { useBookmarks, useSetBookmark } from './queries';
 
 interface BookmarkButtonProps {
@@ -27,9 +28,7 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
           disabled
           className={`min-h-[44px] min-w-[44px] px-3 text-sm ${className ?? ''}`}
         >
-          <span aria-hidden="true" className="mr-1">
-            ☆
-          </span>
+          <iconBookmark.icon aria-hidden="true" size={iconBookmark.size} className="mr-1" />
           {copy.review.bookmarkAdd}
         </Button>
         <Button
@@ -40,6 +39,7 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
           onClick={() => void bookmarksQuery.refetch()}
           className="text-sm text-destructive hover:bg-muted"
         >
+          <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
           {copy.review.retry}
         </Button>
       </span>
@@ -80,9 +80,7 @@ export function BookmarkButton({ client, examId, questionId, className }: Bookma
         className={`min-h-[44px] min-w-[44px] px-3 text-sm ${className ?? ''}`}
         onClick={handleToggle}
       >
-        <span aria-hidden="true" className="mr-1">
-          {isBookmarked ? '★' : '☆'}
-        </span>
+        <iconBookmark.icon aria-hidden="true" size={iconBookmark.size} className="mr-1" />
         {label}
       </Button>
       {errorMsg && (

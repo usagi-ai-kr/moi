@@ -1,5 +1,6 @@
 import type { ApiClient, DomainStats } from '../api/client';
 import { copy } from '../copy';
+import { iconAnalysis, iconRefresh } from '../icons';
 import { StatsSkeleton } from '../Skeletons';
 import { STUDY_DOMAINS } from '../study/types';
 import { domainLabel, pct, statusLabel } from './labels';
@@ -63,7 +64,10 @@ export function StatsDomainsPanel({ client, examId }: { client: ApiClient; examI
       aria-label={copy.history.tabDomains}
       aria-busy={query.isPending ? 'true' : undefined}
     >
-      <h2 className="moi-stats-title">{copy.history.tabDomains}</h2>
+      <h2 className="moi-stats-title inline-flex items-center gap-2">
+        <iconAnalysis.icon aria-hidden="true" size={iconAnalysis.size} />
+        {copy.history.tabDomains}
+      </h2>
       {query.isPending && (
         <div className="moi-stats-pending" role="status" aria-busy="true">
           <span className="moi-sr-only">{copy.stats.loading}</span>
@@ -74,6 +78,7 @@ export function StatsDomainsPanel({ client, examId }: { client: ApiClient; examI
         <div role="alert" className="moi-stats-error">
           <p className="moi-note">{copy.stats.error}</p>
           <button type="button" className="moi-study-link" onClick={() => void query.refetch()}>
+            <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
             {copy.stats.retry}
           </button>
         </div>

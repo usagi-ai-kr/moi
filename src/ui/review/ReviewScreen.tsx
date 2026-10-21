@@ -3,6 +3,7 @@ import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { copy } from '../copy';
+import { iconRefresh } from '../icons';
 import { ExamScope } from '../exam/ExamScope';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { ReviewCandidates } from './ReviewCandidates';
@@ -84,6 +85,7 @@ export function ReviewScreen({ client }: Props) {
           <p>{copy.review.sessionLoadError}</p>
           <div>
             <Button size="sm" variant="outline" onClick={() => void currentQuery.refetch()}>
+              <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
               {copy.review.retry}
             </Button>
           </div>

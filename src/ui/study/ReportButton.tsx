@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { submitQuestionReport, type ApiClient, type ReportReason } from '../api/client';
 import { copy } from '../copy';
+import { iconReport } from '../icons';
 import './study-feedback.css';
 
 const REASONS: ReadonlyArray<{ value: ReportReason; label: string }> = [
@@ -48,6 +49,7 @@ export function ReportButton({ client, questionId, questionVersionId }: Props) {
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
+        <iconReport.icon aria-hidden="true" size={iconReport.size} className="mr-1" />
         {copy.report.open}
       </button>
       {open && (

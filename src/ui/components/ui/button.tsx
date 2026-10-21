@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Loader2 } from 'lucide-react';
+import { iconLoading } from '@/ui/icons';
 import * as React from 'react';
 import { cn } from '@/ui/lib/utils';
 
@@ -37,7 +37,7 @@ function Button({ className, variant, size, asChild, pending, disabled, children
   const classes = cn(buttonVariants({ variant, size }), className);
   const content = (
     <>
-      {pending ? <Loader2 data-slot="spinner" aria-hidden="true" className="animate-spin" /> : null}
+      {pending ? <iconLoading.icon data-slot="spinner" aria-hidden="true" size={iconLoading.size} className="animate-spin" /> : null}
       {children}
     </>
   );

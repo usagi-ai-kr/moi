@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Skeleton } from '../components/ui/skeleton';
 import { copy } from '../copy';
+import { iconRefresh, iconStart } from '../icons';
 
 interface ReviewCandidatesProps {
   readonly data: ReviewCandidatesResponse | undefined;
@@ -42,6 +43,7 @@ export function ReviewCandidates({
         <p>{copy.review.loadError}</p>
         <div>
           <Button size="sm" variant="outline" onClick={onRetry}>
+            <iconRefresh.icon aria-hidden="true" size={iconRefresh.size} className="mr-1" />
             {copy.review.retry}
           </Button>
         </div>
@@ -81,6 +83,7 @@ export function ReviewCandidates({
             {copy.review.waitingSuffix}
           </h2>
           <Button pending={isStarting} onClick={onStart}>
+            <iconStart.icon aria-hidden="true" size={iconStart.size} className="mr-1" />
             {copy.review.startAction}
           </Button>
         </div>
