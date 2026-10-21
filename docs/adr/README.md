@@ -60,7 +60,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0043 | CI에 THIRD_PARTY_NOTICES --check 게이트 추가 | Accepted | 2026-10-20 | [0043-ci-notices-check-gate.md](./0043-ci-notices-check-gate.md) |
 | ADR-0044 | 해설 Mermaid 노드 라벨 인용 규칙 | Accepted | 2026-10-20 | [0044-mermaid-label-quote.md](./0044-mermaid-label-quote.md) |
 | ADR-0045 | 해설 Mermaid 렌더러 Pele 전환 | Superseded by ADR-0047 | 2026-10-20 | [0045-pele-mermaid-renderer.md](./0045-pele-mermaid-renderer.md) |
-| ADR-0046 | 학습 세트 10문제 조정 | Accepted | 2026-10-20 | [0046-ten-question-study-set.md](./0046-ten-question-study-set.md) |
+| ADR-0046 | 학습 세트 10문제 조정 | Superseded by ADR-0081 | 2026-10-20 | [0046-ten-question-study-set.md](./0046-ten-question-study-set.md) |
 | ADR-0047 | Pele 전환 0.2.4 구현 시점과 전환·복구 계약 | Accepted | 2026-10-20 | [0047-pele-0.2.4-implementation-timing.md](./0047-pele-0.2.4-implementation-timing.md) |
 | ADR-0048 | 작업 정지 절차와 브리프·보고서 절대 경로 | Superseded by ADR-0051 | 2026-10-20 | [0048-orchestration-stop-protocol.md](./0048-orchestration-stop-protocol.md) |
 | ADR-0049 | 제출 전 정답 개수 안내 | Accepted | 2026-10-20 | [0049-answer-count-disclosure.md](./0049-answer-count-disclosure.md) |
@@ -95,4 +95,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0078 | 문제 신고 액션 버튼 표면/상태/44px 계약 | Accepted | 2026-10-21 | [0078-report-button-action-surface.md](./0078-report-button-action-surface.md) |
 | ADR-0079 | 근거 링크 칩 padding·wrap·상태·외부링크 semantics | Accepted | 2026-10-21 | [0079-source-link-chip-padding-wrap-state-semantics.md](./0079-source-link-chip-padding-wrap-state-semantics.md) |
 | ADR-0080 | 중복 인터랙션 잠금 — 시작·제출 동기 가드와 충돌 CTA 차단 | Accepted | 2026-10-21 | [0080-interaction-lock.md](./0080-interaction-lock.md) |
+| ADR-0081 | 학습·복습 회차 문제 수 4/8 선택 | Accepted | 2026-10-21 | [0081-set-size-4-8.md](./0081-set-size-4-8.md) |
 <!-- ADR_INDEX:END -->

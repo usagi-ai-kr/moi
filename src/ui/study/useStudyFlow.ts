@@ -43,6 +43,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   const { examId } = useExamScope();
   const initialOpt = opts?.initialSetId;
   const [setId, setSetId] = useState<string | null>(() => (initialOpt !== undefined ? initialOpt : readStudyParam()));
+  const [size, setSize] = useState<number>(4);
   const [startError, setStartError] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const [unauth, setUnauth] = useState(false);
@@ -68,7 +69,6 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   useEffect(() => {
     if (!blocked) setSubmitError((prev) => (prev === copy.study.syncBlocked ? null : prev));
   }, [blocked]);
-
   const handleStart = useCallback(() => {
     if (!startLock.tryAcquire(startMut.isPending)) return;
     setStartError(null);
@@ -76,8 +76,8 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
     setUnauth(false);
     startMut.mutate(
       s.scope === 'domain'
-        ? { examId, mode: s.scope, domainId: s.domainId }
-        : { examId, mode: s.scope },
+        ? { examId, mode: s.scope, domainId: s.domainId, size }
+        : { examId, mode: s.scope, size },
       {
         onSuccess: (set) => {
           setSetId(set.id);
@@ -138,7 +138,6 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
     [answerMut, s, setId, setQuery.data, submitMut.isPending, sync, userId],
   );
 
-  // 저장 실패·오프라인 재시도 (이슈 #52).
   const handleRetry = useCallback(() => {
     if (!setId) return;
     let hasDrafts = false;
@@ -240,6 +239,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
 
   return {
     s, set, setId, unanswered, setQuery, historyQuery,
+    size, setSize,
     startMut, answerMut, submitMut, abandonMut,
     startError, conflict, unauth, submitError, blocked,
     conflicts: sync.conflicts, syncBusy: sync.busy,

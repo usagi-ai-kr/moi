@@ -1,7 +1,7 @@
 import { assertStudySetInvariants } from '@/domain/study/invariants';
 import { gradeItems, type GradableItem } from '@/domain/study/grading';
 import { shuffleOptionOrder, unattemptedFirst, weightedSample, WEAK_WEIGHT_BASE } from '@/domain/study/selection';
-import { STUDY_SET_SIZE } from '@/domain/study/thresholds';
+import { DEFAULT_STUDY_SET_SIZE, isStudySetSize } from '@/domain/study/thresholds';
 import type { ItemResponse, StudySet, StudySetItem, StudySetMode, StudySetSummary } from '@/domain/study/types';
 import type { PoolEntry, StudyDeps } from './ports';
 import { buildSetAttempts } from '@/app/stats/attempt-builder';
@@ -15,7 +15,7 @@ import { buildSetAttempts } from '@/app/stats/attempt-builder';
 
 export type StartStudySetResult =
   | { readonly outcome: 'started'; readonly set: StudySet }
-  | { readonly outcome: 'rejected'; readonly reason: 'active_set_exists' | 'domain_required' | 'pool_insufficient' };
+  | { readonly outcome: 'rejected'; readonly reason: 'active_set_exists' | 'domain_required' | 'pool_insufficient' | 'invalid_size' };
 
 export type AnswerStudyItemResult =
   | { readonly outcome: 'answered' | 'pass' | 'unanswered' }
@@ -36,17 +36,22 @@ export interface CompletedSetsPage {
 
 export async function startStudySet(
   deps: StudyDeps,
-  input: { userId: string; examId: string; mode: StudySetMode; domainId?: string },
+  input: { userId: string; examId: string; mode: StudySetMode; domainId?: string; size?: number },
 ): Promise<StartStudySetResult> {
   if (input.mode === 'domain' && (input.domainId === undefined || input.domainId.length === 0)) {
     return { outcome: 'rejected', reason: 'domain_required' };
+  }
+  const requestedSize = input.size === undefined ? DEFAULT_STUDY_SET_SIZE : input.size;
+  if (!isStudySetSize(requestedSize)) {
+    return { outcome: 'rejected', reason: 'invalid_size' };
   }
   const active = await deps.repository.findActive({ userId: input.userId, examId: input.examId });
   if (active !== null) return { outcome: 'rejected', reason: 'active_set_exists' };
 
   const all = await deps.pool.listPool();
   const filtered = input.mode === 'domain' ? all.filter((entry) => entry.domainId === input.domainId) : all;
-  if (filtered.length < STUDY_SET_SIZE) return { outcome: 'rejected', reason: 'pool_insufficient' };
+  if (filtered.length === 0) return { outcome: 'rejected', reason: 'pool_insufficient' };
+  const targetSize = Math.min(requestedSize, filtered.length);
 
   const rng = () => deps.rng.next();
   const unseen = unattemptedFirst(filtered, []);
@@ -60,23 +65,23 @@ export async function startStudySet(
 
   const picked = weightedSample(
     unseen.map((entry) => ({ weight: firstWeight(entry), value: entry })),
-    STUDY_SET_SIZE,
+    targetSize,
     rng,
   ).map((entry) => entry.value);
 
-  if (picked.length < STUDY_SET_SIZE) {
+  if (picked.length < targetSize) {
     const pickedIds = new Set(picked.map((entry) => entry.questionId));
     const fill = weightedSample(
       seen
         .filter((entry) => !pickedIds.has(entry.questionId))
         .map((entry) => ({ weight: seenWeight(entry), value: entry })),
-      STUDY_SET_SIZE - picked.length,
+      targetSize - picked.length,
       rng,
     ).map((entry) => entry.value);
     picked.push(...fill);
   }
 
-  const items: StudySetItem[] = picked.slice(0, STUDY_SET_SIZE).map((entry) => ({
+  const items: StudySetItem[] = picked.slice(0, targetSize).map((entry) => ({
     questionId: entry.questionId,
     questionVersionId: entry.version.questionVersionId,
     versionNo: entry.version.versionNo,

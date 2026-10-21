@@ -80,7 +80,7 @@ Then('학습 시작 화면과 상단 메뉴가 보인다', async ({ page }) => {
   await expect(page.getByRole('link', { name: '학습 시작' })).toBeVisible();
   await expect(page.getByRole('link', { name: '학습 현황/이력' })).toBeVisible();
   await expect(page.getByRole('link', { name: '계정' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '10문제 학습' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '학습 시작' })).toBeVisible();
 });
 
 Then('원본 사용자 id가 노출되지 않는다', async ({ page }) => {

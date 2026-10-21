@@ -318,10 +318,6 @@ Given('답안 저장이 일시 실패하도록 준비되면', async () => {
   failNextAnswer = true;
 });
 
-When('10문제 학습 버튼을 누르면', async ({ page }) => {
-  await page.getByRole('button', { name: '10문제 학습' }).click();
-});
-
 When('학습 시작 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: '학습 시작' }).click();
 });

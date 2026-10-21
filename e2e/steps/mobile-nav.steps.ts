@@ -267,6 +267,10 @@ async function tabOrder(page: Page, max: number): Promise<string[]> {
       if (!['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(el.tagName)) {
         return { repeat, text: '' };
       }
+      // 메뉴 영역(header nav/drawer) 안의 컨트롤만 집계한다. 홈 CTA 등 main의 버튼은 제외한다.
+      if (!el.closest('header.moi-shell-header, dialog.moi-drawer')) {
+        return { repeat, text: '' };
+      }
       return { repeat, text: (el.getAttribute('aria-label') || el.textContent || '').trim() };
     });
     if (result.repeat) break;

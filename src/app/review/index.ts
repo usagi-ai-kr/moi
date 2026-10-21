@@ -1,7 +1,7 @@
 import { assertSessionOwned } from '@/domain/review/invariants';
 import { planReviewRound, rejoinPending, remainingAfterPick } from '@/domain/review/round-queue';
 import { buildReviewSession, endSession, gradeCurrent, isExhausted, summarize } from '@/domain/review/session';
-import { REVIEW_MIN_CANDIDATES } from '@/domain/review/thresholds';
+import { DEFAULT_REVIEW_ROUND_SIZE, isReviewRoundSize, REVIEW_MIN_CANDIDATES } from '@/domain/review/thresholds';
 import type { ReviewAttempt, ReviewCandidate, ReviewMode, ReviewResponse, ReviewSession } from '@/domain/review/types';
 import type { ReviewCandidateInput, ReviewDeps } from './ports';
 
@@ -14,7 +14,7 @@ import type { ReviewCandidateInput, ReviewDeps } from './ports';
 
 export type StartReviewResult =
   | { readonly outcome: 'started'; readonly session: ReviewSession }
-  | { readonly outcome: 'rejected'; readonly reason: 'active_session_exists' | 'no_candidates' };
+  | { readonly outcome: 'rejected'; readonly reason: 'active_session_exists' | 'no_candidates' | 'invalid_size' };
 
 export type AnswerReviewResult =
   | { readonly outcome: 'answered'; readonly correct: boolean; readonly attempt: ReviewAttempt; readonly session: ReviewSession }
@@ -66,9 +66,13 @@ export async function getReviewCandidatesView(
 }
 
 /** 회차 시작 — plan remaining에서 모드 가중치로 최대 10문항을 뽑아 스냅샷·queue를 저장한다. */
-export async function startReviewSession(deps: ReviewDeps, input: { userId: string; examId: string; mode: ReviewMode }): Promise<StartReviewResult> {
+export async function startReviewSession(deps: ReviewDeps, input: { userId: string; examId: string; mode: ReviewMode; size?: number }): Promise<StartReviewResult> {
   const active = await deps.repository.findActive(input);
   if (active !== null) return { outcome: 'rejected', reason: 'active_session_exists' };
+  const requestedSize = input.size === undefined ? DEFAULT_REVIEW_ROUND_SIZE : input.size;
+  if (!isReviewRoundSize(requestedSize)) {
+    return { outcome: 'rejected', reason: 'invalid_size' };
+  }
   const candidates = await listCandidates(deps, input);
   if (candidates.length < REVIEW_MIN_CANDIDATES) return { outcome: 'rejected', reason: 'no_candidates' };
   const lastEnded = await deps.repository.findLastEnded(input);
@@ -83,6 +87,7 @@ export async function startReviewSession(deps: ReviewDeps, input: { userId: stri
     candidates: remainingCandidates,
     createdAt: deps.clock.now(),
     rng: () => deps.rng.next(),
+    size: Math.min(requestedSize, remainingCandidates.length || requestedSize),
   });
   const picked = base.items.map((i) => i.questionId);
   const session: ReviewSession = { ...base, remainingQuestionIds: remainingAfterPick(plan.remaining, picked), cycleQuestionIds: plan.cycle };

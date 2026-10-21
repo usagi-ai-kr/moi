@@ -49,8 +49,8 @@ export function useBookmarks(client: ApiClient, examId: string) {
 export function useStartReview(client: ApiClient) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { examId: string; mode: ReviewMode }) =>
-      startReviewSession(client, input.examId, input.mode),
+    mutationFn: (input: { examId: string; mode: ReviewMode; size?: number }) =>
+      startReviewSession(client, input.examId, input.mode, input.size),
     onSuccess: (data: ReviewSessionStartResponse, vars) => {
       queryClient.setQueryData(reviewKeys.current(vars.examId, vars.mode), {
         ...data,

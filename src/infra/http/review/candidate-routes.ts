@@ -55,7 +55,7 @@ export function registerReviewCandidateRoutes(app: Hono<{ Bindings: Env }>, opti
       const exam = await runtime.resolveExam(parsed.data.examId);
       if (!exam) return c.json({ error: 'not_found' }, 404);
       const deps = runtime.createDeps({ db: c.env.DB });
-      const result = await startReviewSession(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode });
+      const result = await startReviewSession(deps, { userId: auth.userId, examId: exam.code, mode: parsed.data.mode, size: parsed.data.size });
       if (result.outcome === 'rejected') {
         if (result.reason === 'active_session_exists') return c.json({ error: 'active_session_exists' }, 409);
         return c.json({ error: 'no_candidates' }, 422);

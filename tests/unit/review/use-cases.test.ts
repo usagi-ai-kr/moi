@@ -31,7 +31,7 @@ describe('StartReviewSession (모드별 독립 회차·스냅샷)', () => {
   it('Given 오답 3·Pass 1·미응답 1 When wrong 복습 시작 Then 5문제·가중치 적용', async () => {
     // Pass·미응답 제출도 유효 오답으로 계수된다고 가정한 소스(오답 3, Pass 1, 미응답 1 → 5문제).
     const f = fakes({ wrong: makeCandidates(5, { 0: 3, 1: 1, 2: 1, 3: 1, 4: 1 }) });
-    const result = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
+    const result = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     expect(result.outcome).toBe('started');
     if (result.outcome === 'started') {
       expect(result.session.items).toHaveLength(5);
@@ -45,7 +45,7 @@ describe('StartReviewSession (모드별 독립 회차·스냅샷)', () => {
 
   it('Given 북마크 5 When bookmark 복습 Then 균등 5문제', async () => {
     const f = fakes({ bookmarked: makeCandidates(5, { 0: 9, 2: 2 }) });
-    const result = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark' });
+    const result = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark', size: 8 });
     expect(result.outcome).toBe('started');
     if (result.outcome === 'started') {
       expect(result.session.items).toHaveLength(5);
@@ -184,7 +184,7 @@ describe('EndReviewSession·Resume (종료·이어풀기)', () => {
 describe('대상 증감·소진 (다음 회차부터 반영)', () => {
   it('Given 회차 중 북마크 추가 When 회차 조회 Then 다음 회차부터 반영', async () => {
     const f = fakes({ bookmarked: makeCandidates(5) });
-    const started = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark' });
+    const started = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark', size: 8 });
     const session = (started as { session: ReviewSession }).session;
     expect(session.items).toHaveLength(5);
 
@@ -200,7 +200,7 @@ describe('대상 증감·소진 (다음 회차부터 반영)', () => {
 
     // 종료 후 새 회차는 최신 목록(6문제)을 반영한다.
     await endReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark' });
-    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark' });
+    const next = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'bookmark', size: 8 });
     if (next.outcome === 'started') {
       expect(next.session.items).toHaveLength(6);
       expect(next.session.items.map((i) => i.questionId)).toContain('new-q');

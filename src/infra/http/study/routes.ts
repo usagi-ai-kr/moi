@@ -95,12 +95,14 @@ export function registerStudyRoutes(app: Hono<{ Bindings: Env }>, options?: Stud
       }
       const { examId, mode } = parsed.data;
       const domainId = parsed.data.domainId;
+      const size = parsed.data.size;
       try {
         const result = await startStudySet(runtime.createDeps({ examId, db: c.env.DB }), {
           userId,
           examId,
           mode,
           ...(domainId !== undefined ? { domainId } : {}),
+          size,
         });
         if (result.outcome === 'rejected') {
           if (result.reason === 'active_set_exists') {

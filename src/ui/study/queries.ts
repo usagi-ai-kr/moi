@@ -85,11 +85,49 @@ export function isUnauthorized(err: unknown): boolean {
 export function useStartStudy(client: ApiClient) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { examId: string; mode: StudyMode; domainId?: string }) => startStudySet(client, input),
-    onSuccess: (set: StudyActiveSet) => {
+    mutationFn: (input: { examId: string; mode: StudyMode; domainId?: string; size?: number }) => startStudySet(client, input),
+    onSuccess: (set: StudyActiveSet, variables: { examId: string; mode: StudyMode; domainId?: string; size?: number }) => {
       queryClient.setQueryData(setQueryKey(set.id), set);
+      // 시작 성공 시 요청 size를 기록한다 — 라우트 변경(/study/new→/study)으로
+      // useStudyFlow가 remount되어 size가 기본값으로 리셋돼도 부족 안내가 동작하게 한다 (#275 F1).
+      if (variables.size !== undefined) rememberRequestedSize(variables.examId, variables.size);
     },
   });
+}
+
+// 시작 시 요청한 문제 수 — D1·API 계약 변경 없이 UI-only로 active 화면까지 전달한다 (#275 F1).
+// sessionStorage라 새로고침 후에도 유지되고 탭 간에는 격리된다. 시험별로 키를 나눈다.
+const REQUESTED_SIZE_KEY = 'moi.study.requestedSize.v1';
+
+export function rememberRequestedSize(examId: string, size: number): void {
+  try {
+    sessionStorage.setItem(REQUESTED_SIZE_KEY, JSON.stringify({ examId, size, at: Date.now() }));
+  } catch {
+    // 저장 실패 무시 — 안내는 표시되지 않는다.
+  }
+}
+
+export function readRequestedSize(examId: string): number | null {
+  try {
+    const raw = sessionStorage.getItem(REQUESTED_SIZE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { examId?: unknown; size?: unknown };
+    if (parsed.examId !== examId || typeof parsed.size !== 'number') return null;
+    return parsed.size;
+  } catch {
+    return null;
+  }
+}
+
+// 라우터 active 경로(/study) 판정 — legacy 직접 렌더(단위 테스트·?study=)에서는
+// StudyScreen이 remount 없이 정확한 size를 들고 있어 QuestionView가 안내를 중복하지 않는다.
+export function isRouterStudyPath(): boolean {
+  try {
+    const u = new URL(window.location.href);
+    return u.pathname === '/study' && !u.searchParams.has('study');
+  } catch {
+    return false;
+  }
 }
 
 interface AnswerInput {

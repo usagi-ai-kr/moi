@@ -200,7 +200,7 @@ describe('235 홈 통합 (h1만 교체·CTA 유지)', () => {
   it('홈 h1이 32종 중 하나·CTA·히스토리 링크 유지·h1 1개', async () => {
     renderApp(loggedInClient());
     // 로그인 홈이 뜰 때까지 대기 (초기 브랜드 h1 'moi'와 구분).
-    expect(await screen.findByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: '학습 시작' })).toBeInTheDocument();
     const h1 = screen.getByRole('heading', { level: 1 });
     expect(HERO_GREETINGS.map((g) => g.text)).toContain(h1.textContent);
     expect(h1).not.toHaveAttribute('aria-live');
