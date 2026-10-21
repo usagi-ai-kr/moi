@@ -149,7 +149,8 @@
   box-shadow: inset 3px 0 0 var(--moi-color-orange);
 }
 
-/* Drawer 로그아웃 액션 — 메뉴 링크와 구분선으로 위계를 분리한다(#234/ADR-0072). */
+/* Drawer 로그아웃 액션 — 메뉴 링크와 간격만으로 위계를 분리한다(#258).
+   구분선(border-top) 없이 여백으로만 구분해 데스크톱 nav와 동일 위계를 유지한다. */
 .moi-drawer-action {
   display: flex;
   flex-direction: column;
@@ -157,7 +158,6 @@
   gap: var(--moi-space-2);
   margin-top: var(--moi-space-3);
   padding: var(--moi-space-3) var(--moi-space-2) 0;
-  border-top: 1px solid var(--moi-color-border);
 }
 .moi-drawer-action .moi-logout-action {
   width: 100%;

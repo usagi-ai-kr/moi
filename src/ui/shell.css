@@ -100,16 +100,14 @@
   text-underline-offset: 4px;
 }
 
-/* 내비게이션 로그아웃 액션 — 메뉴 링크와 구분선·간격으로 위계를 분리한다(#234/ADR-0072).
+/* 내비게이션 로그아웃 액션 — 메뉴 링크와 nav gap만으로 위계를 분리한다(#258).
+   세로 구분선(border-left)·여백(margin/padding) 없이 gap으로만 구분한다.
    파괴 행위가 아니므로 danger 강조는 쓰지 않는다 — danger는 탈퇴 위험 영역에 남긴다. */
 .moi-nav-action {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--moi-space-1);
-  margin-left: var(--moi-space-2);
-  padding-left: var(--moi-space-3);
-  border-left: 1px solid var(--moi-color-border);
 }
 
 .moi-logout-action {
@@ -202,9 +200,11 @@
 }
 
 /* #233 Slice B — nav 아이콘+라벨 간격·크기(20px 토큰).
-   Drawer 링크는 drawer.css가 flex이므로 gap만 보완한다. 줄바꿈·밀집 악화 금지. */
+   Drawer 링크는 drawer.css가 flex이므로 gap만 보완한다. 줄바꿈·밀집 악화 금지.
+   #258 — 로그아웃 버튼 아이콘도 동일 20px 토큰으로 nav와 일관되게 한다. */
 .moi-nav-link svg,
-.moi-drawer-link svg {
+.moi-drawer-link svg,
+.moi-logout-action svg {
   flex: none;
   width: 20px;
   height: 20px;
