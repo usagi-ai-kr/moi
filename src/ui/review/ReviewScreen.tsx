@@ -45,7 +45,7 @@ export function ReviewScreen({ client, examId = STUDY_EXAM_ID }: Props) {
   return (
     <div className="moi-page flex flex-col gap-4">
       <header className="flex flex-col gap-3">
-        <h1 className="moi-title text-2xl font-bold">{copy.review.title}</h1>
+        <h1 className="moi-title">{copy.review.title}</h1>
         <div role="tablist" aria-label={copy.review.title} className="flex flex-wrap gap-2 border-b border-border pb-3">
           <Button
             role="tab"

@@ -63,8 +63,8 @@
   font-size: var(--moi-size-body);
 }
 .moi-study-check input {
-  width: 20px;
-  height: 20px;
+  width: var(--moi-icon-md);
+  height: var(--moi-icon-md);
   accent-color: var(--moi-color-orange);
 }
 /* 네이티브 accent-color는 체크 색이 원 밖으로 번져 보여 직접 그린다 (#178). */
@@ -74,8 +74,8 @@
   display: grid;
   place-content: center;
   flex: none;
-  width: 20px;
-  height: 20px;
+  width: var(--moi-icon-md);
+  height: var(--moi-icon-md);
   margin: 0;
   border: 2px solid var(--moi-color-border);
   border-radius: 50%;
@@ -175,11 +175,42 @@
   }
 }
 .moi-study-ghost {
-  min-height: var(--moi-space-8);
+  min-height: var(--moi-control-h);
+  padding-inline: var(--moi-space-2);
   background: transparent;
   border: 0;
+  border-radius: var(--moi-radius-sm);
+  font-size: var(--moi-size-body);
   color: var(--moi-color-muted);
   cursor: pointer;
+}
+@media (any-pointer: coarse) {
+  .moi-study-ghost {
+    min-height: var(--moi-touch-min);
+  }
+}
+.moi-study-primary:disabled,
+.moi-study-secondary:disabled,
+.moi-study-ghost:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .moi-study-primary:hover,
+  .moi-study-secondary:hover {
+    opacity: 0.92;
+  }
+  .moi-study-primary:active,
+  .moi-study-secondary:active {
+    opacity: 0.88;
+  }
+}
+.moi-study-detail-title {
+  margin: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
 }
 .moi-study-primary:focus-visible,
 .moi-study-secondary:focus-visible,

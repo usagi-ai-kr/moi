@@ -51,9 +51,9 @@ export function ResultQuestionList({ perItem, currentIndex, onSelect }: Props) {
       aria-labelledby={headingId}
       aria-describedby={hintId}
     >
-      <h3 id={headingId} className="moi-study-question-list-title">
+      <h2 id={headingId} className="moi-study-question-list-title">
         {copy.study.resultQuestionList}
-      </h3>
+      </h2>
       <p id={hintId} className="moi-note moi-study-question-list-hint">
         {copy.study.resultQuestionListHint}
       </p>

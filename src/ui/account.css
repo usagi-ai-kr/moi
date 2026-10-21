@@ -4,7 +4,9 @@
 }
 .moi-account-title {
   margin: 0;
-  font-size: var(--moi-size-h2);
+  font-family: var(--moi-font-display);
+  font-size: var(--moi-size-h1);
+  line-height: var(--moi-lh-tight);
   color: var(--moi-color-ink);
 }
 .moi-account-logout {
@@ -26,7 +28,15 @@
 }
 .moi-account-logout:disabled {
   cursor: not-allowed;
-  opacity: 0.72;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .moi-account-logout:hover {
+    opacity: 0.92;
+  }
+  .moi-account-logout:active {
+    opacity: 0.88;
+  }
 }
 .moi-account-logout:focus-visible {
   outline: 2px solid var(--moi-color-ink);

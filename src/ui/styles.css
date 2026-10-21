@@ -188,7 +188,7 @@ pre,
 
 .moi-alert {
   width: 100%;
-  max-width: var(--moi-kakao-max-w);
+  max-width: 100%;
 }
 
 /* 홈 학습 진입 CTA — 초기 번들에 두는 최소 스타일. 학습 화면 본체는 study.css(lazy). */
@@ -234,6 +234,8 @@ pre,
   outline: 2px solid var(--moi-color-ink);
   outline-offset: 2px;
 }
+.moi-study-open:disabled,.moi-study-link:disabled{cursor:not-allowed;opacity:.5}
+@media (prefers-reduced-motion:no-preference){.moi-study-open:hover,.moi-study-link:hover{opacity:.92}.moi-study-open:active,.moi-study-link:active{opacity:.88}}
 
 /* 학습 현황 스타일은 stats/stats.css로 이동 (#182 — 사용하는 컴포넌트가 import). */
 /* 계정·이력 페이지 — 기존 토큰·카드 재사용, 320~1280 기본 반응형 */

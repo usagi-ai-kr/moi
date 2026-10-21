@@ -39,7 +39,7 @@
 
 .moi-action:disabled {
   cursor: not-allowed;
-  opacity: 0.72;
+  opacity: 0.5;
 }
 
 .moi-action:focus-visible,
@@ -76,8 +76,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: var(--moi-icon-md);
+  height: var(--moi-icon-md);
   border-radius: 50%;
   font-size: 13px;
   font-weight: 700;
@@ -105,8 +105,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--moi-space-8);
-  min-height: var(--moi-space-8);
+  min-width: var(--moi-touch-min);
+  min-height: var(--moi-touch-min);
   padding: 0;
   background: transparent;
   border: 0;
@@ -118,7 +118,7 @@
 
 .moi-alert-retry {
   flex: none;
-  min-height: var(--moi-space-8);
+  min-height: var(--moi-touch-min);
   padding-inline: var(--moi-space-3);
   background: transparent;
   border: 1px solid var(--moi-color-border);
@@ -140,8 +140,8 @@
 }
 
 .moi-spinner-sm {
-  width: 16px;
-  height: 16px;
+  width: var(--moi-icon-sm);
+  height: var(--moi-icon-sm);
   border-width: 2px;
 }
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import type { ApiClient } from '../api/client';
+import { copy } from '../copy';
 import { HistoryTabs } from '../history/HistoryTabs';
 import { resolveHistoryTab, type HistoryTab } from '../history/history-tab-state';
 import { StatsDomainsPanel } from '../stats/StatsDomainsPanel';
@@ -127,6 +128,7 @@ export function HistoryPage({ client }: { client: ApiClient }) {
 
   return (
     <div className="moi-page">
+      <h1 className="moi-title">{copy.nav.history}</h1>
       <HistoryTabs
         value={activeTab}
         onChange={handleTabChange}

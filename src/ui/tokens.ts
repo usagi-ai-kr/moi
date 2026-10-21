@@ -42,9 +42,19 @@ export const radius = {
   lg: 12,
 } as const;
 
+// 조작 아이콘 광학 크기 — 16(인라인·알림·스피너)·20(배지)·24(내비) 역할 고정 (ADR-0064).
+// favicon·브랜드 아이콘(22px)은 브랜드 자산으로 분리한다 (ADR-0054·0062).
+export const icon = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+} as const;
+
 export const layout = {
   containerMaxWidth: 960,
   // 큰 화면의 읽기 열 — 헤더 내부와 본문이 같은 폭을 공유한다 (#148 6항).
+  // study 760–900(DESIGN §5)은 별도 토큰을 두지 않고 셸 reading 열(720)을 채운다:
+  // ≥1024px에서 .moi-study{max-width:100%}가 셸 720열을 그대로 사용한다 (ADR-0064).
   readingMaxWidth: 720,
   // 구 첫 화면 헤더 높이 — #225에서 셸(61px) 단일 규격으로 통일해 CSS 사용 중단.
   // 호환을 위해 값은 유지한다 (삭제 금지 — 외부 참조 가능).
@@ -112,6 +122,7 @@ export const cssVars: Record<string, string> = {
   ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--moi-color-${k}`, v])),
   ...Object.fromEntries(Object.entries(space).map(([k, v]) => [`--moi-space-${k}`, px(v)])),
   ...Object.fromEntries(Object.entries(radius).map(([k, v]) => [`--moi-radius-${k}`, px(v)])),
+  ...Object.fromEntries(Object.entries(icon).map(([k, v]) => [`--moi-icon-${k}`, px(v)])),
   '--moi-container-max': px(layout.containerMaxWidth),
   '--moi-reading-max': px(layout.readingMaxWidth),
   '--moi-header-h': px(layout.headerHeight),

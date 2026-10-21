@@ -94,7 +94,7 @@ export function QuestionView(p: Props) {
           <p className="moi-alert-text">{p.submitError}</p>
         </div>
       )}
-      <h2 className="moi-study-title">{item.stem}</h2>
+      <h1 className="moi-study-title">{item.stem}</h1>
       <p className="moi-note" aria-live="polite">
         {copy.study.answerCountHint(item.answerCount)}
       </p>
