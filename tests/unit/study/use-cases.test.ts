@@ -350,6 +350,54 @@ describe('LegacyCompat (기존 20문항 세트 읽기 호환, #187·ADR-0046)', 
   });
 });
 
+describe('LegacyCompat (기존 10문항 세트 읽기 호환, #268)', () => {
+  /** 구(10문항) 규격으로 저장된 활성 세트 — 생성 경로를 거치지 않고 직접 적재한다. */
+  function legacyTenSet(): StudySet {
+    const items = Array.from({ length: 10 }, (_, i) => ({
+      questionId: `legacy10-q-${i}`,
+      questionVersionId: `legacy10-qv-${i}-v1`,
+      versionNo: 1,
+      optionOrder: ['a', 'b', 'c', 'd'],
+      answerOptionIds: ['b'],
+      stem: `기존 10문항 문제 ${i} 본문`,
+      options: ['a', 'b', 'c', 'd'].map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
+      explanation: `기존 10문항 문제 ${i} 해설`,
+      sourceUrls: [`https://docs.aws.amazon.com/legacy10-q-${i}`],
+      response: { kind: 'unanswered' } as const,
+    }));
+    return {
+      id: 'legacy-set-10',
+      userId: 'u1',
+      examId: 'saa-c03',
+      mode: 'all',
+      status: 'active',
+      createdAt: 1700000000,
+      items,
+    };
+  }
+
+  it('10문항 active 세트는 풀이·제출 경로에서 거부되지 않는다(크기 검사는 생성 시에만)', async () => {
+    const f = fakes();
+    const legacy = legacyTenSet();
+    await f.repository.save({ set: legacy });
+    const found = (await f.repository.findById({ id: legacy.id })) as StudySet;
+    expect(found.items).toHaveLength(10);
+    for (const item of found.items) {
+      const ok = await answerStudyItem(f, {
+        setId: legacy.id,
+        userId: 'u1',
+        questionId: item.questionId,
+        response: { kind: 'answered', optionIds: ['b'] },
+      });
+      expect(ok.outcome).toBe('answered');
+    }
+    const submitted = await submitStudySet(f, { setId: legacy.id, userId: 'u1', confirmUnanswered: false });
+    expect(submitted.outcome).toBe('submitted');
+    expect(f.sets.get(legacy.id)?.result?.accuracyPercent).toBe(100);
+    expect(f.sets.get(legacy.id)?.result?.answeredCount).toBe(10);
+  });
+});
+
 describe('StartStudySet size 계약 (8문항·부분 출제·잘못된 값 거부, #275)', () => {
   it('size 8 → 8문항·중복 0', async () => {
     const f = fakes({ poolCount: 30 });

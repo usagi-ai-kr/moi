@@ -27,7 +27,7 @@ async function gradeAll(deps: ReturnType<typeof fakes>['deps'], session: ReviewS
 }
 
 describe('review 10문항 회차 queue (app fake)', () => {
-  it('1) 후보 25 → total 25, start 10', async () => {
+  it('1) 후보 25 → total 25, start 8', async () => {
     expect(REVIEW_ROUND_SIZE).toBe(10);
     const f = fakes(25);
     const view = await getReviewCandidatesView(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong' });
@@ -38,7 +38,7 @@ describe('review 10문항 회차 queue (app fake)', () => {
     if (started.outcome === 'started') expect(started.session.items).toHaveLength(8);
   });
 
-  it('2) 10씩 채점·종료하면 10→10→5→새 cycle 25', async () => {
+  it('2) 8씩 채점·종료하면 8→8→8→1(남은 1문항)', async () => {
     const f = fakes(25, 11);
     const s1 = await startReviewSession(f.deps, { userId: 'u1', examId: 'saa-c03', mode: 'wrong', size: 8 });
     if (s1.outcome !== 'started') throw new Error('s1 failed');

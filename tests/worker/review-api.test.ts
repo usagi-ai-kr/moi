@@ -160,6 +160,19 @@ describe('복습 HTTP 인증·검증', () => {
     expect((await req('/api/review/sessions', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } })).status).toBe(201);
   });
 
+  it('size 는 4·8 만 허용한다 — 9 는 Zod 가 먼저 막아 422 validation_failed (#268)', async () => {
+    const token = await mintSession(U1);
+    const res = await req('/api/review/sessions', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM_CODE, mode: 'wrong', size: 9 },
+    });
+    expect(res.status).toBe(422);
+    expect(await res.json()).toMatchObject({ error: 'validation_failed' });
+    // 도메인의 invalid_size 는 HTTP 경로에서는 Zod 뒤에 닿지 않는다(경계가 먼저 막는다).
+    expect((await req('/api/review/sessions', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong', size: 8 } })).status).toBe(201);
+  });
+
   it('교차 출처 쓰기를 차단하고 GET·쓰기 응답에 no-store를 붙인다', async () => {
     const token = await mintSession(U1);
     const blocked = await req('/api/review/sessions', {
