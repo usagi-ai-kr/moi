@@ -1,15 +1,23 @@
 import { useId, useRef, type KeyboardEvent } from 'react';
 import type { StudyPerItem } from '../api/client';
 import { copy } from '../copy';
+import {
+  iconCorrect,
+  iconPass,
+  iconUnanswered,
+  iconWrong,
+  type IconSpec,
+} from '../icons';
 
 type StatusKey = 'correct' | 'incorrect' | 'pass' | 'unanswered';
 
-// 색만으로 구분하지 않도록 상태마다 문구와 기호를 함께 쓴다(#132).
-const STATUS: Record<StatusKey, { symbol: string; label: string }> = {
-  correct: { symbol: '✓', label: copy.study.resultStatusCorrect },
-  incorrect: { symbol: '✕', label: copy.study.resultStatusIncorrect },
-  pass: { symbol: '»', label: copy.study.pass },
-  unanswered: { symbol: '—', label: copy.study.unansweredLabel },
+// 색만으로 구분하지 않도록 상태마다 문구와 아이콘을 함께 쓴다(#132, #233 Slice B).
+// 기호 텍스트(✓✕»—) 대신 icons.ts spec을 렌더한다 — 상태 라벨·aria는 그대로 둔다.
+const STATUS: Record<StatusKey, { spec: IconSpec; label: string }> = {
+  correct: { spec: iconCorrect, label: copy.study.resultStatusCorrect },
+  incorrect: { spec: iconWrong, label: copy.study.resultStatusIncorrect },
+  pass: { spec: iconPass, label: copy.study.pass },
+  unanswered: { spec: iconUnanswered, label: copy.study.unansweredLabel },
 };
 
 function statusOf(item: StudyPerItem): StatusKey {
@@ -61,6 +69,7 @@ export function ResultQuestionList({ perItem, currentIndex, onSelect }: Props) {
         {perItem.map((item, index) => {
           const statusKey = statusOf(item);
           const status = STATUS[statusKey];
+          const StatusIcon = status.spec.icon;
           return (
             <li key={item.questionId}>
               <button
@@ -78,7 +87,11 @@ export function ResultQuestionList({ perItem, currentIndex, onSelect }: Props) {
                 <span className="moi-study-question-number">{index + 1}</span>
                 <span className="moi-study-question-status">
                   <span className="moi-study-question-status-symbol" aria-hidden="true">
-                    {status.symbol}
+                    <StatusIcon
+                      size={status.spec.size}
+                      aria-hidden="true"
+                      focusable="false"
+                    />
                   </span>
                   {status.label}
                 </span>

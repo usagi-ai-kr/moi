@@ -3,6 +3,13 @@ import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { Button } from '../components/ui/button';
 import { ExamScope } from '../exam/ExamScope';
+import {
+  iconAbandon,
+  iconNext,
+  iconPass,
+  iconPrev,
+  iconSubmit,
+} from '../icons';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
 import { ReportButton } from './ReportButton';
@@ -25,6 +32,13 @@ interface Props {
   onAbandonRequest: () => void;
   abandonTriggerRef?: RefObject<HTMLButtonElement | null>;
 }
+
+// #233 Slice B — 액션 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
+const SubmitIcon = iconSubmit.icon;
+const PrevIcon = iconPrev.icon;
+const NextIcon = iconNext.icon;
+const PassIcon = iconPass.icon;
+const AbandonIcon = iconAbandon.icon;
 
 function isChecked(item: StudyActiveItem, optionId: string): boolean {
   return item.response.kind === 'answered' && item.response.optionIds.includes(optionId);
@@ -90,11 +104,23 @@ export function QuestionView(p: Props) {
             pending={p.submitting}
             onClick={p.onSubmitRequest}
           >
+            <SubmitIcon
+              size={iconSubmit.size}
+              aria-hidden="true"
+              focusable="false"
+              className="moi-action-icon"
+            />
             {submitLabel}
           </Button>
         )}
         <Button asChild variant="outline" size="sm" className="text-destructive">
           <button type="button" ref={p.abandonTriggerRef} onClick={p.onAbandonRequest}>
+            <AbandonIcon
+              size={iconAbandon.size}
+              aria-hidden="true"
+              focusable="false"
+              className="moi-action-icon"
+            />
             {copy.study.abandon}
           </button>
         </Button>
@@ -133,6 +159,12 @@ export function QuestionView(p: Props) {
       {/* 버튼 위계 — DESIGN.md 5절: Pass=secondary, 미응답으로 지우기=ghost (shadcn Button 공통 규격). */}
       <div className="moi-study-actions">
         <Button type="button" variant="secondary" onClick={() => p.onPass(item.questionId, item.response)}>
+          <PassIcon
+            size={iconPass.size}
+            aria-hidden="true"
+            focusable="false"
+            className="moi-action-icon"
+          />
           {copy.study.pass}
         </Button>
         <Button type="button" variant="ghost" className="bg-transparent" onClick={() => p.onClear(item.questionId, item.response)}>
@@ -152,6 +184,12 @@ export function QuestionView(p: Props) {
       {/* [이전][다음]은 같은 크기·같은 variant의 secondary. 마지막은 [이전][제출하기](#232). */}
       <div className="moi-study-nav">
         <Button type="button" variant="secondary" disabled={p.index === 0} onClick={() => p.onIndex(p.index - 1)}>
+          <PrevIcon
+            size={iconPrev.size}
+            aria-hidden="true"
+            focusable="false"
+            className="moi-action-icon"
+          />
           {copy.study.prev}
         </Button>
         {isLast ? (
@@ -162,6 +200,12 @@ export function QuestionView(p: Props) {
             pending={p.submitting}
             onClick={p.onSubmitRequest}
           >
+            <SubmitIcon
+              size={iconSubmit.size}
+              aria-hidden="true"
+              focusable="false"
+              className="moi-action-icon"
+            />
             {submitLabel}
           </Button>
         ) : (
@@ -171,6 +215,12 @@ export function QuestionView(p: Props) {
             disabled={p.index >= total - 1}
             onClick={() => p.onIndex(p.index + 1)}
           >
+            <NextIcon
+              size={iconNext.size}
+              aria-hidden="true"
+              focusable="false"
+              className="moi-action-icon"
+            />
             {copy.study.next}
           </Button>
         )}

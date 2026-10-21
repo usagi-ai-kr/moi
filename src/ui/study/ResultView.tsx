@@ -4,10 +4,33 @@ import { copy } from '../copy';
 import type { ApiClient, StudyCorrections, StudySubmittedSet } from '../api/client';
 import { Button } from '../components/ui/button';
 import { ExamScope } from '../exam/ExamScope';
+import {
+  iconBookmark,
+  iconHistory,
+  iconStart,
+  iconWrong,
+  type IconSpec,
+} from '../icons';
 import { ResultQuestionList } from './ResultQuestionList';
 import { ResultPager } from './ResultPager';
 import { scopeLabel } from './types';
 import './study-result.css';
+
+// #233 Slice B — 액션 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
+const StartIcon = iconStart.icon;
+const HistoryIcon = iconHistory.icon;
+
+function ActionIcon({ spec }: { spec: IconSpec }) {
+  const Icon = spec.icon;
+  return (
+    <Icon
+      size={spec.size}
+      aria-hidden="true"
+      focusable="false"
+      className="moi-action-icon"
+    />
+  );
+}
 
 interface Props {
   client: ApiClient;
@@ -38,7 +61,10 @@ function ReviewShortcut({ mode, label }: { mode: 'wrong' | 'bookmark'; label: st
   const to = `/review?mode=${mode}`;
   return (
     <Button asChild variant="secondary">
-      <Link to={to}>{label}</Link>
+      <Link to={to}>
+        <ActionIcon spec={mode === 'wrong' ? iconWrong : iconBookmark} />
+        {label}
+      </Link>
     </Button>
   );
 }
@@ -144,9 +170,21 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
       {/* 하단 버튼 위계 — 새 세트 시작=primary, 학습 이력·오답 복습=secondary(같은 크기). */}
       <div className="moi-study-actions">
         <Button type="button" variant="primary" onClick={onRestart}>
+          <StartIcon
+            size={iconStart.size}
+            aria-hidden="true"
+            focusable="false"
+            className="moi-action-icon"
+          />
           {copy.study.backToStart}
         </Button>
         <Button type="button" variant="secondary" onClick={onHistory}>
+          <HistoryIcon
+            size={iconHistory.size}
+            aria-hidden="true"
+            focusable="false"
+            className="moi-action-icon"
+          />
           {copy.study.historyLink}
         </Button>
         <ReviewShortcut mode="wrong" label={copy.review.goToWrongReview} />
