@@ -2,7 +2,13 @@ import type { KeyboardEvent } from 'react';
 import { copy } from '../copy';
 import type { ApiClient, StudyPerItem, StudySubmittedItem } from '../api/client';
 import { Button } from '../components/ui/button';
+import { iconNext, iconPrev, iconResult } from '../icons';
 import { ResultItemDetail } from './ResultItemDetail';
+
+// #233 Slice B — 페이저 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
+const PrevIcon = iconPrev.icon;
+const NextIcon = iconNext.icon;
+const SummaryIcon = iconResult.icon;
 
 interface Props {
   client: ApiClient;
@@ -64,10 +70,22 @@ export function ResultPager(p: Props) {
           disabled={p.currentIndex === 0}
           onClick={() => p.onGo(p.currentIndex - 1)}
         >
+          <PrevIcon
+            size={iconPrev.size}
+            aria-hidden="true"
+            focusable="false"
+            className="moi-action-icon"
+          />
           {copy.study.prev}
         </Button>
         {p.currentIndex >= p.pageCount - 1 ? (
           <Button type="button" variant="secondary" onClick={p.onSummary}>
+            <SummaryIcon
+              size={iconResult.size}
+              aria-hidden="true"
+              focusable="false"
+              className="moi-action-icon"
+            />
             {copy.study.backToSummary}
           </Button>
         ) : (
@@ -78,6 +96,12 @@ export function ResultPager(p: Props) {
             disabled={p.currentIndex >= p.pageCount - 1}
             onClick={() => p.onGo(p.currentIndex + 1)}
           >
+            <NextIcon
+              size={iconNext.size}
+              aria-hidden="true"
+              focusable="false"
+              className="moi-action-icon"
+            />
             {copy.study.next}
           </Button>
         )}

@@ -229,3 +229,11 @@ h1.moi-study-title {
   gap: var(--moi-space-2);
   width: 100%;
 }
+/* #233 Slice B — 액션 아이콘 20px 토큰(shadcn svg 16px보다 우선). 네이티브 버튼은 아이콘+라벨 정렬만 보완. */
+.moi-study [data-slot='button'] svg.moi-action-icon { width: 20px; height: 20px; flex: none; }
+.moi-study-start .moi-study-primary { display: inline-flex; align-items: center; justify-content: center; gap: var(--moi-space-1); }
+.moi-study .moi-study-link { gap: var(--moi-space-1); }
+.moi-study .moi-alert-retry { display: inline-flex; align-items: center; justify-content: center; gap: var(--moi-space-1); }
+.moi-study .moi-study-link svg, .moi-study .moi-alert-retry svg { flex: none; width: 20px; height: 20px; }
+/* 아이콘 추가로 길어진 라벨이 초좁폭에서 가로로 밀려나지 않도록 줄바꿈 허용 — 여유 폭에서는 한 줄 그대로. */
+.moi-study [data-slot='button'] { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }

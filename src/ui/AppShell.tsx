@@ -1,10 +1,18 @@
-import { Menu, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { Brand } from './Brand';
 import { Drawer } from './components/ui/drawer';
 import { copy } from './copy';
 import { ExamSelector } from './exam/ExamSelector';
+import {
+  iconAccount,
+  iconBookmark,
+  iconClose,
+  iconHistory,
+  iconMenu,
+  iconStart,
+  type IconSpec,
+} from './icons';
 import { prefetchRoute } from './lazy-routes';
 import { LogoutAction } from './LogoutAction';
 import { MOBILE_NAV_QUERY, useMediaQuery } from './responsive';
@@ -14,6 +22,15 @@ import './drawer.css';
 // 모바일 Drawer의 dialog id — 트리거의 aria-controls와 일치해야 한다 (ADR-0057).
 const DRAWER_ID = 'moi-mobile-nav';
 
+// #233 Slice B — nav 아이콘은 icons.ts spec(ADR-0073·DESIGN §4).
+// 라벨은 그대로 두고 아이콘은 장식(aria-hidden)으로 렌더한다.
+function NavIcon({ spec }: { spec: IconSpec }) {
+  const Icon = spec.icon;
+  return <Icon size={spec.size} aria-hidden="true" focusable="false" />;
+}
+
+const MenuIcon = iconMenu.icon;
+const CloseIcon = iconClose.icon;
 // NavLink 청크를 hover/focus/touch 시점에 미리 받아 라우트 전환 시 로딩 폴백을 줄인다 (#184).
 function prefetchOnIntent(to: '/history' | '/review' | '/account') {
   return {
@@ -58,15 +75,19 @@ export function AppShell({
           <div className="moi-shell-nav-group">
             <nav className="moi-nav" aria-label={copy.nav.label} hidden={isMobile}>
               <NavLink to="/" end className="moi-nav-link">
+                <NavIcon spec={iconStart} />
                 {copy.nav.study}
               </NavLink>
               <NavLink to="/history" className="moi-nav-link" {...prefetchOnIntent('/history')}>
+                <NavIcon spec={iconHistory} />
                 {copy.nav.history}
               </NavLink>
               <NavLink to="/review" className="moi-nav-link" {...prefetchOnIntent('/review')}>
+                <NavIcon spec={iconBookmark} />
                 {copy.nav.review}
               </NavLink>
               <NavLink to="/account" className="moi-nav-link" {...prefetchOnIntent('/account')}>
+                <NavIcon spec={iconAccount} />
                 {copy.nav.account}
               </NavLink>
               <LogoutAction className="moi-nav-action" pending={pending} onLogout={onLogout} />
@@ -84,7 +105,7 @@ export function AppShell({
               aria-label={copy.nav.menuOpen}
               onClick={() => setDrawerOpen(true)}
             >
-              <Menu aria-hidden="true" focusable="false" />
+              <MenuIcon size={iconMenu.size} aria-hidden="true" focusable="false" />
             </button>
           ) : null}
         </div>
@@ -110,7 +131,7 @@ export function AppShell({
               aria-label={copy.nav.menuClose}
               onClick={() => setDrawerOpen(false)}
             >
-              <X aria-hidden="true" focusable="false" />
+              <CloseIcon size={iconClose.size} aria-hidden="true" focusable="false" />
             </button>
           </div>
           <div className="moi-drawer-exam">
@@ -118,6 +139,7 @@ export function AppShell({
           </div>
           <nav className="moi-drawer-nav" aria-label={copy.nav.label}>
             <NavLink to="/" end className="moi-drawer-link" onClick={() => setDrawerOpen(false)}>
+              <NavIcon spec={iconStart} />
               {copy.nav.study}
             </NavLink>
             <NavLink
@@ -126,6 +148,7 @@ export function AppShell({
               onClick={() => setDrawerOpen(false)}
               {...prefetchOnIntent('/history')}
             >
+              <NavIcon spec={iconHistory} />
               {copy.nav.history}
             </NavLink>
             <NavLink
@@ -134,6 +157,7 @@ export function AppShell({
               onClick={() => setDrawerOpen(false)}
               {...prefetchOnIntent('/review')}
             >
+              <NavIcon spec={iconBookmark} />
               {copy.nav.review}
             </NavLink>
             <NavLink
@@ -142,6 +166,7 @@ export function AppShell({
               onClick={() => setDrawerOpen(false)}
               {...prefetchOnIntent('/account')}
             >
+              <NavIcon spec={iconAccount} />
               {copy.nav.account}
             </NavLink>
           </nav>

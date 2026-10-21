@@ -117,7 +117,7 @@ function listButton(name: string) {
 }
 
 describe('결과 문항 목록 (#132)', () => {
-  it('요약 다음, 해설 앞에 번호·상태를 문구와 기호로 보여준다', () => {
+  it('요약 다음, 해설 앞에 번호·상태를 문구와 아이콘으로 보여준다 (#233 Slice B)', () => {
     renderResult();
     const list = screen.getByRole('navigation', { name: '문항 목록' });
     expect(within(list).getByRole('list')).toBeInTheDocument();
@@ -126,15 +126,22 @@ describe('결과 문항 목록 (#132)', () => {
     expect(screen.getByText(/정답률 25%/).compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(list.compareDocumentPosition(pager()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
-    for (const [name, symbol] of [
-      ['문제 1: 정답', '✓'],
-      ['문제 2: 오답', '✕'],
-      ['문제 3: Pass', '»'],
-      ['문제 4: 미응답', '—'],
+    // 상태 기호 텍스트(✓✕»—) 대신 icons.ts spec 아이콘 + 상태 문구 (ADR-0073).
+    for (const [name, label] of [
+      ['문제 1: 정답', '정답'],
+      ['문제 2: 오답', '오답'],
+      ['문제 3: Pass', 'Pass'],
+      ['문제 4: 미응답', '미응답'],
     ]) {
       const button = listButton(name);
-      expect(button).toHaveTextContent(symbol);
+      expect(button).toHaveTextContent(label);
+      const svg = button.querySelector('svg[aria-hidden="true"]');
+      expect(svg).not.toBeNull();
+      expect(svg?.getAttribute('width')).toBe('20');
     }
+    expect(list.textContent).not.toContain('✓');
+    expect(list.textContent).not.toContain('✕');
+    expect(list.textContent).not.toContain('»');
   });
 
   it('목록에서 문항을 선택하면 같은 화면의 페이저 상세가 해당 문항으로 이동한다', () => {

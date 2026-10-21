@@ -1,7 +1,13 @@
 import { copy } from '../copy';
 import { ExamScope } from '../exam/ExamScope';
+import { iconHistory, iconResume, iconStart } from '../icons';
 import { STUDY_DOMAINS } from './types';
 import type { StudyScope } from './types';
+
+// #233 Slice B — 액션 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
+const StartIcon = iconStart.icon;
+const ResumeIcon = iconResume.icon;
+const HistoryIcon = iconHistory.icon;
 
 interface Props {
   scope: StudyScope;
@@ -80,6 +86,7 @@ export function StartView(p: Props) {
         <div className="moi-alert moi-alert-warning" role="alert">
           <p className="moi-alert-text">{copy.study.activeExists}</p>
           <button type="button" className="moi-alert-retry" onClick={p.onResume}>
+            <ResumeIcon size={iconResume.size} aria-hidden="true" focusable="false" />
             {copy.study.continueStudy}
           </button>
         </div>
@@ -102,10 +109,12 @@ export function StartView(p: Props) {
           aria-busy={p.pending}
           onClick={p.onStart}
         >
+          <StartIcon size={iconStart.size} aria-hidden="true" focusable="false" />
           {p.pending ? copy.study.starting : copy.study.startAction}
         </button>
         {p.onHistory && (
           <button type="button" className="moi-study-link" onClick={p.onHistory}>
+            <HistoryIcon size={iconHistory.size} aria-hidden="true" focusable="false" />
             {copy.study.historyLink}
           </button>
         )}
