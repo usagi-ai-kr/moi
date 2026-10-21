@@ -4,6 +4,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { createKakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
 import { normalizePasetoLocalKey } from '@/infra/auth/session/keyring';
 import { createApp } from '@/infra/http/app';
+import { createD1AccountRepository } from '@/infra/persistence/d1-account-repository';
 import { createD1UserIdentityRepository } from '@/infra/persistence/d1-user-identity-repository';
 import type { OAuthIdentity } from '@/domain/auth/identity';
 import migration0000 from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
@@ -407,6 +408,79 @@ describe('로그인 → 세션 발급 → /api/me', () => {
 
     expect(res.status).toBe(401);
     expect(res.headers.get('cache-control')).toBe('no-store');
+  });
+});
+
+describe('GET /api/me — 계정 정보 DTO (#234/ADR-0072)', () => {
+  it('가입일·최근 로그인을 함께 돌려준다 (마이그레이션·write 0)', async () => {
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const app = createAppWithSpy();
+    const token = await performLogin(app, testEnv);
+
+    const me = await app.fetch(
+      new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${token}` } }),
+      testEnv,
+    );
+
+    expect(me.status).toBe(200);
+    expect(me.headers.get('cache-control')).toBe('no-store');
+    const body = (await me.json()) as {
+      user: { id: string; createdAt: number | null; lastLoginAt: number | null };
+    };
+    // 가입일 = users.created_at (epoch seconds)
+    const userRow = await db
+      .prepare('SELECT created_at FROM users WHERE id = ?1')
+      .bind(body.user.id)
+      .first<{ created_at: number }>();
+    expect(body.user.createdAt).toBe(userRow?.created_at);
+    expect(body.user.createdAt).toBeGreaterThan(0);
+    // 최근 로그인 = MAX(sessions.issued_at) — 로그인 이력이 행으로 남아 최대값이 마지막 로그인이다
+    const sessionRow = await db
+      .prepare('SELECT MAX(issued_at) AS m FROM sessions WHERE user_id = ?1')
+      .bind(body.user.id)
+      .first<{ m: number | null }>();
+    expect(body.user.lastLoginAt).toBe(sessionRow?.m);
+    expect(body.user.lastLoginAt).toBeGreaterThan(0);
+    // 마이그레이션 0건 — users/sessions 스키마는 그대로다
+    expect(await count('users')).toBe(1);
+    expect(await count('sessions')).toBe(1);
+  });
+
+  it('재로그인 후 최근 로그인은 새 세션 발급 시각으로 갱신된다', async () => {
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const app = createAppWithSpy();
+    await performLogin(app, testEnv);
+    const tokenB = await performLogin(app, testEnv);
+
+    const me = await app.fetch(
+      new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${tokenB}` } }),
+      testEnv,
+    );
+    const body = (await me.json()) as { user: { lastLoginAt: number | null } };
+    const latest = await db
+      .prepare('SELECT MAX(issued_at) AS m FROM sessions')
+      .first<{ m: number | null }>();
+    expect(body.user.lastLoginAt).toBe(latest?.m);
+  });
+
+  it('계정 정보 저장소: 세션 이력이 없는 계정은 lastLoginAt이 null이다', async () => {
+    const repo = createD1AccountRepository(db);
+    const userId = crypto.randomUUID();
+    const nowSec = Math.floor(Date.now() / 1000);
+    await db
+      .prepare('INSERT INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)')
+      .bind(userId, nowSec, nowSec)
+      .run();
+
+    const account = await repo.findAccountInfo({ userId });
+
+    expect(account?.createdAt).toBe(nowSec);
+    expect(account?.lastLoginAt).toBeNull();
+  });
+
+  it('계정 정보 저장소: 존재하지 않는 사용자는 null이다', async () => {
+    const repo = createD1AccountRepository(db);
+    await expect(repo.findAccountInfo({ userId: crypto.randomUUID() })).resolves.toBeNull();
   });
 });
 

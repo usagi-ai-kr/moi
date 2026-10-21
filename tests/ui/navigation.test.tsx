@@ -50,6 +50,36 @@ function loggedOutClient(): ApiClient {
   } as unknown as ApiClient;
 }
 
+/** 로그아웃이 실패(403)하는 클라이언트 — nav 액션의 오류·재시도를 검증한다. */
+function logoutFailingClient(): ApiClient {
+  return {
+    get: vi.fn((path: string) => ({
+      json: async () => {
+        if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
+        return { user: { id: '123e4567-e89b-12d3-a456-426614174000', createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } };
+      },
+    })),
+    post: vi.fn(async () => {
+      throw httpError(403, { error: 'forbidden' });
+    }),
+    patch: vi.fn(),
+  } as unknown as ApiClient;
+}
+
+/** 로그아웃 응답이 끝나지 않는 클라이언트 — pending 상태를 검증한다. */
+function logoutHangingClient(): ApiClient {
+  return {
+    get: vi.fn((path: string) => ({
+      json: async () => {
+        if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
+        return { user: { id: '123e4567-e89b-12d3-a456-426614174000', createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } };
+      },
+    })),
+    post: vi.fn(() => new Promise<Response>(() => {})),
+    patch: vi.fn(),
+  } as unknown as ApiClient;
+}
+
 function renderAt(client: ApiClient, url: string) {
   window.history.replaceState(null, '', url);
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -132,12 +162,25 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     expect(screen.getByRole('option', { name: 'AWS SAA-C03' })).toBeInTheDocument();
   });
 
-  it('/account 직접 진입: 계정 화면에 UUID/masked-id 없이 로그아웃만 있다', async () => {
+  it('/account 직접 진입: 계정 정보는 보이지만 내부 ID·로그아웃 버튼은 없다 (#234)', async () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     renderAt(loggedInClientWithHistory(0), '/account');
-    expect(await screen.findByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: '계정' })).toBeInTheDocument();
+    expect(screen.getByText('가입일')).toBeInTheDocument();
+    expect(screen.getByText('최근 로그인')).toBeInTheDocument();
+    expect(screen.getByText('로그인 방식')).toBeInTheDocument();
+    // 내부 식별자·마스킹 id는 화면(aria-label 포함)에 노출하지 않는다
     expect(screen.queryByTestId('masked-id')).not.toBeInTheDocument();
     expect(document.body.textContent).not.toContain(id);
+    for (const el of Array.from(document.querySelectorAll('[aria-label]'))) {
+      expect(el.getAttribute('aria-label')).not.toContain(id);
+    }
+    // 로그아웃은 내비게이션 액션 — 계정 본문에는 없다
+    const logoutButtons = screen.getAllByRole('button', { name: '로그아웃' });
+    expect(logoutButtons.length).toBeGreaterThan(0);
+    for (const button of logoutButtons) {
+      expect(button.closest('.moi-account')).toBeNull();
+    }
     expect(screen.getByRole('link', { name: '계정' })).toHaveAttribute('aria-current', 'page');
   });
 
@@ -186,5 +229,65 @@ describe('라우터·AppShell 내비게이션 (#148)', () => {
     expect(prefetchSpy).toHaveBeenCalledWith('/history');
     expect(prefetchSpy).toHaveBeenCalledWith('/review');
     expect(prefetchSpy).toHaveBeenCalledWith('/account');
+  });
+});
+
+describe('내비게이션 로그아웃 액션 (#234/ADR-0072)', () => {
+  it('로그아웃은 이동 링크가 아니라 실제 액션 버튼이다', async () => {
+    useDesktopViewport();
+    renderAt(loggedInClientWithHistory(0), '/');
+    const button = await screen.findByRole('button', { name: '로그아웃' });
+    expect(button.tagName).toBe('BUTTON');
+    expect(button).toHaveAttribute('type', 'button');
+    // 메뉴 링크와 달리 현재 위치 표시(aria-current)를 갖지 않는다
+    expect(button).not.toHaveAttribute('aria-current');
+    expect(screen.queryByRole('link', { name: '로그아웃' })).not.toBeInTheDocument();
+  });
+
+  it('로그아웃 pending 동안은 disabled + aria-busy다', async () => {
+    useDesktopViewport();
+    renderAt(logoutHangingClient(), '/');
+    const button = await screen.findByRole('button', { name: '로그아웃' });
+    fireEvent.click(button);
+
+    const pending = await screen.findByRole('button', { name: /로그아웃하고 있습니다/ });
+    expect(pending).toBeDisabled();
+    expect(pending).toHaveAttribute('aria-busy', 'true');
+  });
+
+  it('로그아웃 실패: role=alert 안내와 재시도 버튼이 같은 위치에 보인다', async () => {
+    useDesktopViewport();
+    renderAt(logoutFailingClient(), '/');
+    const button = await screen.findByRole('button', { name: '로그아웃' });
+    fireEvent.click(button);
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('로그아웃하지 못했습니다.');
+    expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument();
+  });
+
+  it('로그아웃 성공: 세션을 버리고 비로그인 화면으로 전환된다', async () => {
+    useDesktopViewport();
+    let loggedOut = false;
+    const client = {
+      get: vi.fn((path: string) => ({
+        json: async () => {
+          if (loggedOut) throw httpError(401, { error: 'unauthorized' });
+          if (String(path).startsWith('api/study/sets')) return { items: [], total: 0 };
+          return { user: { id: '123e4567-e89b-12d3-a456-426614174000', createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } };
+        },
+      })),
+      post: vi.fn(async () => {
+        loggedOut = true;
+        return new Response(null, { status: 204 });
+      }),
+      patch: vi.fn(),
+    } as unknown as ApiClient;
+
+    renderAt(client, '/');
+    fireEvent.click(await screen.findByRole('button', { name: '로그아웃' }));
+
+    expect(await screen.findByRole('link', { name: '카카오 로그인' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
   });
 });

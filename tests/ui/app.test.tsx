@@ -104,30 +104,59 @@ describe('App (세션 상태 화면)', () => {
     expect(screen.queryByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).not.toBeInTheDocument();
   });
 
-  it('로그인 홈: 계정/로그아웃을 상시 노출하지 않고 원본 id를 렌더하지 않는다', async () => {
+  it('로그인 홈: 계정 메뉴와 로그아웃 액션을 노출하고 원본 id를 렌더하지 않는다', async () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
     renderApp(client, '/');
     expect(await screen.findByRole('button', { name: '10문제 학습' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '학습 시작' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
+    // 로그아웃은 내비게이션의 독립 액션 버튼이다(#234)
+    expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
     expect(screen.queryByTestId('masked-id')).not.toBeInTheDocument();
     expect(document.body.textContent).not.toContain(id);
     expect(document.body.textContent).not.toContain('123e');
   });
 
-  it('계정 화면(/account): 로그아웃 버튼만 있고 UUID/masked-id가 없다', async () => {
+  it('계정 화면(/account): 계정 정보를 보여주고 UUID·로그아웃 버튼이 본문에 없다', async () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
-    const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
+    const client = fakeClient({ meStatus: 200, meBody: { user: { id, createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } } });
     renderApp(client, '/account');
-    expect(await screen.findByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: '계정' })).toBeInTheDocument();
+    expect(screen.getByText('로그인 방식')).toBeInTheDocument();
+    expect(screen.getByText('카카오')).toBeInTheDocument();
+    expect(screen.getByText('가입일')).toBeInTheDocument();
+    expect(screen.getByText('최근 로그인')).toBeInTheDocument();
     expect(screen.queryByTestId('masked-id')).not.toBeInTheDocument();
     expect(document.body.textContent).not.toContain(id);
     expect(document.body.textContent).not.toContain('123e');
     for (const el of Array.from(document.querySelectorAll('[aria-label]'))) {
       expect(el.getAttribute('aria-label')).not.toContain(id);
     }
+    // 로그아웃은 계정 본문이 아니라 nav 액션 — 본문 섹션 안에는 없다
+    const accountSection = document.querySelector('.moi-account');
+    expect(accountSection?.querySelector('button[name="logout"]')).toBeNull();
+    expect(accountSection?.querySelector('.moi-logout-action')).toBeNull();
+    expect(screen.getByRole('button', { name: '로그아웃' }).closest('.moi-account')).toBeNull();
+  });
+
+  it('계정 화면: 기록이 없으면 1970 대신 "정보 없음"을 보여준다 (#234/#212)', async () => {
+    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const client = fakeClient({ meStatus: 200, meBody: { user: { id, createdAt: 0, lastLoginAt: null } } });
+    renderApp(client, '/account');
+    await screen.findByRole('heading', { level: 1, name: '계정' });
+    expect(document.body.textContent).not.toContain('1970');
+    expect(screen.getAllByText('날짜 정보 없음').length).toBe(2);
+  });
+
+  it('계정 화면: ms 단위 시각도 같은 형식으로 보여준다 (1970 회귀 방지)', async () => {
+    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const client = fakeClient({ meStatus: 200, meBody: { user: { id, createdAt: 1_700_000_000_000, lastLoginAt: 1_700_100_000_000 } } });
+    renderApp(client, '/account');
+    await screen.findByRole('heading', { level: 1, name: '계정' });
+    expect(document.body.textContent).not.toContain('1970');
+    expect(screen.getByText('2023. 11. 15.')).toBeInTheDocument();
+    expect(screen.getByText('2023. 11. 16.')).toBeInTheDocument();
   });
 
   it('오류/취소(?auth=error): 안전 메시지 + URL 정리 + 토큰 미노출', async () => {

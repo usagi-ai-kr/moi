@@ -4,7 +4,7 @@ import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { RouteFallback } from './RouteFallback';
-import { useAuthCallback, useSessionId, useUiStore, type ApiClient } from './session';
+import { useAuthCallback, useSessionUser, useUiStore, type ApiClient } from './session';
 import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
 // 로그인 후 트리는 비로그인 홈 초기 번들/LCP에 포함하지 않도록 지연 로드한다 (이슈 #132).
@@ -57,20 +57,20 @@ function LoggedOutView({
 }
 
 export function App({ client }: { client: ApiClient }) {
-  const { status, userId, retry } = useSessionId(client);
+  const { status, user, retry } = useSessionUser(client);
   const authFailed = useAuthCallback('error');
   useAuthCallback('success');
   const bannerDismissed = useUiStore((s) => s.authBannerDismissed);
   const showAuthError = authFailed && !bannerDismissed;
 
-  if (status !== 'logged-in' || userId === null) {
+  if (status !== 'logged-in' || user === null) {
     return <LoggedOutView status={status} onRetry={retry} showAuthError={showAuthError} />;
   }
 
   return (
     <RouteErrorBoundary>
       <Suspense fallback={<RouteFallback />}>
-        <AuthenticatedApp client={client} userId={userId} showAuthError={showAuthError} />
+        <AuthenticatedApp client={client} user={user} showAuthError={showAuthError} />
       </Suspense>
     </RouteErrorBoundary>
   );

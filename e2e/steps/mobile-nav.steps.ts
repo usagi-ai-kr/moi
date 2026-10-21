@@ -18,7 +18,10 @@ const STATS_DTO = {
 
 Given('모바일 내비게이션 API 모의가 준비되면', async ({ page }) => {
   await page.route('**/api/me', async (route) => {
-    await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
+    await route.fulfill({
+      status: 200,
+      json: { user: { id: 'e2e-user-1', createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } },
+    });
   });
   await page.route('**/api/study/stats**', async (route) => {
     await route.fulfill({ status: 200, json: STATS_DTO });
@@ -76,7 +79,7 @@ When('200% 확대를 흉내내면', async ({ page }) => {
 
 When('Drawer 텍스트를 200%로 확대한다', async ({ page }) => {
   await page.addStyleTag({
-    content: '.moi-drawer-link, .moi-drawer-head { font-size: 200% !important; }',
+    content: '.moi-drawer-link, .moi-drawer-head, .moi-logout-action { font-size: 200% !important; }',
   });
 });
 
@@ -114,6 +117,15 @@ Then('Drawer에 네 메뉴가 보인다', async ({ page }) => {
   }
 });
 
+// 로그아웃은 Drawer 안의 독립 액션 버튼이다 — 링크 4개와 구분된다(#234/ADR-0072).
+Then('Drawer에 로그아웃 액션이 보인다', async ({ page }) => {
+  const drawer = page.locator('dialog.moi-drawer');
+  const button = drawer.getByRole('button', { name: '로그아웃' });
+  await expect(button).toBeVisible();
+  await expect(drawer.getByRole('link', { name: '로그아웃' })).toHaveCount(0);
+  await expect(drawer.getByRole('link')).toHaveCount(4);
+});
+
 Then('현재 위치 메뉴가 표시된다', async ({ page }) => {
   const current = page.locator('dialog.moi-drawer a[aria-current="page"]');
   await expect(current).toHaveCount(1);
@@ -122,7 +134,7 @@ Then('현재 위치 메뉴가 표시된다', async ({ page }) => {
 
 Then('Drawer 항목은 44px 이상이다', async ({ page }) => {
   const drawer = page.locator('dialog.moi-drawer');
-  for (const selector of ['.moi-drawer-close', '.moi-drawer-link']) {
+  for (const selector of ['.moi-drawer-close', '.moi-drawer-link', '.moi-logout-action']) {
     const boxes = await drawer.locator(selector).evaluateAll((els) =>
       els.map((el) => {
         const rect = el.getBoundingClientRect();

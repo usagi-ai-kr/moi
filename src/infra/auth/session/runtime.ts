@@ -1,9 +1,11 @@
 import type { ResolveOrCreateUserDeps } from '@/app/identity/resolve-or-create-user';
 import type { AuthenticateSessionDeps } from '@/app/session/authenticate-session';
+import type { GetAccountInfoDeps } from '@/app/session/get-account-info';
 import type { IssueUserSessionDeps } from '@/app/session/issue-user-session';
 import type { RevokeSessionDeps } from '@/app/session/revoke-session';
 import type { SessionEventLogger } from '@/app/session/ports';
 import { createJsonLogger } from '@/infra/logging/json-logger';
+import { createD1AccountRepository } from '@/infra/persistence/d1-account-repository';
 import { createD1UserIdentityRepository } from '@/infra/persistence/d1-user-identity-repository';
 import { createD1SessionRepository } from './d1-session-repository';
 import { createPasetoKeyring } from './keyring';
@@ -23,6 +25,8 @@ export interface SessionRuntime {
   readonly revoke: RevokeSessionDeps;
   /** 카카오 identity → 내부 user resolve (#3 use case deps). */
   readonly resolveIdentity: ResolveOrCreateUserDeps;
+  /** 계정 정보(가입일·최근 로그인) 조회 — 읽기 전용(#234/ADR-0072). */
+  readonly account: GetAccountInfoDeps;
   readonly logger: SessionEventLogger;
 }
 
@@ -36,12 +40,14 @@ export function createSessionRuntime(env: SessionEnv, requestId: string): Sessio
   const tokenAdapter = createPasetoSessionTokenAdapter(keyring);
   const sessionRepo = createD1SessionRepository(env.DB);
   const identityRepo = createD1UserIdentityRepository(env.DB);
+  const accountRepo = createD1AccountRepository(env.DB);
 
   return {
     issue: { tokenIssuer: tokenAdapter, sessionRepository: sessionRepo, logger },
     authenticate: { tokenVerifier: tokenAdapter, sessionRepository: sessionRepo, logger },
     revoke: { tokenVerifier: tokenAdapter, sessionRepository: sessionRepo, logger },
     resolveIdentity: { repository: identityRepo, logger },
+    account: { accountRepository: accountRepo },
     logger,
   };
 }

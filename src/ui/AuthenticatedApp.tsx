@@ -11,7 +11,7 @@ import {
   useSearchParams,
 } from 'react-router';
 import { copy } from './copy';
-import { useLogout, useUiStore, type ApiClient } from './session';
+import { useLogout, useUiStore, type ApiClient, type MeUser } from './session';
 import { ExamScope } from './exam/ExamScope';
 import { ExamScopeProvider } from './exam/ExamScopeProvider';
 import './authenticated.css';
@@ -108,20 +108,22 @@ function NotFound() {
 
 function AuthenticatedRoutes({
   client,
-  userId,
+  user,
   showAuthError,
 }: {
   client: ApiClient;
-  userId: string;
+  user: MeUser;
   showAuthError: boolean;
 }) {
+  const userId = user.id;
   const doLogout = useLogout(client, userId);
   const logoutPending = useUiStore((s) => s.logoutPending);
 
   return (
     <ExamScopeProvider>
       <Routes>
-        <Route element={<AppShell />}>
+        {/* 로그아웃은 계정 본문이 아니라 내비게이션(데스크톱 nav·모바일 Drawer) 액션이다(#234/ADR-0072). */}
+        <Route element={<AppShell onLogout={doLogout} pending={logoutPending} />}>
           <Route element={<RouteBoundaryLayout />}>
             <Route index element={<Home showAuthError={showAuthError} client={client} />} />
             <Route
@@ -162,7 +164,7 @@ function AuthenticatedRoutes({
             />
             <Route
               path="account"
-              element={<Suspense fallback={<RouteFallback />}><AccountPage pending={logoutPending} onLogout={doLogout} /></Suspense>}
+              element={<Suspense fallback={<RouteFallback />}><AccountPage user={user} /></Suspense>}
             />
             <Route path="*" element={<NotFound />} />
           </Route>
@@ -174,7 +176,7 @@ function AuthenticatedRoutes({
 
 export function AuthenticatedApp(props: {
   client: ApiClient;
-  userId: string;
+  user: MeUser;
   showAuthError: boolean;
 }) {
   const inRouter = useInRouterContext();

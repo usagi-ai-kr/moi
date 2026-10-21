@@ -1,12 +1,15 @@
 import type { Hono } from 'hono';
 import { authenticateSession, type AuthenticateSessionResult } from '@/app/session/authenticate-session';
+import { getAccountInfo } from '@/app/session/get-account-info';
+import type { AccountInfo } from '@/app/session/ports';
 import { revokeSession } from '@/app/session/revoke-session';
 import { createSessionRuntime, type SessionRuntime } from '@/infra/auth/session/runtime';
 import { parseSessionCookieValue, serializeSessionCookieClearance } from './cookie';
 
 /**
  * 세션 라우트 (이슈 #4, ADR-0005/0006).
- * - GET /api/me: 200 `{ user: { id } }`(내부 UUID) / 미인증·변조·만료·폐기 401, no-store.
+ * - GET /api/me: 200 `{ user: { id, createdAt, lastLoginAt } }`(내부 UUID·가입일·최근 로그인) /
+ *   미인증·변조·만료·폐기 401, no-store. 가입일·최근 로그인은 파생 조회이며 값이 없으면 null이다(#234/ADR-0072).
  * - POST /auth/logout: CSRF(Origin + Sec-Fetch-Site) 검증 실패 403 → 미인증 401 →
  *   성공 204 + D1 revoke + 쿠키 삭제(Max-Age=0). 같은 PASETO 재사용 401.
  * - CSRF 판정: Sec-Fetch-Site가 있고 same-origin이 아니면 차단, Origin이 있고
@@ -28,6 +31,17 @@ function isCrossSiteRequest(headers: Headers, requestUrl: string): boolean {
   return false;
 }
 
+/** 계정 정보 조회 — 실패해도 로그인 판정(200/401)은 흔들지 않는다. 표시용 값은 '없음(null)'으로 내린다. */
+async function loadAccountInfo(runtime: SessionRuntime, userId: string): Promise<AccountInfo | null> {
+  try {
+    const result = await getAccountInfo(runtime.account, { userId });
+    return result.outcome === 'found' ? result.account : null;
+  } catch {
+    runtime.logger.warn('account_info_unavailable', 'lookup_failed');
+    return null;
+  }
+}
+
 export function registerSessionRoutes(app: Hono<{ Bindings: Env }>, options?: SessionRouteOptions): void {
   const createRuntime = options?.createRuntime ?? createSessionRuntime;
 
@@ -40,7 +54,14 @@ export function registerSessionRoutes(app: Hono<{ Bindings: Env }>, options?: Se
     });
     c.header('Cache-Control', 'no-store');
     if (result.outcome === 'authenticated') {
-      return c.json({ user: { id: result.userId } });
+      const account = await loadAccountInfo(runtime, result.userId);
+      return c.json({
+        user: {
+          id: result.userId,
+          createdAt: account?.createdAt ?? null,
+          lastLoginAt: account?.lastLoginAt ?? null,
+        },
+      });
     }
     return c.json({ error: 'unauthorized' }, 401);
   });
