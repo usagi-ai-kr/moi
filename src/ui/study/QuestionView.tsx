@@ -1,5 +1,4 @@
 import type { RefObject } from 'react';
-import { DEFAULT_STUDY_SET_SIZE } from '@/domain/study/thresholds';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { OptionFieldset } from '../components/option-fieldset';
@@ -15,7 +14,7 @@ import {
 } from '../icons';
 import { useExamScope } from '../exam/ExamScopeProvider';
 import { BookmarkButton } from '../review/BookmarkButton';
-import { readRequestedSize, isRouterStudyPath } from './queries';
+import { shouldShowShortageNotice } from './queries';
 import { ReportButton } from './ReportButton';
 import { StudyShortageNotice } from './StudyShortageNotice';
 import type { SaveState } from './types';
@@ -36,6 +35,8 @@ interface Props {
   onSubmitRequest: () => void;
   onAbandonRequest: () => void;
   abandonTriggerRef?: RefObject<HTMLButtonElement | null>;
+  /** 렌더 중인 세트 id — 부족 안내 stash가 다른 세트 기록일 때 오안내를 막는다 (#275 r5). 없으면 안내를 표시하지 않는다. */
+  setId?: string;
 }
 
 // #233 Slice B — 액션 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
@@ -88,13 +89,7 @@ export function QuestionView(p: Props) {
   const saveText = SAVE_TEXT[p.save];
   const isLast = p.index >= total - 1;
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
-  // 부족 안내 — 라우트 변경으로 size가 기본값 리셋돼도 요청 size stash로 비교한다 (#275 F1).
-  const requestedSize = readRequestedSize(examId);
-  const showShortageNotice =
-    requestedSize !== null &&
-    isRouterStudyPath() &&
-    p.items.length >= DEFAULT_STUDY_SET_SIZE &&
-    p.items.length < requestedSize;
+  const showShortageNotice = shouldShowShortageNotice(examId, p.setId, p.items.length);
   return (
     <section className="moi-study" aria-label={`${copy.study.questionLabel} ${p.index + 1}/${total}`}>
       {showShortageNotice && <StudyShortageNotice count={p.items.length} />}
