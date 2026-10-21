@@ -520,3 +520,93 @@ describe('세트 크기 size 계약 (4/8·기본 4·잘못된 값 422, #275)', (
     }
   });
 });
+
+describe('legacy 10문항 세트 D1 호환 (#268 Slice 2C)', () => {
+  const LEGACY_USER = '0f9f1a3e-6f1a-4c2e-8f0b-00000000a101';
+  const LEGACY_SET = 'legacy-set-10-w1';
+  const LEGACY_COUNT = 10;
+
+  /** 구(10문항) 규격 세트를 생성 경로를 거치지 않고 D1 에 직접 적재한다(단위 legacy 테스트와 같은 방식). */
+  async function seedLegacyTenSet(userId: string): Promise<void> {
+    const now = NOW();
+    await db
+      .prepare(
+        "INSERT INTO study_sets (id, user_id, exam_id, mode, domain_id, status, created_at) VALUES (?1, ?2, ?3, 'all', NULL, 'active', ?4)",
+      )
+      .bind(LEGACY_SET, userId, EXAM, now)
+      .run();
+    for (let i = 0; i < LEGACY_COUNT; i += 1) {
+      const qid = `q-${EXAM}-${i}`;
+      const vid = `${qid}-v1`;
+      const optionIds = [`${qid}-a`, `${qid}-b`, `${qid}-c`, `${qid}-d`];
+      await db
+        .prepare(
+          "INSERT INTO study_set_items (set_id, question_id, question_version_id, version_no, option_order, answer_option_ids, response_kind, selected_option_ids, stem, options_json, explanation, source_urls) VALUES (?1, ?2, ?3, 1, ?4, ?5, 'unanswered', '[]', ?6, ?7, ?8, ?9)",
+        )
+        .bind(
+          LEGACY_SET,
+          qid,
+          vid,
+          JSON.stringify(optionIds),
+          JSON.stringify([optionIds[1]]),
+          `구 규격 문제 ${i} 본문`,
+          JSON.stringify(optionIds.map((id, k) => ({ optionId: id, text: `보기 ${k}` }))),
+          `구 규격 문제 ${i} 해설`,
+          JSON.stringify([`https://docs.aws.amazon.com/legacy-q-${i}`]),
+        )
+        .run();
+    }
+  }
+
+  it('10문항 세트는 current 로 읽고 답안·제출까지 호환된다(크기 검사는 생성 시에만)', async () => {
+    const token = await mintSession(LEGACY_USER);
+    await seedLegacyTenSet(LEGACY_USER);
+
+    const current = await studyRequest(`/api/study/sets/current?examId=${EXAM}`, { token });
+    expect(current.status).toBe(200);
+    const restored = (await current.json()) as {
+      id: string;
+      items: Array<{ questionId: string; answerCount: number; answerOptionIds?: unknown; stem?: unknown }>;
+    };
+    expect(restored.id).toBe(LEGACY_SET);
+    expect(restored.items).toHaveLength(LEGACY_COUNT);
+    for (const item of restored.items) {
+      expect(item.answerCount).toBe(1);
+      // 정답·해설은 제출 전 노출되지 않는다.
+      expect(item.answerOptionIds).toBeUndefined();
+      expect(typeof item.stem).toBe('string');
+    }
+
+    // 10문항 모두 답한다(스냅샷 정답 = 보기 B).
+    for (const item of restored.items) {
+      const answer = await studyRequest(`/api/study/sets/${LEGACY_SET}/answers`, {
+        method: 'PATCH',
+        token,
+        body: {
+          questionId: item.questionId,
+          response: { kind: 'answered', optionIds: [`${item.questionId}-b`] },
+        },
+      });
+      expect(answer.status).toBe(200);
+    }
+
+    const submitted = await studyRequest(`/api/study/sets/${LEGACY_SET}/submit`, {
+      method: 'POST',
+      token,
+      body: { confirmUnanswered: true },
+    });
+    expect(submitted.status).toBe(200);
+    const result = (await submitted.json()) as {
+      items: Array<{ questionId: string; explanation: string; sourceUrls: string[] }>;
+      result: { answeredCount: number; unansweredCount: number; accuracyPercent: number; perItem: Array<{ correctOptionIds: string[] | null }> };
+    };
+    expect(result.result.answeredCount).toBe(LEGACY_COUNT);
+    expect(result.result.unansweredCount).toBe(0);
+    expect(result.result.accuracyPercent).toBe(100);
+    expect(result.result.perItem).toHaveLength(LEGACY_COUNT);
+    for (const item of result.items) {
+      expect(item.explanation.length).toBeGreaterThan(0);
+      expect(Array.isArray(item.sourceUrls)).toBe(true);
+    }
+  });
+});

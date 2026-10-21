@@ -10,34 +10,15 @@ import { useStudyUiStore } from './store';
 import { clearSetDrafts, completeDraftSend, dropTabState, listDraftsForSet, openDraftStorage, recordDraft } from './draft-sync';
 import { useDraftSync } from './useDraftSync';
 import { useTabState } from './useTabState';
+import { readStudyParam, writeStudyParam } from './study-url';
+import type { StudyFlowOptions } from './types';
 
-export function readStudyParam(): string | null {
-  try {
-    return new URL(window.location.href).searchParams.get('study');
-  } catch {
-    return null;
-  }
-}
-
-export function writeStudyParam(id: string | null): void {
-  try {
-    const u = new URL(window.location.href);
-    if (id) u.searchParams.set('study', id);
-    else u.searchParams.delete('study');
-    window.history.replaceState(null, '', `${u.pathname}${u.search}${u.hash}`);
-  } catch {
-    // URL 동기화 실패는 무시 — 메모리 상태로 계속한다.
-  }
-}
+// URL 동기화 헬퍼와 옵션 타입은 새 모듈로 추출했다(#268 Slice 2C — 250줄 상한 해소, ADR-0015 모듈 길이 예산).
+// 기존 import 경로를 유지하려고 여기서 다시 내보낸다.
+export { readStudyParam, writeStudyParam } from './study-url';
+export type { StudyFlowOptions } from './types';
 
 // 시작·답안·제출·포기 흐름 (#52, ADR-0021). 라우트 분리(#148): param 우선, 콜백 없으면 legacy fallback.
-export interface StudyFlowOptions {
-  initialSetId?: string | null;
-  onSetStarted?: (id: string) => void;
-  onSubmitted?: (id: string) => void;
-  onAbandoned?: () => void;
-}
-
 export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlowOptions) {
   const s = useStudyUiStore();
   const { examId } = useExamScope();
