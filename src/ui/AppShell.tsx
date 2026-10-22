@@ -16,6 +16,7 @@ import {
 import { prefetchRoute } from './lazy-routes';
 import { LogoutAction } from './LogoutAction';
 import { MOBILE_NAV_QUERY, useMediaQuery } from './responsive';
+import { VersionFooter } from './VersionFooter';
 import './shell.css';
 import './drawer.css';
 
@@ -132,6 +133,8 @@ export function AppShell({
             </div>
           ) : null}
           <Outlet />
+          {/* 앱 버전·빌드 일자 — 마일스톤 단일 소스에서 주입(콘텐츠 열 중앙 정렬). */}
+          <VersionFooter />
         </div>
       </main>
       <Drawer
