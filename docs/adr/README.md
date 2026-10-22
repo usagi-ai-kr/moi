@@ -104,4 +104,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0087 | 기풀이 표시 기준과 계정·시험 격리 | Accepted | 2026-10-22 | [0087-study-pool-completed-attempts.md](./0087-study-pool-completed-attempts.md) |
 | ADR-0088 | 디스패치 큐·콜백 상태 점검 하네스 | Accepted | 2026-10-22 | [0088-harness-dispatch-status.md](./0088-harness-dispatch-status.md) |
 | ADR-0090 | 런타임 비종속 오케스트레이션 코어와 내구 인박스 | Accepted | 2026-10-22 | [0090-orchestration-runtime-adapters.md](./0090-orchestration-runtime-adapters.md) |
+| ADR-0091 | 환영 삽화 외부 생성 API 사용 | Accepted | 2026-10-22 | [0091-welcome-illustrations.md](./0091-welcome-illustrations.md) |
 <!-- ADR_INDEX:END -->
