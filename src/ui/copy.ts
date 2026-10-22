@@ -1,4 +1,5 @@
-// UI 문구 단일 소스 (ADR-0012); #275 회차 문제 수(4/8)는 사용자 선택이라 고정 개수 문구를 쓰지 않는다.
+// UI 문구 단일 소스 (ADR-0012). #275 회차 문제 수(4/8)는 사용자 선택이다.
+import { examProgressCopy } from './exam/exam-progress-copy';
 
 export const copy = {
   brand: 'moi',
@@ -244,5 +245,6 @@ export const copy = {
   exam: {
     label: '시험',
     scopeLabel: '시험 기준',
+    progress: examProgressCopy,
   },
 } as const;

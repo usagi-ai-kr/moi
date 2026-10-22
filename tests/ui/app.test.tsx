@@ -210,13 +210,16 @@ describe('App (세션 상태 화면)', () => {
   });
 
   it('네트워크 오류: 오류 안내 + 다시 시도로 복구', async () => {
-    let calls = 0;
+    let meCalls = 0;
     const client = {
-      get: vi.fn(() => ({
+      get: vi.fn((path: string) => ({
         json: async () => {
-          calls += 1;
-          if (calls === 1) throw new TypeError('fetch failed');
-          return { user: { id: 'abc1234567' } };
+          if (path === 'api/me') {
+            meCalls += 1;
+            if (meCalls === 1) throw new TypeError('fetch failed');
+            return { user: { id: 'abc1234567' } };
+          }
+          throw new Error(`예상하지 않은 GET 요청: ${path}`);
         },
       })),
       post: vi.fn(),
@@ -227,7 +230,7 @@ describe('App (세션 상태 화면)', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: '학습 시작' })).toBeInTheDocument();
     });
-    expect(calls).toBe(2);
+    expect(meCalls).toBe(2);
   });
 
   it('브라우저 저장소에 토큰을 두지 않는다', async () => {

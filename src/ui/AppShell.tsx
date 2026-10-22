@@ -4,6 +4,8 @@ import { Brand } from './Brand';
 import { Drawer } from './components/ui/drawer';
 import { copy } from './copy';
 import { ExamSelector } from './exam/ExamSelector';
+import { ExamProgress } from './exam/ExamProgress';
+import type { ApiClient } from './api/client';
 import {
   iconAccount,
   iconBookmark,
@@ -63,9 +65,13 @@ export function isExamScopedPath(pathname: string): boolean {
 export function AppShell({
   onLogout,
   pending,
+  client,
+  userId,
 }: {
   onLogout: () => Promise<void>;
   pending: boolean;
+  client?: ApiClient;
+  userId?: string;
 }) {
   const isMobile = useMediaQuery(MOBILE_NAV_QUERY);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -130,6 +136,7 @@ export function AppShell({
           {isExamScopedPath(location.pathname) ? (
             <div className="moi-content-exam">
               <ExamSelector id="moi-exam-select-content" />
+              {client && userId ? <ExamProgress client={client} userId={userId} /> : null}
             </div>
           ) : null}
           <Outlet />
