@@ -82,3 +82,62 @@
   outline-offset: 2px;
   box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
 }
+
+/* 시험 전체 진척도 — 선택기 바로 뒤의 비조작 상태 표시 (#353). */
+.moi-exam-progress {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--moi-space-1);
+  min-height: var(--moi-touch-min);
+  max-width: 100%;
+  color: var(--moi-color-ink);
+  font-size: var(--moi-size-small);
+  line-height: var(--moi-lh-normal);
+  white-space: nowrap;
+}
+
+.moi-exam-progress-ring {
+  display: block;
+  flex: none;
+  width: var(--moi-icon-md);
+  height: var(--moi-icon-md);
+  overflow: visible;
+  transform: rotate(-90deg);
+}
+
+.moi-exam-progress-track,
+.moi-exam-progress-arc {
+  fill: none;
+  stroke-width: 3;
+}
+
+.moi-exam-progress-track {
+  stroke: var(--moi-color-border);
+}
+
+.moi-exam-progress-arc {
+  stroke: var(--moi-color-orange);
+  stroke-linecap: round;
+}
+
+.moi-exam-progress-value {
+  color: var(--moi-color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.moi-exam-progress-skeleton {
+  box-sizing: border-box;
+  display: block;
+  width: var(--moi-icon-md);
+  height: var(--moi-icon-md);
+  border: 3px solid var(--moi-color-border);
+  border-radius: 50%;
+}
+
+.moi-exam-progress--unavailable {
+  justify-content: center;
+  width: var(--moi-icon-md);
+  color: var(--moi-color-muted);
+  font-variant-numeric: tabular-nums;
+}

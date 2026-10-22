@@ -100,24 +100,25 @@ Then('진도 문구가 {string}로 보인다', async ({ page }, text: string) =>
 });
 
 Then('진도 막대 값은 {int}이다', async ({ page }, value: number) => {
-  const progress = page.getByRole('progressbar');
+  const progress = page.locator('.moi-scope-progress-bar');
   await expect(progress).toBeVisible();
   await expect(progress).toHaveAttribute('value', String(value));
   await expect(progress).toHaveAttribute('max', '100');
 });
 
 Then('진척도 확인 불가 안내가 보인다', async ({ page }) => {
-  await expect(page.getByRole('status')).toContainText(copy.study.progressUnavailable);
+  await expect(page.locator('.moi-scope-progress-status')).toContainText(copy.study.progressUnavailable);
   await expect(page.locator('body')).not.toContainText('NaN');
 });
 
 Then('진척도 오류와 재시도 버튼이 보인다', async ({ page }) => {
-  await expect(page.getByRole('alert')).toContainText(copy.study.progressError);
-  await expect(page.getByRole('button', { name: copy.study.retry })).toBeEnabled();
+  const error = page.locator('.moi-scope-progress-error');
+  await expect(error).toContainText(copy.study.progressError);
+  await expect(error.getByRole('button', { name: copy.study.retry })).toBeEnabled();
 });
 
 Then('진척도 로딩 안내가 보인다', async ({ page }) => {
-  await expect(page.getByRole('status')).toContainText(copy.study.progressLoading);
+  await expect(page.locator('.moi-scope-progress-status')).toContainText(copy.study.progressLoading);
 });
 
 Then('학습 시작 버튼을 사용할 수 있다', async ({ page }) => {
@@ -125,7 +126,7 @@ Then('학습 시작 버튼을 사용할 수 있다', async ({ page }) => {
 });
 
 Then('진도 막대는 없다', async ({ page }) => {
-  await expect(page.getByRole('progressbar')).toHaveCount(0);
+  await expect(page.locator('.moi-scope-progress-bar')).toHaveCount(0);
 });
 
 Then('범위 진척도와 선택 영역이 겹치지 않는다', async ({ page }) => {

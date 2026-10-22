@@ -110,4 +110,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0093 | 가중 점수 기반 오케스트레이터 진행 보고 | Accepted | 2026-10-22 | [0093-progress-report-scoring.md](./0093-progress-report-scoring.md) |
 | ADR-0094 | 푸터·빌드 메타데이터 표시 정책 | Accepted | 2026-10-22 | [0094-footer-console-build-meta.md](./0094-footer-console-build-meta.md) |
 | ADR-0095 | 학습 시작 범위 진척도 분자·분모와 재조회 정책 | Accepted | 2026-10-22 | [0095-scope-progress-indicator.md](./0095-scope-progress-indicator.md) |
+| ADR-0096 | 시험 전체 진척도 지표와 표시 계약 | Accepted | 2026-10-22 | [0096-exam-progress-ring.md](./0096-exam-progress-ring.md) |
 <!-- ADR_INDEX:END -->

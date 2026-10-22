@@ -3,6 +3,7 @@ import type { ApiClient } from '../api/client';
 import { useSessionUser } from '../session';
 import { REVIEW_CACHE_ROOT } from './cache-keys';
 import { CONCEPT_CACHE_ROOT } from '../concepts/queries';
+import { studyStatsQueryKey } from '../stats/useStudyStats';
 import {
   endReviewSession,
   getCurrentReviewSession,
@@ -81,6 +82,7 @@ export function useSubmitReviewAnswer(client: ApiClient) {
       submitReviewAnswer(client, input),
     onSuccess: (_data, vars) => {
       void queryClient.invalidateQueries({ queryKey: reviewKeys.current(vars.examId, vars.mode, userId) });
+      void queryClient.invalidateQueries({ queryKey: studyStatsQueryKey(vars.examId, userId) });
       void queryClient.invalidateQueries({ queryKey: CONCEPT_CACHE_ROOT });
     },
   });

@@ -126,7 +126,7 @@ function AuthenticatedRoutes({
     <ExamScopeProvider>
       <Routes>
         {/* 로그아웃은 계정 본문이 아니라 내비게이션(데스크톱 nav·모바일 Drawer) 액션이다(#234/ADR-0072). */}
-        <Route element={<AppShell onLogout={doLogout} pending={logoutPending} />}>
+        <Route element={<AppShell client={client} userId={userId} onLogout={doLogout} pending={logoutPending} />}>
           <Route element={<RouteBoundaryLayout />}>
             <Route index element={<Home showAuthError={showAuthError} client={client} />} />
             <Route
