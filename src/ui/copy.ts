@@ -59,6 +59,7 @@ export const copy = {
   study: {
     cta: '학습 시작',
     historyLink: '학습 이력',
+    concepts: '개념 위키',
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
     starting: '시작하는 중',

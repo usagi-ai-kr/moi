@@ -103,5 +103,6 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0086 | 학습 범위·문항 수 선택 그룹 컨테이너와 옵션 간격 축소 | Accepted | 2026-10-21 | [0086-selection-group-container.md](./0086-selection-group-container.md) |
 | ADR-0087 | 기풀이 표시 기준과 계정·시험 격리 | Accepted | 2026-10-22 | [0087-study-pool-completed-attempts.md](./0087-study-pool-completed-attempts.md) |
 | ADR-0088 | 디스패치 큐·콜백 상태 점검 하네스 | Accepted | 2026-10-22 | [0088-harness-dispatch-status.md](./0088-harness-dispatch-status.md) |
+| ADR-0089 | 개념 위키 정적 문서와 개인화 추천 점수 | Proposed | 2026-10-22 | [0089-concept-wiki-recommendations.md](./0089-concept-wiki-recommendations.md) |
 | ADR-0090 | 런타임 비종속 오케스트레이션 코어와 내구 인박스 | Accepted | 2026-10-22 | [0090-orchestration-runtime-adapters.md](./0090-orchestration-runtime-adapters.md) |
 <!-- ADR_INDEX:END -->

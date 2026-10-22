@@ -1,0 +1,120 @@
+.moi-concept-document section + section {
+  margin-top: var(--moi-space-4);
+  padding-top: var(--moi-space-4);
+  border-top: 1px solid var(--moi-color-border);
+}
+
+.moi-concept-document h3,
+.moi-concept-empty h2 {
+  margin: 0 0 var(--moi-space-2);
+  font-size: var(--moi-size-body);
+  line-height: 1.45;
+}
+
+.moi-concept-document p,
+.moi-concept-empty p {
+  margin: 0;
+  font-size: var(--moi-size-body);
+  line-height: 1.6;
+}
+
+.moi-concept-comparisons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  margin: 0;
+}
+
+.moi-concept-comparison dt {
+  font-weight: 650;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.moi-concept-comparison dd {
+  margin: var(--moi-space-1) 0 0;
+  line-height: 1.6;
+}
+
+.moi-concept-sources,
+.moi-concept-question-list,
+.moi-concept-signal-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  margin: 0;
+  padding-left: var(--moi-space-4);
+}
+
+.moi-concept-sources a {
+  display: inline-block;
+  min-height: 44px;
+  padding-block: var(--moi-space-2);
+  color: var(--moi-color-ink);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  overflow-wrap: anywhere;
+}
+
+.moi-concept-related summary {
+  min-height: 44px;
+  padding-block: var(--moi-space-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.moi-concept-question-list {
+  margin-top: var(--moi-space-2);
+}
+
+.moi-concept-question-list li + li {
+  padding-top: var(--moi-space-2);
+  border-top: 1px solid var(--moi-color-border);
+}
+
+.moi-concept-question-list p {
+  font-size: var(--moi-size-body);
+  line-height: 1.6;
+}
+
+.moi-concept-signal-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--moi-space-1) var(--moi-space-3);
+  margin-top: var(--moi-space-1);
+  color: var(--moi-color-muted);
+  font-size: var(--moi-size-small);
+}
+
+.moi-concept-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--moi-space-2);
+  margin-top: var(--moi-space-3);
+}
+
+.moi-concept-actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: var(--moi-space-2) var(--moi-space-3);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  color: var(--moi-color-ink);
+  text-decoration: none;
+}
+
+.moi-concept-actions a:hover,
+.moi-concept-actions a:focus-visible {
+  border-color: var(--moi-color-ink);
+  text-decoration: underline;
+}
+
+.moi-concept-actions a:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+.moi-concept-empty .moi-note {
+  margin-top: var(--moi-space-2);
+}

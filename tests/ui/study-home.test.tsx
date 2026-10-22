@@ -14,8 +14,8 @@ function loggedInClient(): ApiClient {
   } as unknown as ApiClient;
 }
 
-function renderApp(client: ApiClient) {
-  window.history.replaceState(null, '', '/');
+function renderApp(client: ApiClient, initialPath = '/') {
+  window.history.replaceState(null, '', initialPath);
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
@@ -51,6 +51,14 @@ describe('홈 학습 진입', () => {
     // 로그아웃은 계정 본문이 아니라 내비게이션 액션이다(#234)
     expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '로그아웃' }).closest('.moi-account')).toBeNull();
+  });
+
+  it('개념 위키 진입 링크에 현재 시험을 전달한다', async () => {
+    renderApp(loggedInClient(), '/?exam=saa-c03');
+    expect(await screen.findByRole('link', { name: '개념 위키' })).toHaveAttribute(
+      'href',
+      '/concepts?exam=saa-c03',
+    );
   });
 
   it('CTA를 누르면 학습 범위 화면이 열린다(지연 청크)', async () => {

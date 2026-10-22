@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 import { DEFAULT_STUDY_SET_SIZE } from '@/domain/study/thresholds';
+import { CONCEPT_CACHE_ROOT } from '../concepts/queries';
 import {
   abandonStudySet,
   answerStudyItem,
@@ -189,6 +190,7 @@ export function useSubmitStudy(client: ApiClient) {
     onSuccess: (set) => {
       queryClient.setQueryData(setQueryKey(set.id), set);
       void queryClient.invalidateQueries({ queryKey: STUDY_HISTORY_KEY });
+      void queryClient.invalidateQueries({ queryKey: CONCEPT_CACHE_ROOT });
     },
   });
 }
