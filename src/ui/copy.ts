@@ -15,9 +15,7 @@ export const copy = {
     pending: '로그인 중…',
   },
   version: {
-    /** 빌드 일자의 원본은 yy-MM-dd이고, 푸터에서는 가운데점으로 표시한다. */
-    footer: (version: string, buildDate: string) =>
-      `v${version} (${buildDate.replace(/^(\d{2})-(\d{2})-(\d{2})$/, '$1·$2·$3')})`,
+    footer: (version: string) => `v${version}`,
   },
   nav: {
     study: '학습 시작',

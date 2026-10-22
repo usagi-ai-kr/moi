@@ -4,7 +4,7 @@
 // - 후보: open_issues >= 1 이고 제목이 semver(X.Y.Z) 로 시작하며 추상 placeholder(1.0.0) 가 아닌 것
 // - 선택: 후보 중 최소 버전 (0.2.x 는 0.3.x 보다 앞선다)
 // - 실패: 조회·파싱·후보 부재 시 throw (fail-closed) — 기본값·고정값·null 을 두지 않는다.
-// - 빌드일자는 KST(UTC+9) 기준 yy-MM-dd.
+// - 빌드시각은 KST(UTC+9) 기준 yyyy-MM-dd HH:mm.
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 
@@ -70,13 +70,44 @@ export function selectVersion(milestones) {
   return candidates[0].version;
 }
 
-/** 빌드일자 — KST(UTC+9) 기준 yy-MM-dd. */
-export function buildDateKst(now = new Date()) {
+/** 빌드시각 — KST(UTC+9) 기준 yyyy-MM-dd HH:mm. */
+export function buildTimeKst(now = new Date()) {
   const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  const year = String(kst.getUTCFullYear()).slice(-2);
+  const year = String(kst.getUTCFullYear()).padStart(4, '0');
   const month = String(kst.getUTCMonth() + 1).padStart(2, '0');
   const day = String(kst.getUTCDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  const hour = String(kst.getUTCHours()).padStart(2, '0');
+  const minute = String(kst.getUTCMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hour}:${minute}`;
+}
+
+/** 커밋 제목에서 마지막 `(#NNN)` PR 번호를 추출한다. 패턴이 없으면 null. */
+export function parsePullRequestNumber(commitSubject) {
+  const matches = String(commitSubject ?? '').matchAll(/\(#(\d+)\)/g);
+  let pullRequest = null;
+  for (const match of matches) {
+    const parsed = Number(match[1]);
+    if (Number.isSafeInteger(parsed) && parsed > 0) pullRequest = parsed;
+  }
+  return pullRequest;
+}
+
+/** git 제목 조회에 실패해도 빌드는 계속하고 PR 번호를 unknown으로 표시한다. */
+async function defaultGitRun() {
+  try {
+    const { stdout } = await execFileAsync('git', ['log', '-1', '--format=%s']);
+    return stdout;
+  } catch {
+    return '';
+  }
+}
+
+async function resolvePullRequestNumber(runGit = defaultGitRun) {
+  try {
+    return parsePullRequestNumber(await runGit());
+  } catch {
+    return null;
+  }
 }
 
 /** gh api 실행 — 실패 시 1줄 요약으로 throw(비밀값·전체 출력 금지). */
@@ -108,10 +139,16 @@ export async function fetchMilestones({ run = defaultRun } = {}) {
   return parsed;
 }
 
-/** 버전·빌드일자 확정 — 조회 실패는 그대로 전파(fail-closed). */
-export async function resolveVersion({ run = defaultRun, now = new Date() } = {}) {
+/** 버전은 fail-closed, PR 로그 실패는 null, 빌드시각은 KST로 확정한다. */
+export async function resolveVersion({
+  run = defaultRun,
+  runGit = defaultGitRun,
+  now = new Date(),
+} = {}) {
   const milestones = await fetchMilestones({ run });
-  return { version: selectVersion(milestones), buildDate: buildDateKst(now) };
+  const version = selectVersion(milestones);
+  const pullRequest = await resolvePullRequestNumber(runGit);
+  return { version, pullRequest, buildTime: buildTimeKst(now) };
 }
 
 // 직접 실행 시 JSON 출력(빌드 스크립트에서 사용).

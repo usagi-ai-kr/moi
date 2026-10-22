@@ -107,4 +107,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0090 | 런타임 비종속 오케스트레이션 코어와 내구 인박스 | Accepted | 2026-10-22 | [0090-orchestration-runtime-adapters.md](./0090-orchestration-runtime-adapters.md) |
 | ADR-0091 | 환영 삽화 외부 생성 API 사용 | Accepted | 2026-10-22 | [0091-welcome-illustrations.md](./0091-welcome-illustrations.md) |
 | ADR-0093 | 가중 점수 기반 오케스트레이터 진행 보고 | Accepted | 2026-10-22 | [0093-progress-report-scoring.md](./0093-progress-report-scoring.md) |
+| ADR-0094 | 푸터·빌드 메타데이터 표시 정책 | Accepted | 2026-10-22 | [0094-footer-console-build-meta.md](./0094-footer-console-build-meta.md) |
 <!-- ADR_INDEX:END -->
