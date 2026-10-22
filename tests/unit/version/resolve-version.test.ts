@@ -1,8 +1,9 @@
 // 앱 버전 단일 소스(resolve-version) — 네트워크 없이 mock 응답만으로 검증한다.
 import { describe, expect, it } from 'vitest';
 import {
-  buildDateKst,
+  buildTimeKst,
   hasOpenIssues,
+  parsePullRequestNumber,
   parseVersionTitle,
   resolveVersion,
   selectVersion,
@@ -103,19 +104,48 @@ describe('selectVersion (마일스톤 → 앱 버전)', () => {
   });
 });
 
-describe('buildDateKst (KST 기준 yy-MM-dd)', () => {
-  it('UTC+KST9 시간으로 날짜를 만든다', () => {
-    expect(buildDateKst(new Date('2026-10-21T14:59:59Z'))).toBe('26-10-21');
-    expect(buildDateKst(new Date('2026-10-21T15:00:00Z'))).toBe('26-10-22');
-    expect(buildDateKst(new Date('2026-01-01T00:00:00Z'))).toBe('26-01-01');
+describe('buildTimeKst (KST 기준 yyyy-MM-dd HH:mm)', () => {
+  it('UTC+KST9 시각을 연도와 분까지 표시한다', () => {
+    expect(buildTimeKst(new Date('2026-10-21T14:59:59Z'))).toBe('2026-10-21 23:59');
+    expect(buildTimeKst(new Date('2026-10-21T15:00:00Z'))).toBe('2026-10-22 00:00');
+    expect(buildTimeKst(new Date('2026-10-22T07:30:00Z'))).toBe('2026-10-22 16:30');
+    expect(buildTimeKst(new Date('2026-01-01T00:00:00Z'))).toBe('2026-01-01 09:00');
+  });
+});
+
+describe('parsePullRequestNumber (HEAD 제목)', () => {
+  it('마지막 병합 PR 번호를 선택한다', () => {
+    expect(parsePullRequestNumber('fix: 푸터 날짜 (#336) (#348)')).toBe(348);
+  });
+
+  it('병합 PR 패턴이 없으면 null을 반환한다', () => {
+    expect(parsePullRequestNumber('fix: 푸터 날짜 정리')).toBeNull();
   });
 });
 
 describe('resolveVersion (mock gh 응답)', () => {
-  it('조회 성공 시 버전과 빌드일자를 반환한다', async () => {
+  it('조회 성공 시 버전, HEAD PR 번호, KST 빌드 시각을 반환한다', async () => {
     const run = async () => ({ stdout: JSON.stringify(MILESTONES) });
-    const result = await resolveVersion({ run, now: new Date('2026-10-21T16:00:00Z') });
-    expect(result).toEqual({ version: '0.2.4', buildDate: '26-10-22' });
+    const runGit = async () => 'fix: 푸터 날짜 (#336) (#348)\n';
+    const result = await resolveVersion({
+      run,
+      runGit,
+      now: new Date('2026-10-22T07:30:00Z'),
+    });
+    expect(result).toEqual({
+      version: '0.2.4',
+      pullRequest: 348,
+      buildTime: '2026-10-22 16:30',
+    });
+  });
+
+  it('git 로그에서 PR 번호를 읽지 못하면 버전 조회는 유지하고 번호는 null이다', async () => {
+    const run = async () => ({ stdout: JSON.stringify(MILESTONES) });
+    const runGit = async () => {
+      throw new Error('git unavailable');
+    };
+    const result = await resolveVersion({ run, runGit });
+    expect(result.pullRequest).toBeNull();
   });
 
   it('조회 실패는 그대로 전파한다(fail-closed)', async () => {

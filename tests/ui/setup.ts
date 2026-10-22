@@ -8,12 +8,11 @@ afterEach(() => {
 });
 
 // --- 빌드 주입값 테스트 픽스처 ---
-// __APP_VERSION__·__BUILD_DATE__ 는 vite define 이 주입하는 전역이다(#footer-version).
+// __APP_VERSION__ 은 vite define 이 주입하는 전역이다(마일스톤 단일 소스).
 // 프로덕트 코드에는 기본값이 없고(마일스톤 단일 소스), 테스트 환경에서만 고정 픽스처를 제공한다.
 {
-  const g = globalThis as unknown as { __APP_VERSION__: string; __BUILD_DATE__: string };
+  const g = globalThis as unknown as { __APP_VERSION__: string };
   g.__APP_VERSION__ = '0.2.4';
-  g.__BUILD_DATE__ = '26-10-22';
 }
 
 // --- jsdom 폴리필 (AntD 6) ---

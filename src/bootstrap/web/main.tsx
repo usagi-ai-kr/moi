@@ -7,6 +7,7 @@ import '@/ui/widgets.css';
 import { applyTokens, typography } from '@/ui/tokens';
 import { App } from '@/ui/App';
 import { createApiClient } from '@/ui/api/client';
+import { logBuildInfo } from './build-info';
 
 // 토큰 → CSS 변수 주입 후 렌더 (ADR-0012: 스타일 값의 단일 소스)
 applyTokens();
@@ -27,6 +28,7 @@ function Root() {
 const root = document.getElementById('root');
 if (!root) throw new Error('#root 엘리먼트가 없습니다');
 
+logBuildInfo({ version: __APP_VERSION__, pullRequest: __BUILD_PR__, buildTime: __BUILD_TIME__ });
 createRoot(root).render(<Root />);
 
 // 디스플레이 폰트(KoddiUD)는 첫 페인트·LCP 이후 지연 주입 — 대용량 폰트를 임계 경로와
