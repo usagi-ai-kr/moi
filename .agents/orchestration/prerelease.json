@@ -1,4 +1,4 @@
 {
-  "pool": ["w1", "w2", "w3"],
-  "reserve": ["r"]
+  "pool": ["codex-gpt-luna", "codex-gpt-2", "oc-beam-free"],
+  "reserve": ["oc-minimax-flash"]
 }

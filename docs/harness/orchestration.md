@@ -158,3 +158,9 @@ daemon의 주기 확인은 내구 인박스 전달·재시도용이다. 워커�
 - pm2 등록은 하지 않는다. 필요 시 OS 스케줄러(cron)로 `--once`를 5분마다 호출한다.
 - 입력: `tmp/prerelease-queue.jsonl`, `.agents/orchestration/prerelease.json`, 상태 `tmp/prerelease-state.json`.
 - herdr 바이너리 대체: `HARNESS_HERDR_BIN=/path/to/herdr`.
+
+### pm2 등록 예 (선택, 자동 실행)
+```bash
+pm2 start "node .agents/skills/agent-orchestration/scripts/prerelease-dispatch.mjs --interval 300" --name prerelease-dispatch
+pm2 save
+```
