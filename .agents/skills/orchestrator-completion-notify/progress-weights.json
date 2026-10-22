@@ -1,0 +1,16 @@
+{
+  "threshold": 6,
+  "quietMinutes": 60,
+  "milestones": ["0.2.5", "0.2.8", "0.2.9", "0.2.10", "0.2.11", "0.2.12"],
+  "eventWeights": {
+    "prMerged": 3,
+    "callbackBlocked": 3,
+    "callbackFailed": 3,
+    "callbackDone": 2,
+    "prOpened": 2,
+    "devCiHealthChanged": 2,
+    "prMergeStateChanged": 1,
+    "issueClosed": 1,
+    "issueOpened": 1
+  }
+}

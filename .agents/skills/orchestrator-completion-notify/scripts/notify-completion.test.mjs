@@ -94,6 +94,25 @@ test('dry-run: 네트워크 요청 없이 payload와 마스킹된 대상만 출�
   }
 });
 
+test('progress 이벤트는 상태값 없이 진행 현황 payload를 mock webhook에 한 번 전송한다', async () => {
+  const mock = await startMock(() => ({ status: 204 }));
+  try {
+    const r = await run(['--event', 'progress', '--title', '진행 현황', '--summary', '최근 병합: #42'], {
+      env: { DISCORD_WEBHOOK: mock.url, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+    });
+    assert.equal(r.code, 0);
+    assert.equal(mock.requests.length, 1);
+    const payload = JSON.parse(mock.requests[0].body);
+    assert.equal(payload.embeds[0].title, '진행 현황');
+    assert.equal(payload.embeds[0].color, 0x1abc9c);
+    assert.equal(payload.embeds[0].footer.text, 'moi · 진행 현황');
+    assert.ok(!r.stdout.includes(SECRET));
+    assert.ok(!r.stderr.includes(SECRET));
+  } finally {
+    await mock.close();
+  }
+});
+
 test('payload: 상태별 색·필드·timestamp·footer 를 채운다', async () => {
   const r = await run(
     [

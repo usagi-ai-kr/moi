@@ -1,6 +1,6 @@
 ---
 name: orchestrator-completion-notify
-description: 단위 묶음(전 PR merge·배포·smoke·이슈 close) 완료 시 Discord 완성 알림을 1회 보내는 moi 하네스 스킬·스크립트. Claude Code·Codex·Agy·OpenCode가 같은 스크립트·스킬로 호출한다. 완성 알림·Discord 알림·완성 notify·notify-completion·단위 묶음 완료 통지가 필요할 때 사용. 단위별 알림은 금지.
+description: moi 오케스트레이터의 Discord 완료·개입·확인·산출물·가중 진행 현황 알림을 관리하는 스킬. Claude Code·Codex·Agy·OpenCode가 같은 스크립트를 사용한다. 완성 알림·Discord 알림·notify-completion·주기 진행 보고·점수 합산 임계값이 필요할 때 사용. 단위별 알림은 금지.
 compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DISCORD_WEBHOOK 설정 필요.
 ---
 
@@ -10,10 +10,11 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 
 ## 언제 보내고 언제 보내지 않는가
 - **보내는 경우**: o가 단위 묶음 완료(모든 PR merge + 배포 + smoke + 이슈 close)를 판단한 직후 **1회**.
-- **보내지 않는 경우**: 워커 단위 중간 보고, 리뷰 1건, 단위별 완료, 재시도 반복, merge 전 확인, `--dry-run` 확인. **단위별 알림은 금지** — 자주 오면 Discord를 끄게 되어 알림의 가치가 사라진다.
+- **보내지 않는 경우**: 워커 단위 중간 보고, 리뷰 1건, 단위별 완료, 재시도 반복, merge 전 확인, `--dry-run` 확인. 개별 이벤트는 보내지 않고 합산 보고만 한다.
 - **보내는 주체**: o만. 워커(w)·리뷰어(r)는 `--dry-run`으로 payload만 확인하고 실제 전송하지 않는다.
 - **상태**: `complete`(완료) · `blocked`(차단) · `failed`(실패). 완료가 아니면 status를 사실대로 쓴다.
-- **이벤트**: `completion`(기본, 기존 상태 유지) · `intervention`(사용자 개입 필요) · `confirmation`(사용자 확인 요청) · `deliverable`(요청 산출물 도달). ADR-0085. o 전용 알림이며 워커는 `--dry-run`만 사용한다.
+- **이벤트**: `completion` · `intervention` · `confirmation` · `deliverable` · `progress`(가중 점수 기반 주기 현황). 상세 기준은 ADR-0093. `progress`는 o 전용이며 워커는 `--dry-run`만 사용한다.
+- **진행 점수**: `.agents/skills/orchestrator-completion-notify/progress-weights.json`에서 점수·임계값을 관리한다. 합계 6 이상 즉시 보고하며, 60분 경과 시 점수 1 이상만 보고한다.
 
 ## 호출 (CWD = repo root)
 1. 먼저 payload만 확인한다(전송 없음):
@@ -36,7 +37,7 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 ## 인자
 | 옵션 | 설명 |
 | --- | --- |
-| `--event` | `completion`(기본) \| `intervention` \| `confirmation` \| `deliverable` |
+| `--event` | `completion`(기본) \| `intervention` \| `confirmation` \| `deliverable` \| `progress` |
 | `--from-hook` | stdin JSON `message` 필드 사용 (훅 전용) |
 | `--status` | `complete` \| `blocked` \| `failed` (completion 이벤트에서 필수) |
 | `--title` | 알림 제목 (필수, 훅 모드에서는 기본값) |
@@ -69,4 +70,5 @@ compatibility: Node.js 22+ (내장 fetch) 필요. .env 또는 MOI_ENV_FILE의 DI
 ## 스크립트
 - `node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs` — 알림 전송(의존성 없음, Node 내장 fetch).
 - `node --test .agents/skills/orchestrator-completion-notify/scripts/notify-completion.test.mjs` — 회귀 테스트(mock HTTP, 실제 Discord 호출 없음).
+- `node .agents/skills/orchestrator-completion-notify/scripts/progress-report.mjs --interval 60s` — o 전용 상시 진행 보고(PM2 운영법은 `docs/harness/completion-notify.md`).
 - 사용법·에이전트별 예시·트러블슈팅: `docs/harness/completion-notify.md`.
