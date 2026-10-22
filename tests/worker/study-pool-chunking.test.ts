@@ -99,7 +99,7 @@ describe('study-pool 청킹 (500문항 대비)', () => {
   it('130문항 풀을 bound 100 상한 안에서 전량 반환한다', async () => {
     await seedChunkExam();
     const pool = createD1QuestionPool(withBoundLimit(db, BOUND_LIMIT), EXAM_CODE);
-    const entries = await pool.listPool();
+    const entries = await pool.listPool({ userId: 'chunk-test-user' });
     expect(entries).toHaveLength(QUESTION_COUNT);
     const ids = new Set(entries.map((e) => e.questionId));
     expect(ids.size).toBe(QUESTION_COUNT);

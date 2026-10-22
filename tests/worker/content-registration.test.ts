@@ -13,6 +13,7 @@ import migration0003 from '../../drizzle/migrations/0003_add-question-bank.sql?r
 import migration0004 from '../../drizzle/migrations/0004_add-admin-api.sql?raw';
 import migration0005 from '../../drizzle/migrations/0005_add-study-sets.sql?raw';
 import migration0006 from '../../drizzle/migrations/0006_add-study-item-content.sql?raw';
+import migration0009 from '../../drizzle/migrations/0009_add-study-attempts.sql?raw';
 import { applyD1Migrations } from './fixtures/kakao-fakes';
 
 // 이슈 #134 — 500문항 로컬 등록 리허설.
@@ -158,6 +159,7 @@ beforeAll(async () => {
     migration0004,
     migration0005,
     migration0006,
+    migration0009,
   ]);
   try {
     await db.exec('PRAGMA foreign_keys = ON;');
@@ -278,7 +280,7 @@ describeContent('500문항 로컬 등록 리허설', () => {
       );
 
       // 출제 풀 어댑터가 500문항을 반환하고, 정답 id가 보기 id의 부분집합이다.
-      const pool = await createD1QuestionPool(db, 'saa-c03').listPool();
+      const pool = await createD1QuestionPool(db, 'saa-c03').listPool({ userId: 'content-registration-test-user' });
       expect(pool).toHaveLength(EXPECTED_QUESTIONS);
       for (const entry of pool) {
         expect(entry.version.answerOptionIds.length).toBeGreaterThan(0);

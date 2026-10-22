@@ -29,7 +29,7 @@ export interface PoolEntry {
 }
 
 export interface QuestionPool {
-  listPool(): Promise<readonly PoolEntry[]>;
+  listPool(input: { userId: string }): Promise<readonly PoolEntry[]>;
 }
 
 export interface StudySetRepository {

@@ -5,6 +5,7 @@ import { normalizePasetoLocalKey } from '@/infra/auth/session/keyring';
 import { sha256Hex } from '@/infra/auth/session/crypto';
 import { createApp } from '@/infra/http/app';
 import { createD1QuestionBankRepository } from '@/infra/persistence/d1-question-bank-repository';
+import { createD1QuestionPool } from '@/infra/persistence/study-pool';
 import migration0000 from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
 import migration0001 from '../../drizzle/migrations/0001_add-users-external-identities.sql?raw';
 import migration0002 from '../../drizzle/migrations/0002_add-sessions.sql?raw';
@@ -631,5 +632,148 @@ describe('legacy 10문항 세트 D1 호환 (#268 Slice 2C)', () => {
       expect(item.explanation.length).toBeGreaterThan(0);
       expect(Array.isArray(item.sourceUrls)).toBe(true);
     }
+  });
+});
+
+
+describe('기풀이 문제 풀 집계 (#311)', () => {
+  async function seedAttempt(input: {
+    readonly userId: string;
+    readonly examId: string;
+    readonly questionId: string;
+    readonly outcome: string;
+    readonly status: 'active' | 'abandoned' | 'submitted';
+    readonly source?: 'set' | 'review';
+    readonly excludedAt?: number | null;
+  }): Promise<void> {
+    const setId = crypto.randomUUID();
+    const now = NOW();
+    await db
+      .prepare('INSERT INTO study_sets (id, user_id, exam_id, mode, domain_id, status, created_at) VALUES (?1, ?2, ?3, ?4, NULL, ?5, ?6)')
+      .bind(setId, input.userId, input.examId, 'all', input.status, now)
+      .run();
+    await db
+      .prepare(
+        'INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, 0)',
+      )
+      .bind(
+        crypto.randomUUID(),
+        input.userId,
+        input.examId,
+        input.questionId,
+        input.questionId + '-v1',
+        input.outcome,
+        now * 1000,
+        input.source ?? 'set',
+        setId,
+        input.excludedAt ?? null,
+      )
+      .run();
+  }
+
+  it('제출된 세트의 정답·오답만 기풀이로 표시하고 계정·시험·상태를 격리한다', async () => {
+    // Given: 네 문항을 정답·오답·Pass·미응답으로 제출한 사용자와 다른 계정의 제출 이력이 있다.
+    const userId = '0f9f1a3e-6f1a-4c2e-8f0b-000000000311';
+    const otherUserId = '0f9f1a3e-6f1a-4c2e-8f0b-000000000312';
+    const token = await mintSession(userId);
+    await mintSession(otherUserId);
+    const started = await studyRequest('/api/study/sets', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM, mode: 'all', size: 4 },
+    });
+    expect(started.status).toBe(201);
+    const set = (await started.json()) as { id: string; items: Array<{ questionId: string }> };
+    const [correct, wrong, pass, unanswered] = set.items;
+    expect(correct).toBeDefined();
+    expect(wrong).toBeDefined();
+    expect(pass).toBeDefined();
+    expect(unanswered).toBeDefined();
+
+    await studyRequest('/api/study/sets/' + set.id + '/answers', {
+      method: 'PATCH',
+      token,
+      body: { questionId: correct!.questionId, response: { kind: 'answered', optionIds: [correct!.questionId + '-b'] } },
+    });
+    await studyRequest('/api/study/sets/' + set.id + '/answers', {
+      method: 'PATCH',
+      token,
+      body: { questionId: wrong!.questionId, response: { kind: 'answered', optionIds: [wrong!.questionId + '-a'] } },
+    });
+    await studyRequest('/api/study/sets/' + set.id + '/answers', {
+      method: 'PATCH',
+      token,
+      body: { questionId: pass!.questionId, response: { kind: 'pass' } },
+    });
+    const submitted = await studyRequest('/api/study/sets/' + set.id + '/submit', {
+      method: 'POST',
+      token,
+      body: { confirmUnanswered: true },
+    });
+    expect(submitted.status).toBe(200);
+
+    const candidates = Array.from({ length: 24 }, (_, index) => 'q-' + EXAM + '-' + index);
+    const submittedIds = new Set(set.items.map((item) => item.questionId));
+    const isolatedQuestionId = candidates.find((questionId) => !submittedIds.has(questionId));
+    expect(isolatedQuestionId).toBeDefined();
+
+    // 다음 세트는 제출 완료된 정답·오답을 제외하고 아직 미풀이인 문제부터 뽑는다.
+    const nextStarted = await studyRequest('/api/study/sets', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM, mode: 'all', size: 4 },
+    });
+    expect(nextStarted.status).toBe(201);
+    const nextSet = (await nextStarted.json()) as { id: string; items: Array<{ questionId: string }> };
+    expect(nextSet.items.every((item) => item.questionId !== correct!.questionId && item.questionId !== wrong!.questionId)).toBe(true);
+    const abandonedNext = await studyRequest('/api/study/sets/' + nextSet.id + '/abandon', {
+      method: 'POST',
+      token,
+      body: { confirm: true },
+    });
+    expect(abandonedNext.status).toBe(200);
+
+    // 타 계정 제출, 다른 시험, 진행 중/포기, Pass, review 출처, 정정 제외 시도는 기풀이가 아니다.
+    await seedAttempt({ userId: otherUserId, examId: EXAM, questionId: isolatedQuestionId as string, outcome: 'wrong', status: 'submitted' });
+    await seedAttempt({ userId, examId: 'other-exam', questionId: isolatedQuestionId as string, outcome: 'wrong', status: 'submitted' });
+    await seedAttempt({ userId, examId: EXAM, questionId: isolatedQuestionId as string, outcome: 'correct', status: 'active' });
+    await seedAttempt({ userId, examId: EXAM, questionId: isolatedQuestionId as string, outcome: 'wrong', status: 'abandoned' });
+    await seedAttempt({ userId, examId: EXAM, questionId: isolatedQuestionId as string, outcome: 'pass', status: 'submitted' });
+    await seedAttempt({ userId, examId: EXAM, questionId: isolatedQuestionId as string, outcome: 'wrong', status: 'submitted', source: 'review' });
+    await seedAttempt({ userId, examId: EXAM, questionId: isolatedQuestionId as string, outcome: 'wrong', status: 'submitted', excludedAt: NOW() });
+
+    // 제출 후 문제 버전을 바꿔도 기록의 questionId가 같으므로 기풀이 상태가 이어진다.
+    const bank = createD1QuestionBankRepository(db);
+    const correctQuestionId = correct!.questionId;
+    await bank.insertVersion({
+      id: correctQuestionId + '-v2',
+      questionId: correctQuestionId,
+      stem: '개정된 문제',
+      explanation: '개정 해설',
+      sourceUrls: [],
+      answerOptionIds: [correctQuestionId + '-v2-b'],
+      optionSetHash: correctQuestionId + '-hash-v2',
+      options: ['a', 'b', 'c', 'd'].map((key) => ({
+        id: correctQuestionId + '-v2-' + key,
+        optionKey: key.toUpperCase(),
+        text: '개정 보기 ' + key,
+      })),
+      now: NOW(),
+    });
+
+    // When: 대상 계정과 다른 계정의 시험 풀을 각각 조회한다.
+    const userPool = await createD1QuestionPool(db, EXAM).listPool({ userId });
+    const otherUserPool = await createD1QuestionPool(db, EXAM).listPool({ userId: otherUserId });
+    const byQuestionId = new Map(userPool.map((entry) => [entry.questionId, entry]));
+    const otherByQuestionId = new Map(otherUserPool.map((entry) => [entry.questionId, entry]));
+
+    // Then: 제출된 정답·오답만 attempted이고, 정정 제외 기록은 무시하며 버전 변경 뒤에도 격리된다.
+    expect(byQuestionId.get(correctQuestionId)?.attempted).toBe(true);
+    expect(byQuestionId.get(correctQuestionId)?.version.versionNo).toBe(2);
+    expect(byQuestionId.get(wrong!.questionId)?.attempted).toBe(true);
+    expect(byQuestionId.get(pass!.questionId)?.attempted).toBe(false);
+    expect(byQuestionId.get(unanswered!.questionId)?.attempted).toBe(false);
+    expect(byQuestionId.get(isolatedQuestionId as string)?.attempted).toBe(false);
+    expect(otherByQuestionId.get(isolatedQuestionId as string)?.attempted).toBe(true);
   });
 });

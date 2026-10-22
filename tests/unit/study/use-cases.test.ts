@@ -73,7 +73,7 @@ describe('StartStudySet (활성 세트 1개·스냅샷)', () => {
     const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
     expect(result.outcome).toBe('started');
     if (result.outcome === 'started') {
-      const pool = await f.pool.listPool();
+      const pool = await f.pool.listPool({ userId: 'u1' });
       for (const item of result.set.items) {
         const entry = pool.find((e) => e.questionId === item.questionId) as ReturnType<typeof makePoolEntry>;
         expect(item.stem).toBe(entry.version.stem);
