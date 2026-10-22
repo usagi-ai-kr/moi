@@ -28,6 +28,26 @@ describe('renderPeleDiagram real Pele', () => {
     expect(out?.diagramType).toBe('sequence');
   });
 
+  it('이슈 #335 한글 presigned URL 시퀀스의 실제 출력을 통과시킨다', async () => {
+    const out = await renderPeleDiagram({
+      code: [
+        'sequenceDiagram',
+        '  participant App as 모바일 앱',
+        '  participant API as 애플리케이션',
+        '  participant S3 as S3',
+        '  App->>API: 업로드 URL 요청',
+        '  API-->>App: presigned URL 응답',
+        '  App->>S3: presigned URL로 파일 업로드',
+        '  S3-->>App: 업로드 완료',
+      ].join('\n'),
+      idPrefix: 'issue-335-seq',
+      maxWidth: 320,
+    });
+    expect(out).not.toBeNull();
+    expect(out?.diagramType).toBe('sequence');
+    expect(out?.svg ?? '').toContain('<svg');
+  });
+
   it('accTitle·accDescr 실제 출력을 통과시킨다', async () => {
     const out = await renderPeleDiagram({
       code: 'flowchart LR\n  accTitle: My Title\n  accDescr: My desc\n  A-->B',

@@ -75,9 +75,9 @@ jobs:
         if: steps.scaffold.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browsers (chromium)
+      - name: Install Playwright browsers (chromium + WebKit #335)
         if: steps.scaffold.outputs.ready == 'true'
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium webkit
 
       - name: Quality gates (fail-closed)
         if: steps.scaffold.outputs.ready == 'true'
@@ -97,3 +97,11 @@ jobs:
             fi
           done
           exit "$missing"
+
+      - name: Upload Playwright evidence (#335)
+        if: always() && steps.scaffold.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-evidence-${{ github.run_id }}
+          path: test-results/
+          if-no-files-found: ignore
