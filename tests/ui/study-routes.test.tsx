@@ -45,8 +45,8 @@ function makeSet(overrides?: Partial<StudyActiveSet>): StudyActiveSet {
   };
 }
 
-function submittedSet(): StudyActiveSet {
-  const base = makeSet({ status: 'submitted', submittedAt: 1700000001000 });
+function submittedSet(overrides?: Partial<StudyActiveSet>): StudyActiveSet {
+  const base = makeSet({ ...overrides, status: 'submitted', submittedAt: 1700000001000 });
   return {
     ...base,
     items: base.items.map((it, i) => ({
@@ -74,10 +74,16 @@ function submittedSet(): StudyActiveSet {
 interface FakeOpts {
   start?: StudyActiveSet;
   startError?: number;
+  startResponses?: Array<StudyActiveSet | { error: number; reason?: string }>;
+  startDelays?: Array<Promise<void> | undefined>;
+  startCalls?: unknown[];
+  submit?: StudyActiveSet;
+  currentOnConflict?: StudyActiveSet;
   get?: StudyActiveSet;
   /** 세트 ID별 응답 — 경로의 ID와 실제 조회 대상을 일치시켜 검증한다 (#171). */
   sets?: Record<string, StudyActiveSet>;
   current?: StudyActiveSet | null;
+  currentAfterStart?: StudyActiveSet | null;
   currentError?: number;
   history?: { items: StudySummary[]; total: number };
 }
@@ -87,6 +93,9 @@ function requestedSetId(path: string): string {
 }
 
 function fakeStudyClient(o: FakeOpts = {}): ApiClient {
+  let currentSet = o.current ?? null;
+  let submittedSetResult: StudyActiveSet | null = null;
+  let startIndex = 0;
   return {
     get: vi.fn((path: string) => ({
       json: async () => {
@@ -103,7 +112,7 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
         }
         if (p.startsWith('api/study/sets/current')) {
           if (o.currentError) throw httpError(o.currentError, { error: 'internal' });
-          if (o.current) return o.current;
+          if (currentSet) return currentSet;
           throw httpError(404, { error: 'no_active_set' });
         }
         if (p.startsWith('api/study/sets?')) {
@@ -121,19 +130,34 @@ function fakeStudyClient(o: FakeOpts = {}): ApiClient {
             return set;
           }
           if (o.get) return o.get;
-          if (o.current) return o.current;
+          if (submittedSetResult && submittedSetResult.id === requestedSetId(p)) return submittedSetResult;
+          if (currentSet && currentSet.id === requestedSetId(p)) return currentSet;
           throw httpError(404, { error: 'not_found' });
         }
         throw httpError(404, { error: 'not_found' });
       },
     })),
-    post: vi.fn((path: string) => ({
+    post: vi.fn((path: string, options?: { json?: unknown }) => ({
       json: async () => {
         if (String(path) === 'api/study/sets') {
+          const index = startIndex++;
+          o.startCalls?.push(options?.json);
+          await o.startDelays?.[index];
           if (o.startError) throw httpError(o.startError, { error: 'active_set_exists' });
-          return o.start ?? makeSet();
+          const response = o.startResponses?.[index] ?? o.start ?? makeSet();
+          if ('error' in response) {
+            if (response.error === 409 && o.currentOnConflict) currentSet = o.currentOnConflict;
+            throw httpError(response.error, { error: response.reason ?? 'start_failed' });
+          }
+          currentSet = o.currentAfterStart === undefined ? response : o.currentAfterStart;
+          return response;
         }
-        if (String(path).endsWith('/submit')) return submittedSet();
+        if (String(path).endsWith('/submit')) {
+          const response = o.submit ?? submittedSet(currentSet ?? undefined);
+          submittedSetResult = response;
+          currentSet = null;
+          return response;
+        }
         if (String(path).endsWith('/abandon')) return makeSet({ status: 'abandoned' });
         throw httpError(404, { error: 'not_found' });
       },
@@ -154,6 +178,7 @@ function resetStore() {
     view: 'start',
     scope: 'all',
     domainId: 'dom-security',
+    size: 4,
     index: 0,
     save: 'idle',
     confirmSubmit: false,
@@ -291,7 +316,7 @@ describe('학습 라우트 분리 (#148)', () => {
   });
 
   it('시작 직후 current가 404를 돌려주면 /study/new로 replace한다', async () => {
-    renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: null }), '/study/new');
+    renderStudyRoutes(fakeStudyClient({ start: makeSet(), current: null, currentAfterStart: null }), '/study/new');
     expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study\/new$/));
@@ -320,6 +345,180 @@ describe('학습 라우트 분리 (#148)', () => {
     expect(await screen.findByText('학습 결과')).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/study/result'));
     expectNoSetIdInUrl();
+  });
+
+  it('결과에서 새 세트를 시작하면 시험·범위·영역·8문제 설정을 유지한다', async () => {
+    const startCalls: unknown[] = [];
+    const first = makeSet({ mode: 'domain', domainId: 'dom-resilience' });
+    const next = makeSet({ id: 'set-2', mode: 'domain', domainId: 'dom-resilience' });
+    const client = fakeStudyClient({
+      startResponses: [first, next],
+      startCalls,
+      submit: submittedSet({ id: first.id, mode: 'domain', domainId: 'dom-resilience' }),
+    });
+    renderStudyRoutes(client, '/study/new');
+
+    fireEvent.click(await screen.findByRole('radio', { name: '영역별' }));
+    fireEvent.change(screen.getByLabelText('영역'), { target: { value: 'dom-resilience' } });
+    fireEvent.click(screen.getByRole('radio', { name: '8문제' }));
+    fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/10/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
+    await screen.findByText('학습 결과');
+
+    fireEvent.click(screen.getByRole('button', { name: '새 세트 시작' }));
+
+    await waitFor(() => expect(startCalls).toHaveLength(2));
+    expect(startCalls[1]).toEqual({
+      examId: 'saa-c03',
+      mode: 'domain',
+      domainId: 'dom-resilience',
+      size: 8,
+    });
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
+  });
+
+  it('새 세트 시작 실패 시 결과를 유지하고 같은 설정으로 다시 시도한다', async () => {
+    const startCalls: unknown[] = [];
+    const first = makeSet({ mode: 'weak' });
+    const next = makeSet({ id: 'set-2', mode: 'weak' });
+    const client = fakeStudyClient({
+      startResponses: [first, { error: 500 }, next],
+      startCalls,
+      submit: submittedSet({ id: first.id, mode: 'weak' }),
+    });
+    renderStudyRoutes(client, '/study/new');
+
+    fireEvent.click(await screen.findByRole('radio', { name: '취약 영역' }));
+    fireEvent.click(screen.getByRole('radio', { name: '4문제' }));
+    fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/10/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
+    await screen.findByText('학습 결과');
+
+    fireEvent.click(screen.getByRole('button', { name: '새 세트 시작' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(/다시 시도/);
+    expect(screen.getByText('학습 결과')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '새 세트 시작' })).toBeEnabled();
+
+    fireEvent.click(screen.getByRole('button', { name: '새 세트 시작' }));
+    await waitFor(() => expect(startCalls).toHaveLength(3));
+    expect(startCalls[1]).toEqual({ examId: 'saa-c03', mode: 'weak', size: 4 });
+    expect(startCalls[2]).toEqual(startCalls[1]);
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
+  });
+
+  it('전체 범위 4문제 결과에서 바로 새 세트를 시작한다', async () => {
+    const startCalls: unknown[] = [];
+    const first = makeSet();
+    const next = makeSet({ id: 'set-2' });
+    const client = fakeStudyClient({
+      startResponses: [first, next],
+      startCalls,
+      submit: submittedSet({ id: first.id }),
+    });
+    renderStudyRoutes(client, '/study/new');
+
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/10/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
+    await screen.findByText('학습 결과');
+
+    fireEvent.click(screen.getByRole('button', { name: '새 세트 시작' }));
+
+    await waitFor(() => expect(startCalls).toHaveLength(2));
+    expect(startCalls[1]).toEqual({ examId: 'saa-c03', mode: 'all', size: 4 });
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
+  });
+
+  it('새 세트 시작 중 중복 요청과 결과 화면의 다른 동작을 잠근다', async () => {
+    let releaseStart!: () => void;
+    const waitForStart = new Promise<void>((resolve) => { releaseStart = resolve; });
+    const startCalls: unknown[] = [];
+    const first = makeSet({ mode: 'domain', domainId: 'dom-resilience' });
+    const next = makeSet({ id: 'set-2', mode: 'domain', domainId: 'dom-resilience' });
+    const client = fakeStudyClient({
+      startResponses: [first, next],
+      startDelays: [undefined, waitForStart],
+      startCalls,
+      submit: submittedSet({ id: first.id, mode: 'domain', domainId: 'dom-resilience' }),
+    });
+    renderStudyRoutes(client, '/study/new');
+
+    fireEvent.click(await screen.findByRole('radio', { name: '영역별' }));
+    fireEvent.change(screen.getByLabelText('영역'), { target: { value: 'dom-resilience' } });
+    fireEvent.click(screen.getByRole('radio', { name: '8문제' }));
+    fireEvent.click(screen.getByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/10/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
+    await screen.findByText('학습 결과');
+
+    const startButton = screen.getByRole('button', { name: '새 세트 시작' });
+    await waitFor(() => expect(startButton).toBeEnabled());
+    fireEvent.click(startButton);
+    fireEvent.click(startButton);
+    await waitFor(() => expect(startCalls).toHaveLength(2));
+    const pendingButton = await screen.findByRole('button', { name: '시작하는 중' });
+    expect(pendingButton).toBeDisabled();
+    expect(screen.getByRole('button', { name: '설정 변경' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '학습 이력' })).toBeDisabled();
+    expect(screen.getByRole('link', { name: /오답 복습/ })).toHaveAttribute('aria-disabled', 'true');
+
+    releaseStart();
+    expect(await screen.findByText(/1\/10/)).toBeInTheDocument();
+  });
+
+  it('문제 풀이 부족 오류는 결과를 유지하고 설정 변경으로 복구한다', async () => {
+    const startCalls: unknown[] = [];
+    const first = makeSet();
+    const client = fakeStudyClient({
+      startResponses: [first, { error: 422, reason: 'pool_insufficient' }],
+      startCalls,
+      submit: submittedSet({ id: first.id }),
+    });
+    renderStudyRoutes(client, '/study/new');
+
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/10/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
+    await screen.findByText('학습 결과');
+    fireEvent.click(screen.getByRole('button', { name: '새 세트 시작' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/풀 수 있는 문제가 없습니다/);
+    expect(screen.getByText('학습 결과')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '설정 변경' }));
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent('/study/new'));
+    expect(await screen.findByText('학습 범위 선택')).toBeInTheDocument();
+    expect(startCalls).toHaveLength(2);
+  });
+
+  it('이미 진행 중인 세트 충돌에서 이어풀기로 복구한다', async () => {
+    const first = makeSet();
+    const existing = makeSet({ id: 'set-existing' });
+    const client = fakeStudyClient({
+      startResponses: [first, { error: 409, reason: 'active_set_exists' }],
+      currentOnConflict: existing,
+      submit: submittedSet({ id: first.id }),
+    });
+    renderStudyRoutes(client, '/study/new');
+
+    fireEvent.click(await screen.findByRole('button', { name: '학습 시작' }));
+    await screen.findByText(/1\/10/);
+    fireEvent.click(screen.getByRole('button', { name: /제출하기/ }));
+    fireEvent.click(await screen.findByRole('button', { name: '제출 확인' }));
+    await screen.findByText('학습 결과');
+    fireEvent.click(screen.getByRole('button', { name: '새 세트 시작' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/이미 진행 중인 세트/);
+    fireEvent.click(screen.getByRole('button', { name: '이어풀기' }));
+    expect(await screen.findByRole('button', { name: '포기하기' })).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId('location')).toHaveTextContent(/^\/study$/));
   });
 
   it('/study/result state가 없으면 /history로 이동한다', async () => {

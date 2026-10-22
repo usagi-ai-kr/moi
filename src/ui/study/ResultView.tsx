@@ -36,6 +36,12 @@ interface Props {
   set: StudySubmittedSet;
   onRestart: () => void;
   onHistory: () => void;
+  onChangeSettings?: () => void;
+  onResume?: () => void;
+  startPending?: boolean;
+  startError?: string | null;
+  startConflict?: boolean;
+  unauthorized?: boolean;
   corrections?: StudyCorrections;
 }
 
@@ -56,11 +62,19 @@ function correctionReasonLabel(reason: string): string {
 }
 
 // 복습 바로가기 — 항상 SPA Link(호출자는 라우터 안에서 렌더한다, #176).
-function ReviewShortcut({ mode, label }: { mode: 'wrong' | 'bookmark'; label: string }) {
+function ReviewShortcut({ mode, label, disabled = false }: { mode: 'wrong' | 'bookmark'; label: string; disabled?: boolean }) {
   const to = `/review?mode=${mode}`;
   return (
     <Button asChild variant="secondary">
-      <Link to={to}>
+      <Link
+        to={to}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : undefined}
+        className={disabled ? 'pointer-events-none opacity-50' : undefined}
+        onClick={(event) => {
+          if (disabled) event.preventDefault();
+        }}
+      >
         <ActionIcon spec={mode === 'wrong' ? iconWrong : iconBookmark} />
         {label}
       </Link>
@@ -71,7 +85,10 @@ function ReviewShortcut({ mode, label }: { mode: 'wrong' | 'bookmark'; label: st
 // 결과 — 요약·문항별 선택/정답 + 스냅샷 해설·근거 링크(제출 후 노출).
 // 상세 렌더는 ResultPager·ResultItemDetail이 담당한다(#232 그룹 구조).
 // 정정 이력(corrections)이 있으면 최초→정정 정답률·유효 분모·사유를 덧붙인다(#53).
-export function ResultView({ client, set, onRestart, onHistory, corrections }: Props) {
+export function ResultView({
+  client, set, onRestart, onHistory, onChangeSettings, onResume, startPending = false,
+  startError, startConflict = false, unauthorized = false, corrections,
+}: Props) {
   const [page, setPage] = useState(0);
   // 결과 요약 포커스 타깃 — 마지막 상세의 요약 이동용(#232). 제출·채점 호출 없음.
   const summaryRef = useRef<HTMLHeadingElement | null>(null);
@@ -166,18 +183,35 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
           </ul>
         </section>
       )}
+      {(startError || startConflict || unauthorized) && (
+        <div className="moi-alert moi-alert-error" role="alert">
+          <p className="moi-alert-text">
+            {startConflict ? copy.study.activeExists : unauthorized ? copy.study.needLogin : startError}
+          </p>
+          {startConflict && onResume && (
+            <Button type="button" variant="outline" onClick={onResume} disabled={startPending}>
+              {copy.study.continueStudy}
+            </Button>
+          )}
+        </div>
+      )}
       {/* 하단 버튼 위계 — 새 세트 시작=primary, 학습 이력·오답 복습=secondary(같은 크기). */}
       <div className="moi-study-actions">
-        <Button type="button" variant="primary" onClick={onRestart}>
+        <Button type="button" variant="primary" onClick={onRestart} pending={startPending}>
           <StartIcon
             size={iconStart.size}
             aria-hidden="true"
             focusable="false"
             className="moi-action-icon"
           />
-          {copy.study.backToStart}
+          {startPending ? copy.study.starting : copy.study.backToStart}
         </Button>
-        <Button type="button" variant="secondary" onClick={onHistory}>
+        {onChangeSettings && (
+          <Button type="button" variant="secondary" onClick={onChangeSettings} disabled={startPending}>
+            {copy.study.changeSettings}
+          </Button>
+        )}
+        <Button type="button" variant="secondary" onClick={onHistory} disabled={startPending}>
           <HistoryIcon
             size={iconHistory.size}
             aria-hidden="true"
@@ -186,8 +220,8 @@ export function ResultView({ client, set, onRestart, onHistory, corrections }: P
           />
           {copy.study.historyLink}
         </Button>
-        <ReviewShortcut mode="wrong" label={copy.review.goToWrongReview} />
-        <ReviewShortcut mode="bookmark" label={copy.review.goToBookmarkReview} />
+        <ReviewShortcut mode="wrong" label={copy.review.goToWrongReview} disabled={startPending} />
+        <ReviewShortcut mode="bookmark" label={copy.review.goToBookmarkReview} disabled={startPending} />
       </div>
     </section>
   );

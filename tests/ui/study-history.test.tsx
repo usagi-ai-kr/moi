@@ -50,6 +50,7 @@ function renderHistory(client: ApiClient) {
     view: 'history',
     scope: 'all',
     domainId: 'dom-security',
+    size: 4,
     index: 0,
     save: 'idle',
     confirmSubmit: false,

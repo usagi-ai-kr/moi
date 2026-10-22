@@ -128,6 +128,12 @@ export function StudyScreen({
         client={client}
         set={set}
         onRestart={f.restart}
+        onChangeSettings={onNavigate ? () => onNavigate('/study/new') : f.changeSettings}
+        onResume={onNavigate ? () => { f.resumeConflict(); onNavigate('/study'); } : f.resumeConflict}
+        startPending={f.startMut.isPending}
+        startError={f.startError}
+        startConflict={f.conflict}
+        unauthorized={f.unauth}
         onHistory={onNavigate ? () => onNavigate('/history') : () => s.setView('history')}
         corrections={correctionsQuery.data}
       />
