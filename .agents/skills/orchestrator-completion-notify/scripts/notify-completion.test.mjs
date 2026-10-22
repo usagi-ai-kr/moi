@@ -324,6 +324,56 @@ test('필수값 누락(--title)은 exit 1 이다', async () => {
   assert.equal(r.code, 1);
 });
 
+test('훅 요약: tool_input.questions → 질문+선택지', async () => {
+  const payload = { tool_input: { questions: [{ question: '어떤 방식으로 진행할까요?', options: [{ label: 'A안' }, { label: 'B안' }] }] } };
+  const r = await run(['--event', 'confirmation', '--from-hook', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+    stdin: JSON.stringify(payload),
+  });
+  assert.equal(r.code, 0);
+  const embed = parsePayload(r.stdout).embeds[0];
+  assert.match(embed.description, /어떤 방식으로 진행할까요\?/);
+  assert.match(embed.description, /선택지: A안, B안/);
+  assert.equal(embed.title, '확인 요청');
+});
+
+test('훅 요약: questions 없음 → 일반 문구', async () => {
+  const r = await run(['--event', 'confirmation', '--from-hook', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+    stdin: JSON.stringify({ tool_input: {} }),
+  });
+  assert.equal(r.code, 0);
+  const embed = parsePayload(r.stdout).embeds[0];
+  assert.equal(embed.description, '사용자 확인이 필요합니다.');
+});
+
+test('훅 요약: 비JSON/빈 stdin → 일반 문구', async () => {
+  const r1 = await run(['--event', 'intervention', '--from-hook', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+    stdin: 'not json',
+  });
+  assert.equal(r1.code, 0);
+  assert.equal(parsePayload(r1.stdout).embeds[0].description, '사용자 개입이 필요합니다.');
+
+  const r2 = await run(['--event', 'intervention', '--from-hook', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+    stdin: '',
+  });
+  assert.equal(r2.code, 0);
+  assert.equal(parsePayload(r2.stdout).embeds[0].description, '사용자 개입이 필요합니다.');
+});
+
+test('훅 요약: Notification message 그대로', async () => {
+  const r = await run(['--event', 'intervention', '--from-hook', '--dry-run'], {
+    env: { DISCORD_WEBHOOK: UNREACHABLE, MOI_NOTIFY_ALLOW_LOCAL: '1' },
+    stdin: JSON.stringify({ message: '배포 승인이 필요합니다' }),
+  });
+  assert.equal(r.code, 0);
+  const embed = parsePayload(r.stdout).embeds[0];
+  assert.equal(embed.description, '배포 승인이 필요합니다');
+  assert.equal(embed.title, '개입 필요');
+});
+
 // ── ADR-0085 B1: 훅 모드는 모든 실패 경로에서 exit 0 (PreToolUse exit 2 는 AskUserQuestion 을 막는다) ──
 
 test('훅 모드: webhook 미설정이어도 exit 0 + stderr 한 줄 요약', async () => {

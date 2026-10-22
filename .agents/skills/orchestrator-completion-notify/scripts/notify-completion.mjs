@@ -257,13 +257,58 @@ async function readStdin() {
   return Buffer.concat(chunks).toString('utf8');
 }
 
-/** 훅 입력에서 message 필드를 안전하게 추출한다. */
+/** 훅 입력에서 "무엇을 결정해야 하는지" 한 문단을 안전하게 추출한다. */
 function extractHookMessage(raw) {
   const text = String(raw ?? '').trim();
   if (!text) return '';
   try {
     const parsed = JSON.parse(text);
-    if (parsed && typeof parsed.message === 'string') return parsed.message.trim();
+    if (!parsed || typeof parsed !== 'object') return '';
+
+    // Notification 훅: message 필드.
+    if (typeof parsed.message === 'string' && parsed.message.trim()) {
+      return parsed.message.trim();
+    }
+
+    // PreToolUse(AskUserQuestion): tool_input.questions[].question / options[].label.
+    const containers = [parsed.tool_input, parsed.toolInput, parsed.input, parsed];
+    let questions = [];
+    for (const c of containers) {
+      if (c && typeof c === 'object' && Array.isArray(c.questions)) {
+        questions = c.questions;
+        break;
+      }
+    }
+    if (Array.isArray(questions) && questions.length > 0) {
+      const lines = [];
+      for (const q of questions.slice(0, 3)) {
+        if (!q || typeof q !== 'object') continue;
+        const question =
+          typeof q.question === 'string'
+            ? q.question.trim()
+            : typeof q.prompt === 'string'
+              ? q.prompt.trim()
+              : typeof q.text === 'string'
+                ? q.text.trim()
+                : '';
+        if (question) lines.push(question);
+        const opts = Array.isArray(q.options) ? q.options : [];
+        const labels = opts
+          .map((o) => {
+            if (typeof o === 'string') return o.trim();
+            if (o && typeof o === 'object') {
+              if (typeof o.label === 'string') return o.label.trim();
+              if (typeof o.text === 'string') return o.text.trim();
+              if (typeof o.value === 'string') return o.value.trim();
+            }
+            return '';
+          })
+          .filter(Boolean);
+        if (labels.length > 0) lines.push(`선택지: ${labels.join(', ')}`);
+      }
+      const summary = lines.join('\n').trim();
+      if (summary) return summary;
+    }
   } catch {
     // PreToolUse 등 구조가 다를 수 있으므로 조용히 무시하고 일반 문구로 대체한다.
   }
