@@ -2,6 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { HTTPError } from 'ky';
 import { DEFAULT_STUDY_SET_SIZE } from '@/domain/study/thresholds';
 import { CONCEPT_CACHE_ROOT } from '../concepts/queries';
+import { studyStatsQueryKey } from '../stats/useStudyStats';
 import {
   abandonStudySet,
   answerStudyItem,
@@ -182,7 +183,7 @@ export function useAnswerStudy(client: ApiClient) {
   });
 }
 
-export function useSubmitStudy(client: ApiClient) {
+export function useSubmitStudy(client: ApiClient, statsOwner?: { examId: string; userId: string }) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { setId: string; confirmUnanswered: boolean }) =>
@@ -191,6 +192,9 @@ export function useSubmitStudy(client: ApiClient) {
       queryClient.setQueryData(setQueryKey(set.id), set);
       void queryClient.invalidateQueries({ queryKey: STUDY_HISTORY_KEY });
       void queryClient.invalidateQueries({ queryKey: CONCEPT_CACHE_ROOT });
+      if (statsOwner) {
+        void queryClient.invalidateQueries({ queryKey: studyStatsQueryKey(statsOwner.examId, statsOwner.userId) });
+      }
     },
   });
 }

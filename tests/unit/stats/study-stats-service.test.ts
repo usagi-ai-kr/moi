@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getStudyStats } from '@/app/stats/study-stats-service';
-import type { StatsClock, StudyHistoryPort } from '@/app/stats/ports';
+import type { StatsClock, StudyHistoryPort, StudyQuestionCountPort } from '@/app/stats/ports';
 import type { StudyHistoryEntry } from '@/domain/stats/types';
 import { EXAM, NOW, OTHER_EXAM, entry, hundredFirstSolves } from './fixtures';
 
@@ -16,38 +16,50 @@ function fakeHistory(entries: readonly StudyHistoryEntry[]): StudyHistoryPort {
   };
 }
 
+function fakeQuestionCounts(counts: Readonly<Record<string, number>>): StudyQuestionCountPort {
+  return { async loadByDomain() { return counts; } };
+}
+
 const fixedClock: StatsClock = { now: () => NOW };
 const USER = 'u-1';
 
 describe('getStudyStats (use case)', () => {
-  it('fake Port 이력 → 시험별 통계 반환(분모 500 기본)', async () => {
+  it('고유 첫 풀이 통계와 현재 문제 풀 분모를 함께 반환한다', async () => {
     const entries = [
       ...hundredFirstSolves(80),
       ...Array.from({ length: 3 }, (_, i) =>
         entry({ questionId: `other-${i}`, domainId: 'cost-optimization', outcome: 'wrong', examId: OTHER_EXAM, firstAttempt: true }),
       ),
     ];
-    const stats = await getStudyStats({ history: fakeHistory(entries), clock: fixedClock }, { userId: USER, examId: EXAM });
+    const stats = await getStudyStats(
+      { history: fakeHistory(entries), questionCounts: fakeQuestionCounts({ security: 400, resilience: 100 }), clock: fixedClock },
+      { userId: USER, examId: EXAM },
+    );
 
     expect(stats.examId).toBe(EXAM);
     expect(stats.totalQuestions).toBe(500);
+    expect(stats.domainQuestionCounts).toEqual({ security: 400, resilience: 100 });
     expect(stats.uniqueFirstSolved).toBe(100);
     expect(stats.coverage).toBeCloseTo(0.2, 10);
     expect(stats.overallAccuracy).toBeCloseTo(0.8, 10);
   });
 
-  it('totalQuestions 주입 시 진도율 분모를 따른다', async () => {
+  it('활성 문제가 없으면 0 분모·유한 coverage를 반환한다', async () => {
     const stats = await getStudyStats(
-      { history: fakeHistory(hundredFirstSolves(80)), clock: fixedClock },
-      { userId: USER, examId: EXAM, totalQuestions: 200 },
+      { history: fakeHistory(hundredFirstSolves(80)), questionCounts: fakeQuestionCounts({}), clock: fixedClock },
+      { userId: USER, examId: EXAM },
     );
 
-    expect(stats.totalQuestions).toBe(200);
-    expect(stats.coverage).toBeCloseTo(0.5, 10);
+    expect(stats.totalQuestions).toBe(0);
+    expect(stats.coverage).toBe(0);
+    expect(Number.isFinite(stats.coverage)).toBe(true);
   });
 
   it('빈 이력でも 예외 없이 빈 통계를 반환한다', async () => {
-    const stats = await getStudyStats({ history: fakeHistory([]), clock: fixedClock }, { userId: USER, examId: EXAM });
+    const stats = await getStudyStats(
+      { history: fakeHistory([]), questionCounts: fakeQuestionCounts({ security: 500 }), clock: fixedClock },
+      { userId: USER, examId: EXAM },
+    );
 
     expect(stats.uniqueFirstSolved).toBe(0);
     expect(stats.overallAccuracy).toBeNull();
@@ -60,7 +72,10 @@ describe('getStudyStats (use case)', () => {
       entry({ questionId: 'q1', domainId: 'security', outcome: 'wrong', daysAgo: 30 }),
       entry({ questionId: 'q1', domainId: 'security', outcome: 'correct', daysAgo: 3 }),
     ];
-    const stats = await getStudyStats({ history: fakeHistory(entries), clock: fixedClock }, { userId: USER, examId: EXAM });
+    const stats = await getStudyStats(
+      { history: fakeHistory(entries), questionCounts: fakeQuestionCounts({ security: 500 }), clock: fixedClock },
+      { userId: USER, examId: EXAM },
+    );
 
     expect(stats.domains[0].recentAccuracy).toBe(1);
   });

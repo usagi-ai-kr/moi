@@ -9,7 +9,7 @@ import './stats.css';
 
 // 영역·취약 패널 — STUDY_DOMAINS 4개 고정 카드 (#224, o 결정 2).
 // 값은 응답에 있는 것만 쓰고, 없는 영역은 데이터 부족·학습 이력 없음·— (0%·0문제 발명 금지).
-// 집계·API·DTO·D1 무변경 — 카드 수는 UI 표시 모델에서만 고정한다.
+// 카드 수는 UI 표시 모델에서 고정한다. 진척도 분모는 stats API의 문제 풀 집계를 재사용한다.
 // 결과 갱신은 짧은 상태 문구 live region 으로 알린다 (카드 전체를 읽어주지 않는다).
 
 // 영역 카드 지표 3칸 — 라벨은 copy.stats.metrics 단일 소스 (ADR-0012).
@@ -40,8 +40,8 @@ function DomainMetrics({
   );
 }
 
-export function StatsDomainsPanel({ client, examId }: { client: ApiClient; examId: string }) {
-  const query = useStudyStats(client, examId, true);
+export function StatsDomainsPanel({ client, examId, userId }: { client: ApiClient; examId: string; userId: string }) {
+  const query = useStudyStats(client, examId, userId, true);
   const data = query.data ?? null;
 
   // legacy alias 병합 + canonical 매칭 (labels.domainLabel 규칙과 동일).

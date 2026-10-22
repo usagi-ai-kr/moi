@@ -1,7 +1,7 @@
 ---
 id: ADR-0024
 title: 학습 통계·취약 영역 파라미터
-status: Accepted
+status: Superseded by ADR-0095
 date: 2026-10-18
 related: ["#54", "ADR-0021"]
 ---

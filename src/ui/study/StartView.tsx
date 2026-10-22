@@ -2,6 +2,8 @@ import { copy } from '../copy';
 import { iconHistory, iconResume, iconStart } from '../icons';
 import { STUDY_DOMAINS } from './types';
 import type { StudyScope } from './types';
+import type { ApiClient } from '../api/client';
+import { ScopeProgressView } from './ScopeProgress';
 
 // #233 Slice B — 액션 아이콘은 icons.ts spec(ADR-0073). 라벨 유지, 장식 aria-hidden.
 const StartIcon = iconStart.icon;
@@ -22,6 +24,7 @@ interface Props {
   onStart: () => void;
   onResume: () => void;
   onHistory?: () => void;
+  progressSource?: { client: ApiClient; examId: string; userId: string };
 }
 
 // 범위(전체/영역/취약) 선택 — AntD 없이 네이티브 라디오 + 토큰 CSS.
@@ -72,6 +75,13 @@ export function StartView(p: Props) {
             />
             {copy.study.scopeWeak}
           </label>
+          {p.progressSource && (
+            <ScopeProgressView
+              {...p.progressSource}
+              scope={p.scope}
+              domainId={p.domainId}
+            />
+          )}
         </div>
       </fieldset>
       <fieldset className="moi-study-field" aria-label={copy.study.sizeLegend} disabled={p.pending}>

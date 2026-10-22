@@ -23,7 +23,7 @@ function parsePageParam(raw: string | null): { page: number; isInvalid: boolean 
 
 // 학습 현황/이력 — ?tab=(summary|domains|completed)이 단일 진실 원천 (#224).
 // ?page=는 completed 탭에서만 의미를 가지며 탭 전환 시에도 보존한다.
-export function HistoryPage({ client }: { client: ApiClient }) {
+export function HistoryPage({ client, userId }: { client: ApiClient; userId: string }) {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   // 통계는 선택 시험(공개 코드) 기준 — 하드코딩 없음 (#239).
@@ -135,8 +135,8 @@ export function HistoryPage({ client }: { client: ApiClient }) {
       <HistoryTabs
         value={activeTab}
         onChange={handleTabChange}
-        summary={<StatsSummaryPanel client={client} examId={examId} />}
-        domains={<StatsDomainsPanel client={client} examId={examId} />}
+        summary={<StatsSummaryPanel client={client} examId={examId} userId={userId} />}
+        domains={<StatsDomainsPanel client={client} examId={examId} userId={userId} />}
         completed={
           <HistoryView
             items={query.data?.items ?? []}

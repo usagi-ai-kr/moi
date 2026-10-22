@@ -20,6 +20,7 @@ function httpError(status: number, body: unknown): HTTPError {
 const STATS: StudyStats = {
   examId: 'saa-c03',
   totalQuestions: 500,
+  domainQuestionCounts: { 'dom-security': 150, 'dom-resilience': 130, 'dom-performance': 120, 'dom-cost-optimization': 100 },
   uniqueFirstSolved: 20,
   coverage: 0.04,
   overallAccuracy: 0.7,
@@ -133,7 +134,7 @@ function renderHistory(
           {opts?.onLocation && <LocationProbe onLocation={opts.onLocation} />}
           {opts?.onControls && <NavigationControls onControls={opts.onControls} />}
           <Routes>
-            <Route path="/history" element={<HistoryPage client={client} />} />
+            <Route path="/history" element={<HistoryPage client={client} userId="history-user" />} />
           </Routes>
         </MemoryRouter>
       </QueryClientProvider>,

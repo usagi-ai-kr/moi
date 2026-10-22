@@ -175,6 +175,7 @@ export interface WeakDomain {
 export interface StudyStats {
   examId: string;
   totalQuestions: number;
+  domainQuestionCounts: Record<string, number>;
   uniqueFirstSolved: number;
   coverage: number;
   overallAccuracy: number | null;

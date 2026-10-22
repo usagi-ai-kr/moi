@@ -231,7 +231,7 @@ function renderHistoryRoutes(client: ApiClient, initial: string | { pathname: st
     <MemoryRouter initialEntries={[initial]}>
       <QueryClientProvider client={queryClient}>
         <Routes>
-          <Route path="/history" element={<HistoryPage client={client} />} />
+          <Route path="/history" element={<HistoryPage client={client} userId="history-user" />} />
           <Route path="/history/detail" element={<HistoryDetailPage client={client} />} />
           <Route path="/history/:setId" element={<LegacyHistoryRedirect client={client} />} />
         </Routes>

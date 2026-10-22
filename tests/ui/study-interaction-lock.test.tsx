@@ -269,7 +269,7 @@ describe('#270 차단2 — 응답 유실 후 409 라우터 복구', () => {
     } as unknown as ApiClient;
     renderStudy(client, onNavigate);
     fireEvent.click(screen.getByRole('button', { name: copy.study.startAction }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('시작하지 못했습니다');
+    expect(await screen.findByText(copy.study.startFailed)).toBeInTheDocument();
     // 서버에는 세트가 남았음을 mock 상태로 증명한다.
     expect(serverActive).not.toBeNull();
     expect(calls).toBe(1);

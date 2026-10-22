@@ -12,6 +12,7 @@ import type { StudyStats } from '../../src/ui/api/client';
 const STATS: StudyStats = {
   examId: 'saa-c03',
   totalQuestions: 500,
+  domainQuestionCounts: { 'dom-security': 150, 'dom-resilience': 130, 'dom-performance': 120, 'dom-cost-optimization': 100 },
   uniqueFirstSolved: 20,
   coverage: 0.04,
   overallAccuracy: 0.7,
@@ -64,7 +65,7 @@ function renderPanel(client: ApiClient) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={qc}>
-      <StatsSummaryPanel client={client} examId="saa-c03" />
+      <StatsSummaryPanel client={client} examId="saa-c03" userId="stats-user" />
     </QueryClientProvider>,
   );
 }
@@ -73,7 +74,7 @@ function renderDomainsPanel(client: ApiClient) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={qc}>
-      <StatsDomainsPanel client={client} examId="saa-c03" />
+      <StatsDomainsPanel client={client} examId="saa-c03" userId="stats-user" />
     </QueryClientProvider>,
   );
 }
