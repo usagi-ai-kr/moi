@@ -78,25 +78,49 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
         .from(questions)
         .where(and(eq(questions.examId, resolved.id), eq(questions.status, 'active')));
       if (active.length === 0) return [];
+      // 버전 매핑을 먼저 구해 "현재 버전" 기준 판정을 가능하게 한다(개정 문항은 현재 버전만).
+      const { versionByQuestion, optionIdsByVersion } = await loadVersionMap(active.map((q) => q.id));
       // 시도 축 호환(ADR-0058): 입력값·내부 ID·공개 코드는 같은 시험이므로 함께 조회한다.
-      const agg = await db
+      // 정답 이력도 조회해 "최신 유효 시도가 correct 이면 제외"를 판정한다(#315).
+      const attempts = await db
         .prepare(
-          "SELECT question_id AS q, COUNT(*) AS c FROM study_attempts WHERE user_id = ?1 AND exam_id IN (?2, ?3, ?4) AND outcome IN ('wrong','pass','unanswered') AND excluded_at IS NULL GROUP BY question_id",
+          'SELECT question_id AS q, question_version_id AS v, outcome AS o, occurred_at AS t, attempt_id AS a ' +
+            'FROM study_attempts WHERE user_id = ?1 AND exam_id IN (?2, ?3, ?4) AND excluded_at IS NULL',
         )
         .bind(userId, examId, resolved.id, resolved.code)
-        .all<{ q: string; c: number }>();
-      const countByQ = new Map<string, number>();
-      for (const r of agg.results ?? []) countByQ.set(r.q, r.c);
-      const targets = active.map((q) => q.id).filter((id) => (countByQ.get(id) ?? 0) > 0);
+        .all<{ q: string; v: string; o: string; t: number; a: string }>();
+      // 문항별 최신 시도(현재 버전만) 산출.
+      const latestByQ = new Map<string, { outcome: string; occurredAt: number; attemptId: string }>();
+      const currentWrongCount = new Map<string, number>();
+      const hasAnyAttempt = new Set<string>();
+      for (const r of attempts.results ?? []) {
+        hasAnyAttempt.add(r.q);
+        const currentVid = versionByQuestion.get(r.q)?.id;
+        if (!currentVid || r.v !== currentVid) continue; // 개정 문항은 현재 버전 시도만 판정
+        if (r.o === 'wrong' || r.o === 'pass' || r.o === 'unanswered') {
+          currentWrongCount.set(r.q, (currentWrongCount.get(r.q) ?? 0) + 1);
+        }
+        const prev = latestByQ.get(r.q);
+        if (!prev || r.t > prev.occurredAt || (r.t === prev.occurredAt && r.a > prev.attemptId)) {
+          latestByQ.set(r.q, { outcome: r.o, occurredAt: r.t, attemptId: r.a });
+        }
+      }
+      const targets: string[] = [];
+      for (const q of active.map((q) => q.id)) {
+        const latest = latestByQ.get(q);
+        if (latest && latest.outcome === 'correct') continue; // 최신 유효 시도가 정답 → 제외
+        // 현재 버전 시도가 없지만 개정 전 이력이 있는 문항은 후보(가중치 0)로 유지.
+        // 시도 이력이 전혀 없는 문항은 기존처럼 제외한다.
+        if (latest || hasAnyAttempt.has(q)) targets.push(q);
+      }
       if (targets.length === 0) return [];
-      const { versionByQuestion, optionIdsByVersion } = await loadVersionMap(targets);
       const out: ReviewCandidateInput[] = [];
       for (const qid of [...targets].sort()) {
         const v = versionByQuestion.get(qid);
         if (!v) continue;
         out.push({
           questionId: qid,
-          validWrongCount: countByQ.get(qid) ?? 0,
+          validWrongCount: currentWrongCount.get(qid) ?? 0,
           version: {
             questionVersionId: v.id,
             versionNo: v.versionNo,
