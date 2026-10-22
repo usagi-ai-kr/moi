@@ -111,6 +111,26 @@ describe('D1 복습 소스 (#51)', () => {
     expect([...(v2?.version.optionIds ?? [])].sort()).toEqual(['q-v2-v2-o1', 'q-v2-v2-o2']);
   });
 
+  it('오답 후 정답 문항은 후보에서 제외한다 (최신 유효 시도 기준)', async () => {
+    await db
+      .prepare("INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) VALUES (?1, ?2, ?3, ?4, ?5, 'correct', ?6, 'set', ?7, NULL, 0)")
+      .bind('a-w1-correct', 'u-1', 'e-1', 'q-wrong', 'q-wrong-v1', NOW * 1000 + 100, 'set-a-w1-correct')
+      .run();
+    const rows = await source.listWrongCandidates({ userId: 'u-1', examId: 'e-1' });
+    const ids = rows.map((r) => r.questionId);
+    expect(ids).not.toContain('q-wrong');
+  });
+
+  it('정답 후 재오답 문항은 다시 후보에 포함된다', async () => {
+    await db
+      .prepare("INSERT INTO study_attempts (attempt_id, user_id, exam_id, question_id, question_version_id, outcome, occurred_at, source, source_id, excluded_at, first_attempt) VALUES (?1, ?2, ?3, ?4, ?5, 'wrong', ?6, 'set', ?7, NULL, 0)")
+      .bind('a-c1-wrong', 'u-1', 'e-1', 'q-correct', 'q-correct-v1', NOW * 1000 + 100, 'set-a-c1-wrong')
+      .run();
+    const rows = await source.listWrongCandidates({ userId: 'u-1', examId: 'e-1' });
+    const ids = rows.map((r) => r.questionId);
+    expect(ids).toContain('q-correct');
+  });
+
   it('북마크 추가·해제·목록 — 개인별 독립·UNIQUE·중복토글·타사용자 보존', async () => {
     expect(await source.listBookmarkCandidates({ userId: 'u-1', examId: 'e-1' })).toEqual([]);
     expect(await source.toggleBookmark({ userId: 'u-1', questionId: 'q-wrong' })).toEqual({ bookmarked: true });
