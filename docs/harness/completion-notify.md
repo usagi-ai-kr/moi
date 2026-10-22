@@ -4,11 +4,11 @@
 
 ## 규칙 요약
 - **단위 묶음 완료**(전 PR merge + 배포 + smoke + 이슈 close)를 **o가 판단한 직후 1회**만 보낸다.
-- **단위별 알림은 금지**(워커 중간 보고·리뷰 1건·재시도 반복 X). 자주 오면 채널을 끄게 된다.
+- **단위별 알림은 금지**(워커 중간 보고·리뷰 1건·재시도 반복 X). 여러 이벤트를 점수로 합산한 주기 현황만 별도로 보낸다.
 - 알림 실패는 merge를 되돌리지 않는다. blocker로 보고하고 재전송한다.
 - 워커(w)·리뷰어(r)는 `--dry-run`으로 payload만 확인한다. 실제 전송은 o만 한다.
 
-## 이벤트 (ADR-0085)
+## 이벤트 (ADR-0085 · ADR-0093)
 스크립트는 `--event`로 이벤트 종류를 구분한다. 기본값은 `completion`(하위호환).
 
 | 이벤트 | 의미 | 색 | 트리거 |
@@ -17,9 +17,37 @@
 | `intervention` | 사용자 개입 필요 | 주황(0xf39c12) | Notification 훅 `permission_prompt\|idle_prompt` |
 | `confirmation` | 사용자 확인 요청 | 파랑(0x3498db) | PreToolUse 훅 `AskUserQuestion` |
 | `deliverable` | 요청 산출물 도달 | 보라(0x9b59b6) | o 명시 호출 |
+| `progress` | 점수 합산 진행 현황 | 청록(0x1abc9c) | o 전용 PM2 주기 작업 |
 
 - `--status`는 `completion` 이벤트에서만 사용한다 (`complete`/`blocked`/`failed`).
 - `--from-hook` 모드는 stdin JSON의 `message` 필드를 본문으로 사용한다. 필드가 없거나 파싱 실패 시 일반 문구로 대체한다 (PreToolUse 입력 구조는 가정하지 않는다).
+
+## 진행 현황 점수와 운영 (ADR-0093)
+가중치·임계값·마일스톤 목록은 `.agents/skills/orchestrator-completion-notify/progress-weights.json`에서 관리한다. 코드는 점수를 하드코딩하지 않는다.
+
+| 이벤트 | 점수 |
+| --- | ---: |
+| PR 병합 | 3 |
+| blocked / failed 콜백 | 3 |
+| done 콜백 | 2 |
+| PR open | 2 |
+| dev CI health red↔green | 2 |
+| PR merge-state 변경 | 1 |
+| 이슈 close / open | 1 |
+
+- 합계 6점에서 즉시 보고한다. 마지막 보고 60분 경과 시 점수 1 이상이면 보고하고, 점수 0이면 건너뛴다. 성공 보고 뒤 점수를 초기화한다.
+- o가 `moi-progress-report`를 PM2로 상시 실행한다. `tmp/progress-state.json`은 마지막 보고 시각, 점수, GitHub 기준선, 콜백 로그 byte offset을 보관한다. 최초 실행은 과거 이벤트를 기준선으로만 설정한다.
+- 본문은 최대 5줄: 최근 병합 PR/SHA, 열린 PR 상태, dev CI 결과, blocked/failed 작업과 다음 조치, 지정 마일스톤의 열린 이슈 수. webhook·`.env` 값과 콜백 보고서 경로는 포함하지 않는다.
+- GitHub CLI 조회는 읽기 전용이며, 콜백 로그의 pending/전달 완료 중복은 한 번만 점수화한다. 개별 작업 진행 알림은 보내지 않는다.
+
+repo root에서 시작하고 상태를 저장한다. `moi-callback-relay`는 별도로 유지한다.
+```bash
+pm2 start .agents/skills/orchestrator-completion-notify/scripts/progress-report.mjs \
+  --name moi-progress-report -- --interval 60s
+pm2 save
+pm2 status moi-progress-report
+```
+
 
 ## 환경 설정
 | 항목 | 설명 |
@@ -162,6 +190,7 @@ node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs
 ## 검증
 ```bash
 node --test .agents/skills/orchestrator-completion-notify/scripts/notify-completion.test.mjs
+node --test .agents/skills/orchestrator-completion-notify/scripts/progress-report.test.mjs
 node .agents/scripts/validate-skills.mjs
 node .agents/skills/harness-budget/scripts/check-module-lengths.mjs
 ```

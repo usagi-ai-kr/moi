@@ -1,7 +1,7 @@
 ---
 id: ADR-0085
 title: 오케스트레이터 Discord 알림 이벤트 확장 — intervention·confirmation·deliverable
-status: Accepted
+status: Superseded by ADR-0093
 date: 2026-10-21
 related: ["#279", "ADR-0075", "ADR-0042", "ADR-0084"]
 ---

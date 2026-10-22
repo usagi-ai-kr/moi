@@ -15,9 +15,9 @@ const EXIT = { ok: 0, config: 1, usage: 2, http: 3 };
 
 const STATUS_COLOR = { complete: 0x2ecc71, blocked: 0xf1c40f, failed: 0xe74c3c };
 const STATUS_LABEL = { complete: '완료', blocked: '차단', failed: '실패' };
-const EVENT_COLOR = { intervention: 0xf39c12, confirmation: 0x3498db, deliverable: 0x9b59b6 };
-const EVENT_LABEL = { intervention: '개입 필요', confirmation: '확인 요청', deliverable: '산출물 도달' };
-const EVENTS = new Set(['completion', 'intervention', 'confirmation', 'deliverable']);
+const EVENT_COLOR = { intervention: 0xf39c12, confirmation: 0x3498db, deliverable: 0x9b59b6, progress: 0x1abc9c };
+const EVENT_LABEL = { intervention: '개입 필요', confirmation: '확인 요청', deliverable: '산출물 도달', progress: '진행 현황' };
+const EVENTS = new Set(['completion', 'intervention', 'confirmation', 'deliverable', 'progress']);
 const LIMIT = { title: 256, description: 4096, fieldName: 256, fieldValue: 1024, embed: 6000, fields: 25 };
 const VALUE_FLAGS = new Set(['event', 'status', 'title', 'summary', 'milestone', 'version', 'url', 'commit', 'issue', 'test', 'env-path']);
 const REPEATABLE = new Set(['issue', 'test']);
@@ -325,7 +325,7 @@ const HOOK_GENERIC_MESSAGE = {
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
 
-  if (!EVENTS.has(opts.event)) throw usageError(`--event 값 오류: ${opts.event} (completion|intervention|confirmation|deliverable)`);
+  if (!EVENTS.has(opts.event)) throw usageError(`--event 값 오류: ${opts.event} (completion|intervention|confirmation|deliverable|progress)`);
 
   if (opts.event === 'completion') {
     if (!opts.status) throw configError('--status 가 필요합니다 (complete|blocked|failed)');
@@ -361,7 +361,7 @@ async function main() {
 
   if (!webhook) throw configError('DISCORD_WEBHOOK 설정이 없습니다 (환경변수 또는 .env/MOI_ENV_FILE)');
   await sendWebhook(webhook, payload, redact);
-  console.log(`sent: status=${opts.status} title=${opts.title} target=discord-webhook (masked)`);
+  console.log(`sent: event=${opts.event} status=${opts.status ?? '-'} title=${opts.title} target=discord-webhook (masked)`);
   return EXIT.ok;
 }
 

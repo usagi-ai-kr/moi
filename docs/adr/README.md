@@ -99,11 +99,12 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0082 | 학습·복습 문제 풀이 카드 UI 공통화 | Accepted | 2026-10-21 | [0082-question-card-ui-unification.md](./0082-question-card-ui-unification.md) |
 | ADR-0083 | 시험 Select chevron 여백 — 네이티브 select 유지와 아이콘 배치 | Accepted | 2026-10-21 | [0083-exam-select-chevron.md](./0083-exam-select-chevron.md) |
 | ADR-0084 | 에이전트 코멘트와 사용자 승인 구분 — 우선순위·범위 변경 규칙 | Accepted | 2026-10-21 | [0084-agent-comment-approval.md](./0084-agent-comment-approval.md) |
-| ADR-0085 | 오케스트레이터 Discord 알림 이벤트 확장 — intervention·confirmation·deliverable | Accepted | 2026-10-21 | [0085-orch-discord-events.md](./0085-orch-discord-events.md) |
+| ADR-0085 | 오케스트레이터 Discord 알림 이벤트 확장 — intervention·confirmation·deliverable | Superseded by ADR-0093 | 2026-10-21 | [0085-orch-discord-events.md](./0085-orch-discord-events.md) |
 | ADR-0086 | 학습 범위·문항 수 선택 그룹 컨테이너와 옵션 간격 축소 | Accepted | 2026-10-21 | [0086-selection-group-container.md](./0086-selection-group-container.md) |
 | ADR-0087 | 기풀이 표시 기준과 계정·시험 격리 | Accepted | 2026-10-22 | [0087-study-pool-completed-attempts.md](./0087-study-pool-completed-attempts.md) |
 | ADR-0088 | 디스패치 큐·콜백 상태 점검 하네스 | Accepted | 2026-10-22 | [0088-harness-dispatch-status.md](./0088-harness-dispatch-status.md) |
 | ADR-0089 | 개념 위키 정적 문서와 개인화 추천 점수 | Proposed | 2026-10-22 | [0089-concept-wiki-recommendations.md](./0089-concept-wiki-recommendations.md) |
 | ADR-0090 | 런타임 비종속 오케스트레이션 코어와 내구 인박스 | Accepted | 2026-10-22 | [0090-orchestration-runtime-adapters.md](./0090-orchestration-runtime-adapters.md) |
 | ADR-0091 | 환영 삽화 외부 생성 API 사용 | Accepted | 2026-10-22 | [0091-welcome-illustrations.md](./0091-welcome-illustrations.md) |
+| ADR-0093 | 가중 점수 기반 오케스트레이터 진행 보고 | Accepted | 2026-10-22 | [0093-progress-report-scoring.md](./0093-progress-report-scoring.md) |
 <!-- ADR_INDEX:END -->
