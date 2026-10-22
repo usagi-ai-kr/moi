@@ -6,7 +6,7 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 
 # 에이전트 오케스트레이션 — 역할·콜백·검증
 
-출처: #48/#49 컨텍스트 오염 사례, ADR-0023(컨텍스트·검증), ADR-0042(역할·콜백), ADR-0051(정지·tmp 인계, ADR-0048 대체). 관련: `tdd-bdd-testing`, `architecture-boundaries`.
+출처: #48/#49 컨텍스트 오염 사례, ADR-0023(컨텍스트·검증), ADR-0042(역할·콜백), ADR-0051(정지·tmp 인계, ADR-0048 대체), ADR-0090(런타임 비종속 전달). 관련: `tdd-bdd-testing`, `architecture-boundaries`. **상세 절차·예시·운영 표: `docs/harness/orchestration.md`** (이 문서가 상세, SKILL.md 가 규칙).
 
 ## 역할
 | 역할 | 책임 | 금지 |
@@ -22,8 +22,8 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 
 ## 콜백 프로토콜
 - 완료·blocked·failed **모두** 콜백한다. 침묵 완료는 없다.
-- 형식: `[callback] unit=<unit> status=<done|blocked|failed> report=<path>`
-- `sh .agents/skills/agent-orchestration/scripts/notify.sh o <unit> <status> <report>` — 콜백 대상은 이름 `o`를 기본으로 한다(패널 ID 직접 지정은 예외). `<MOI_WORK_DIR|보고서 디렉터리>/callbacks.log`에 먼저 기록하고 `herdr agent prompt`로 전송한다. 전송 실패는 `delivered=pending`으로 남기고 종료 0이며, o가 재전송한다. `--dry-run`은 기록·전송 없이 출력만 한다.
+- 형식: `[callback] unit=<unit> status=<done|blocked|failed> report=<path>` · 호출: `sh .agents/skills/agent-orchestration/scripts/notify.sh o <unit> <status> <report>`
+- 기록: `<MOI_WORK_DIR|보고서 디렉터리>/callbacks.log`에 먼저 남기고 `herdr agent prompt`로 전송한다. 전송 실패는 `delivered=pending`으로 남기고 종료 0이며 o가 재전송한다(`--dry-run`은 기록·전송 없이 출력만). 상세·예시: `docs/harness/orchestration.md`.
 - o는 콜백을 받으면 보고서를 읽고 다음 단위를 디스패치한다. 같은 unit의 중복 콜백은 최신 status로 처리한다.
 
 ## 디스패치 큐·상태 점검
@@ -43,6 +43,17 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 ## 폴링·폴백 타이머
 - `herdr agent prompt --wait`·파일 폴링으로 완료를 추정하지 않는다. 완료 신호는 콜백뿐이다.
 - 단위 묶음당 폴백 타이머 **1개, 15분**. 만료 시 해당 패널 출력을 읽어 triage하고, 완료면 보고서 확인, 정지면 재프롬프트, 오류면 재배정한다.
+
+## SLA·초과 판정·재배정
+- **작업 SLA 5분, 리뷰 SLA 10분.** 초과는 난이도가 아니라 패널 상태로 보고, 초과 시각·증상을 판단 요청에 함께 적는다.
+- 초과 시 **4분류로 먼저 분류**하고 분류별 조치만 한다: ① 오케스트레이션 실패(브리프 축소·같은 모델 재디스패치) ② 워커 능력(강한 모델로 재배정) ③ 외부(재시도 1회 → 다른 모델/제공자 경로 + blocker 보고) ④ 오차(동일 브리프 1회 재시도 → ② 승격). 표·사례: `docs/harness/orchestration.md`.
+- **유휴 패널 즉시 재배정** — 콜백 완료·blocked/failed 패널에 다음 단위를 즉시 배정(브리프·worktree·금지 파일 명시, 새 단위 전용 세션). 같은 worktree·브랜치 동시 배정 금지.
+- **정기 점검(5분 harness-watch)** — 콜백 대기 구간에만 5분마다 1회 `harness-watch.sh` 호출로 OVERDUE/MISSING 확인(쓰기 없는 보고 전용, 상시 폴링 루프 금지). OVERDUE 는 위 4분류로 판정한다.
+
+## 패널 판단·모델 운영
+- **판단 요청에는 각 모델의 성능·경향 요약을 함께 제시한다**(강점·약점 1줄씩). 현 패널 표: `docs/harness/orchestration.md`.
+- **워커 추가·모델 교체는 판단 요청 → 사용자 승인 후 실행.** 승인 없이 새 패널 생성·모델 변경 금지. 교체 승인·실행 시 `notify-completion.mjs --event confirmation` 으로 Discord 통지 1회(단위별 알림 아님).
+- **effort(추론 강도)는 o가 임의로 변경 가능** — 기본은 **전 패널 max 또는 변경 불가** 유지, 낮출 때는 판단 요청에 근거를 적어 승인받는다.
 
 ## 승인·우선순위 (이슈 #288)
 - 에이전트가 사용자 계정으로 남긴 이슈/PR 코멘트는 **사용자 승인으로 간주하지 않는다**. 코멘트에는 `[agent]` prefix를 필수로 붙인다.
@@ -71,8 +82,7 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 
 ## 작업 정지·인계 (ADR-0051)
 - 정지 지시 후 새 외부 쓰기(PR·이슈·병합·배포·push·새 디스패치)는 금지. 허용은 지시가 명시한 인계 산출물뿐이다.
-- 순서: 패널별 중지 프롬프트(테스트·서버 종료, 미커밋 보존, 3줄 상태 응답 후 대기) → 폴백 타이머 해제 → 브랜치·SHA·미커밋·잔여 프로세스 확인 → `tmp/handover-<날짜>.md` 작성 후 인계 이슈(`tuck`, 현재 Milestone)에 게시(다음 o 재개 프롬프트 포함). 인계는 `docs/`에 두지 않고, 남겨야 할 내용은 이슈로 처리한다.
-- 미커밋 워커 변경은 버리지 않고 `wip:` 커밋으로 보존하며 게이트 미검증을 표시한다.
+- 순서: 패널별 중지 프롬프트(테스트·서버 종료, 미커밋 보존, 3줄 상태 응답 후 대기) → 폴백 타이머 해제 → 브랜치·SHA·미커밋·잔여 프로세스 확인 → `tmp/handover-<날짜>.md` 작성 후 인계 이슈(`tuck`, 현재 Milestone) 게시(다음 o 재개 프롬프트 포함). 미커밋 워커 변경은 `wip:` 커밋으로 보존하고 게이트 미검증을 표시한다. 상세: `docs/harness/orchestration.md`.
 - 브리프·보고서·콜백 로그는 메인 저장소 `tmp/`의 절대 경로로 전달한다(gitignore, `.gitkeep`만 커밋). worktree의 `tmp/`·`$TMPDIR`는 쓰지 않는다.
 
 ## 실패 처리
@@ -83,7 +93,12 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 ## 스크립트
 - `sh .agents/skills/agent-orchestration/scripts/check-worker-output.sh <worktree> <report> [--allow-empty]` — 종료 코드 0 통과, 1 위반, 2 사용 오류.
 - `sh .agents/skills/agent-orchestration/scripts/notify.sh <target-pane> <unit> <status> <report> [--dry-run]` — 종료 코드 0 전송/기록, 1 로그 기록 실패, 2 사용 오류.
+- `sh .agents/skills/agent-orchestration/scripts/harness-watch.sh [queue.tsv] [callbacks.log]` — 디스패치 큐 상태 점검(DONE/RUNNING/OVERDUE/MISSING). 쓰기 없음.
 - 회귀 테스트: `check-worker-output.test.sh`, `notify.test.sh`.
 
 ## 참고
 - ADR-0023(컨텍스트 리셋·산출물 검증), ADR-0042(역할·콜백), `AGENTS.md` 작업 원칙, `architecture-boundaries`(domain 순수성)
+
+## o 응대 원칙 (서브에이전트 위임)
+- o는 **1분 안에 응답 가능한 상태**를 유지한다. 허용 위임은 보고서 판정·다음 지시 초안뿐(`callback-triage` 를 백그라운드로 호출, 결과 대기 안 함). 위임 금지: 디스패치 실행·커밋/PR/병합/배포·콜백 기록 변경·새 에이전트 생성.
+- 보고서가 1건이고 status 한 줄로 충분하면 o가 직접 판단한다. 2건 이상이거나 본문 50줄 초과면 위임하고, 위임 결과가 오면 반영하고 `tmp/callbacks.log`에 처리 기록을 남긴다. 상세: `docs/harness/orchestration.md`.

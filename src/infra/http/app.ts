@@ -3,6 +3,7 @@ import { registerAdminRoutes } from './admin/routes';
 import { registerCorrectionAdminRoutes } from './admin/correction-routes';
 import { registerAuthRoutes } from './auth/routes';
 import { registerCorrectionListRoutes } from './corrections/routes';
+import { registerConceptRoutes } from './concepts/routes';
 import { registerReportRoutes } from './reports/routes';
 import { registerReviewRoutes } from './review/routes';
 import { registerSessionRoutes } from './session/routes';
@@ -48,6 +49,7 @@ export function createApp(options?: CreateAppOptions) {
   registerReportRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
   registerCorrectionListRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
   registerStatsRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
+  registerConceptRoutes(app, { createSessionRuntime: options?.createSessionRuntime });
   registerReviewRoutes(app, {
     createRuntime: options?.createReviewRuntime,
     createSessionRuntime: options?.createSessionRuntime,
