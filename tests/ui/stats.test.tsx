@@ -94,6 +94,7 @@ beforeEach(() => {
     view: 'start',
     scope: 'all',
     domainId: 'dom-security',
+    size: 4,
     index: 0,
     save: 'idle',
     confirmSubmit: false,

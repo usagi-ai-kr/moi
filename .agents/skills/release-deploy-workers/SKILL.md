@@ -1,6 +1,6 @@
 ---
 name: release-deploy-workers
-description: Cloudflare Workers 배포·검증 지침. 단일 Worker(SPA+Hono) 배포, D1 원격 마이그레이션, Secrets 바인딩, Kakao Redirect URI 등록, viewport 스크린샷, 실계정 smoke(최초/재로그인/로그아웃), 배포 보고 형식이 필요할 때 사용.
+description: Cloudflare Workers 배포·검증 지침. 단일 Worker(SPA+Hono) 배포, 워커 단위 수락 시 즉시 배포→smoke→보고, D1 원격 마이그레이션, Secrets 바인딩, Kakao Redirect URI 등록, viewport 스크린샷, 실계정 smoke(최초/재로그인/로그아웃), 배포 보고 형식이 필요할 때 사용.
 compatibility: curl 필요 (scripts/smoke-check.sh).
 ---
 
@@ -21,6 +21,14 @@ compatibility: curl 필요 (scripts/smoke-check.sh).
 - [ ] `paseto-ts` Workers 번들 호환 검증
 - [ ] Pino 구조화 로그(thread transport 미사용) 검증
 - [ ] CI 게이트 전체 통과: lint / typecheck / check:architecture / test:unit / test:integration / test:bdd / build
+
+## 단위별 즉시 배포 (워커 단위 수락 → 배포 → smoke → 보고)
+- **트리거**: 워커 단위가 수락되면(리뷰 `approve` + CI 게이트 통과 + PR 병합) **즉시** 배포·smoke·보고까지 **한 세트**로 끝낸다. 다음 단위를 시작하기 전에 마친다.
+- **대상**: 단일 Worker `moi` 1개 — dev/main 배포 분리 없음(#262 tuck·미구현). 배포 대상 Worker 를 늘리지 않는다.
+- **절차**: ① 수락 확인(리뷰 verdict approve + CI gates success + PR merged) → ② `wrangler deploy` → ③ `sh .agents/skills/release-deploy-workers/scripts/smoke-check.sh <base-url>` (fail-closed) → ④ 배포 URL·Worker 버전·smoke 결과를 보고서에 기록.
+- **사용자 대기(정지)**: Secrets 등록·회전(PASETO 키·Kakao client secret), Kakao Redirect URI 등록 등 **사용자 의존 절차**가 막히면 임의로 진행하지 말고 대기 목록에 `막힌 항목 · 필요한 사용자 동작 · 재개 조건`을 남기고 **멈춘다**(재시도 루프 금지). 해제되면 위 절차부터 이어간다.
+- **알림 경로**: `pr.py` 는 **존재하지 않는다**. PR 알림·콜백은 `sh .agents/skills/agent-orchestration/scripts/notify.sh <pane> <unit> <status> <report>` 로만 보낸다.
+- **알림 주기**: 완성 알림은 기존대로 **단위 묶음 1회**(ADR-0075) — 여기의 즉시 배포는 알림 주기와 무관하다.
 
 ## 릴리스 runbook (순서 · 중단 · 복구)
 1. 로컬: `run-gates` 전체 + 하네스 selftests 통과

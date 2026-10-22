@@ -13,6 +13,10 @@ export const copy = {
   login: {
     kakao: '카카오 로그인',
   },
+  version: {
+    /** 앱 버전·빌드 일자 표기 — 값은 빌드 주입(__APP_VERSION__·__BUILD_DATE__)만 쓴다. */
+    footer: (version: string, buildDate: string) => `v${version} (${buildDate})`,
+  },
   nav: {
     study: '학습 시작',
     history: '학습 현황/이력',
@@ -57,6 +61,9 @@ export const copy = {
     startTitle: '학습 범위 선택',
     startAction: '학습 시작',
     starting: '시작하는 중',
+    startFailed: '새 세트를 시작하지 못했습니다. 같은 설정으로 다시 시도해 주세요.',
+    poolInsufficient: '선택한 범위에 풀 수 있는 문제가 없습니다. 설정을 바꾸거나 다른 범위를 선택해 주세요.',
+    changeSettings: '설정 변경',
     // #269: 범위 옵션(전체/영역별/취약)과 중복되는 괄호 안내를 걷어내고 개수 계약만 남긴다.
     // 문제 수(4/8) 선택·10문제 계약 변경은 #275 소유라 이 문구의 개수 표기는 유지한다.
     examContext: '범위와 문제 수를 선택하세요.',
