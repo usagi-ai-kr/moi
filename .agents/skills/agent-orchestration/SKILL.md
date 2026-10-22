@@ -44,6 +44,21 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 - `herdr agent prompt --wait`·파일 폴링으로 완료를 추정하지 않는다. 완료 신호는 콜백뿐이다.
 - 단위 묶음당 폴백 타이머 **1개, 15분**. 만료 시 해당 패널 출력을 읽어 triage하고, 완료면 보고서 확인, 정지면 재프롬프트, 오류면 재배정한다.
 
+## SLA·초과 판정·재배정
+- **작업 SLA 5분, 리뷰 SLA 10분.** 초과는 단 난이도가 아니라 **패널 상태**로 본다 — o가 판단을 요청할 때 초과 시각·관측된 증상을 함께 적는다.
+- SLA 초과는 아래 4분류로 **먼저 분류**하고, 분류에 맞는 조치만 한다(재시작·재배정·사용자 확인이 섞이지 않게).
+  1. **오케스트레이션 실패** — 브리프 모호·권한 없음·판단 요청 누락·패널 미배정. 조치: 브리프를 좁혀 **같은 모델·신규 세션**으로 재디스패치.
+  2. **워커 능력** — 모델이 단위를 못 맞추는 경우(요구사항 오판·반복 실패). 조치: 더 강한 모델로 **재배정**(모델 교체는 아래 승인 절차).
+  3. **외부** — 제공자 오류·429/5xx·네트워크·원격 API 지연. 조치: 재시도 1회 → 여전히 실패하면 다른 모델/제공자 경로로 재배정하고 blocker로 보고.
+  4. **오차** — 단위 범위의 단순 실수(파일 위치·명령어·조사 부족). 조치: 같은 워커에 동일 브리프로 1회 재시도(콘텍스트 리셋) → 2회 실패 시 2번으로 승격.
+- **유휴 패널 즉시 재배정** — 콜백을 보낸 패널·blocked/failed 로 끝난 패널은 즉시 대기 상태이므로 o는 다음 단위를 그 패널에 배정한다(브리프·worktree·금지 파일을 명시하고 새 단위 전용 세션에서 시작). 같은 worktree·브랜치를 두 패널에 동시에 배정하지 않는다.
+- **정기 점검(5분 harness-watch)** — o는 콜백 대기 구간에서 5분마다 1회 `sh .agents/skills/agent-orchestration/scripts/harness-watch.sh [queue.tsv] [callbacks.log]` 를 호출해 OVERDUE/MISSING 을 확인한다. 점검은 **쓰기 없는 보고 전용**이며 상시 폴링 루프를 만들지 않는다(대기 구간에만 둔다). OVERDUE 는 위 4분류로 판정하고 그때 재시도·재배정을 결정한다.
+
+## 패널 판단·모델 운영
+- **판단 요청에는 각 모델의 성능·경향 요약을 함께 제시한다.** 현 패널: `codex-gpt-luna` = GPT-6-Luna(max), `codex-gpt-2` = GPT-6-Luna(max), `oc-minimax-flash` = MiniMax M3.1 Flash, `oc-beam-free` = Beam Free (패널이 바뀌면 이 표를 갱신한다). 요약에는 각 모델의 강점·약점(속도·정확도·장문 맥락 유지 등)을 1줄씩 적는다.
+- **워커 추가·모델 교체는 판단 요청 → 사용자 승인 후 실행.** 승인 없이 새 패널을 만들거나 모델을 바꾸지 않는다. 교체가 승인·실행되면 `node .agents/skills/orchestrator-completion-notify/scripts/notify-completion.mjs --event confirmation --title "<교체 내용>" --summary "<모델·패널·사유>"` 로 Discord 통지를 1회 보낸다(단위별 알림 아님).
+- **effort(추론 강도)는 o가 임의로 변경할 수 있다.** 기본은 **전 패널 max 또는 변경 불가** 상태를 유지하고, 낮추려면 판단 요청에 근거를 적어 승인받는다. effort 조정은 산출물 품질 차이로 기록하지 않는다.
+
 ## 승인·우선순위 (이슈 #288)
 - 에이전트가 사용자 계정으로 남긴 이슈/PR 코멘트는 **사용자 승인으로 간주하지 않는다**. 코멘트에는 `[agent]` prefix를 필수로 붙인다.
 - 우선순위 변경·범위 제외·후속 이관은 **사용자 명시 승인 링크** 없이는 금지한다.
@@ -83,6 +98,7 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 ## 스크립트
 - `sh .agents/skills/agent-orchestration/scripts/check-worker-output.sh <worktree> <report> [--allow-empty]` — 종료 코드 0 통과, 1 위반, 2 사용 오류.
 - `sh .agents/skills/agent-orchestration/scripts/notify.sh <target-pane> <unit> <status> <report> [--dry-run]` — 종료 코드 0 전송/기록, 1 로그 기록 실패, 2 사용 오류.
+- `sh .agents/skills/agent-orchestration/scripts/harness-watch.sh [queue.tsv] [callbacks.log]` — 디스패치 큐 상태 점검(DONE/RUNNING/OVERDUE/MISSING). 쓰기 없음.
 - 회귀 테스트: `check-worker-output.test.sh`, `notify.test.sh`.
 
 ## 참고
