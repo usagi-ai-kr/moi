@@ -104,5 +104,6 @@ UI·UX 기준은 `DESIGN.md`이며, Lighthouse만으로 디자인 완료를 판�
 | `agent-orchestration` | 역할·콜백·산출물 검증 |
 | `orchestrator-completion-notify` | 단위 묶음 완료 Discord 알림 |
 | `harness-budget` | 모듈 길이 예산 검사·해소, 하네스 비대화 방지 |
+| `harness-eval-report` | usagi 이슈 본문(dry-run) |
 
-> 출처: GitHub 이슈 #1–#13·사용자 확정 사항(2026-10-18). 초기 결정은 `docs/adr/` ADR-0001–0010 백필(이슈 #1 첫 PR·#9 추적). 충돌 시 우선순위는 위 관리 규칙을 따른다.
+> 출처: GitHub #1–#13·사용자 확정(2026-10-18). 초기 결정 `docs/adr/` ADR-0001–0010 백필(#1·#9 추적). 충돌 시 위 규칙 우선.
