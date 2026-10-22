@@ -25,6 +25,7 @@ export function resolvePort(raw: string | undefined): number {
 
 const PORT = resolvePort(process.env.PORT);
 const BASE_URL = `http://localhost:${PORT}`;
+const RUN_WEBKIT_335 = process.env.CI === 'true' || process.env.CI === '1' || process.env.RUN_WEBKIT_335 === '1';
 
 // 해석 결과도 노출한다 — 설정 배선이 단위 테스트로 검증되도록(#268 Slice 2C fix r1).
 export const BDD_PORT = PORT;
@@ -53,5 +54,12 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    ...(RUN_WEBKIT_335 ? [{
+      name: 'webkit-335',
+      grep: /Pele 전수 렌더|유효한 sequence 도식|렌더 실패 원문은 작은 화면/,
+      use: { ...devices['Desktop Safari'], browserName: 'webkit' as const },
+    }] : []),
+  ],
 });

@@ -61,7 +61,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0044 | 해설 Mermaid 노드 라벨 인용 규칙 | Accepted | 2026-10-20 | [0044-mermaid-label-quote.md](./0044-mermaid-label-quote.md) |
 | ADR-0045 | 해설 Mermaid 렌더러 Pele 전환 | Superseded by ADR-0047 | 2026-10-20 | [0045-pele-mermaid-renderer.md](./0045-pele-mermaid-renderer.md) |
 | ADR-0046 | 학습 세트 10문제 조정 | Superseded by ADR-0081 | 2026-10-20 | [0046-ten-question-study-set.md](./0046-ten-question-study-set.md) |
-| ADR-0047 | Pele 전환 0.2.4 구현 시점과 전환·복구 계약 | Accepted | 2026-10-20 | [0047-pele-0.2.4-implementation-timing.md](./0047-pele-0.2.4-implementation-timing.md) |
+| ADR-0047 | Pele 전환 0.2.4 구현 시점과 전환·복구 계약 | Superseded by ADR-0092 | 2026-10-20 | [0047-pele-0.2.4-implementation-timing.md](./0047-pele-0.2.4-implementation-timing.md) |
 | ADR-0048 | 작업 정지 절차와 브리프·보고서 절대 경로 | Superseded by ADR-0051 | 2026-10-20 | [0048-orchestration-stop-protocol.md](./0048-orchestration-stop-protocol.md) |
 | ADR-0049 | 제출 전 정답 개수 안내 | Accepted | 2026-10-20 | [0049-answer-count-disclosure.md](./0049-answer-count-disclosure.md) |
 | ADR-0050 | 하이브리드 기기 터치 타깃 44px | Accepted | 2026-10-20 | [0050-any-pointer-touch-target.md](./0050-any-pointer-touch-target.md) |
@@ -106,6 +106,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0089 | 개념 위키 정적 문서와 개인화 추천 점수 | Proposed | 2026-10-22 | [0089-concept-wiki-recommendations.md](./0089-concept-wiki-recommendations.md) |
 | ADR-0090 | 런타임 비종속 오케스트레이션 코어와 내구 인박스 | Accepted | 2026-10-22 | [0090-orchestration-runtime-adapters.md](./0090-orchestration-runtime-adapters.md) |
 | ADR-0091 | 환영 삽화 외부 생성 API 사용 | Accepted | 2026-10-22 | [0091-welcome-illustrations.md](./0091-welcome-illustrations.md) |
+| ADR-0092 | Pele 해설 Mermaid 전수 교차 검증과 전환 시점 재정의 | Accepted | 2026-10-22 | [0092-pele-content-cross-validation.md](./0092-pele-content-cross-validation.md) |
 | ADR-0093 | 가중 점수 기반 오케스트레이터 진행 보고 | Accepted | 2026-10-22 | [0093-progress-report-scoring.md](./0093-progress-report-scoring.md) |
 | ADR-0094 | 푸터·빌드 메타데이터 표시 정책 | Accepted | 2026-10-22 | [0094-footer-console-build-meta.md](./0094-footer-console-build-meta.md) |
 | ADR-0095 | 학습 시작 범위 진척도 분자·분모와 재조회 정책 | Accepted | 2026-10-22 | [0095-scope-progress-indicator.md](./0095-scope-progress-indicator.md) |

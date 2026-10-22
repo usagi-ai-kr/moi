@@ -36,6 +36,10 @@ let abandonCalls = 0;
 // POST /submit 호출 횟수 (#232 — 마지막 문항 제출 1회·결과 재제출 0회 검증).
 let submitCalls = 0;
 
+// 이슈 #335 Mermaid 입력 재현용 — 결과 응답의 첫 문항 해설만 교체한다.
+let issue335Explanation: string | null = null;
+let issue335RuntimeErrors: string[] = [];
+
 // 학습 현황 고정 응답 (#54) — saa-c03 요청에만 제공한다.
 const STATS_DTO = {
   examId: 'saa-c03',
@@ -81,7 +85,9 @@ function freshSet(): { id: string; status: string; items: FakeItem[]; submittedA
     stem: `문제 ${i} 본문: VPC와 서브넷 구성은?`,
     options: [`q-${i}-a`, `q-${i}-b`, `q-${i}-c`, `q-${i}-d`].map((id) => ({ optionId: id, text: `보기 ${id} 내용` })),
     answerCount: 1,
-    explanation: `문제 ${i} 해설: 정답은 q-${i}-a이다.`,
+    explanation: i === 0 && issue335Explanation !== null
+      ? issue335Explanation
+      : `문제 ${i} 해설: 정답은 q-${i}-a이다.`,
     sourceUrls: [`https://docs.aws.amazon.com/q-${i}`],
     response: { kind: 'unanswered' },
   }));
@@ -152,6 +158,14 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
   failNextAnswer = false;
   abandonCalls = 0;
   submitCalls = 0;
+  issue335Explanation = null;
+  issue335RuntimeErrors = [];
+  page.on('pageerror', (error) => issue335RuntimeErrors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /mermaid|pele|diagram/i.test(message.text())) {
+      issue335RuntimeErrors.push(message.text());
+    }
+  });
   await page.route('**/api/me', async (route) => {
     await route.fulfill({ status: 200, json: { user: { id: 'e2e-user-1' } } });
   });
@@ -312,6 +326,34 @@ Given('학습 API 모의가 준비되면', async ({ page }) => {
     }
     await route.fulfill({ status: 404, json: { error: 'not_found' } });
   });
+});
+
+
+Given('이슈 #335 한글 sequence 해설이 준비되면', async () => {
+  issue335Explanation = [
+    '```mermaid',
+    'sequenceDiagram',
+    '  participant App as 모바일 앱',
+    '  participant API as 애플리케이션',
+    '  participant S3 as S3',
+    '  App->>API: 업로드 URL 요청',
+    '  API-->>App: presigned URL 응답',
+    '  App->>S3: presigned URL로 파일 업로드',
+    '  S3-->>App: 업로드 완료',
+    '```',
+  ].join('\n');
+});
+
+Given('이슈 #335 렌더 실패 원문이 준비되면', async () => {
+  const longToken = 'signed-upload-token-'.repeat(12);
+  issue335Explanation = [
+    '```mermaid',
+    'sequenceDiagram',
+    '  participant App as 모바일 앱',
+    `  App->>API: ${longToken}`,
+    '  !!! 잘못된 문법',
+    '```',
+  ].join('\n');
 });
 
 Given('답안 저장이 일시 실패하도록 준비되면', async () => {
@@ -477,6 +519,53 @@ Then('저장됨 표시가 보인다', async ({ page }) => {
 
 Then('미응답 확인이 보인다', async ({ page }) => {
   await expect(page.getByText(/풀지 않은 문제/)).toBeVisible();
+});
+
+
+Then('이슈 #335 sequence 다이어그램이 SVG로 렌더된다', async ({ page }) => {
+  const diagram = page.getByTestId('mermaid-diagram');
+  await expect(diagram).toHaveAttribute('role', 'img');
+  await expect(diagram.locator('svg')).toBeVisible();
+  await expect(diagram.locator('svg')).toContainText(/모바일\s*앱/, { timeout: 10_000 });
+  const engine = page.context().browser()?.browserType().name() ?? 'browser';
+  const width = page.viewportSize()?.width ?? 0;
+  await page.screenshot({ path: `test-results/issue-335-${engine}-sequence-${width}.png`, fullPage: true });
+  expect(issue335RuntimeErrors).toEqual([]);
+});
+
+Then('이슈 #335 결과 조작과 근거 링크가 보인다', async ({ page }) => {
+  await expect(page.getByRole('button', { name: '북마크 추가' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Q 0' })).toBeVisible();
+  await expect(page.getByRole('button', { name: copy.study.nextItem })).toBeVisible();
+});
+
+Then('렌더 실패 원문은 카드 안에서 줄바꿈되고 주변 조작이 보인다', async ({ page }) => {
+  const diagram = page.getByTestId('mermaid-diagram');
+  await expect(diagram.getByRole('alert')).toBeVisible();
+  const pre = diagram.locator('pre');
+  await expect(pre).toContainText('signed-upload-token');
+  const layout = await pre.evaluate((el) => {
+    const card = el.closest('.moi-study-peritem > li');
+    if (!card) throw new Error('결과 문항 카드가 없습니다');
+    const preRect = el.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    return {
+      whiteSpace: getComputedStyle(el).whiteSpace,
+      cardRight: cardRect.right,
+      preRight: preRect.right,
+      viewportWidth: document.documentElement.clientWidth,
+      documentWidth: document.documentElement.scrollWidth,
+    };
+  });
+  expect(layout.whiteSpace).toBe('pre-wrap');
+  expect(layout.preRight).toBeLessThanOrEqual(layout.cardRight + 1);
+  expect(layout.documentWidth - layout.viewportWidth).toBeLessThanOrEqual(1);
+  await expect(page.getByRole('button', { name: '북마크 추가' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Q 0' })).toBeVisible();
+  await expect(page.getByRole('button', { name: copy.study.nextItem })).toBeVisible();
+  const engine = page.context().browser()?.browserType().name() ?? 'browser';
+  const width = page.viewportSize()?.width ?? 0;
+  await page.screenshot({ path: `test-results/issue-335-${engine}-fallback-${width}.png`, fullPage: true });
 });
 
 Then('학습 결과가 보인다', async ({ page }) => {
