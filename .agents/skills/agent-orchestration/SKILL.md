@@ -6,7 +6,7 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 
 # 에이전트 오케스트레이션 — 역할·콜백·검증
 
-출처: #48/#49 컨텍스트 오염 사례, ADR-0023(컨텍스트·검증), ADR-0042(역할·콜백), ADR-0051(정지·tmp 인계, ADR-0048 대체). 관련: `tdd-bdd-testing`, `architecture-boundaries`. **상세 절차·예시·운영 표: `docs/harness/orchestration.md`** (이 문서가 상세, SKILL.md 가 규칙).
+출처: #48/#49 컨텍스트 오염 사례, ADR-0023(컨텍스트·검증), ADR-0042(역할·콜백), ADR-0051(정지·tmp 인계, ADR-0048 대체), ADR-0090(런타임 비종속 전달). 관련: `tdd-bdd-testing`, `architecture-boundaries`. **상세 절차·예시·운영 표: `docs/harness/orchestration.md`** (이 문서가 상세, SKILL.md 가 규칙).
 
 ## 역할
 | 역할 | 책임 | 금지 |
