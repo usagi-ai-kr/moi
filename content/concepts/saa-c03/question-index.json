@@ -1,0 +1,3002 @@
+{
+  "005562eac5522b6eaea3b0d20e419e77aa4de0f3c83af52691bc8367cd405076": {
+    "sourceQuestionId": "saa-res-0070",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "008d6d79b4335542da842a8718492bcb1f3a7ae390386ffec2681056aa22dfd4": {
+    "sourceQuestionId": "saa-perf-0093",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "009309a59786c1bc6c18e634b512fc7bb6deef0b09a9e95d416d10999629cd89": {
+    "sourceQuestionId": "saa-sec-0053",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "019ec1834d0b11a76d75e1d3345c8280a2de4b20edbbd25c53594de89781891c": {
+    "sourceQuestionId": "saa-sec-0010",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "01dbaf580b927ce30f5b51cd2dd063ee30ef0d9b21c60300904cf79064e41dfe": {
+    "sourceQuestionId": "saa-sec-0080",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "027784ef1f0e1b5b5ffef5e8f17ad326816b806d59c3fccb03baba7f5bc2ae77": {
+    "sourceQuestionId": "saa-perf-0026",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "037f73261e8d9f09838f427ee43878e0b44fa733916f3e8e7221731b4804b4ac": {
+    "sourceQuestionId": "saa-perf-0045",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "0413e3226bb5bf02a97abf6987ac5016041934b0dd903d991005b230e7d3b225": {
+    "sourceQuestionId": "saa-res-0069",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "0446a400215b6f7005e284a7d58c044698bd72861cb9816f96421ace40a347f6": {
+    "sourceQuestionId": "saa-cost-0053",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "0534b938cb2a7b764e899a00bf11af093e9bb9a04e860d86f5385b343187e7d6": {
+    "sourceQuestionId": "saa-res-0103",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "0620c2ea64ddcfde5c5d80399f4e936551f8d99e74e444fae6216b21af8ee7c1": {
+    "sourceQuestionId": "saa-perf-0098",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "06997ffe4f009d978d1d7923f483a5ea79a47e1edf3957a1e4b9ef11a41f06b6": {
+    "sourceQuestionId": "saa-cost-0092",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "06cba332b49d36a555100d8c64d327d5b355241e294275b2834a3369a061a1b2": {
+    "sourceQuestionId": "saa-sec-0115",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "0726961d29b275d2df4409e817c5c52363c0b8a109a7c3539056decc78989f9d": {
+    "sourceQuestionId": "saa-perf-0056",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "0776e967a0213aa77cc7b75f1e196fb721d12507ac7a2fee1c737db20f884e59": {
+    "sourceQuestionId": "saa-perf-0072",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "079ef8cfdb9b54a8c07d7fa6f9c07cacf12451482639aeac94c0fb4aea4d9952": {
+    "sourceQuestionId": "saa-res-0085",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "07aa280f5302a2af799f289bea8edc1401353a69829426248bbf70dc99d41346": {
+    "sourceQuestionId": "saa-perf-0031",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "0869e313e1087ac98a258f7afba81a71be51a7f80cc6935c19523e9a1f67c3e6": {
+    "sourceQuestionId": "saa-res-0129",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "application-recovery"
+  },
+  "09a08f3e487a5859159d69410d8baa46fb78b9bba62f3c99cf5587b547c7bc74": {
+    "sourceQuestionId": "saa-perf-0063",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "09bcedd6b3fe5fa56ce60366aacde7b1f15addd8d68f66a159574778feba8173": {
+    "sourceQuestionId": "saa-sec-0120",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "09bed7f761e4ed7f4ac21e4af8d804d1f63e0fd8fe287696537a3679a98c3324": {
+    "sourceQuestionId": "saa-res-0124",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "09e903ea3e606a30a59fadecb62c451728f039372da5dec5d50dbdcb803e4171": {
+    "sourceQuestionId": "saa-res-0046",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "09ef06ab12becacad01f7c5837a53660823d8a1c8eec6deb0f09e6082466e7d9": {
+    "sourceQuestionId": "saa-res-0100",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "0a7698da4bd60e2f99c257f61e5b6d86b1d7bb6f730a3fb5c544e1d14d79b42e": {
+    "sourceQuestionId": "saa-perf-0016",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "0aea1bbcfa3b9f8772ea4511fb1de1ab844eafcd8b2d8164bb388e41c05bb626": {
+    "sourceQuestionId": "saa-perf-0112",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "0b21a03d74602294d8d0689ab0197c6c6f280f4d6e9f461b0d6122d064c05763": {
+    "sourceQuestionId": "saa-cost-0008",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "0b86e0815261279e166180c2b9bbda97adf4377886501c48bee741885a9a4099": {
+    "sourceQuestionId": "saa-sec-0117",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "0bed69e5a7d2e81e84901d9be85790e91495ec2fb529cb38c2519723a6273fae": {
+    "sourceQuestionId": "saa-res-0097",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "0d90762be464efed6fad887b6831a7034ba63d15a8dd33e403655e6f7a83dcaa": {
+    "sourceQuestionId": "saa-cost-0033",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "0de46f2ada6e142f2f76bf893f9e8b931156066b845c98c107b83d74676dc9ba": {
+    "sourceQuestionId": "saa-sec-0119",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "0e11474e3de0c7ee209b8c26589c09754f40f49fe535598206bd3fe5ed01b5be": {
+    "sourceQuestionId": "saa-res-0119",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "0e75419879f3946de35eafa12d69ebefd3c8734887d910150a3ce6f272ba0c9a": {
+    "sourceQuestionId": "saa-sec-0022",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "0eec227ae9760d4df022dbd315c8efee1411ed0d521e9d564df3379fd4d10abc": {
+    "sourceQuestionId": "saa-sec-0042",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "0f0527c08a1626564f0f4c086573f16767342e5a38b1aa630c744623cb23c347": {
+    "sourceQuestionId": "saa-cost-0035",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "114ce3049c704e58a9a344664d1a8c9a1c0cba32aacf7bbae3ce10e6dba45213": {
+    "sourceQuestionId": "saa-cost-0082",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "11c62326deba5e818d2797be7ca00dd26e5d8c924894d98902d9aa0bfe5daa10": {
+    "sourceQuestionId": "saa-cost-0084",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "126c89766cce1864389bf23157f2a43b4e1562ef044d0533fca10b4a48a669a0": {
+    "sourceQuestionId": "saa-perf-0004",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "1400a233a7618a999ed353647784aa4be8b62f2c33f3baef21131848be4ad0eb": {
+    "sourceQuestionId": "saa-cost-0093",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "141535179cb228ca050fee55ad437b90ae7ea9b31568311379a5daff01dc23c3": {
+    "sourceQuestionId": "saa-perf-0018",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "147365a9a8aa75aec26621161e8f4dd885c4349e5314a88ffe6735ae964b0297": {
+    "sourceQuestionId": "saa-res-0075",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "14a6ff1e10a45cc7208bafee7f131c4ae9a3e85d911f000d2d5885b248fd42e5": {
+    "sourceQuestionId": "saa-perf-0083",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "163f7dcbd4b96c33b5010a40131a4609d712d6f3a658864976cd7585a550598f": {
+    "sourceQuestionId": "saa-cost-0017",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "168db6da6ed364fb6cfc106caa9a672fd83eab5fa8086f5e7970dff04a815fcb": {
+    "sourceQuestionId": "saa-sec-0131",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "183475a2ad10aeb2fa0ef04e3186a2aabd24e24c9a414c7efed0de640be41728": {
+    "sourceQuestionId": "saa-cost-0018",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "18347df454568d11befcf554c7487e5d756f84051f20b05ff10719fec913d378": {
+    "sourceQuestionId": "saa-res-0092",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "186ca0b35c2e7604829751c4d340e0bf630836eb471bbd241e87d756a8bf3a87": {
+    "sourceQuestionId": "saa-sec-0073",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "18bbae41b9fff8c49d9777b974040f08258ab6a86b0c4d7c15983f14e46429e4": {
+    "sourceQuestionId": "saa-cost-0044",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "19243c281bcf91a2353189d64d3a091713c7f6cdefa7a8b6718a65eb799506fb": {
+    "sourceQuestionId": "saa-res-0022",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "199bad352c6b015c9255e825b7e799d3f9c5e73b4bdcae947e7fcacf152cf626": {
+    "sourceQuestionId": "saa-sec-0019",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "1b5640e5f9df412c503623e68f66a2d0f0027500f469c691e4bcfff6161000a2": {
+    "sourceQuestionId": "saa-cost-0096",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "1c0afcc812b6260c9401532f9c8a7d2940446a9ca9537536d7a9024d027f2ac3": {
+    "sourceQuestionId": "saa-sec-0102",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "1c0e2718ddf74784dc3da77ec05e8385946cdb39a2ef3cd2ecb4b3a1bb38161b": {
+    "sourceQuestionId": "saa-cost-0061",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "1c183f96e60bb367567e9e069b74f6fa4f0404bc9381e74ed2e464a7b4ac285c": {
+    "sourceQuestionId": "saa-res-0036",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "1c42b916cb03a0d58a84363d80d72d82b7e059aa430a10dfb6e8c1094d17f5fd": {
+    "sourceQuestionId": "saa-perf-0002",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "1c4f0e961d4168c09eb1d664e4970bd6316eab52fc609a0f644f0872979f1bad": {
+    "sourceQuestionId": "saa-res-0017",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "1cebfec1ea68d2230a9f7cbd29ce5782f7a648bb274ca0ef0b20f75c1551639b": {
+    "sourceQuestionId": "saa-res-0099",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "1d74531dab6b3ff3559c161fe683a608a50fbbde44c47b1cbfdbc76218b38222": {
+    "sourceQuestionId": "saa-res-0039",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "1e51a1b28e63f54ee5b31df8724c81389e7843cf58c7e4343f60859bde66b562": {
+    "sourceQuestionId": "saa-sec-0076",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "1e68d8891fda80a5edf8baaf124db0ed308612eb2dd5d3554e95ea9ebc236155": {
+    "sourceQuestionId": "saa-sec-0101",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "1eac23f4ffad1c35e60943d713e7760019cb39f87e0d56b2c7ee9628f1cef962": {
+    "sourceQuestionId": "saa-sec-0118",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "1ed0d20883a0ee5dc12f80587c841bd4efc69277575aa38a14f0bbc989984820": {
+    "sourceQuestionId": "saa-perf-0013",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "1f9bf96390333b7efad7e09e4c5a9cc43f25ff4372c08320cde28cf5b240cc92": {
+    "sourceQuestionId": "saa-res-0042",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "1fb543ef93321824550cb79527ef27053e00e4dea40fdad819f800a3061a0bb8": {
+    "sourceQuestionId": "saa-perf-0078",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "207c542b7d6f55bac3db769f0343532f406c29c446a257c0a346d10709a9a56d": {
+    "sourceQuestionId": "saa-cost-0086",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "21eb35889682354ee9fa9fff9f41e79d87753f0f9353fe110b75890da122d64d": {
+    "sourceQuestionId": "saa-cost-0023",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "226b44d335fc5d7fd90e3fbf9c54a3c99cdea1342a4a26960be17c77065ef2de": {
+    "sourceQuestionId": "saa-perf-0032",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "2295b6395862201ad5c14c0ba00eaebaa7caf918e3180277b685fd743118c09f": {
+    "sourceQuestionId": "saa-sec-0050",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "22a57f801016d55ccd5da68cefb30e447ceeb227e9b00193b994b8212a8a37ad": {
+    "sourceQuestionId": "saa-sec-0007",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "22bbc42de9397098fe16095049258438a71add184340ac8871956c766e89fa5c": {
+    "sourceQuestionId": "saa-sec-0147",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "234cc10c6ec91f495f7c08d89414f6a670a420fb9c2ab272b40b9d5236514a39": {
+    "sourceQuestionId": "saa-sec-0059",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "236ec92a5639da3aaad7b700f511f759eab86c252ab265a6b9b0dd1f19afa266": {
+    "sourceQuestionId": "saa-sec-0095",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "2383097b3527aa90f054542269becfca1c51edea8e486621295b258b0f7113b0": {
+    "sourceQuestionId": "saa-sec-0041",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "2389f14ed6d5b53f6f91a4a7fab3bb57f353944ff299864529be6182b317a040": {
+    "sourceQuestionId": "saa-sec-0017",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "240de4ee08d7c8e8702f28703c03e5d3fd6d24da0e681689331f62b801900727": {
+    "sourceQuestionId": "saa-res-0003",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "243cf64674773c97286bc640a724df9909aa7e10facacc7354c286c8135a06c0": {
+    "sourceQuestionId": "saa-cost-0047",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "24e09504e6f0b93fbd8cb86339a21a6c80d99258e55d6ea816736286177101b7": {
+    "sourceQuestionId": "saa-perf-0104",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "24feefcd325275630a545f743a0cf90f9db475fee474a95dcba386129dc8468f": {
+    "sourceQuestionId": "saa-sec-0020",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "251a37bbd932b5831f9645fe4e6129d355a7b09ef4995a97debb7f87a7220e73": {
+    "sourceQuestionId": "saa-perf-0086",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "2544b9ce3816d7b0279030081c991f847d6cec1108ef7148e934929e3159a7a3": {
+    "sourceQuestionId": "saa-sec-0044",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "262d4a8d440dfb9a29b40fc2096f55b59b492afbb7de168c55921bd2666beaa5": {
+    "sourceQuestionId": "saa-perf-0102",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "26b8079615ef7a385dd8e155199672733d2d402f3be392437ef6e039a2499e7d": {
+    "sourceQuestionId": "saa-cost-0069",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "27268090a708f7efe29875a9927f398b40bab408a20614d559a19ff2678123c2": {
+    "sourceQuestionId": "saa-sec-0093",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "27692c6c6fd146ed8c9d3890bd9ee9759e00db248a94ecc89c0cf57916e2d3dd": {
+    "sourceQuestionId": "saa-sec-0143",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "28160d095d4aad4bf8bc9fb87fd43ae18e722abf746a7d03271c93242e23b3d4": {
+    "sourceQuestionId": "saa-sec-0031",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "29d76ec6dc50b42ecc6bc0dca0494f3985ae7ef80393ecad70fae850e44e8d85": {
+    "sourceQuestionId": "saa-sec-0012",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "2b5d56cb70ac67b00151327f07acff7617c7cf9a56efbf2504fc0fd4b5526b63": {
+    "sourceQuestionId": "saa-res-0125",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "2bbf4d4d2da21db9a71609f8481691f924955a48f6d95b0cf542f60661e2e1d1": {
+    "sourceQuestionId": "saa-perf-0048",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "2c55ed96adb929014a73c6c283e87b7e9bbd2c559c43fea8bb0aabdf5a2942ff": {
+    "sourceQuestionId": "saa-cost-0074",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "2ca2d75c838cc667e05ca2b3c08ba6b8e342d93566d51a3b65b8087d6514ecd9": {
+    "sourceQuestionId": "saa-perf-0076",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "2d5c3a9d0c5fcf71536ab92958b85248ece28b81e532f02963560f73b70d7513": {
+    "sourceQuestionId": "saa-res-0020",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "2e89fc92b4c7cbe68bec33306ddb66419ecb5ea9a6decf637436da97bf5acbbd": {
+    "sourceQuestionId": "saa-sec-0082",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "2ee03da9d1cb86a800bc13b2709e6c0af3e8eb898438735b6aab3afd489dc427": {
+    "sourceQuestionId": "saa-perf-0020",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "2f255e5bb36d55318a693c9e8a4cc7549e68347d09e86add63c2925d6a0e9533": {
+    "sourceQuestionId": "saa-sec-0038",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "2f77662a2f59f3d30d90416b25096b98269e23f72527d1e5753933eb90566676": {
+    "sourceQuestionId": "saa-res-0032",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "3052b8b83da6cd7edf560fa97daf097baa6309a36f39d25deae909ff4d6444c5": {
+    "sourceQuestionId": "saa-perf-0027",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "30e89ca7d8644a8bb3f0d59823d72f5a95e76506a5b2d353b859d348c8311d95": {
+    "sourceQuestionId": "saa-res-0047",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "32b01ec9a98a6378c1aa7032572fd555e6aa1f9d7a72af8cd9470fe9d1d79c20": {
+    "sourceQuestionId": "saa-perf-0042",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "3329d83c6e81340b4b543cb90de1b6682e1bd40f8c9d279117ace087aaf569b0": {
+    "sourceQuestionId": "saa-perf-0103",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "341f2e069af5c37e86bd64a5adc55740a86a45afffbd00dac1e9eb32235eab37": {
+    "sourceQuestionId": "saa-res-0015",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "34870e16784fcfcf28d8d0fd9632373abefa2cfa43235ea30b176a89c59cd5e0": {
+    "sourceQuestionId": "saa-perf-0060",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "34bd7110326f790d94da9a2c00e2c315b1b2dadaeb819a8d0119e5a32fb2283c": {
+    "sourceQuestionId": "saa-res-0098",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "34c9bd2d0cc6d579421b4da9e6aa48a44a1ad353e785b19f5827caccef4d3e73": {
+    "sourceQuestionId": "saa-sec-0079",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "355768f7a672f73fd6fec63183e55a8836d44d6983bb8cba915c7fd1eac4d5a1": {
+    "sourceQuestionId": "saa-res-0034",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "35d73b0ae6845a710e2670cd8a32f4f94d3ed2efc80151e33aa7d3b5f0b7766f": {
+    "sourceQuestionId": "saa-perf-0074",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "35ff7dbabb29c79569b61d07b07c588dae6fbf5ca2171dae5ca91e3edfe02ac8": {
+    "sourceQuestionId": "saa-perf-0118",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "364e03fdfaa3000a34c6028112ec4eb9ade427581c279c1b9a57aabd6c586c58": {
+    "sourceQuestionId": "saa-cost-0041",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "36649660d33df4ab1d4648241e120fb97fb8d8b6864d3940186b35d9e6117cfe": {
+    "sourceQuestionId": "saa-perf-0006",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "36cd29c4b3ea858c78f564d7dc45171874064fa7a008dd3d76d20a22e72f4160": {
+    "sourceQuestionId": "saa-sec-0064",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "38773a64b50544272e547349f07ceb524d0784c02d7050cd8654801f6712ff53": {
+    "sourceQuestionId": "saa-cost-0059",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "393544c92c7ba3fb1252a8806e3b7c985c8cbc7c14994e98144cba25c6e6a4cf": {
+    "sourceQuestionId": "saa-sec-0088",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "39c01752dd83b121bf2c4014196947e82d10b7c45aff8a81eb477ab8f5e75f89": {
+    "sourceQuestionId": "saa-perf-0022",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "3a09188db32432ea18aa21239d40d46af70db24a4d236ec191ed791c73ac4fb5": {
+    "sourceQuestionId": "saa-sec-0015",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "3a1721e9448bc2295761a87f068e31a6278a1177e0bd75a089190e5d75a9f8c4": {
+    "sourceQuestionId": "saa-res-0033",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "3a9175d39b5da8dbecafd9cc292d9424be61b97ee614d403bf29ebdf8a4c6b1f": {
+    "sourceQuestionId": "saa-sec-0014",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "3cbe10b687a909628a1892ce6887a24a5e6696904f4d7176397079f216bd5608": {
+    "sourceQuestionId": "saa-sec-0023",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "3cd458f842b552e73bf13f5999196cfc3721fbac6665bebb9937a7fe11f7dbe5": {
+    "sourceQuestionId": "saa-cost-0083",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "3cf399bcdbeb50239df0f778085d9ec8feec7cc32e01d0e4a80bb40f9b45f0ab": {
+    "sourceQuestionId": "saa-cost-0025",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "3da9210495c38a241fdb3aecdfb0a4b880a681d678769168b316b87523314954": {
+    "sourceQuestionId": "saa-perf-0030",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "3de5d98c5c04d6a91bafa0f29c1a16fed2ac3ca6ab33469d0eddd037426b7f93": {
+    "sourceQuestionId": "saa-perf-0050",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "3e39ecb5e793bd755d80566ffc16818f914db1565cab3de37ecd09178b282d81": {
+    "sourceQuestionId": "saa-cost-0064",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "3e57f0e0f8ab8471d8836962a052dec55dffa2660abc3c292a45c1dc69e1fc88": {
+    "sourceQuestionId": "saa-sec-0037",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "3f98120efab1e3e65ac41cd91e921421527f470a9a17027900339a612e63081f": {
+    "sourceQuestionId": "saa-sec-0114",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "3fbcac085ad0579ecb17e46513f72d1d98dc42a5c6973cb8a059205ec3ea14e3": {
+    "sourceQuestionId": "saa-cost-0057",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "3fcb015982c89dced717bf771390309e7b8353ac5435f00f0cb134c7288460d4": {
+    "sourceQuestionId": "saa-sec-0096",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "402fdd7a88cca4785dc2a6b1a47951b86e5a4abb185adee5121b3c36a7a386e0": {
+    "sourceQuestionId": "saa-sec-0028",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "412d22d3f859d9dc7690f10b7d1cc77fb0bc8381061d8ebab6b2bc8f40d3b96a": {
+    "sourceQuestionId": "saa-sec-0056",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "41555df4b0784bc342ed3bc1f68d2cf81f99778f40eb503239e79c0896bc7607": {
+    "sourceQuestionId": "saa-res-0019",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "434144fb38874be2af771a515045bdfde7a022f12a667351772e8c4bd3a570aa": {
+    "sourceQuestionId": "saa-sec-0141",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "449658d9eb14a79c4cd2f43f87ae70d68af05d2e4fcc7817a794a8b023bda65e": {
+    "sourceQuestionId": "saa-cost-0005",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "44ce4622b0632e019f2030abdde4ae7582c3feb78c5ea9f8f5d0c02f553cb239": {
+    "sourceQuestionId": "saa-res-0063",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "452841982bd70d48ff181c3fcf735603e603b5f124258e7045869e516e83a85a": {
+    "sourceQuestionId": "saa-sec-0071",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "4587de934a26460f03287a07e1b40a794893520981a6efcce4a0f377d81d66f8": {
+    "sourceQuestionId": "saa-cost-0080",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "45f02315c73a16ec85759c0fc30b0bd2c1a5fba74403e7b12172e3f960bf134a": {
+    "sourceQuestionId": "saa-res-0081",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "46048dd178af072e3ecde5a46f3a36a7c9d91df01943cc430cb53c99d924f626": {
+    "sourceQuestionId": "saa-res-0005",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "461bf4d0e617c2ad410f6a6889823b9f3f6198490d3ac1392ef24b5f4fbb66e3": {
+    "sourceQuestionId": "saa-cost-0055",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "478ab9b930f82026866f3a4017ff4a6edee746d170b784b0ceea34a1a6fd7653": {
+    "sourceQuestionId": "saa-sec-0127",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "4802c50e3781c92252758417c6eed415db86131c5de74832a9563a3ec69f25e7": {
+    "sourceQuestionId": "saa-cost-0020",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "49076c33c268cda5e1597145d0f7456f7e57cac876d594997d80fa56c91b4214": {
+    "sourceQuestionId": "saa-cost-0043",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "49bc12cfc6e04a06611103d371ba7a34f84f1329e089f2c03535bd1a242eabc2": {
+    "sourceQuestionId": "saa-sec-0105",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "49e04bb9c5972f7f979ec6e29793919a535246ecec4facc2acc640a9d22a3127": {
+    "sourceQuestionId": "saa-res-0117",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "49eb82b8c3ada8d722139f5803422c760df74a4956d5963d2b832d4e82b64a79": {
+    "sourceQuestionId": "saa-perf-0019",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "4a181ace693de9dfe14fe7b9f028630b00b41359edd85864e6ae537100f41b59": {
+    "sourceQuestionId": "saa-perf-0099",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "4a61855b42b891f1385e1b1c2796aeaaef1fc27ce5ac9210e35aa17a3b9ecffd": {
+    "sourceQuestionId": "saa-perf-0110",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "4b037a8fc7cd1c7d7fcaaf597f4cd9cb14c49f23d6989934508754ea37474b94": {
+    "sourceQuestionId": "saa-perf-0025",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "4b0c96ab6cac846f18862926b4ef76752603b6af14d10cefa894901571bb0a5d": {
+    "sourceQuestionId": "saa-perf-0041",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "4b6d9eec5dfa2cb4c0ad007d796fe876fdad0408ad570fdadc2fe35306890385": {
+    "sourceQuestionId": "saa-sec-0011",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "4d8a81b5809c81042a9f77cb6a723740d54124bd092a8bcd63bfea1b3c0222ab": {
+    "sourceQuestionId": "saa-res-0114",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "4e42ae25b81c85d58b6a7f93f767c14b10da3b484c0637911c98ba267905c5d6": {
+    "sourceQuestionId": "saa-res-0113",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "4e85a4ecc72edaeb4a52729e8d357e708ec676307a80a63e2f3c26b153a365bf": {
+    "sourceQuestionId": "saa-res-0004",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "4eef4d350999dd30a20984a42df5165dedb5046f18d03e57572ca7d463cc7cd8": {
+    "sourceQuestionId": "saa-res-0086",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "4f0071f26ac37af2c4dab5c2a9c875627c5a1b57294247f2c00528d5b8211e9c": {
+    "sourceQuestionId": "saa-res-0080",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "4fa8a0dc012642b0fa2b01861f03727f4b756353b5abc63abe115b6ff8c8f66c": {
+    "sourceQuestionId": "saa-res-0077",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "515ada40d26c6b60a1352aa94e9b70d50c3c8be05e243f5703a6b87e272562c8": {
+    "sourceQuestionId": "saa-sec-0139",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "528948fc318340a480863c011044c7be60c1349d65b9351346530fd3a9453d7d": {
+    "sourceQuestionId": "saa-cost-0046",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "5295c01ce0c76d5045b857d9364fe83e87d0ee36e3129fad7a6304aa77bdad94": {
+    "sourceQuestionId": "saa-perf-0061",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "52efac1959649259a6685a1ab9d008ae0837aa4729697aa050f106bce4ebd2a4": {
+    "sourceQuestionId": "saa-cost-0066",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "530bf34bef205e0ea296d0c653bba83d3b47e0f2a070931cd76554713df6b75e": {
+    "sourceQuestionId": "saa-sec-0061",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "537a7559dcc2e9aaf8cc4a927d4f027c8f7335494808aba9b6f382693a500a4c": {
+    "sourceQuestionId": "saa-sec-0112",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "54fd953b78f9ee5641ec2efd38c48e641141664b5198bf7a491c995a03c74d9c": {
+    "sourceQuestionId": "saa-cost-0004",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "561b85e3750778b9eeea4a4674a3a05062f4e04054858258e70e3a1d67f338c0": {
+    "sourceQuestionId": "saa-perf-0071",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "569d39c744da720cf009db4f0a7723d1c0f98ff2acc9a50cbf6ea8b8f347fee2": {
+    "sourceQuestionId": "saa-perf-0107",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "57cbde4f03f343dfc0485bf942d6f985628fe74a9763ae4a6ef02d3cf881cfbd": {
+    "sourceQuestionId": "saa-sec-0091",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "57e7379172add5d1c2cef1ae97c5b7380315e1bda66017f39af7061bd4f17477": {
+    "sourceQuestionId": "saa-sec-0021",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "580e641cbe59fa78f0fccc154a9a45654ee0955b56577aea31d53dfe5c007e2d": {
+    "sourceQuestionId": "saa-cost-0095",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "58e71c43d111066cdf97be50d1efd0218fcd88c993c2feb441d26470877890e2": {
+    "sourceQuestionId": "saa-res-0096",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "5a5d4947e8770dbf3fba22516e68d1ebc511fd49a5c96abdea3718fc9645e3eb": {
+    "sourceQuestionId": "saa-res-0053",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "5a66d8c52ae9dacdb7b5a0eb58bcb0da89fd30b47688a55ad2a758fd5edae8b4": {
+    "sourceQuestionId": "saa-sec-0004",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "5acbfb06ab59aecbde969c1906215fe78ec21d9f8c9a6157d5f5d989ff14372d": {
+    "sourceQuestionId": "saa-res-0026",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "5af1d8260c8b4a1c381bff9fc80ee486eb8055dbab8c8deb0814cafda6678f7c": {
+    "sourceQuestionId": "saa-perf-0059",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "5b3e71116de0fd75247e08052f31908dde6af08c529146ccaca90689fc0be3d3": {
+    "sourceQuestionId": "saa-sec-0025",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "5b76c4741445d05ad92253c027abc428378cf0389c983c39c142e154e6808fa7": {
+    "sourceQuestionId": "saa-res-0043",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "5e59e174c0c8ca5b03833d0ceb6097baa2a151104812904a50160bb546bca37d": {
+    "sourceQuestionId": "saa-sec-0029",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "5ef22fc3178e727fd93301f91e20c01ed8ed691bd28248f9d45028de9e036806": {
+    "sourceQuestionId": "saa-sec-0070",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "5f5c3e28b227b8adc246a6a9a6b5eec5a35960419cc6d904016ef5b9339ff8f8": {
+    "sourceQuestionId": "saa-perf-0037",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "5f8f1dbb0a6e7ba631143a45e19812811ac72ff11056c1d5d07a8d625f497e20": {
+    "sourceQuestionId": "saa-res-0041",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "60e54538ef9d50183e99432ed5bc26ad35c856a9564e8c2efd71cb218d56157e": {
+    "sourceQuestionId": "saa-sec-0099",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "612442ea4f324685ad0e5419a52182da82544b6d51f4c1c34396510e2132350d": {
+    "sourceQuestionId": "saa-res-0010",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "620edc458a11ba32812535b14e5151448b6dda1fb96aa949964653fab65d9a54": {
+    "sourceQuestionId": "saa-sec-0097",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "6237e2d3aa70cc697a7813ec6393541136c5bc1de6461b8866ca761bf268298b": {
+    "sourceQuestionId": "saa-sec-0150",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "627092a7992e92d12e41ca918642401abece75f7e37b587a77bdeb8d145ae98c": {
+    "sourceQuestionId": "saa-res-0109",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "64da40c3a584d0e820aec84468391254bb071a4299c034a057535dec36715fca": {
+    "sourceQuestionId": "saa-sec-0036",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "6509ac1212ef45ecd5f5f540e5208f91155445a956f090e698df5b925223595a": {
+    "sourceQuestionId": "saa-perf-0114",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "651f48cbd488af5069f65dad0825a6536f06acc18ea4d65ce2bd659be9efba76": {
+    "sourceQuestionId": "saa-cost-0049",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "65476adb2135a395a35b77d5626d22a8dabad245547162a93d18536a58052d4c": {
+    "sourceQuestionId": "saa-res-0127",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "application-recovery"
+  },
+  "65ad35d98c5ebfef5dacb6ffa62125a40d9885e3bf9dc55dc6f81afece58fe07": {
+    "sourceQuestionId": "saa-sec-0068",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "65f963e8cb676f9726e1c6a3ea1dc65ea0aa94ae630a19e6523a44ef08928a96": {
+    "sourceQuestionId": "saa-cost-0026",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "66b60eb29f7258c4e702c6bbe9d73da1a98577aa30cf8ddec0da54c73075f796": {
+    "sourceQuestionId": "saa-sec-0089",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "6748db88acabe83a7eca61bb9a1e0383a3831cfd5578eef9dedbc18d9712020e": {
+    "sourceQuestionId": "saa-sec-0144",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "678f0f6e23c7f670adc72fd0711763a37d6935ce77c9da77e1d5c288eb098137": {
+    "sourceQuestionId": "saa-sec-0054",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "67e8bdfa54cf68757910929a4e1ad8bc4d36cfd56fe04b51d2b520bfa614c211": {
+    "sourceQuestionId": "saa-res-0056",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "68249af1d5241a685938e1ebee6b3d160ec07a700673e7e1f6c8baf5054ac625": {
+    "sourceQuestionId": "saa-sec-0048",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "683fa5bab889fcd3ca9f31eab2d312d8ba89bf2df44d47f8e459e67c8d87a8a6": {
+    "sourceQuestionId": "saa-res-0065",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "6914b15b33166086a1dee89c1253d0092401e98e5adca3ae138ae0c0bc6af521": {
+    "sourceQuestionId": "saa-sec-0035",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "6939c7dda7c64c1949964cceded01167b997155a133b34241154f3a4f0a64e00": {
+    "sourceQuestionId": "saa-res-0018",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "6a02ca9b286bc707e596d5b2ad960deea5037c1f02f173af9c71cd81008666ac": {
+    "sourceQuestionId": "saa-perf-0049",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "6a4af98edf44ffccb7a1ab466afa551d08cdf2691d833dd722726122614a37f9": {
+    "sourceQuestionId": "saa-perf-0088",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "6c0415878e2ad379cc9e6e5cd980edf87e049e7ad4f4c485f01536b157920108": {
+    "sourceQuestionId": "saa-perf-0082",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "6c7b442e268499627eada8c01f9f9507e1ff124380232554bc2669dcf90de357": {
+    "sourceQuestionId": "saa-cost-0065",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "6d0dd3c76403ceac4bb71cc8f72661ebb07ef584d80c2ff92ca7cfab951d202c": {
+    "sourceQuestionId": "saa-res-0116",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "6dc12ca0ba9875f1fde595033da86a06f3ff9100e4b97892fa2a17ed3ae6bbba": {
+    "sourceQuestionId": "saa-res-0122",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "6dfbd45ce68210a300e4302061c87b745bd5bea4e24ba1ec2957935afb979f7d": {
+    "sourceQuestionId": "saa-res-0007",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "6e7e8b87659e75d8836d5c10526d8f9b37df86729721b812d408ed0ef5de3e4a": {
+    "sourceQuestionId": "saa-perf-0034",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "6e9036cd8e767fc1b11d627d3610be1c5da6c2372e7cf1dc559f009df8269406": {
+    "sourceQuestionId": "saa-perf-0024",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "6ee655004d825e432fb10fb92215a56f1f05e097d347d291642d354d0dcedbb8": {
+    "sourceQuestionId": "saa-res-0038",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "6ef3125e19975923e58b1337ba2fe671b376ff1220d4922bfd60956196ba9e6c": {
+    "sourceQuestionId": "saa-sec-0121",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "6f643d283c0964693d377f7291f1755600c0274c376ffcf1e3fa44e612fc5b7a": {
+    "sourceQuestionId": "saa-perf-0003",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "713550b72cbe976633faf48504ebf751833a0e2f28019959eba8453a86316106": {
+    "sourceQuestionId": "saa-perf-0092",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "71b7b766c35b7b1def266ab4c631decda4fcff50b9d98fa4b01f8c6b2d2a0b74": {
+    "sourceQuestionId": "saa-sec-0018",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "72164c8e24e3f77b1f09d9649c6dbff77472bce6dcb481c2af5f92ed2b6daa41": {
+    "sourceQuestionId": "saa-sec-0122",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "72673c4f9ef48e6b85119a42e7bc4bce424b1c2b646ee38fbedcac72b15f76cc": {
+    "sourceQuestionId": "saa-perf-0007",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "72e9b9edfa87ed5fc0594f6407ffa6a8614d705e01df963a34bdf92a1a032a84": {
+    "sourceQuestionId": "saa-cost-0073",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "73f756a68812f289d298b7e2fcd634d1e31976484263e4788f89127705b6e761": {
+    "sourceQuestionId": "saa-perf-0080",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "7445ab3aa07e8aa4d9199fbe37a9899e4107616cba8117ac7f2c7cf2268de412": {
+    "sourceQuestionId": "saa-cost-0003",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "745fa1b7e6c26cab5213e50fc56ff2609409d32f1bb3e7c5ff1f1ec28eec1cd1": {
+    "sourceQuestionId": "saa-sec-0078",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "74756c836d78afe26c30eb48a8563e46a872d2922211347406cab5298bb124f2": {
+    "sourceQuestionId": "saa-sec-0043",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "751a970dc4c8978b70b58c305a466113a76dd049f33cebded5f73296e99568d4": {
+    "sourceQuestionId": "saa-sec-0085",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "759b3d198dd0899c995e7f907d89202ea610e3e956b95de595d198ccb546bae7": {
+    "sourceQuestionId": "saa-cost-0091",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "75ce49b4e828a1c06eae6c482cd746ccd96242ac207097400d5fd65bc20f3c29": {
+    "sourceQuestionId": "saa-res-0050",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "75e26b81a6c8d6cfd11bcd732be629dd39821565de00343e1480f82b228c5665": {
+    "sourceQuestionId": "saa-perf-0100",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "76a0e4d05af0ed9d53a9bdf789aa3dc3ee342f57a4ddae7bfcc0b184b07671fa": {
+    "sourceQuestionId": "saa-sec-0109",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "771d0e60e1b8f365b0e4091acf3173f73b601b793b152c5c7b9a6e8918e964e3": {
+    "sourceQuestionId": "saa-sec-0034",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "774305616005068fd4ef6f5c4f5136d1bc8be66a27d366dc778c2cc6b63173cb": {
+    "sourceQuestionId": "saa-perf-0053",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "77e3cc54d08596bfc4918ed4ab542eca10ca6d5482d48ff1f68211cac2e1c485": {
+    "sourceQuestionId": "saa-res-0071",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "781cc40615f2f57ce089b2737564453042798e6885aff2b5f23ab3f39a536e4f": {
+    "sourceQuestionId": "saa-cost-0015",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "798e342a160586b289a352e4c56b0ebca36df79f7a8b64f2e6280a592a47d5cf": {
+    "sourceQuestionId": "saa-cost-0090",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "79da336d201bbce41bec2659079bc04bb731833afb77c14819fd7598cfaffc09": {
+    "sourceQuestionId": "saa-cost-0088",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "7aebf6b6c3b582aa35e126f1016e38603f2e52e01be500eafa764d6801da9a60": {
+    "sourceQuestionId": "saa-res-0090",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "7b2f518e7d923d1d20bb717f97d0c71c79c08a7ef70d992b1f2358844219601d": {
+    "sourceQuestionId": "saa-perf-0029",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "7bb38ad6cfcf8f46367c4573ecac91509bbeff67282b98ce55c901cd474d5c19": {
+    "sourceQuestionId": "saa-res-0051",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "7bb4f8ac44d771b3fd183dfe08cd614627374f7cdfc608bb158746bb22f4d1ac": {
+    "sourceQuestionId": "saa-res-0076",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "7cf5c82225f9714854e551a0398608bcfb0253b353a992a97a2c62827738ae51": {
+    "sourceQuestionId": "saa-sec-0065",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "7cf7fdd029cc91c36683b3b5de11c37a1803d63f60bddac1fa41db864c19c3ba": {
+    "sourceQuestionId": "saa-sec-0136",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "7cfcaf62de295d46e9111fd1809b6b8cd32e9777e84c2af0feaa5b0ab5adebfb": {
+    "sourceQuestionId": "saa-sec-0013",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "7d5be63a7f1057ab164bdc4cb89242ef21b873021f97a59ad43c664e5a914c22": {
+    "sourceQuestionId": "saa-sec-0047",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "7d85e3148019b6d4d9b1e678b7af52120be8a4685a66dc3af6dc2be1dcfbb595": {
+    "sourceQuestionId": "saa-res-0105",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "7db3b589579fe6a92bfb57c242e5c470c3a7d64a8e4cbdc063c0479ade8f3421": {
+    "sourceQuestionId": "saa-cost-0006",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "7e08ea4251dedc4b196be29c52d927a8452d08fee3627d1b39123af744147077": {
+    "sourceQuestionId": "saa-res-0044",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "7e6745f4334ad981f4e2f7ed0791e751f316033b18c4d913437ed41c1363d7ce": {
+    "sourceQuestionId": "saa-sec-0026",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "7e6fe8181c692f42fd7a52efc4e0b89992329fbdc5a300a0e34eb8684358d928": {
+    "sourceQuestionId": "saa-cost-0037",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "7f98f1ebf436f82af0e17f4871e22be4a8423f7a640423338fcc247a3160f06c": {
+    "sourceQuestionId": "saa-res-0095",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "80298244c03f69a072c3f933fdf46ebcac2c7195221e3ff7398c26404074870e": {
+    "sourceQuestionId": "saa-perf-0075",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "808f3ddf6d4c541259c800e1ff11afdd305541186191de7ae19456e9b2809c4d": {
+    "sourceQuestionId": "saa-res-0031",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "80d92ebc182baebfc52fa6db262b6ad34df97bf1bd58f4d1e3b70026fca22643": {
+    "sourceQuestionId": "saa-perf-0064",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "81bf3fc5bf175aaf639a36d99e255f69cb42e2383cf14f144fcea2394f1a5835": {
+    "sourceQuestionId": "saa-perf-0094",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "8251ee5aed6cc55df2c2c4e75d3797d1590bf9790e6c53fa96f2df9a6fde5bba": {
+    "sourceQuestionId": "saa-sec-0146",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "82966017355e80639a7f045bc9965218d388bb6a1026df7dbb1fc8f317cd91c8": {
+    "sourceQuestionId": "saa-perf-0051",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "829e15d637d345ef1e7f0df63e39d5c90db71e6e27db366d882e321be4c8944f": {
+    "sourceQuestionId": "saa-perf-0014",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "82e59c1197cecb9e8cb335ca73c19d7c3cc0dcdf91c62de348c403cfab21ca6a": {
+    "sourceQuestionId": "saa-res-0028",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "83a4c71f899924e68ce9a81325485aa850bee4e5bc9038aee8450a216afa5522": {
+    "sourceQuestionId": "saa-sec-0098",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "83dc8b0d103181f8a5593ea0bef2e5f528d53ac6e2b0ecc472c6d1b85dc35695": {
+    "sourceQuestionId": "saa-cost-0040",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "841aeffe284956d7b8c9d88d617e43823029ba9dac1f48cf4492f0d9cd94041a": {
+    "sourceQuestionId": "saa-res-0128",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "application-recovery"
+  },
+  "84f3d9c919c6452474749797d5e858d6c716679b23232efaeba3e7078b9694e9": {
+    "sourceQuestionId": "saa-cost-0019",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "859368d5ab206576d30dab1cf6ff736ef6b314a40edde512771e86b79f679c09": {
+    "sourceQuestionId": "saa-cost-0081",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "85f4d1c9c076fb9136f05ab5a66f5bef7229789279eb19f3da3def12eb5246c1": {
+    "sourceQuestionId": "saa-cost-0032",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "86164f4bd50d809310b4272e0ef7fd480a1d335b0521b20ba3063ed2ea595a05": {
+    "sourceQuestionId": "saa-cost-0099",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "864f08f56574b9daf71b407f9c8aa816d35ad192bab92ffcee738eeaa175c5b6": {
+    "sourceQuestionId": "saa-sec-0058",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "865a6aff44a9de0fce5acd56d32d1b8671535c5c211a838c40e15e1a7330b207": {
+    "sourceQuestionId": "saa-sec-0046",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "8684107b651c9ca4b1b5cbab795d5a9ae7faa1560ef1517cef358e871468ad75": {
+    "sourceQuestionId": "saa-sec-0149",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "86a8bc84a1ea1ad0277f27ab8cbde6cdce3e2f75be869002b0d6360b5de7467e": {
+    "sourceQuestionId": "saa-sec-0060",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "86afb99e763ced03d75f61e7ac43c610606b913c2efff49279935aad50c3d72f": {
+    "sourceQuestionId": "saa-cost-0058",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "86b5f4102e540c88fae59c2a49305296b0bb2ee6393a9b22f0264327cf4e782d": {
+    "sourceQuestionId": "saa-res-0029",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "8716ee3bc2cfb21208ec8bac1cfbd8224f44239f78408f5d1969a2e320b1311f": {
+    "sourceQuestionId": "saa-sec-0130",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "873b8086d92411983e58d3087fddcd29c86a66122f08fc68a7095281beeaf82e": {
+    "sourceQuestionId": "saa-cost-0001",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "877611fa0a1285b296378ec608d5473778a0a3d3c542fc786cfe231315a80d75": {
+    "sourceQuestionId": "saa-cost-0062",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "87fd9a7eb044ee86f7c73a0a6931e6fa630c3854330970f5bc5dba47bd71d140": {
+    "sourceQuestionId": "saa-perf-0046",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "88de591de095882455b6aa61fa935c7299e8376d85a98a3e207c5ec4c996e270": {
+    "sourceQuestionId": "saa-sec-0137",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "891c48e52e2a2edeab381e6d74ddfbdfbc06def2a5f17d9d36f0019a03dc3c0c": {
+    "sourceQuestionId": "saa-res-0009",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "89e340b15134fb169e423b1407916b9c2a118aeb53e1f7b7d4370647b347ffad": {
+    "sourceQuestionId": "saa-sec-0145",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "8a355e369fee5ef3fdb578e5f1357f7c92c44a1a7a6e41121f545a3799ea2e7e": {
+    "sourceQuestionId": "saa-res-0093",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "8a39cf052bb801ec85bbd3841b5d4e3af1658424334590c7ecfe8b40e8c33fdd": {
+    "sourceQuestionId": "saa-sec-0006",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "8ab673b1c9322a278c7877a2bb6e401c1bb98dc5be70075b6f67f3f8bcb95847": {
+    "sourceQuestionId": "saa-res-0126",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "application-recovery"
+  },
+  "8b024890bd9d36b1cfd743598cf1bbc68a2bea089b95b87535e04ffc2aadff19": {
+    "sourceQuestionId": "saa-res-0066",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "8bc1e95e01a489363654b364af882766151ea02319beca776fafdbb6d8a9d0de": {
+    "sourceQuestionId": "saa-res-0040",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "8bfbbd8b896d8472a50b755d428b81340d9561e01e7e57746874f22289e5002e": {
+    "sourceQuestionId": "saa-cost-0038",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "8ec79e888fef6dc47a927e5ccd2695157cab0cf50da3d25fb44fe3386a808a0f": {
+    "sourceQuestionId": "saa-sec-0126",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "8f4c0a40c97999fffb42af41595282a31fc8bf6e93548ba6d5143670e074087b": {
+    "sourceQuestionId": "saa-sec-0132",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "8f93e7a6a54bb12fbe087a2e421324675e4ff5d4a5bef0967b3fbf3308b74145": {
+    "sourceQuestionId": "saa-cost-0056",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "8fe874fa161e6c05cc168c78b33d91f392f786ec54971c56a03cd56ee9843093": {
+    "sourceQuestionId": "saa-sec-0129",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "914535ed576a6613f9d8e2c1206902ef8c6b1e93f0d86f0bb5716f24b8b90a6d": {
+    "sourceQuestionId": "saa-cost-0034",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "91a48a8d6fef258e6613156526cfd954ebb13517a20721fcfc117d5df2cd85bb": {
+    "sourceQuestionId": "saa-perf-0073",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "91c4cb55337e31054ed4a0a972ff26c50e62814075fad2ee1615db9c3d49ba24": {
+    "sourceQuestionId": "saa-res-0108",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "9242073fb61088f76cec02cdf6839921224e4e3660ec391c0261f53a847d68f0": {
+    "sourceQuestionId": "saa-res-0130",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "application-recovery"
+  },
+  "9393526ee2b8e49bbbb6deb83d1d81672b7248c31ef4b8a4a98bbbb223bd4756": {
+    "sourceQuestionId": "saa-perf-0057",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "93ef88b6cc0f5114d436b58745af3758ad8d8f6a3efbbd645437fec70a5a2ae0": {
+    "sourceQuestionId": "saa-perf-0035",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "9453bdd928284c4748e2643d7e11a8b19bb195bbaa3d3299a3cc92ec0e202988": {
+    "sourceQuestionId": "saa-res-0049",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "94a9c73f92acdfc35232ad774279db3a5b49fd30fb2b943a9a9c0c84cbd6f0bb": {
+    "sourceQuestionId": "saa-perf-0120",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "94c3f8bb86c2adc5126d9577b8164feddc2e34fb61d39dd9ab86a36fb019cd38": {
+    "sourceQuestionId": "saa-perf-0081",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "94da7f25751bba8a2348a15f0292f3a87c212b704423ef786fd0a50734755410": {
+    "sourceQuestionId": "saa-res-0013",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "951255c5ac9744b4cc27164a2e873eb89f46563d2edd4c61aea590f94d907a55": {
+    "sourceQuestionId": "saa-cost-0098",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "95d59d6da7eea5914d3e26db24e0736bc6065a0bb565d3ef8c30cfb961a1edb6": {
+    "sourceQuestionId": "saa-sec-0106",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "961a193637bc22e10ad4583ca1e5bd873a9b231aec45d333bb9299475d5b068f": {
+    "sourceQuestionId": "saa-perf-0001",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "967816b46df4f6d9f07b6cfe0d8ed6ca880eb52469318c34d2f73e46fe90437e": {
+    "sourceQuestionId": "saa-perf-0054",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "968e0676e216be1a4e805aa537fb1f4575161bc1232e3bdaccefe44838ab68f2": {
+    "sourceQuestionId": "saa-perf-0017",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "98b0853552df1aa2ba5da474aa293cd17b9a37220f8d0695d3767bf9a8eb0081": {
+    "sourceQuestionId": "saa-res-0057",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "99b49522f611f3484220084d2a6d42050db9fb5c31cdf16a043abbcb61478130": {
+    "sourceQuestionId": "saa-perf-0077",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "9a724f0e0de2fb7522b61a1a817ef9f8506fa02d813c3df050d84d4e925e1d9e": {
+    "sourceQuestionId": "saa-perf-0005",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "9bdac1f536ce6516ae280937a407d7a7fb79b30c6b6a07d9768e3c7045b1211d": {
+    "sourceQuestionId": "saa-perf-0023",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "9c18a6e180354221a5068cda21324c475a72140574705ef2910b7664cb4ac818": {
+    "sourceQuestionId": "saa-sec-0032",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "9c470d601eeb36604a8e30efb702f48d0f74834656bd6023ec2a5556b012b765": {
+    "sourceQuestionId": "saa-cost-0100",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "9e8a67069ea1e122153a1743501e91681f6acbc681cfb14f930abe1f32abc803": {
+    "sourceQuestionId": "saa-res-0048",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "9ed53812aff885a975b1b19508315f4168fd8120416dbcb378c69013eeb8c6f6": {
+    "sourceQuestionId": "saa-res-0030",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "9f56f27b2cf50893ee01d223e9bac1bf1a4b660c332e65b973246a8d80b4ca07": {
+    "sourceQuestionId": "saa-perf-0084",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "9f6bc13f8123685eafde8448b4b8ae12d19e05ee259aab87dd3b5ce7fda7af0c": {
+    "sourceQuestionId": "saa-res-0014",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "a08e09284eab24073a4cffe476d96563ef8f43f4adaaf271e71a6136738d767d": {
+    "sourceQuestionId": "saa-cost-0009",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "a0a4e2ffe7fbb853350e80a2c078170ab2c19cfa42259def48ca396f61635332": {
+    "sourceQuestionId": "saa-cost-0085",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "a17bcf22097ddd868c647afd64a6763aa378acfdc8c6fdb7ae9c3a0d1610f505": {
+    "sourceQuestionId": "saa-res-0060",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "a1e6c23b4440c2e59f4ed6d008bb2a395ea397e5379bd41832ef85490bd43116": {
+    "sourceQuestionId": "saa-res-0024",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "a2f5f0cfb917ae4ad3df6c743f41a2e6976f797d03bc1886f6fe789a4b10f15a": {
+    "sourceQuestionId": "saa-res-0001",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "a2f956f93ab6c8ebd27caa7a9786eb272a2bc7d083c0e33193f522c3e0d24973": {
+    "sourceQuestionId": "saa-sec-0135",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "a34a05a00b6185e1c997d8c6c375be3205eeca76a81eece065ee83e46afe02aa": {
+    "sourceQuestionId": "saa-sec-0005",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "a371a356987ee39dcd91b5da75584569e2dc9cd9a270406c82fe0ecedb776da5": {
+    "sourceQuestionId": "saa-perf-0012",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "a3acc56088dc9bae38294be6df92a66666e15de82d7fbb0fe592f8b9b7d2fb1e": {
+    "sourceQuestionId": "saa-cost-0072",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "a3bf7bfab7328bb70998bbdd228cd1ea1606774777876c3148c3bcb8825f2424": {
+    "sourceQuestionId": "saa-res-0023",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "a3fffaddf611224b135c84b508f8650473ace726bca151bee1590dad331425dd": {
+    "sourceQuestionId": "saa-sec-0086",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "a4d9bf4b69abddaade8804fe0a3704d4a98ab54b54826d59f38d3ee86e5b48cb": {
+    "sourceQuestionId": "saa-res-0052",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "a52f5779070ccef923fe87b8ded8afe8d2481d19a459467f62fc344cba4d4d2e": {
+    "sourceQuestionId": "saa-sec-0074",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "a586847b351520648c8cc11427919eadeef6060a2e48b3736825c7200399aaa7": {
+    "sourceQuestionId": "saa-perf-0111",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "a5a786cf2e61389e9e38c2594dfde42bf41c0d7c2dd7b1d75c411e251b3da3de": {
+    "sourceQuestionId": "saa-res-0058",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "a60d240e42c1d168b102560a33cfbbb227a45026be9d318f33575800141f9d26": {
+    "sourceQuestionId": "saa-perf-0040",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "a7afd87e89aa32377ca693996bddd5e11f829651053a45be8176d816cb41b7d3": {
+    "sourceQuestionId": "saa-res-0102",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "a7d1960a9de0460ec512384d83b37cdde7d3d750006ed1811e9fc5bda8709838": {
+    "sourceQuestionId": "saa-perf-0043",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "a7d9eb05fdfdf2212614371c098a05ce05ff70164f3d0834b6f0cb8a468a8fe6": {
+    "sourceQuestionId": "saa-sec-0081",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "a859abf031edda5a12e3d90e7a5add0621dc554b1fe69e79a81bab341863fbac": {
+    "sourceQuestionId": "saa-sec-0090",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "a887afbea9e854678db101fe677411c94fe3d3b622a9cc98a9c2c37f4fb06028": {
+    "sourceQuestionId": "saa-perf-0055",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "a8ec7405b5285aca661616bdc331824e0c7823f4662e8ac2a6d884c7537b2fd7": {
+    "sourceQuestionId": "saa-sec-0075",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "aa836e358fac66681f9d472cba102c22771a0623a162d96d0dd9bd7a456eb2bb": {
+    "sourceQuestionId": "saa-cost-0013",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "aaba43035086ba4300259af46b0297ae46b9ed4207b09396ae437c74bdfdd845": {
+    "sourceQuestionId": "saa-sec-0077",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "ab2792bd1a7ab3d39f08e39845ecfe2b5ffe1e5bd0ee295df52546e8dec672e9": {
+    "sourceQuestionId": "saa-perf-0085",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "ac88fe87180d6aa2c9399704cdd2bd569490256f65094e305a1067f82bc46ea2": {
+    "sourceQuestionId": "saa-res-0012",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "add571070e707ba669f50653586f1ac3d0bbe045729e3bbc908747da10b26d19": {
+    "sourceQuestionId": "saa-cost-0048",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "aecdad3533cf0bad181a7fc15b8bddf1ff33eff96b5bf61febb6337492840454": {
+    "sourceQuestionId": "saa-res-0091",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "af995522f802bc0312d92705988068cefde8adddf42f79d6b216852b8b72f6df": {
+    "sourceQuestionId": "saa-cost-0060",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "b0edfc6e7513294b99791ad894f50a6a3d4fa2b3e1a27f31e94a611f5b87e6ab": {
+    "sourceQuestionId": "saa-perf-0119",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "b1c6dc179869d4330f4fb38299d59b69efdaa0252d47c74854de5ee18073eb70": {
+    "sourceQuestionId": "saa-perf-0105",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "b2905dc8700b86e23b0abfc960e50bb51ff7f4200ec00608ecd6a176ceeb0571": {
+    "sourceQuestionId": "saa-sec-0113",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "b3001c6ff4dfd29a1aa5dbd70ae6c273606b8a17fc79b19929f5e54b75bf7fed": {
+    "sourceQuestionId": "saa-res-0027",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "b33062f983f29ec90903e05a13dd687cfbb043aa419bef82ace4d7ce9ad829b6": {
+    "sourceQuestionId": "saa-cost-0002",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "b3467b41e469e24e5b7423b122fe521c254202ab0dc91e13349052a19959cec3": {
+    "sourceQuestionId": "saa-sec-0001",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "b41dc7dce3eee19c9ba44bf3901fa672f5ce7c521507253b9d31376c7140844e": {
+    "sourceQuestionId": "saa-perf-0069",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "b488608b8285ccd0d3073aadffd36d41e0b8e907812c4e3b2b5bd5e33568a2c5": {
+    "sourceQuestionId": "saa-sec-0002",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "b49a8c551f9ed0dd3c1a3c52ae589c6771be7f9ad9a50c41ba7ae05d61334f2c": {
+    "sourceQuestionId": "saa-sec-0094",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "b58bcfddddbc76d24ff4f4b34bd388db0c84648a55bc3b9a3f4bad6e220207ed": {
+    "sourceQuestionId": "saa-sec-0133",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "b58c344a6cd386eeb245f7fd15d01601d85831c59f1a606476c2bc32186abd10": {
+    "sourceQuestionId": "saa-sec-0016",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "b5a5f3bb0c1aca013d8a9b1e40caf314c505ace49b8fe106fc99ecd7fc515d53": {
+    "sourceQuestionId": "saa-res-0111",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "b67ac824805b3aec87d03c07fa2f01cc75733d9fe503b86988ab6f66c457cffc": {
+    "sourceQuestionId": "saa-sec-0051",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "b682314274b25180f4cea34a319d64f3e2a9df8c50cb85716c2763b0b88f97a1": {
+    "sourceQuestionId": "saa-perf-0044",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "b6bdce45c4f5cfebeb8190fd5e7c58c30f5350994391c0521fb4dc15f97e2f3d": {
+    "sourceQuestionId": "saa-res-0054",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "b6d5cf61279d8dbe955865634257a0a76dbc8b83b56f115ea6931770dd7439d1": {
+    "sourceQuestionId": "saa-sec-0111",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "b6e08817899ece7a65cd98655a542c87c3b5a88ead0b913f4f1d94476e000adc": {
+    "sourceQuestionId": "saa-cost-0089",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "b70e98feb84abf22adc923cb505dba9b3dd9eb1124cec6c9f37e7bed82730eb2": {
+    "sourceQuestionId": "saa-res-0061",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "b767f9654c3accd9e94f5d0574b8539e799fdcf796f1efe4fc7649c86d1c902f": {
+    "sourceQuestionId": "saa-perf-0089",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "b7efa719b5110d7ac0fe63bd15835812d7dba1fa9fdf74af8bbdb1f48a0454ae": {
+    "sourceQuestionId": "saa-cost-0071",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "b8cec45b8a89a9e55aab76bb512a415c0487b567116857a222450fc8651b37cc": {
+    "sourceQuestionId": "saa-perf-0021",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "b903f287a05717f3760fe15bff9cb5bf84c1803f525904f3efdd2bd1a19255ee": {
+    "sourceQuestionId": "saa-res-0068",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "b92179d5e46520fd8d850cbd201b287b5839c50bfdf99556575908c53014b43d": {
+    "sourceQuestionId": "saa-cost-0030",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "b9cdd25ce0fa51f256ffdf5ad676c5f81e3b114832057fbb80be600aae28b1b0": {
+    "sourceQuestionId": "saa-res-0112",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "b9fd2dbd9efd5fd3805709e7b1d17900543739d8b65677611d66ed7cd89236ba": {
+    "sourceQuestionId": "saa-cost-0070",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "baef086f77abdbbc1366f745fa1460317b260f5bb3303c763eb5f5c57d266b84": {
+    "sourceQuestionId": "saa-cost-0012",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "baf27d194f50e5dee6281f5d4fe67a282650d082ed34fcf575bbb1968f138b0e": {
+    "sourceQuestionId": "saa-sec-0103",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "baf2f9d87a33d8b9e52400ef4bff061acc9f23089a0eb79a818ee4a4c0085afb": {
+    "sourceQuestionId": "saa-sec-0069",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "bb068aaf60faabd90b7cb83072490257752f77e05b2e95844888645c97cc7119": {
+    "sourceQuestionId": "saa-sec-0110",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "bc2e64b079b98b3f027410c65e8039a520d6d84593ae1aa54c7cb44c1f318a6d": {
+    "sourceQuestionId": "saa-perf-0096",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "bd0c1e24f7fdfb4a49429464d44daf12ab64c2f200d8aeacd4c9113027ef3e91": {
+    "sourceQuestionId": "saa-res-0083",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "bd71fc8a933d0faa06ac06a82322f1f5e84f268170ff19e1aa8bb37dcc6c3235": {
+    "sourceQuestionId": "saa-cost-0051",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "bd7f592c43b373a7a34aef713d880be33f0af6857ab2ead7b3648b568ee74976": {
+    "sourceQuestionId": "saa-sec-0100",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "bec7330e70d35fbe1c9d5a638565fc7465c9363475b131228ffaa528828b46df": {
+    "sourceQuestionId": "saa-sec-0055",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "bf01db38167d13f49527df37ac59de9ddf6088b83e6fd8c7589372036b245aee": {
+    "sourceQuestionId": "saa-res-0016",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "c0a10c5f5cee90cabfb6f21402100e988b6d08457e0eab578ab336b868029f61": {
+    "sourceQuestionId": "saa-cost-0087",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "c0ec27d7bd438b1f0383973d3157317890b26f2448d9507250ce052d8f265383": {
+    "sourceQuestionId": "saa-cost-0039",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "c161a1a037ddcf6fb09eb49a8aa7e4f9c6298a7a978b796b94b932db65ee4406": {
+    "sourceQuestionId": "saa-perf-0068",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "c2a7fe3316768a1a25e95c9a1573b00411dcd22dee26a09e673c859d65f85816": {
+    "sourceQuestionId": "saa-perf-0010",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "c2db85091d347d2ff5fc347b9e42cd00f02d811b5fc7d3a08cf6d1467a84ea83": {
+    "sourceQuestionId": "saa-cost-0052",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "c36169611f26c3be22ebaa4826b653d76aad4c4cb539e8edadf7a690bd74251a": {
+    "sourceQuestionId": "saa-sec-0104",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "c384f1f08836be5c3581cb76ef373abda4c2e6e140ebe5c229d02da11252b73a": {
+    "sourceQuestionId": "saa-sec-0124",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "c3b6f393a550e79d1c4c24b5bad7e5b7174cc7d70d157571191254d9c584d691": {
+    "sourceQuestionId": "saa-perf-0036",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "c457657b9ebb8c7a36922116f7fee0650164d5f0c8f4c9bbef039e5992732fe2": {
+    "sourceQuestionId": "saa-cost-0079",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "c537e4d24ce522560ce8df37bca4f9bddbbf2bfaa74471f333f608a2f48655e2": {
+    "sourceQuestionId": "saa-cost-0031",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "c568a376a2570eba476cfdc1596b738aa4074d6b24ad5f161cef4a51298ca4e8": {
+    "sourceQuestionId": "saa-perf-0038",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "c5798cd41557a3d6678f76f3e85fba8be0b8d264183ee7ef7de3aa8ae2567e3e": {
+    "sourceQuestionId": "saa-res-0055",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "c58d5519bb0959c4bcff87a99e45395c0087661fccbde3a38ae8ff68608269a4": {
+    "sourceQuestionId": "saa-sec-0030",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "c5f87cbe7d3eeba7e6c3ed7464352237a762191f76f7f7a6e0e73c8176be8156": {
+    "sourceQuestionId": "saa-sec-0142",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "c6189973fc6dab0cdf3f39ea08f3c08065fc64b1196b485201a45ee12ff9597e": {
+    "sourceQuestionId": "saa-perf-0067",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "c7bf9bc82256f3d3121cfd6a503c61fd25dd4bec16ad6217e966c4488fc34458": {
+    "sourceQuestionId": "saa-res-0035",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "c7df2e54919ddca3e8df9b180cc0d063709c13fb0993446106650fe80c7ceb22": {
+    "sourceQuestionId": "saa-res-0089",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "c820359510145b642e3af757b5f33b4ff49cc794f4ec7fec6dd05eea12a85fc6": {
+    "sourceQuestionId": "saa-sec-0009",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "c838d7c9f3227b5d71eec9e8d53c1a1d32f674c7b7ef1865b45690ba823b851e": {
+    "sourceQuestionId": "saa-res-0088",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "c894585e66637372617d65425307f1674504f82c2a0bf9574793fb3368b8f778": {
+    "sourceQuestionId": "saa-sec-0148",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "c8dbc9c1fb89514bfcd126ab05e3f5e57baa3bd8b2c8fd102a5f36a67b976764": {
+    "sourceQuestionId": "saa-perf-0066",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "c93cb4bdd9b9b258f4c6bd6a5dc5d2c90f64070c166aed47b6974ea9905e9bae": {
+    "sourceQuestionId": "saa-cost-0067",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "c9e4473bd766495875794f2c644e4d2829b2a854c3af1cfff49d18c0c8b8a55c": {
+    "sourceQuestionId": "saa-res-0118",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "ca31a843fce12f1689831bcef6b289dbd3f08cc670c4203da3b1fef126989e54": {
+    "sourceQuestionId": "saa-res-0045",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "caa913271b63c7c14583d5c398881cd2b8941cd0faf8923451d39579e98c4412": {
+    "sourceQuestionId": "saa-sec-0003",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "cad2aae0b5494d32706dac4d439c9c2b22d167f74ee86bd29815d06991a8ee9e": {
+    "sourceQuestionId": "saa-sec-0087",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "cb0d436e62a09f4117ef8915c106f4750c914d691b429dba8cc4fa404cc30709": {
+    "sourceQuestionId": "saa-cost-0007",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "cb2e4e93c6c48ad83f5ce42d6dfe08397e873059f1c842d2681849dbc5c38f8e": {
+    "sourceQuestionId": "saa-sec-0063",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "cb4222cdbf1e8815434b83decd46a438efe3be05a82af4baaa57f96b7134ca11": {
+    "sourceQuestionId": "saa-res-0106",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "cb65a5c6ea5cb5a54dd77d103c9dcac7253f468be0341c7fbdad6dacc0ae5fcc": {
+    "sourceQuestionId": "saa-perf-0095",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "cb878bf0f38676eb247f4cd202921e8c008122b175188f19246b7f704257a5b8": {
+    "sourceQuestionId": "saa-cost-0078",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "cba34a6d7a739d0f9e6465703daeb8e4ccea90e78d9bbb0df79662ba6e45776c": {
+    "sourceQuestionId": "saa-perf-0065",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "cd685cbc33b30597fd3ce40f33ab843cd670cbf61998f9658e4d21f34df48118": {
+    "sourceQuestionId": "saa-sec-0066",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "cd6b12add99df375e519848129a427d2de29784f226f6401237fa175b3f6bedc": {
+    "sourceQuestionId": "saa-res-0037",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "disaster-recovery"
+  },
+  "cd7a43022cc770dc0c793b4d978b08a720037adcccc454dabd748a4754730388": {
+    "sourceQuestionId": "saa-sec-0107",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "cd816987963d45ba22701b50ded52c69d3eceb2c94c8954c93b7ded39986d80f": {
+    "sourceQuestionId": "saa-sec-0140",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "cdc5be7ae7343b003ef90f84dc5cab36fdefe6bfefe0a90a8c3b5a91a6e7f976": {
+    "sourceQuestionId": "saa-sec-0062",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "cf42b2b31bcc87681688d2855fb3057ea3f4a9839dc3c101b5de067d743adfde": {
+    "sourceQuestionId": "saa-sec-0027",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "d0be971ab30560a0a73023bf0599a2b062fb2f1c67a65c9c74e592c54a1768ad": {
+    "sourceQuestionId": "saa-cost-0042",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "d1226f897f693c245848956dff7db1de36bb7871e6be31e5bc1003d233d53c2f": {
+    "sourceQuestionId": "saa-sec-0125",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "d27c89fb679ba2585699abfb5d9e7ee3c3f14e8c1c81c1be55f016565bfb41e2": {
+    "sourceQuestionId": "saa-perf-0009",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "d3052e6f2caed11d58fb91fb50844b257f14e6fdf81de7d040991a77ac4dc787": {
+    "sourceQuestionId": "saa-res-0104",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "d32d47db19c6a038f8ed0ee917ce3a1f2a26d6de49a7cbd82cde522b041aa21a": {
+    "sourceQuestionId": "saa-sec-0108",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "d35c7a686fb7cc60ae36951797087d21d64b0e1134fd95c11783f306582bf60e": {
+    "sourceQuestionId": "saa-res-0094",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "d376fbf69b13b1fae41398955936ba5b66eaa3abf936f7eaad037e834cfd58ff": {
+    "sourceQuestionId": "saa-res-0079",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "d3f54af40e04fca6bb538f9c224ea4fd20b3ec96af8ce9b4509ab402b066f272": {
+    "sourceQuestionId": "saa-res-0074",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "d437cf36f61e50b6c2c0ad68e00d99d727fd8ddf5c4f885fa9d4ff9c9337a83f": {
+    "sourceQuestionId": "saa-res-0002",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "d44b22937b103684d3e6516c64f1d8bbb1945a86eb20a32e371b0fb582fcbc8d": {
+    "sourceQuestionId": "saa-res-0021",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "d4520254707657864204fc8bfee5afcde6a8889daa0fe5710472d83fdff447a3": {
+    "sourceQuestionId": "saa-cost-0075",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "d4c3cd618f06591df8ae13d002d3e6d7a6c2efcd182ab638abaa12b15eafc789": {
+    "sourceQuestionId": "saa-perf-0062",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "d50867bed9a9a9bd14daf30cfb1a055b412678b427bed8c0f7eea786e7636fea": {
+    "sourceQuestionId": "saa-cost-0063",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "d545d08e9f6b6dba5c20671bcc14f5dca97e5bf25f10a02b1c08e717bb852449": {
+    "sourceQuestionId": "saa-sec-0045",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "d5f1011ab738d286b74b46b58f73c970cacefd76e66216139a6143d496b66380": {
+    "sourceQuestionId": "saa-res-0025",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "d6b579cbd4a2645facb346f5a014b765cd747dab5ff645a7a30a880ba2e1997a": {
+    "sourceQuestionId": "saa-res-0073",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "d7985d9dc124a27e9c06f023f9e25b752b9508ce681c47ed714e0af4cd526d97": {
+    "sourceQuestionId": "saa-perf-0011",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "d7c751b01b6584669a2c62663e13a1095d6bb1e0849437251d4892264cf51d1d": {
+    "sourceQuestionId": "saa-cost-0029",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "d80af44edd7ef8cdd58a6c04d70993699f17b78520ef9aeb958b931b5f97661e": {
+    "sourceQuestionId": "saa-perf-0097",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "d80cc5b38aa7d29ac009cb7d021deaa3fc8804cfcee2f3f47ae00256c37acf0a": {
+    "sourceQuestionId": "saa-perf-0052",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "d8306ddf55a60c96c87e1d7b131f4d9f72883045b046a3f4139f166c3e04892e": {
+    "sourceQuestionId": "saa-perf-0087",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "d898d35573b107aa0834fa67fd2d356f68cb828200a425e8b0a9e9241d5da3ec": {
+    "sourceQuestionId": "saa-perf-0116",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "d96be851210acbfd2c415d5b0fa8c7a32500b96d1b1b6960a187ef7783801957": {
+    "sourceQuestionId": "saa-perf-0091",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "d9776e01b44485e0905c35d2e82e2aff915fb6f15a8677b46cbcee6cfab05640": {
+    "sourceQuestionId": "saa-cost-0027",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "da59650d58cb78265e41924471b030b96a84cfb0a8e286be52b8c8d55f1deb4a": {
+    "sourceQuestionId": "saa-res-0064",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "db2984b02086ef01746cac18e80cabca85d4aec629ee71f51c4a43da51858a0a": {
+    "sourceQuestionId": "saa-perf-0039",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "db3bbf1f916a5f6ab5b7d56bdc4c5a01cc952085818b0aab16c1579f6bc7d6fb": {
+    "sourceQuestionId": "saa-res-0011",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "db3d77816dc9e02ef7662585610917e184df08cf5df225aab53f04775ec7849c": {
+    "sourceQuestionId": "saa-perf-0028",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "dc4ab167b9e5b91376df19b97c8889e8cf5c9daa71d8de79cc8167ac123d048f": {
+    "sourceQuestionId": "saa-perf-0079",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "dc6211c64327fa9f82b8ed1f4ce8abdc4b0cf7cbc8061d86a545426aca93a5d7": {
+    "sourceQuestionId": "saa-sec-0049",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "dc876c40dafb18df81ac5adca0b0a4a5124844d6ddafc0198a80baf39eadf4b8": {
+    "sourceQuestionId": "saa-res-0082",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "dcb5f6e240ce14c464ca14b846f50214fe66d5f96cd9e619ebee3a279a9854d7": {
+    "sourceQuestionId": "saa-sec-0123",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  },
+  "dd2f772a03c5ec6c521ebb06421a6a97a62dc06bc3f6ea6303f3f739ffb2f8f0": {
+    "sourceQuestionId": "saa-perf-0115",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "dd62e3bcba1804e0745f34ea633c02e5fa4ca3aa1163bc4c55633a645e5102a6": {
+    "sourceQuestionId": "saa-perf-0058",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "dd7456d53d2d7c6b2e2961d5d81293e77f5fd4c60c420b220f6046b255c75c91": {
+    "sourceQuestionId": "saa-cost-0097",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "dd958b0dca38cc2586918062430aec428bdabbc8e6805b18b876ff2a4ccac8e6": {
+    "sourceQuestionId": "saa-perf-0109",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "de05b4f254df5ea4b6ba47d42e1e37bb6d1838dee45470fbab1be83290c749a7": {
+    "sourceQuestionId": "saa-sec-0040",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "de4ee784913278160cd0e227a3938d964be2d0cbe297f73fa0a0af6dafcfa14b": {
+    "sourceQuestionId": "saa-res-0072",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "de5ab05ebb3382a3f08ec6b529be437fcdf1646b2f3de2ff15118b198d7cfd6e": {
+    "sourceQuestionId": "saa-perf-0090",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "content-delivery-networking"
+  },
+  "deabffa9624faae576e1557b9f5a485743c13b97d1aa49a500e8fc4957cf93f4": {
+    "sourceQuestionId": "saa-res-0123",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "df41b9962701e75ad0d2f0ac63bdf09eba2f1859a528ef977bd444611b392556": {
+    "sourceQuestionId": "saa-sec-0084",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "e083c57ab4d942b1baf899f34d9fb53037c090f4cb3631ffa0742d2614588678": {
+    "sourceQuestionId": "saa-sec-0057",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "e0b5d068fc2def8b4daa2bda646ffbbf9ae71ab8ec5493a993bfdf6a3dbdd3c3": {
+    "sourceQuestionId": "saa-sec-0138",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "e1658f481d98de5c50b12ce6ad56406e5460fdf87bfb9412026d6d3b2c21f474": {
+    "sourceQuestionId": "saa-res-0008",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "e28d27d9d88f4b16912a64468b3484d8d6d3e4620a98bf36b34c65bfef7e1f54": {
+    "sourceQuestionId": "saa-sec-0092",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "e2cfde1b11cb63f3ff52ea9a07c543368f4a09c34e078f30ef04d7994fa6a162": {
+    "sourceQuestionId": "saa-res-0120",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "e2e22b8923bf8ed458f779659385e869efe29a6fbc2f4e08b6365a917cfaf0c5": {
+    "sourceQuestionId": "saa-perf-0047",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "e2e489efe2800d3e5bf1dd743fc17441d7741a715c9f05901f3e2b1a35abf328": {
+    "sourceQuestionId": "saa-sec-0072",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "e37c070212e5881fdb0c34ce073f1c7145c63daede391d5ac819b46ce0c61458": {
+    "sourceQuestionId": "saa-cost-0011",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "e3cace2e82caf69fc99f0bb6863b4b839b459a1b5a7d5b83aa67fade6451b810": {
+    "sourceQuestionId": "saa-res-0078",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "e3ff32e9d82d027c9f058f1c16b19ba50aed0347a93f6fc61b22aa10bf45efe9": {
+    "sourceQuestionId": "saa-perf-0117",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "e44072efcac2aebf59f2ec8eceb06c200d19860e6d592b66f182beac73a6ce51": {
+    "sourceQuestionId": "saa-sec-0128",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "e57fa6d13ab5471e34fbe4630b7a131d37f17c3d1980eea5f7726cb8cada55f9": {
+    "sourceQuestionId": "saa-res-0084",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "e5a60bf34fd7cf1d17dc8bcadb07d5273df37df033e1f2ec0133a9986a095c11": {
+    "sourceQuestionId": "saa-res-0110",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "e5b2979b0a109826bc3fee1d4ba5abbd1162967c186d747838a5ed0de1e6ae3f": {
+    "sourceQuestionId": "saa-perf-0101",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "e647fe796f094c4c357519a01e7044f4737f482a789ea0aed6a94e577499eca7": {
+    "sourceQuestionId": "saa-sec-0033",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "e77a0b94ac5a0f889c41db84dc0b501c4d256aa2e8c329fabc145af09839fee5": {
+    "sourceQuestionId": "saa-sec-0134",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "detection-audit"
+  },
+  "e98113de3a45dc0fc8c0584353eee2a66e0a9a559427f8f0ac6b454eed229d09": {
+    "sourceQuestionId": "saa-perf-0108",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "eab057f481b8c513c2adae03b26fbe444667e969a9c614f298a7323194c565e8": {
+    "sourceQuestionId": "saa-cost-0045",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "eb961fd1ad559616998d34f64afd26d1869c2423966a0443ecf1277e4ab7f456": {
+    "sourceQuestionId": "saa-cost-0076",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "ec1dccb3002d68b2500d785c651b251756b87768d2de4eac237757d39a1034fc": {
+    "sourceQuestionId": "saa-cost-0028",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "ee9a7638eb04080275a12315586f8782a0eeece9137dd6d51e82570696f8b838": {
+    "sourceQuestionId": "saa-res-0087",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "event-resilience"
+  },
+  "ef18745055ade1c687cc8300bf664fb2a4480806d3897f6086c067121d9a1307": {
+    "sourceQuestionId": "saa-sec-0024",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "f0a50e0eaace153850183618153144a75ccd805d04acf200db3bb4e0c202d963": {
+    "sourceQuestionId": "saa-sec-0083",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "network-security"
+  },
+  "f0bed8119763b8c5a02dd24782123b397dc52a4a2114e8c136a0bb44e5fc4259": {
+    "sourceQuestionId": "saa-cost-0022",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "f0c4702d85c7a0460191a714925f63f85ee5c8b459c376ba1f4bb4b8b9cb03fc": {
+    "sourceQuestionId": "saa-cost-0077",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "f25f64ed7e93f8993d3861b6fe6432c53ea17951c34e395719505d6756cc5ba8": {
+    "sourceQuestionId": "saa-cost-0050",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "f2abb04876e148130e0f735adf41034e69b4f56b9147906b99f2de382845e913": {
+    "sourceQuestionId": "saa-res-0107",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "f372bd0025371f236b9019f0d74bbfb2bf7cba787b9e050495fbc8f43da4043b": {
+    "sourceQuestionId": "saa-perf-0113",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "f3cb43053043dec92eb13e64a5abfdce7200a3dd121e566396c36273513fc60a": {
+    "sourceQuestionId": "saa-perf-0033",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "storage-performance"
+  },
+  "f428d3d9afb36e63d3264312477aca4d1e0e623f433a30f441ff5398ba10bf3b": {
+    "sourceQuestionId": "saa-res-0121",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "f43aa8103c5fa9a899086b9deb06060b97a28701c776c95b4809f379cd33eb32": {
+    "sourceQuestionId": "saa-res-0062",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "f45cb44c2c5db980481869e8b318bbc3c7e2e4e569964c597d449a5b155add40": {
+    "sourceQuestionId": "saa-perf-0070",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "database-performance"
+  },
+  "f4b91f7642414b6acead0d7b19602fc385a78fda6935ca69cada00194949f98f": {
+    "sourceQuestionId": "saa-cost-0016",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "f4c47582759cd7286278118b3ce96e9afa9de9cdb2b132c398105169896daf40": {
+    "sourceQuestionId": "saa-cost-0010",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "f56b6d2646014c5cb661c04b812d996b9df36e75183ce843f3d799afe6a921f6": {
+    "sourceQuestionId": "saa-res-0006",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "high-availability"
+  },
+  "f576e0670cf8244d02bd7f3c07dae55d8cb0f8efe4a3c76ab1f39cb69baeb337": {
+    "sourceQuestionId": "saa-cost-0054",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "f63b093825364ff2bee64f984b53f77e4849e5332fd55f3e2e2a38fc47605588": {
+    "sourceQuestionId": "saa-cost-0024",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "f6d0bc8c1a71798bbc159fbac133904206ebed5d8f0c0faca49535dd1d039bee": {
+    "sourceQuestionId": "saa-sec-0039",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "org-federation"
+  },
+  "f6ed5004f2fc22070966f5020786c4e8034178260539c875ee43ecf9f81c84da": {
+    "sourceQuestionId": "saa-perf-0106",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "analytics-streaming"
+  },
+  "f72df4484e2ceac346aeda796913ea5938c80dbe09494af67f816c83825a0451": {
+    "sourceQuestionId": "saa-cost-0021",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "f83edbbe19eb32cc6439704bd559892ac84ad0935d8d4620afaeaae33ea1ab0f": {
+    "sourceQuestionId": "saa-res-0059",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "f8ad91e750f291096378d2011a73c28077be77df3e9b2825d4f369712e7460bb": {
+    "sourceQuestionId": "saa-sec-0067",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "f8bc99288903f47dfbcc1acb5e9b83db98b24ad706c89a68112950eea479aae1": {
+    "sourceQuestionId": "saa-cost-0068",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "rightsizing-elasticity"
+  },
+  "f8e01e25467e1e5e17833c958853e9105184ec10c819d7bfc3ba6eba84d0d4f6": {
+    "sourceQuestionId": "saa-perf-0008",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "f99745454923b57f8f4a408652e6d6c04eafdaa1e5422cd9ac270c406052fa34": {
+    "sourceQuestionId": "saa-cost-0036",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "storage-costs"
+  },
+  "fa2416d61b7f7bc9f5a93b3827a055a17b57c2252545dd7c4ba3a762fb08afb8": {
+    "sourceQuestionId": "saa-cost-0014",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "compute-pricing"
+  },
+  "fa3a2073b536656e5e34b66dea3cadb19e1f49de5d822ce271a1b344d55ad065": {
+    "sourceQuestionId": "saa-res-0067",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "backup-restoration"
+  },
+  "fa749a26290075fb4782897f0d3985b47e31b1e50c148e1c030c79150cffa7a3": {
+    "sourceQuestionId": "saa-sec-0008",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "iam-identity-access"
+  },
+  "fad8bb2137ff41e22c16b543e7b2dc1a71a20c2bbae0cef5cac23b2a369b8716": {
+    "sourceQuestionId": "saa-res-0115",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "fcf6e81589842374996bb15c211b035254b40c0faf9fe9e28313342cf65e3fde": {
+    "sourceQuestionId": "saa-cost-0094",
+    "examCode": "saa-c03",
+    "domainCode": "cost-optimization",
+    "conceptId": "cost-visibility-networking"
+  },
+  "ff12583faed11ba6769c5531178cf5755a0eb68209b448ab59c9a91463984c21": {
+    "sourceQuestionId": "saa-sec-0052",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "encryption-key-management"
+  },
+  "ff60afef43aeaf9e390f97f8c9104974a9db19ea867dfb8303eaeaf6cd272244": {
+    "sourceQuestionId": "saa-perf-0015",
+    "examCode": "saa-c03",
+    "domainCode": "performance",
+    "conceptId": "compute-performance"
+  },
+  "ff6a5e19e0e16ccfbdb7fd0e6d2cec1efbbdeb8839491d0b5cc20c9e8a269440": {
+    "sourceQuestionId": "saa-res-0101",
+    "examCode": "saa-c03",
+    "domainCode": "resilience",
+    "conceptId": "distributed-data"
+  },
+  "ffb8fdff00a5bc2704bc849bfd09dbc02316b6b69672407d406ac549a679344d": {
+    "sourceQuestionId": "saa-sec-0116",
+    "examCode": "saa-c03",
+    "domainCode": "security",
+    "conceptId": "data-storage-security"
+  }
+}

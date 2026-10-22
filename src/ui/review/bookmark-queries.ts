@@ -3,6 +3,7 @@ import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/
 import type { ApiClient } from '../api/client';
 import { listBookmarks, setBookmark, type BookmarkSetResponse } from '../api/review-client';
 import { reviewKeys } from './queries';
+import { CONCEPT_CACHE_ROOT } from '../concepts/queries';
 
 export function useBookmarks(client: ApiClient, examId: string, userId: string) {
   const queryClient = useQueryClient();
@@ -62,6 +63,7 @@ export function useSetBookmark(client: ApiClient, examId: string, questionId: st
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: reviewKeys.bookmarks(vars.examId, userId) }),
         queryClient.invalidateQueries({ queryKey: reviewKeys.candidates(vars.examId, 'bookmark', userId) }),
+        queryClient.invalidateQueries({ queryKey: CONCEPT_CACHE_ROOT }),
       ]);
     },
   });

@@ -1,0 +1,137 @@
+.moi-concept-wiki {
+  min-width: 0;
+}
+
+.moi-concept-header {
+  margin-bottom: var(--moi-space-5);
+}
+
+.moi-concept-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: var(--moi-space-5);
+  min-width: 0;
+}
+
+.moi-concept-index,
+.moi-concept-detail-region,
+.moi-concept-document,
+.moi-concept-empty {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.moi-concept-section-title,
+.moi-concept-document h2 {
+  margin: 0 0 var(--moi-space-3);
+  font-size: var(--moi-size-h2);
+  line-height: 1.35;
+  color: var(--moi-color-ink);
+}
+
+.moi-concept-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moi-concept-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--moi-space-1);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--moi-space-3);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.moi-concept-choice:hover,
+.moi-concept-choice[aria-pressed='true'] {
+  border-color: var(--moi-color-ink);
+  background: var(--moi-color-surface);
+}
+
+.moi-concept-choice:focus-visible,
+.moi-concept-related summary:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+
+.moi-concept-choice-heading {
+  display: flex;
+  align-items: baseline;
+  gap: var(--moi-space-2);
+  min-width: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.moi-concept-choice-title,
+.moi-concept-choice-reason,
+.moi-concept-document p,
+.moi-concept-comparison dd,
+.moi-concept-question-list p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.moi-concept-rank {
+  flex: 0 0 auto;
+  color: var(--moi-color-muted);
+  font-family: var(--moi-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.moi-concept-choice-reason,
+.moi-concept-choice-count {
+  color: var(--moi-color-muted);
+  font-size: var(--moi-size-small);
+  line-height: 1.5;
+}
+
+.moi-concept-document,
+.moi-concept-empty,
+.moi-concept-placeholder,
+.moi-concept-error,
+.moi-concept-status {
+  padding: var(--moi-space-4);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  background: var(--moi-color-white);
+}
+
+.moi-concept-placeholder {
+  margin: 0;
+  color: var(--moi-color-muted);
+  line-height: 1.6;
+}
+
+@media (min-width: 768px) {
+  .moi-concept-layout {
+    grid-template-columns: minmax(16rem, 0.85fr) minmax(0, 1.4fr);
+  }
+  .moi-concept-index {
+    position: sticky;
+    top: var(--moi-space-3);
+    max-height: calc(100dvh - var(--moi-space-6));
+    overflow-y: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .moi-concept-choice,
+  .moi-concept-actions a {
+    transition: border-color 120ms ease-out, background-color 120ms ease-out;
+  }
+}

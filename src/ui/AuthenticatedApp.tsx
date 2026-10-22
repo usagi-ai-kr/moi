@@ -15,7 +15,7 @@ import { useLogout, useUiStore, type ApiClient, type MeUser } from './session';
 import { ExamScopeProvider } from './exam/ExamScopeProvider';
 import './authenticated.css';
 import { AppShell } from './AppShell';
-import { importAccount, importHistory, importReview } from './lazy-routes';
+import { importAccount, importConcepts, importHistory, importReview } from './lazy-routes';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { RouteFallback } from './RouteFallback';
 import { AuthErrorAlert } from './widgets';
@@ -35,6 +35,7 @@ const HistoryDetailPage = lazy(() =>
 // markdown·통계 번들이 로그아웃/로그인 홈 초기 번들에 포함되지 않도록 분리한다 (이슈 #132).
 // importer는 lazy-routes가 소유해 hover/focus prefetch와 같은 청크를 공유한다 (#184).
 const ReviewScreen = lazy(importReview);
+const ConceptWikiScreen = lazy(importConcepts);
 const HistoryPage = lazy(importHistory);
 const AccountPage = lazy(importAccount);
 
@@ -62,6 +63,10 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
   const [params] = useSearchParams();
   const greeting = useHeroGreeting();
   const legacyStudy = params.get('study');
+  const selectedExam = params.get('exam');
+  const conceptWikiPath = selectedExam
+    ? `/concepts?exam=${encodeURIComponent(selectedExam)}`
+    : '/concepts';
   // legacy: /?study=<UUID> 북마크도 서버 소유권 확인 후 새 주소로 replace (#148).
   if (legacyStudy) {
     return (
@@ -82,6 +87,9 @@ function Home({ showAuthError, client }: { showAuthError: boolean; client: ApiCl
         <button type="button" className="moi-study-link" onClick={() => void navigate('/history')}>
           {copy.study.historyLink}
         </button>
+        <Link to={conceptWikiPath} className="moi-study-link">
+          {copy.study.concepts}
+        </Link>
         <button type="button" className="moi-study-link" onClick={() => void navigate('/study')}>
           {copy.study.continueStudy}
         </button>
@@ -156,6 +164,10 @@ function AuthenticatedRoutes({
             <Route
               path="review"
               element={<Suspense fallback={<RouteFallback />}><ReviewScreen client={client} /></Suspense>}
+            />
+            <Route
+              path="concepts"
+              element={<Suspense fallback={<RouteFallback />}><ConceptWikiScreen client={client} userId={userId} /></Suspense>}
             />
             <Route
               path="account"
