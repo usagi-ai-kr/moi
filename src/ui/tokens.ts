@@ -10,6 +10,7 @@ export const colors = {
   white: '#FFFFFF',
   danger: '#F5222D', // AntD red-6 — 로그아웃·오류 강조 (tokens 단일 소스 유지)
   warning: '#FAAD14', // AntD gold-6 — 경고 강조
+  scrim: 'rgb(35 47 62 / 45%)', // Drawer 백드롭 — ink 45% (토큰 단일 소스)
 } as const;
 
 // 카카오 로그인 버튼 — 카카오 공식 디자인 가이드 값(변경 금지, ADR-0014)
@@ -41,15 +42,36 @@ export const radius = {
   lg: 12,
 } as const;
 
+// 조작 아이콘 광학 크기 — 16(인라인·알림·스피너)·20(배지)·24(내비) 역할 고정 (ADR-0064).
+// favicon·브랜드 아이콘(22px)은 브랜드 자산으로 분리한다 (ADR-0054·0062).
+export const icon = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+} as const;
+
 export const layout = {
   containerMaxWidth: 960,
+  // 큰 화면의 읽기 열 — 헤더 내부와 본문이 같은 폭을 공유한다 (#148 6항).
+  // study 760–900(DESIGN §5)은 별도 토큰을 두지 않고 셸 reading 열(720)을 채운다:
+  // ≥1024px에서 .moi-study{max-width:100%}가 셸 720열을 그대로 사용한다 (ADR-0064).
+  readingMaxWidth: 720,
+  // 구 첫 화면 헤더 높이 — #225에서 셸(61px) 단일 규격으로 통일해 CSS 사용 중단.
+  // 호환을 위해 값은 유지한다 (삭제 금지 — 외부 참조 가능).
   headerHeight: 56,
+  // 로그인 후 셸 헤더 실측 높이 — 브랜드 링크 44px + 헤더 패딩 8px×2 + 하단 테두리 1px (#215).
+  // #225 공통 헤더 단일 소스 — 첫 화면·셸·Drawer 모두 이 값만 사용한다.
+  shellHeaderHeight: 61,
+  // 공통 브랜드 아이콘 광학 크기 — favicon 22px 단일 소스 (#225).
+  brandIconSize: 22,
   containerPaddingX: 'clamp(16px, 5vw, 32px)',
   accentWidth: 48,
   accentHeight: 4,
   enterShift: 8,
   controlHeight: 40,
   touchTargetMin: 44, // 접근성: 터치 타깃 최소
+  drawerWidthMax: 320, // Drawer 최대 폭(20rem) — 320px 뷰포트에서 272px가 된다 (#215)
+  drawerViewportGap: 48, // Drawer와 화면단 사이 최소 여백(3rem) — 백드롭 클릭 영역 확보
 } as const;
 
 export const typography = {
@@ -57,16 +79,29 @@ export const typography = {
     "'KoddiUDOngodic', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
   fontUi:
     "'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
+  // 브랜드 워드마크 전용 — Bricolage Grotesque(OFL-1.1) self-host m/o/i 서브셋.
+  // 폴백은 기존 display 스택 그대로라 로드 전·실패 시 이전 브랜드 표기와 동일(#225).
+  fontBrand:
+    "'Bricolage Grotesque', 'KoddiUDOngodic', 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif",
+  brandFontFamily: 'Bricolage Grotesque',
+  // Google Fonts가 생성한 m/o/i 서브셋 woff2(1.6KB, OFL)를 동일 오리진에 self-host.
+  // KoddiUD 금지(ADR-0014)는 눈누 라이선스 한정이며 OFL self-host는 허용(ADR-0069).
+  brandFontUrl: '/fonts/bricolage-grotesque-moi.woff2',
+  // 숫자 셀 고정폭 서체 — tabular-nums와 함께 자릿수 변화에도 열 정렬을 흔들리지 않게 한다 (ADR-0066).
+  // 한글 글리프는 이 스택에 없어 시스템 한글 서체로 폴백하므로 숫자만 고정폭으로 정렬된다.
+  fontMono:
+    "ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
   displayFontFamily: 'KoddiUDOngodic',
   // 눈누가 제공하는 공식 웹폰트 경로 — 형태 그대로·수정/재배포 금지라 저장소에 파일을 두지 않는다 (ADR-0014)
   displayFontUrl:
     'https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/KoddiUDOnGothic-Bold.woff',
-  baseSize: 16,
+  baseSize: 18,
   sizes: {
-    brand: '20px',
-    h1: 'clamp(32px, 7vw, 44px)',
-    lead: 'clamp(16px, 2.4vw, 18px)',
-    small: '13px',
+    brand: '22px',
+    h1: 'clamp(34px, 7vw, 48px)',
+    h2: '26px',
+    lead: 'clamp(18px, 2.4vw, 20px)',
+    small: '16px', // DESIGN.md 보조 설명 최소 16px (#182)
   },
   lineHeights: {
     tight: 1.15,
@@ -86,6 +121,12 @@ export const breakpoints = {
   desktop: 1200,
 } as const;
 
+// 해설 다이어그램(Pele) — 중앙값만 사용, 컴포넌트에 리터럴 금지 (ADR-0012).
+export const diagram = {
+  renderTimeoutMs: 8000,
+  directionBreakpoint: 640,
+} as const;
+
 const px = (n: number) => `${n}px`;
 
 /** CSS 변수 매핑 — styles.css는 이 이름들만 사용한다 */
@@ -93,14 +134,25 @@ export const cssVars: Record<string, string> = {
   ...Object.fromEntries(Object.entries(colors).map(([k, v]) => [`--moi-color-${k}`, v])),
   ...Object.fromEntries(Object.entries(space).map(([k, v]) => [`--moi-space-${k}`, px(v)])),
   ...Object.fromEntries(Object.entries(radius).map(([k, v]) => [`--moi-radius-${k}`, px(v)])),
+  ...Object.fromEntries(Object.entries(icon).map(([k, v]) => [`--moi-icon-${k}`, px(v)])),
   '--moi-container-max': px(layout.containerMaxWidth),
+  '--moi-reading-max': px(layout.readingMaxWidth),
   '--moi-header-h': px(layout.headerHeight),
+  '--moi-shell-header-h': px(layout.shellHeaderHeight),
+  '--moi-brand-icon-size': px(layout.brandIconSize),
+  '--moi-drawer-w-max': px(layout.drawerWidthMax),
+  '--moi-drawer-gap': px(layout.drawerViewportGap),
   '--moi-container-pad-x': layout.containerPaddingX,
   '--moi-accent-w': px(layout.accentWidth),
   '--moi-accent-h': px(layout.accentHeight),
   '--moi-enter-shift': px(layout.enterShift),
+  '--moi-control-h': px(layout.controlHeight),
+  '--moi-touch-min': px(layout.touchTargetMin),
   '--moi-font-display': typography.fontDisplay,
   '--moi-font-ui': typography.fontUi,
+  '--moi-font-mono': typography.fontMono,
+  '--moi-font-brand': typography.fontBrand,
+  '--moi-size-body': px(typography.baseSize),
   ...Object.fromEntries(Object.entries(typography.sizes).map(([k, v]) => [`--moi-size-${k}`, v])),
   '--moi-kakao-container': kakao.container,
   '--moi-kakao-symbol': kakao.symbol,

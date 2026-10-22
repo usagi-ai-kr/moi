@@ -1,7 +1,7 @@
 ---
 id: ADR-0007
 title: TDD/BDD와 CI 게이트
-status: Accepted
+status: Superseded by ADR-0043
 date: 2026-10-18
 related: ["#1", "#5", "#10"]
 ---

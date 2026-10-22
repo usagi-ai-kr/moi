@@ -21,12 +21,32 @@ export type SessionVerifyResult =
   | { readonly outcome: 'invalid'; readonly reason: 'malformed' | 'tampered' | 'wrong_key' | 'expired' };
 
 export interface SessionRepository {
-  /** 세션 활성화 기록(jti 해시만 저장 — PASETO 원문 저장 금지). */
+  /**
+   * 세션 활성화 기록(jti 해시만 저장 — PASETO 원문 저장 금지).
+   * 계정당 단일 활성 세션(#52): 같은 사용자의 기존 활성 세션을 먼저 폐기한 뒤 새 jti를 활성화한다(원자적·경합 안전).
+   */
   activate(input: { jti: string; userId: string; issuedAt: number; expiresAt: number }): Promise<void>;
   /** jti 활성 여부(revoked_at IS NULL AND expires_at > now). */
   findActive(input: { jti: string; now: number }): Promise<{ userId: string; expiresAt: number } | null>;
   /** 세션 폐기. 이미 폐기/미존재면 false. */
   revoke(input: { jti: string; now: number }): Promise<boolean>;
+}
+
+/**
+ * 계정 정보 읽기 전용 포트 (이슈 #234, ADR-0072).
+ * 가입일·최근 로그인은 **파생 조회**다 — `users.created_at`과 `sessions.issued_at` 최대값을 읽기만 한다(쓰기·마이그레이션 0).
+ */
+export interface AccountInfoRepository {
+  /** 가입일·최근 로그인. 사용자를 찾지 못하면 null(존재하지 않는 계정). */
+  findAccountInfo(input: { userId: string }): Promise<AccountInfo | null>;
+}
+
+/** 계정 표시 정보 — 시간은 epoch seconds. `lastLoginAt`은 로그인 이력이 없으면 null. */
+export interface AccountInfo {
+  /** 가입일 — `users.created_at`. */
+  readonly createdAt: number;
+  /** 최근 로그인 — `MAX(sessions.issued_at)`. 이력이 없으면 null. */
+  readonly lastLoginAt: number | null;
 }
 
 /** ADR-0006 화이트리스트 로그 계약 — 토큰/쿠키/jti/userId 원문을 전달할 방법이 없다. */

@@ -1,0 +1,89 @@
+{
+  "packId": "res-06",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-res-0126",
+      "domainCode": "resilience",
+      "stem": "비동기 호출로 실행되는 Lambda 함수가 일시적 장애로 실패해 2회 재시도까지 모두 소진되었다. 실패한 원래 이벤트를 표준 방식으로 후속 처리 대기열에 전달하려면?",
+      "explanation": "비동기 호출은 최대 **2회 재시도**하며, 소진되면 함수에 구성된 **on-failure 대상**(예: SQS 대기열)으로 이벤트 레코드를 전달한다. 함수 코드는 그 시점에 실행되지 않으므로 애플리케이션 코드로 이 전달을 대신할 수 없다.\n\n```mermaid\nflowchart LR\n  E[이벤트] --> L[Lambda 비동기 호출]\n  L -->|실패| R[재시도 최대 2회]\n  R -->|소진| D[on-failure 대상: SQS]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html",
+        "https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "함수 코드 마지막에 실패 이벤트를 대기열로 보내는 코드를 추가한다." },
+        { "optionKey": "B", "text": "최대 재시도 횟수와 함수 타임아웃을 늘려 실패 자체를 줄인다." },
+        { "optionKey": "C", "text": "CloudWatch Logs 구독 필터로 에러 로그를 모아 별도 스크립트로 재처리한다." },
+        { "optionKey": "D", "text": "함수에 on-failure 대상(SQS 대기열)을 구성해 재시도 소진 시 이벤트를 전달받는다." }
+      ]
+    },
+    {
+      "questionId": "saa-res-0127",
+      "domainCode": "resilience",
+      "stem": "Fargate 기반 ECS 서비스가 단일 AZ 장애 상황에서도 계속 응답하도록 설계하려 한다. 가장 적절한 구성은?",
+      "explanation": "서비스 서브넷에 여러 AZ가 포함되면 태스크가 분산 배치되고 ALB는 정상 AZ 태스크로만 트래픽을 보낸다. 비정상 태스크는 서비스 스케줄링이 자동으로 교체한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "서비스 서브넷에 여러 AZ를 포함하고 태스크를 분산 배치해 ALB에 연결한다." },
+        { "optionKey": "B", "text": "단일 AZ 서브넷에 모든 태스크를 배치하고 태스크 수만 늘려 여유를 확보한다." },
+        { "optionKey": "C", "text": "태스크 정의의 CPU·메모리 할당을 늘려 태스크 수명을 늘린다." },
+        { "optionKey": "D", "text": "ALB 헬스 체크 임계값을 상향해 비정상 태스크 교체를 늦춘다." }
+      ]
+    },
+    {
+      "questionId": "saa-res-0128",
+      "domainCode": "resilience",
+      "stem": "여러 리전에 분산된 VPC 사이에 사설 트래픽 경로를 리전 추가·축소가 쉬운 형태로 유지하려 한다. 가장 적절한 네트워킹 구성은?",
+      "explanation": "리전 간 Transit Gateway 피어링은 AWS 백본 위에서 사설 연결을 유지하며 VPC 추가·삭제가 라우팅 보강 없이 확장된다. 일대일 VPC 피어링 전체 망은 비전이적이라 VPC 수가 늘면 관리가 어렵다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/tgw/tgw-peering.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "애플리케이션 호스트에 퍼블릭 IP를 부여해 인터넷 경로로 통신한다." },
+        { "optionKey": "B", "text": "모든 VPC에 일대일 VPC 피어링을 다 맺고 VPC가 추가될 때마다 망을 보강한다." },
+        { "optionKey": "C", "text": "리전별 Transit Gateway를 리전 간 피어링으로 연결해 백본 위 사설 연결·라우팅을 유지한다." },
+        { "optionKey": "D", "text": "두 리전 배스호스트를 퍼블릭 서브넷에 두고 SSH 터널로 우회한다." }
+      ]
+    },
+    {
+      "questionId": "saa-res-0129",
+      "domainCode": "resilience",
+      "stem": "두 리전 ALB 뒤에서 서비스되는 글로벌 애플리케이션에 고정 진입 IP 세트를 제공하고, 한 리전 장애 시 빠르게 다른 리전으로 전환하려 한다. 가장 적절한 솔루션은?",
+      "explanation": "**Global Accelerator**는 고정 anycast IP 세트를 클라이언트에 제공하고 두 리전 ALB를 엔드포인트로 등록해 장애 감지 시 리전 간 트래픽을 빠르게 전환한다. DNS TTL 대기 없이 전환된다.\n\n```mermaid\nflowchart LR\n  C[Client] --> G[\"Global Accelerator (고정 IP)\"]\n  G -->|정상| A[ALB 리전 A]\n  G -->|리전 A 장애 시| B[ALB 리전 B]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html",
+        "https://docs.aws.amazon.com/global-accelerator/latest/dg/introduction.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "Route 53 지연 시간 라우팅으로 두 리전 ALB 별칭을 가리킨다." },
+        { "optionKey": "B", "text": "Global Accelerator에 두 리전 ALB를 엔드포인트로 등록해 고정 anycast IP로 접속하게 한다." },
+        { "optionKey": "C", "text": "리전별 NLB에 Elastic IP를 할당해 두 IP를 클라이언트에 배포한다." },
+        { "optionKey": "D", "text": "CloudFront에 두 리전 ALB를 오리진 그룹으로 등록해 사용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-res-0130",
+      "domainCode": "resilience",
+      "stem": "Route 53 장애 조치 라우팅으로 보조 리전 전환을 자동화한 운영 환경에서 재해 복구 훈련의 실행 방식으로 가장 적절한 것 두 가지를 고르시오.",
+      "explanation": "정기적으로 실제 전환을 수행해 복구 시간과 데이터 손실을 측정하고 결과를 계획에 기록·반영해야 절차가 검증된다. 장애 후에 처음 검증하거나 보조 리전 리소스 없이 가정으로 진행하면 실패 원인을 알 수 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html",
+        "https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html"
+      ],
+      "answerOptionKeys": ["A", "C"],
+      "options": [
+        { "optionKey": "A", "text": "정기적으로 장애 조치를 실제로 발동해 복구 시간과 데이터 손실을 측정한다." },
+        { "optionKey": "B", "text": "장애가 실제로 발생한 뒤에 처음으로 전환 절차를 검증한다." },
+        { "optionKey": "C", "text": "측정 결과를 재해 복구 계획에 기록·반영해 절차를 갱신한다." },
+        { "optionKey": "D", "text": "보조 리전 리소스 없이 절차서 검토만으로 훈련을 대신한다." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+/* 로그인 후 트리 전용 — Tailwind theme/utilities + shadcn 의미 변수.
+   엔트리(main.tsx → styles.css)에서는 import하지 않는다.
+   AuthenticatedApp(lazy 청크)에서만 import해 초기 렌더 차단 CSS에서 제외한다 (이슈 #132).
+   로그아웃 홈·로딩/에러 화면은 moi-* 토큰 CSS만으로 렌더되며 Tailwind를 사용하지 않는다. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* shadcn 의미 변수 → --moi-* 단일 매핑 (DESIGN.md·ADR-0035). preflight는 단계적 도입으로 미포함. */
+:root { --background: var(--moi-color-white); --foreground: var(--moi-color-ink); --primary: var(--moi-color-orange); --primary-foreground: var(--moi-color-white); --muted: var(--moi-color-surface); --muted-foreground: var(--moi-color-muted); --border: var(--moi-color-border); --destructive: var(--moi-color-danger); --ring: var(--moi-color-ink); --radius: var(--moi-radius-md); }
+@theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --color-destructive: var(--destructive); --color-ring: var(--ring); --radius-sm: var(--moi-radius-sm); --radius-md: var(--radius); --radius-lg: var(--moi-radius-lg); --text-sm: 1rem; --text-base: 1.125rem; }
+
+/* shadcn Button UA 테두리 리셋 (#182) — preflight 미도입 상태에서 남는 `2px outset`을 제거한다.
+   `outline` variant는 `.border` 유틸리티로 1px 토큰 테두리를 그리므로 제외한다. */
+[data-slot='button']:not(.border) { border: 0; }
+
+/* 버튼형 링크 밑줄 제거 (#232·ADR-0065) — Button asChild + Link가 렌더하는
+   [data-slot='button'] 앵커의 UA 밑줄을 제거한다. hover/focus/active/disabled는
+   ADR-0064 버튼 규칙(hover 0.92·active 0.88·disabled 0.5·focus-visible 링)을 그대로
+   사용하고, 근거 링크(.moi-source-links a·.moi-note a·.moi-explanation a)의 밑줄은 유지한다.
+   전역 `a { text-decoration: none }` 금지. */
+[data-slot='button'],
+[data-slot='button']:hover,
+[data-slot='button']:active,
+[data-slot='button']:focus-visible { text-decoration: none; }

@@ -9,7 +9,7 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 출처: 이슈 #1(실행 규약), #2–#5(단계별 테스트). 관련: `architecture-boundaries`, `release-deploy-workers`.
 
 ## 스크립트 (우선 실행 — repo root에서 실행)
-- `node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]` — CI와 동일한 필수 게이트(lint/typecheck/check:architecture/test:unit/test:integration/test:bdd/build)를 로컬에서 순차 실행한다. **fail-closed**: package.json이 있으면(읽기/JSON 오류 포함) 미정의·실패 게이트에서 exit 1, **파일 자체가 없을 때만** 안내 후 exit 0(임시 예외).
+- `node .agents/skills/tdd-bdd-testing/scripts/run-gates.mjs [gate ...]` — CI와 동일한 필수 게이트(lint/typecheck/check:architecture/check:notices/test:unit/test:integration/test:bdd/build)를 로컬에서 순차 실행한다. **fail-closed**: package.json이 있으면(읽기/JSON 오류 포함) 미정의·실패 게이트에서 exit 1, **파일 자체가 없을 때만** 안내 후 exit 0(임시 예외).
 - `sh .agents/skills/tdd-bdd-testing/scripts/run-gates.test.sh` — 판정 회귀 테스트(부재→0 · 잘못된 JSON→1 · 미정의→1 · 전 게이트→0).
 
 ## 실행 규약
@@ -64,7 +64,7 @@ compatibility: Node.js와 pnpm 필요 (scripts/run-gates.mjs).
 - Given 320/375/768/1024/1280 viewport When 로그인·오류 화면 방문 Then 잘리지 않고 조작 가능하다.
 
 ## CI 게이트 (전부 통과해야 함 — fail-closed)
-`pnpm lint` · `typecheck` · `check:architecture` · `test:unit` · `test:integration` · `test:bdd` · `build`
+`pnpm lint` · `typecheck` · `check:architecture` · `check:notices`(`node scripts/generate-third-party-notices.mjs --check`) · `test:unit` · `test:integration` · `test:bdd` · `build`
 - 미정의·스킵은 실패다. 0.1.0 scaffold 이전(package.json 부재)만 임시 예외다.
 
 ## PR 증거 형식

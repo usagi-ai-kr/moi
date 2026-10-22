@@ -1,0 +1,410 @@
+{
+  "packId": "perf-02",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-perf-0026",
+      "domainCode": "performance",
+      "stem": "한 회사가 2 TiB 범용 SSD 볼륨에서 4,000 IOPS와 500 MiB/s를 각각 독립적으로 보장받으려 한다. 가장 적절한 볼륨 유형은?",
+      "explanation": "gp3는 볼륨 크기와 무관하게 IOPS와 처리량을 각각 설정할 수 있다. gp2는 볼륨 크기에 비례해 성능이 결정되므로 이 요구에 맞지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html",
+        "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "gp3 볼륨으로 IOPS와 처리량을 개별 프로비저닝한다." },
+        { "optionKey": "B", "text": "gp2 볼륨을 2 TiB로 만들고 버스트 크레딧에 의존한다." },
+        { "optionKey": "C", "text": "st1 볼륨에 4,000 IOPS를 프로비저닝한다." },
+        { "optionKey": "D", "text": "sc1 볼륨을 여러 개로 나누어 스트라이프한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0027",
+      "domainCode": "performance",
+      "stem": "미션 크리티컬 데이터베이스가 볼륨당 20만 IOPS 이상, 99.999% 내구성, 밀리초 미만 지연을 요구한다. 가장 적합한 EBS 볼륨 유형은?",
+      "explanation": "io2 Block Express는 EBS에서 가장 높은 수준의 IOPS와 내구성을 제공한다. gp3는 최대 16,000 IOPS라 이 요구를 충족하지 못한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/provisioned-iops.html",
+        "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "gp3 볼륨을 최대 IOPS로 프로비저닝한다." },
+        { "optionKey": "B", "text": "io2 Block Express 볼륨을 사용한다." },
+        { "optionKey": "C", "text": "st1 볼륨 여러 개를 RAID 5로 구성한다." },
+        { "optionKey": "D", "text": "instance store 볼륨을 데이터베이스에 사용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0028",
+      "domainCode": "performance",
+      "stem": "같은 AZ의 두 EC2 인스턴스가 하나의 블록 볼륨을 동시에 공유해야 하며, 클러스터 파일 시스템을 사용할 수 있다. 적합한 구성은?",
+      "explanation": "EBS Multi-Attach는 io1·io2 볼륨을 같은 AZ의 여러 인스턴스에 동시에 연결한다. 공유 데이터를 다루므로 클러스터 인식 파일 시스템이 필요하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volumes-multi.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "gp3 볼륨을 두 인스턴스에 동시에 연결한다." },
+        { "optionKey": "B", "text": "S3 버킷을 두 인스턴스에 블록 디바이스로 마운트한다." },
+        { "optionKey": "C", "text": "io2 볼륨을 Multi-Attach로 두 인스턴스에 연결한다." },
+        { "optionKey": "D", "text": "EFS 파일 시스템을 iSCSI로 두 인스턴스에 연결한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0029",
+      "domainCode": "performance",
+      "stem": "매일 수 TB의 로그를 순차적으로 읽고 쓰는 빅데이터 클러스터가 비용 효율적인 높은 처리량을 필요로 한다. 가장 적합한 EBS 볼륨 유형은?",
+      "explanation": "st1은 순차 읽기·쓰기에 최적화된 처리량 중심 HDD 볼륨이다. 로그 처리와 빅데이터 워크로드에서 GB당 비용이 낮다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/hdd-volumes.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "io2 Block Express 볼륨" },
+        { "optionKey": "B", "text": "gp3 볼륨" },
+        { "optionKey": "C", "text": "sc1 볼륨" },
+        { "optionKey": "D", "text": "st1 볼륨" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0030",
+      "domainCode": "performance",
+      "stem": "EBS 볼륨의 IOPS를 높였는데도 애플리케이션 처리량이 늘지 않는다. 가장 먼저 확인해야 할 항목은?",
+      "explanation": "인스턴스 유형마다 EBS에 사용할 수 있는 최대 대역폭과 IOPS가 정해져 있다. 볼륨 성능을 높여도 인스턴스 한도를 넘으면 처리량이 제한된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-optimized.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "인스턴스 유형의 EBS 대역폭 한도" },
+        { "optionKey": "B", "text": "S3 버킷의 요청 비율 한도" },
+        { "optionKey": "C", "text": "EFS 파일 시스템의 처리량 모드" },
+        { "optionKey": "D", "text": "Route 53의 라우팅 정책" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0031",
+      "domainCode": "performance",
+      "stem": "단일 EBS 볼륨의 최대 IOPS로는 요구 성능을 충족할 수 없다. 여러 볼륨을 묶어 읽기·쓰기 성능을 합산하려면 어떤 구성이 적절한가?",
+      "explanation": "**핵심:** **RAID 0**은 데이터를 여러 볼륨에 스트라이프해 IOPS와 처리량을 합산한다. 대신 볼륨 하나가 실패하면 전체 배열이 손상되어 내구성이 낮아진다.\n```mermaid\nflowchart LR\n  A[애플리케이션] --> R[RAID 0]\n  R --> V1[EBS 볼륨 1]\n  R --> V2[EBS 볼륨 2]\n  R --> V3[EBS 볼륨 3]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/raid-config.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "RAID 1 미러 구성" },
+        { "optionKey": "B", "text": "RAID 0 스트라이프 구성" },
+        { "optionKey": "C", "text": "단일 볼륨의 크기를 16 TiB로 확장" },
+        { "optionKey": "D", "text": "볼륨을 다른 AZ로 복제하여 연결" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0032",
+      "domainCode": "performance",
+      "stem": "대용량 스냅샷에서 새 EBS 볼륨을 생성한 직후 첫 읽기에서 지연이 발생한다. 이 초기화 지연을 미리 제거하려면?",
+      "explanation": "**핵심:** **Fast Snapshot Restore**는 스냅샷 블록을 미리 초기화해 볼륨 생성 직후의 첫 읽기 지연을 없앤다. 스냅샷과 AZ 단위로 활성화한다.\n```mermaid\nflowchart LR\n  S[스냅샷] --> F[Fast Snapshot Restore]\n  F --> V[새 EBS 볼륨]\n  V --> R[즉시 읽기 · 지연 없음]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-fast-snapshot-restore.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "볼륨을 gp2에서 st1로 변경한다." },
+        { "optionKey": "B", "text": "스냅샷을 다른 리전으로 복사한다." },
+        { "optionKey": "C", "text": "Fast Snapshot Restore를 활성화한다." },
+        { "optionKey": "D", "text": "볼륨에 Multi-Attach를 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0033",
+      "domainCode": "performance",
+      "stem": "1,000 GiB gp2 볼륨의 기준 IOPS는 얼마인가?",
+      "explanation": "gp2는 GiB당 3 IOPS를 기준으로 성능을 제공한다. 따라서 1,000 GiB 볼륨의 기준 성능은 3,000 IOPS다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/general-purpose.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "1,000 IOPS" },
+        { "optionKey": "B", "text": "1,500 IOPS" },
+        { "optionKey": "C", "text": "2,000 IOPS" },
+        { "optionKey": "D", "text": "3,000 IOPS" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0034",
+      "domainCode": "performance",
+      "stem": "서비스 중단 없이 실행 중인 EC2의 EBS 볼륨을 gp2에서 gp3로 바꾸고 크기도 늘리려 한다. 가장 적절한 방법은?",
+      "explanation": "Elastic Volumes를 사용하면 인스턴스를 중지하지 않고 볼륨 유형·크기·IOPS를 변경할 수 있다. 변경 후에는 파일 시스템 확장이 필요할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/ebs/latest/userguide/ebs-modify-volume.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Elastic Volumes로 볼륨을 온라인 수정한다." },
+        { "optionKey": "B", "text": "인스턴스를 중지하고 새 볼륨을 생성해 교체한다." },
+        { "optionKey": "C", "text": "스냅샷을 만든 뒤 루트 볼륨을 분리한다." },
+        { "optionKey": "D", "text": "볼륨을 삭제하고 같은 크기로 다시 만든다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0035",
+      "domainCode": "performance",
+      "stem": "인스턴스 스토어 볼륨에 저장된 데이터가 유지되는 경우는?",
+      "explanation": "인스턴스 스토어는 인스턴스 재부팅 시에는 데이터가 유지된다. 중지·종료·호스트 장애 시에는 데이터가 사라진다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "인스턴스를 중지한 뒤 다시 시작할 때" },
+        { "optionKey": "B", "text": "인스턴스를 재부팅할 때" },
+        { "optionKey": "C", "text": "인스턴스를 종료할 때" },
+        { "optionKey": "D", "text": "인스턴스가 실행되는 호스트에 장애가 발생할 때" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0036",
+      "domainCode": "performance",
+      "stem": "임시 스크래치 데이터를 다루며 초당 수십만 회의 랜덤 읽기가 필요하고, 데이터 손실은 허용된다. 가장 적합한 스토리지는?",
+      "explanation": "i3 인스턴스는 호스트에 연결된 NVMe SSD 인스턴스 스토어를 제공한다. 높은 랜덤 IOPS와 낮은 지연이 필요하고 손실을 허용하는 임시 데이터에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html",
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "EBS gp3 범용 SSD 볼륨" },
+        { "optionKey": "B", "text": "EBS st1 처리량 최적화 HDD 볼륨" },
+        { "optionKey": "C", "text": "i3 인스턴스의 NVMe 인스턴스 스토어" },
+        { "optionKey": "D", "text": "EFS Standard 공유 파일 시스템" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0037",
+      "domainCode": "performance",
+      "stem": "이미 실행 중인 EC2 인스턴스에 인스턴스 스토어 볼륨을 추가로 연결하려 한다. 가능한 방법은?",
+      "explanation": "인스턴스 스토어 볼륨은 인스턴스 유형에 포함되어 시작 시에만 제공된다. 실행 중이거나 중지된 인스턴스에 별도로 연결할 수 없다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/add-instance-store-volumes.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "콘솔에서 볼륨을 골라 인스턴스에 연결한다." },
+        { "optionKey": "B", "text": "인스턴스를 중지한 뒤 볼륨을 연결하고 시작한다." },
+        { "optionKey": "C", "text": "EBS 볼륨을 인스턴스 스토어로 변환해 연결한다." },
+        { "optionKey": "D", "text": "인스턴스 스토어가 포함된 인스턴스 유형으로 새로 시작한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0038",
+      "domainCode": "performance",
+      "stem": "인스턴스 스토어에만 데이터를 두는 워크로드를 설계할 때 가장 중요한 원칙은?",
+      "explanation": "인스턴스 스토어는 호스트 장애나 인스턴스 중지 시 데이터가 소실된다. 복제본을 다른 곳에 두고 인스턴스를 교체할 수 있게 설계해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "데이터 복제본을 다른 노드에 두고 재생성한다." },
+        { "optionKey": "B", "text": "인스턴스 스토어 볼륨을 매일 EBS로 복사해 둔다." },
+        { "optionKey": "C", "text": "인스턴스 스토어 볼륨을 Multi-Attach로 공유한다." },
+        { "optionKey": "D", "text": "인스턴스 스토어에 트랜잭션 로그를 영구 보관한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0039",
+      "domainCode": "performance",
+      "stem": "수백 GB 객체를 S3에 업로드할 때 multipart upload를 사용하면 얻을 수 있는 이점 두 가지를 고르시오.",
+      "explanation": "Multipart upload는 객체를 여러 파트로 나누어 독립적·병렬로 전송한다. 처리량이 향상되고 실패한 파트만 재전송할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+      ],
+      "answerOptionKeys": ["A", "B"],
+      "options": [
+        { "optionKey": "A", "text": "파트를 병렬로 전송해 전체 처리량을 높인다." },
+        { "optionKey": "B", "text": "실패한 파트만 다시 전송해 전송을 재개할 수 있다." },
+        { "optionKey": "C", "text": "객체를 자동으로 다른 리전에 복제한다." },
+        { "optionKey": "D", "text": "업로드된 객체를 자동으로 Glacier로 전환한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0040",
+      "domainCode": "performance",
+      "stem": "다른 대륙의 지사에서 S3 버킷으로 대용량 파일을 업로드할 때, 공용 인터넷 구간의 영향을 줄여 전송 속도를 높이는 기능은?",
+      "explanation": "Transfer Acceleration은 엣지 로케이션과 AWS 백본 네트워크를 통해 S3 전송 속도를 높인다. 장거리 업로드에서 효과가 크다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "S3 byte-range 병렬 다운로드" },
+        { "optionKey": "B", "text": "S3 Transfer Acceleration" },
+        { "optionKey": "C", "text": "S3 Select 객체 필터링" },
+        { "optionKey": "D", "text": "S3 Inventory 목록 생성" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0041",
+      "domainCode": "performance",
+      "stem": "10 GB 객체를 여러 스레드로 나누어 병렬 다운로드하려 한다. S3에서 사용할 기능은?",
+      "explanation": "Range 헤더를 사용하면 객체의 특정 바이트 구간만 가져올 수 있다. 여러 구간을 병렬로 요청하면 대용량 객체 다운로드 속도를 높일 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "S3 Select로 필요한 열만 조회한다." },
+        { "optionKey": "B", "text": "Transfer Acceleration을 활성화한다." },
+        { "optionKey": "C", "text": "GET 요청에 Range 헤더를 지정한다." },
+        { "optionKey": "D", "text": "객체를 단일 PUT으로 다시 업로드한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0042",
+      "domainCode": "performance",
+      "stem": "S3 버킷의 단일 prefix에 대한 GET 요청이 초당 5,500건을 넘어 지연이 증가한다. 처리량을 높이는 가장 적절한 방법은?",
+      "explanation": "S3는 prefix당 초당 3,500건의 쓰기와 5,500건의 읽기 요청을 처리하도록 확장된다. 요청이 이를 넘으면 여러 prefix로 키를 분산한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "버킷의 스토리지 클래스를 Glacier로 변경한다." },
+        { "optionKey": "B", "text": "객체를 단일 대용량 파일로 합친다." },
+        { "optionKey": "C", "text": "S3 Select를 사용해 요청 수를 줄인다." },
+        { "optionKey": "D", "text": "객체 키를 여러 prefix로 분산한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0043",
+      "domainCode": "performance",
+      "stem": "S3에 저장된 수 TB의 CSV 파일에서 특정 열 몇 개만 조회하려 한다. 전체 객체를 내려받지 않고 전송량을 줄이는 방법은?",
+      "explanation": "S3 Select는 객체에서 필요한 데이터만 SQL로 추출해 전송량을 줄인다. CSV와 JSON 같은 구조화된 객체에 사용할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/selecting-content-from-objects.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "S3 Select로 SQL 쿼리를 실행한다." },
+        { "optionKey": "B", "text": "S3 Transfer Acceleration을 사용한다." },
+        { "optionKey": "C", "text": "객체를 multipart로 업로드한다." },
+        { "optionKey": "D", "text": "버킷에 버전 관리를 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0044",
+      "domainCode": "performance",
+      "stem": "6 GB 객체를 단일 PUT 요청으로 업로드했더니 S3가 요청을 거부했다. 가장 적절한 해결 방법은?",
+      "explanation": "**핵심:** 단일 PUT으로 업로드할 수 있는 객체 크기는 **최대 5 GB**다. 5 GB를 넘는 객체는 **multipart upload**로 나누어 전송해야 한다.\n```mermaid\nflowchart LR\n  O[6 GB 객체] --> M[Multipart Upload]\n  M --> P1[파트 1]\n  M --> P2[파트 2]\n  M --> P3[파트 N]\n  P1 --> S3[S3]\n  P2 --> S3\n  P3 --> S3\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpuoverview.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "객체를 5 GB 이하로 압축한다." },
+        { "optionKey": "B", "text": "multipart upload로 나누어 업로드한다." },
+        { "optionKey": "C", "text": "Transfer Acceleration을 켜고 다시 PUT한다." },
+        { "optionKey": "D", "text": "버킷의 요청 비율 한도를 높인다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0045",
+      "domainCode": "performance",
+      "stem": "수천 개의 EC2 인스턴스가 EFS 파일 시스템에 동시에 접근하는 병렬 워크로드다. 집계 처리량을 높이기 위해 선택할 성능 모드는?",
+      "explanation": "**핵심:** **Max I/O** 성능 모드는 대규모 병렬 접근에서 더 높은 집계 처리량을 제공한다. 대신 작업당 지연이 General Purpose보다 조금 높다.\n```mermaid\nflowchart LR\n  subgraph C[수천 개 EC2]\n    E1[EC2]\n    E2[EC2]\n    E3[EC2]\n  end\n  C --> M[EFS Max I/O]\n  M --> D[(공유 데이터)]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "General Purpose 성능 모드" },
+        { "optionKey": "B", "text": "Bursting 처리량 모드" },
+        { "optionKey": "C", "text": "Max I/O 성능 모드" },
+        { "optionKey": "D", "text": "Elastic 처리량 모드" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0046",
+      "domainCode": "performance",
+      "stem": "EFS 워크로드가 버스트 크레딧으로 감당할 수 없는 일정한 처리량을 지속적으로 필요로 한다. 가장 적절한 처리량 모드는?",
+      "explanation": "Provisioned 처리량 모드는 버스트 크레딧과 무관하게 지정한 처리량을 지속적으로 제공한다. 처리량이 예측 가능하고 높은 워크로드에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/efs/latest/ug/performance.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "Bursting 처리량 모드" },
+        { "optionKey": "B", "text": "Elastic 처리량 모드" },
+        { "optionKey": "C", "text": "General Purpose 성능 모드" },
+        { "optionKey": "D", "text": "Provisioned 처리량 모드" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0047",
+      "domainCode": "performance",
+      "stem": "서로 다른 AZ에 있는 수백 대의 Linux EC2가 동일한 디렉터리를 동시에 읽고 쓰는 공유 스토리지가 필요하다. 가장 적합한 서비스는?",
+      "explanation": "EFS는 여러 AZ의 Linux 인스턴스가 동시에 마운트하는 POSIX 호환 공유 파일 시스템이다. EBS Multi-Attach는 같은 AZ로 제한된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "EFS Standard 파일 시스템" },
+        { "optionKey": "B", "text": "단일 EBS io2 볼륨의 Multi-Attach" },
+        { "optionKey": "C", "text": "인스턴스 스토어 볼륨" },
+        { "optionKey": "D", "text": "S3 Glacier Deep Archive" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0048",
+      "domainCode": "performance",
+      "stem": "여러 AZ에 배치한 EC2가 EFS 파일 시스템을 마운트하도록 구성하려 한다. 각 AZ에서 필요한 것은?",
+      "explanation": "**핵심:** EFS **마운트 대상**은 AZ별로 생성되며 NFS 접근을 제공한다. 각 AZ의 인스턴스는 같은 AZ의 마운트 대상을 통해 파일 시스템에 접근한다.\n```mermaid\nflowchart TB\n  F[(EFS 파일 시스템)]\n  F --- M1[마운트 대상 AZ-a]\n  F --- M2[마운트 대상 AZ-c]\n  M1 --- E1[EC2 AZ-a]\n  M2 --- E2[EC2 AZ-c]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/efs/latest/ug/how-it-works.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "AZ마다 별도의 EFS 파일 시스템을 생성한다." },
+        { "optionKey": "B", "text": "AZ마다 EFS 마운트 대상(mount target)을 생성한다." },
+        { "optionKey": "C", "text": "AZ마다 EBS 볼륨을 생성해 EFS에 연결한다." },
+        { "optionKey": "D", "text": "AZ마다 S3 게이트웨이 엔드포인트를 생성한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0049",
+      "domainCode": "performance",
+      "stem": "Windows 애플리케이션이 SMB 프로토콜과 Active Directory 인증을 사용해 공유 파일 시스템에 접근해야 한다. 가장 적합한 서비스는?",
+      "explanation": "FSx for Windows File Server는 SMB 프로토콜과 Active Directory 통합을 제공하는 관리형 Windows 파일 시스템이다. Windows 애플리케이션의 공유 스토리지에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/fsx/latest/WindowsGuide/what-is.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "EFS Standard 공유 파일 시스템" },
+        { "optionKey": "B", "text": "FSx for Lustre 고성능 파일 시스템" },
+        { "optionKey": "C", "text": "FSx for Windows File Server" },
+        { "optionKey": "D", "text": "S3 Standard 객체 스토리지" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0050",
+      "domainCode": "performance",
+      "stem": "HPC 클러스터가 S3의 데이터를 직접 읽으면서 수백 GB/s의 파일 시스템 처리량을 필요로 한다. 가장 적합한 서비스는?",
+      "explanation": "FSx for Lustre는 HPC와 머신 러닝에 최적화된 고성능 파일 시스템이며 S3 버킷과 연결할 수 있다. 대규모 병렬 읽기에서 높은 처리량을 제공한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "EFS Max I/O" },
+        { "optionKey": "B", "text": "FSx for Windows File Server" },
+        { "optionKey": "C", "text": "EBS gp3 볼륨" },
+        { "optionKey": "D", "text": "FSx for Lustre" }
+      ]
+    }
+  ]
+}

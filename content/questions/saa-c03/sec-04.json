@@ -1,0 +1,362 @@
+{
+  "packId": "sec-04",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-sec-0076",
+      "domainCode": "security",
+      "stem": "ALB 뒤의 EC2 웹 서버 보안 그룹은 ALB 보안 그룹에서 오는 443 인바운드만 허용하고 아웃바운드 규칙은 비어 있다. 클라이언트로의 응답 패킷이 나갈 수 있는 이유는?",
+      "explanation": "보안 그룹은 상태 저장(stateful)이므로 인바운드로 허용된 연결의 응답은 아웃바운드 규칙과 무관하게 통과한다. NACL만 상태 비저장이어서 반환 트래픽 규칙을 별도로 둬야 한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "보안 그룹은 상태 저장 방식이라 허용된 연결의 반환 트래픽을 자동으로 허용한다." },
+        { "optionKey": "B", "text": "NACL이 모든 반환 트래픽을 상태 저장 방식으로 추적해 허용한다." },
+        { "optionKey": "C", "text": "아웃바운드 규칙이 없어도 ALB가 응답 패킷을 대신 전송한다." },
+        { "optionKey": "D", "text": "보안 그룹의 기본 아웃바운드 규칙이 항상 모든 트래픽을 허용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0077",
+      "domainCode": "security",
+      "stem": "한 서브넷의 NACL에 규칙 100(10.0.0.0/16 허용), 규칙 200(10.0.1.5/32 거부)이 있다. 10.0.1.5에서 들어오는 인바운드 트래픽의 처리 결과는?",
+      "explanation": "**핵심:** NACL은 **낮은 번호부터 평가하고 첫 일치에서 결정**한다.\n\n```mermaid\nflowchart TD\n  T[10.0.1.5 인바운드] --> R100{규칙 100: 10.0.0.0/16 Allow}\n  R100 -->|일치| A[허용]\n  R100 -->|불일치| R200{규칙 200: 10.0.1.5/32 Deny}\n  R200 -->|일치| D[거부]\n```\n\n규칙 100이 먼저 일치하므로 200번 거부 규칙은 평가되지 않는다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "두 규칙을 모두 평가한 뒤 거부 규칙을 우선 적용해 차단한다." },
+        { "optionKey": "B", "text": "번호가 가장 낮은 규칙 100이 먼저 일치하므로 허용된다." },
+        { "optionKey": "C", "text": "CIDR이 더 구체적인 규칙 200이 우선하므로 차단된다." },
+        { "optionKey": "D", "text": "NACL은 동일 CIDR 범위를 가진 규칙을 함께 둘 수 없어 오류가 발생한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0078",
+      "domainCode": "security",
+      "stem": "3계층 애플리케이션에서 웹 계층 보안 그룹이 앱 계층 보안 그룹을 소스로 참조하도록 인바운드를 구성했다. 이 방식의 장점은?",
+      "explanation": "보안 그룹을 소스로 지정하면 개별 IP 대신 그룹에 연결된 리소스를 기준으로 트래픽을 허용한다. 오토스케일링으로 IP가 바뀌어도 규칙을 수정할 필요가 없다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "인스턴스의 프라이빗 IP 대신 CIDR 범위로만 접근을 관리할 수 있다." },
+        { "optionKey": "B", "text": "보안 그룹 참조는 서로 다른 리전의 VPC 사이에서도 그대로 동작한다." },
+        { "optionKey": "C", "text": "인스턴스 IP가 바뀌어도 보안 그룹 멤버십을 기준으로 접근이 유지된다." },
+        { "optionKey": "D", "text": "참조된 보안 그룹의 아웃바운드 규칙까지 자동으로 복사된다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0079",
+      "domainCode": "security",
+      "stem": "새 VPC를 만들었을 때 기본 보안 그룹의 기본 동작으로 옳은 것은?",
+      "explanation": "VPC 생성 시 만들어지는 기본 보안 그룹은 인바운드를 모두 거부하고 아웃바운드를 모두 허용한다. 같은 기본 그룹에 연결된 리소스끼리는 서로 통신할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/default-security-group.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "인바운드와 아웃바운드가 모두 허용되고 다른 그룹과의 통신만 차단된다." },
+        { "optionKey": "B", "text": "인바운드와 아웃바운드가 모두 거부되며 명시적 허용이 필요하다." },
+        { "optionKey": "C", "text": "인바운드는 허용되고 아웃바운드는 거부되어 최소 권한에 가깝다." },
+        { "optionKey": "D", "text": "인바운드는 모두 거부되고 아웃바운드는 모두 허용된다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0080",
+      "domainCode": "security",
+      "stem": "운영팀이 특정 악성 IP 대역에서 오는 트래픽을 서브넷 수준에서 즉시 차단하려 한다. 가장 적절한 조치는?",
+      "explanation": "보안 그룹은 허용 규칙만 지원하므로 명시적 거부에는 NACL을 사용한다. NACL은 서브넷 단위로 적용되어 여러 인스턴스를 한 번에 보호할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "해당 서브넷의 NACL에 낮은 번호의 거부 규칙을 추가한다." },
+        { "optionKey": "B", "text": "대상 인스턴스의 보안 그룹에 거부 규칙을 추가한다." },
+        { "optionKey": "C", "text": "인터넷 게이트웨이의 라우트 테이블에서 해당 CIDR 경로를 삭제한다." },
+        { "optionKey": "D", "text": "VPC 흐름 로그를 켜서 해당 IP의 트래픽을 기록한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0081",
+      "domainCode": "security",
+      "stem": "보안 그룹으로 구현할 수 없는 것은?",
+      "explanation": "보안 그룹은 허용 규칙만 평가하며 명시적 거부 규칙을 지원하지 않는다. 특정 주소를 거부해야 한다면 NACL이나 WAF 같은 다른 계층을 사용한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "특정 포트 범위의 인바운드 허용" },
+        { "optionKey": "B", "text": "다른 보안 그룹을 소스로 한 인바운드 허용" },
+        { "optionKey": "C", "text": "특정 CIDR에 대한 명시적 거부 규칙" },
+        { "optionKey": "D", "text": "아웃바운드 트래픽의 목적지 제한" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0082",
+      "domainCode": "security",
+      "stem": "프라이빗 서브넷의 인스턴스에서 외부 API로 443 아웃바운드를 허용했지만 응답이 돌아오지 않는다. NACL 설정에서 우선 확인할 항목은?",
+      "explanation": "**핵심:** NACL은 **상태 비저장**이라 응답 트래픽도 별도 규칙으로 허용해야 한다.\n\n- 아웃바운드: 대상 443 허용\n- 인바운드: 응답이 돌아오는 **임시 포트 범위(1024–65535)** 허용\n\n인바운드 임시 포트가 막혀 있으면 응답이 유실된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "인바운드 443에 대한 거부 규칙이 있는지" },
+        { "optionKey": "B", "text": "인바운드 임시 포트 범위(1024-65535) 허용 규칙이 있는지" },
+        { "optionKey": "C", "text": "아웃바운드 443 허용 규칙이 100번보다 뒤에 있는지" },
+        { "optionKey": "D", "text": "NACL이 상태 저장 방식으로 반환 트래픽을 처리하는지" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0083",
+      "domainCode": "security",
+      "stem": "프라이빗 서브넷의 EC2가 NAT Gateway를 거치지 않고 같은 리전의 S3에 접근하도록 하려면?",
+      "explanation": "게이트웨이 엔드포인트는 라우트 테이블에 S3 prefix list 경로를 추가해 NAT 없이 프라이빗하게 S3에 접근하게 한다. 이 트래픽은 인터넷을 경유하지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html",
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "S3 버킷 정책에 VPC ID 조건을 추가한다." },
+        { "optionKey": "B", "text": "인터페이스 엔드포인트를 생성하고 퍼블릭 DNS를 비활성화한다." },
+        { "optionKey": "C", "text": "S3 Transfer Acceleration을 활성화하고 라우트 테이블을 수정한다." },
+        { "optionKey": "D", "text": "S3 게이트웨이 엔드포인트를 만들고 서브넷 라우트 테이블에 연결한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0084",
+      "domainCode": "security",
+      "stem": "서비스 제공자 VPC와 고객 VPC의 CIDR이 겹칠 수 있는 환경에서 두 VPC를 프라이빗하게 연결해야 한다. 가장 적절한 방법은?",
+      "explanation": "AWS PrivateLink는 CIDR이 겹쳐도 서비스 단위로 프라이빗 연결을 제공한다. 고객 VPC에는 서브넷 ENI가 생성되고 보안 그룹으로 접근을 제어한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "제공자가 게시한 엔드포인트 서비스에 인터페이스 엔드포인트를 연결한다." },
+        { "optionKey": "B", "text": "두 VPC를 VPC 피어링으로 연결하고 라우트를 교환한다." },
+        { "optionKey": "C", "text": "Transit Gateway를 양쪽 VPC에 연결해 CIDR을 재할당한다." },
+        { "optionKey": "D", "text": "Site-to-Site VPN으로 두 VPC를 인터넷 경유 터널로 연결한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0085",
+      "domainCode": "security",
+      "stem": "프라이빗 서브넷의 애플리케이션이 NAT 비용 없이 특정 S3 버킷에만 접근하도록 제한하려 한다. 가장 적절한 구성은?",
+      "explanation": "게이트웨이 엔드포인트 정책으로 특정 버킷 ARN만 허용하면 다른 S3 접근을 차단할 수 있다. 엔드포인트를 통한 트래픽은 NAT Gateway 비용이 발생하지 않는다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/gateway-endpoints.html",
+        "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "S3 버킷을 퍼블릭으로 열고 IAM 정책으로만 접근을 제한한다." },
+        { "optionKey": "B", "text": "S3 게이트웨이 엔드포인트와 해당 버킷 ARN만 허용하는 엔드포인트 정책을 사용한다." },
+        { "optionKey": "C", "text": "모든 트래픽을 NAT Gateway로 보내고 버킷 정책에 IP 조건을 추가한다." },
+        { "optionKey": "D", "text": "인터페이스 엔드포인트를 만들고 보안 그룹에서 0.0.0.0/0을 허용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0086",
+      "domainCode": "security",
+      "stem": "SaaS 제공자가 고객 VPC에 인터넷 노출 없이 자사 서비스를 제공하려 한다. 제공자가 구성해야 할 것은?",
+      "explanation": "**핵심:** 제공자는 **NLB 뒤 서비스를 엔드포인트 서비스로 게시**하고, 고객은 인터페이스 엔드포인트로 접근한다.\n\n```mermaid\nflowchart LR\n  C[고객 VPC] --> E[인터페이스 엔드포인트]\n  E --> S[엔드포인트 서비스]\n  S --> N[NLB]\n  N --> A[제공자 서비스]\n```\n\n트래픽은 프라이빗 IP로 전달되어 인터넷 게이트웨이나 피어링이 필요 없다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/privatelink/endpoint-services-overview.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "각 고객 VPC와의 VPC 피어링을 고객이 수락하도록 요청한다." },
+        { "optionKey": "B", "text": "퍼블릭 ALB를 만들고 고객 VPC의 라우트 테이블에 경로를 추가한다." },
+        { "optionKey": "C", "text": "NLB 뒤에 서비스를 두고 엔드포인트 서비스로 게시한다." },
+        { "optionKey": "D", "text": "고객마다 Direct Connect 전용 회선을 개설한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0087",
+      "domainCode": "security",
+      "stem": "VPC 엔드포인트 정책에 대한 설명으로 옳은 것은?",
+      "explanation": "엔드포인트 정책은 해당 엔드포인트를 통과하는 요청에 허용되는 최대 권한을 정의한다. 실제 접근 허용에는 IAM 정책과 리소스 정책도 함께 충족되어야 한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "연결된 서브넷의 모든 인스턴스에 대한 IAM 권한을 대체한다." },
+        { "optionKey": "B", "text": "엔드포인트를 통과하는 요청을 모두 허용하도록 고정되어 있다." },
+        { "optionKey": "C", "text": "S3 버킷 정책보다 항상 우선하여 버킷 정책을 무시한다." },
+        { "optionKey": "D", "text": "엔드포인트를 통한 접근의 최대 범위를 제한하며 IAM 정책을 대체하지 않는다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0088",
+      "domainCode": "security",
+      "stem": "프라이빗 서브넷의 EC2에 운영자가 접속해야 하지만 인바운드 포트를 열거나 배스천 호스트를 두고 싶지 않다. 가장 적절한 방법은?",
+      "explanation": "Session Manager는 에이전트가 아웃바운드로 SSM 서비스에 연결하므로 인바운드 포트 개방이나 배스천 호스트가 필요 없다. 접근 권한은 IAM 정책으로 통제한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "SSM Agent와 인스턴스 프로파일을 구성하고 Session Manager로 접속한다." },
+        { "optionKey": "B", "text": "보안 그룹에 0.0.0.0/0의 22번 포트를 허용하고 키 페어를 공유한다." },
+        { "optionKey": "C", "text": "EC2 직렬 콘솔을 인터넷에 공개하고 암호 인증을 활성화한다." },
+        { "optionKey": "D", "text": "NAT Gateway를 만들어 SSH 트래픽을 외부로 우회시킨다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0089",
+      "domainCode": "security",
+      "stem": "Session Manager 세션에서 실행된 명령을 감사 목적으로 보관하려면?",
+      "explanation": "Session Manager는 세션 로그를 S3 버킷이나 CloudWatch Logs 그룹으로 전송할 수 있다. 저장 데이터는 KMS 키로 암호화할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-logging.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "EC2 인스턴스의 시스템 로그를 EBS 스냅샷으로 매일 복사한다." },
+        { "optionKey": "B", "text": "세션 데이터를 S3 또는 CloudWatch Logs에 기록하도록 설정한다." },
+        { "optionKey": "C", "text": "VPC 흐름 로그를 켜고 세션 트래픽을 캡처한다." },
+        { "optionKey": "D", "text": "CloudTrail 데이터 이벤트에서 명령 출력을 확인한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0090",
+      "domainCode": "security",
+      "stem": "운영자가 Session Manager 포트 포워딩을 사용해 프라이빗 서브넷의 EC2를 경유하여 RDS에 접속하려 한다. 필요한 구성은?",
+      "explanation": "AWS-StartPortForwardingSession 문서로 SSM Agent가 설치된 EC2의 포트를 로컬 포트로 전달할 수 있다. 인바운드 포트를 열지 않고도 사설 데이터베이스에 접속할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-sessions-start.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "RDS 인스턴스에 퍼블릭 IP를 부여하고 보안 그룹을 전체 허용한다." },
+        { "optionKey": "B", "text": "배스천 호스트에 SSH 터널을 만들고 키를 로컬에 복사한다." },
+        { "optionKey": "C", "text": "SSM Agent가 설치된 중간 EC2를 대상으로 포트 포워딩 세션을 시작한다." },
+        { "optionKey": "D", "text": "VPC 피어링을 구성하고 로컬 PC의 라우트 테이블을 수정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0091",
+      "domainCode": "security",
+      "stem": "NAT Gateway가 없는 프라이빗 서브넷의 EC2에서 Session Manager 접속이 실패한다. SSM Agent가 설치되어 있고 IAM 권한도 올바르다면 추가로 확인할 것은?",
+      "explanation": "**핵심:** NAT 없이 SSM Agent를 연결하려면 **인터페이스 엔드포인트**가 필요하다.\n\n- `com.amazonaws.region.ssm`\n- `com.amazonaws.region.ssmmessages`\n- `com.amazonaws.region.ec2messages`\n\n`region`은 사용하는 리전 코드로 바꾸며, 엔드포인트 보안 그룹은 인스턴스에서 오는 443 인바운드를 허용해야 한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-privatelink.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "EC2 인스턴스의 퍼블릭 IP 할당 여부" },
+        { "optionKey": "B", "text": "보안 그룹의 인바운드 22번 포트가 전체에 허용되어 있는지 여부" },
+        { "optionKey": "C", "text": "VPC의 기본 NACL이 인바운드와 아웃바운드를 모두 허용하는지 여부" },
+        { "optionKey": "D", "text": "ssm, ssmmessages, ec2messages용 인터페이스 엔드포인트 생성 여부" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0092",
+      "domainCode": "security",
+      "stem": "공개된 로그인 API에 대한 자동화된 무차별 대입 공격을 완화하려 한다. AWS WAF에서 가장 적절한 규칙은?",
+      "explanation": "rate-based 규칙은 5분 등의 평가 기간 동안 IP별 요청 수가 임계치를 넘으면 차단한다. 로그인 시도 폭주를 완화하는 데 적합하다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/waf-rule-statement-type-rate-based.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "클라이언트 IP당 일정 시간 요청 수를 제한하는 rate-based 규칙" },
+        { "optionKey": "B", "text": "특정 국가의 모든 요청을 허용하는 지리 기반 규칙" },
+        { "optionKey": "C", "text": "User-Agent 헤더가 비어 있는 요청만 허용하는 규칙" },
+        { "optionKey": "D", "text": "응답 본문 크기에 따라 요청을 차단하는 규칙" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0093",
+      "domainCode": "security",
+      "stem": "AWS WAF에서 알려진 취약점 공격 패턴을 빠르게 차단하고 규칙 집합을 직접 관리하지 않으려면?",
+      "explanation": "AWS managed rule groups는 AWS가 유지 관리하는 규칙 집합으로 일반적인 취약점 공격을 차단한다. 사용자는 규칙을 직접 갱신하지 않아도 된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/aws-managed-rule-groups.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "사용자 지정 규칙에 모든 공격 문자열을 직접 나열한다." },
+        { "optionKey": "B", "text": "AWS managed rule groups를 웹 ACL에 연결한다." },
+        { "optionKey": "C", "text": "Shield Advanced를 활성화하고 DDoS 대응팀을 호출한다." },
+        { "optionKey": "D", "text": "NACL에 모든 외부 IP의 거부 규칙을 추가한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0094",
+      "domainCode": "security",
+      "stem": "AWS WAF 웹 ACL을 연결할 수 없는 리소스는?",
+      "explanation": "AWS WAF는 ALB, CloudFront, API Gateway 등에 연결할 수 있지만 NLB는 지원 대상이 아니다. NLB 앞단의 보호가 필요하면 CloudFront나 AWS Network Firewall 같은 구성을 검토한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "Application Load Balancer" },
+        { "optionKey": "B", "text": "Amazon CloudFront 배포" },
+        { "optionKey": "C", "text": "Network Load Balancer" },
+        { "optionKey": "D", "text": "API Gateway REST API" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0095",
+      "domainCode": "security",
+      "stem": "대규모 DDoS 공격 시 AWS 전문가의 지원과 공격 중 발생한 스케일링 비용 보호가 필요하다. 어떤 서비스를 선택해야 하는가?",
+      "explanation": "Shield Advanced는 DDoS 대응팀(DRT) 지원과 공격으로 인한 스케일링 비용 보호를 제공한다. Shield Standard는 추가 비용 없이 기본 L3/L4 보호만 제공한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Shield Standard" },
+        { "optionKey": "B", "text": "AWS WAF만 사용" },
+        { "optionKey": "C", "text": "Amazon GuardDuty" },
+        { "optionKey": "D", "text": "AWS Shield Advanced" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0096",
+      "domainCode": "security",
+      "stem": "AWS Shield Standard에 대한 설명으로 옳은 것은?",
+      "explanation": "Shield Standard는 모든 AWS 고객에게 추가 비용 없이 제공되는 기본 DDoS 보호다. 애플리케이션 계층 공격에는 WAF 규칙을 함께 사용해야 한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/shield-chapter.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "모든 AWS 고객에게 추가 비용 없이 자동 적용된다." },
+        { "optionKey": "B", "text": "조직의 모든 계정에 별도 구독이 필요하다." },
+        { "optionKey": "C", "text": "주로 애플리케이션 계층의 SQL 삽입을 차단한다." },
+        { "optionKey": "D", "text": "DDoS 대응팀과 24시간 전화 지원을 포함한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0097",
+      "domainCode": "security",
+      "stem": "AWS Organizations의 여러 계정에 있는 보안 그룹 규칙을 중앙에서 표준화하고 위반 시 자동 교정하려면?",
+      "explanation": "Firewall Manager는 Organizations와 연동해 여러 계정의 보안 그룹 정책을 중앙에서 배포하고 비준수 리소스를 교정한다. 계정별 반복 작업 없이 표준을 유지할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/fms-chapter.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "각 계정에 Config 규칙을 개별 배포하고 수동으로 수정한다." },
+        { "optionKey": "B", "text": "Firewall Manager 보안 그룹 정책으로 조직 전체에 규칙을 배포한다." },
+        { "optionKey": "C", "text": "SCP로 모든 보안 그룹 생성을 금지한다." },
+        { "optionKey": "D", "text": "각 계정의 관리자가 NACL을 동일하게 수동 구성한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0098",
+      "domainCode": "security",
+      "stem": "AWS Firewall Manager를 사용하기 위한 전제 조건으로 옳은 것은?",
+      "explanation": "Firewall Manager는 Organizations의 계정 범위와 Config의 리소스 평가를 기반으로 동작한다. 두 서비스가 준비되지 않으면 정책을 조직 전체에 적용할 수 없다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/fms-prereq.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "모든 계정에 Shield Advanced를 먼저 구독해야 한다." },
+        { "optionKey": "B", "text": "각 계정에 별도 Network Load Balancer를 만들어야 한다." },
+        { "optionKey": "C", "text": "Organizations와 Config를 먼저 활성화해야 한다." },
+        { "optionKey": "D", "text": "모든 리소스가 단일 리전에 있어야 한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0099",
+      "domainCode": "security",
+      "stem": "보안 그룹은 443 인바운드를 허용하는데 일부 클라이언트만 연결에 실패한다. 실제로 거부된 트래픽을 확인하는 가장 직접적인 방법은?",
+      "explanation": "**핵심:** **VPC Flow Logs**가 보안 그룹·NACL에서 거부된 트래픽을 `REJECT`로 기록한다.\n\n- 소스·목적지·포트를 확인해 차단 계층을 좁힌다.\n- 흐름 로그는 패킷 본문이 아니라 메타데이터를 기록한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "CloudTrail 이벤트에서 네트워크 연결 로그를 조회한다." },
+        { "optionKey": "B", "text": "AWS Config 규칙 평가 결과에서 거부 사유를 확인한다." },
+        { "optionKey": "C", "text": "GuardDuty Findings에서 패킷 드롭 내역을 확인한다." },
+        { "optionKey": "D", "text": "VPC 흐름 로그에서 REJECT로 기록된 레코드를 조회한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0100",
+      "domainCode": "security",
+      "stem": "여러 계정의 ALB에 동일한 WAF 규칙을 적용하고 새로 만든 ALB에도 자동 적용하려면?",
+      "explanation": "Firewall Manager의 WAF 정책은 조직 내 기존 및 신규 ALB에 동일한 웹 ACL을 자동으로 연결한다. 계정별 수동 연결 없이 규칙을 일관되게 유지할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/waf/latest/developerguide/fms-chapter.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Firewall Manager WAF 정책을 조직 전체에 배포한다." },
+        { "optionKey": "B", "text": "각 계정의 ALB에 웹 ACL을 수동으로 연결한다." },
+        { "optionKey": "C", "text": "CloudFront 함수에서 모든 요청을 검사한다." },
+        { "optionKey": "D", "text": "NACL 규칙을 모든 VPC에 동일하게 복제한다." }
+      ]
+    }
+  ]
+}

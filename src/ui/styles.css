@@ -1,3 +1,7 @@
+/* Tailwind theme/utilities + shadcn 의미 변수는 로그인 후 청크 전용
+   src/ui/authenticated.css에서 AuthenticatedApp(lazy)이 import한다.
+   엔트리 렌더 차단 CSS에 포함하지 않는다 (이슈 #132). */
+
 /* 기본 스타일 — 값은 src/ui/tokens.ts(단일 소스)가 주입하는 CSS 변수만 사용한다 (ADR-0012).
    디스플레이 폰트(@font-face)는 tokens.ts 값으로 첫 페인트 이후 지연 주입된다 (ADR-0014). */
 
@@ -16,8 +20,23 @@ body {
   background: var(--moi-color-white);
   color: var(--moi-color-ink);
   font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-body);
   line-height: var(--moi-lh-normal);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 한국어는 어절 단위로 줄바꿈하되, 코드·URL·식별자 같은 긴 토큰만 강제로 끊는다 (#182). */
+code,
+pre,
+.moi-source,
+.moi-stats-list,
+.moi-weak-list,
+.moi-note a,
+.moi-explanation a {
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 /* 레이아웃: container 내부 padding으로 충돌 방지 · flex/grid · overflow 지양 (ADR-0012) */
@@ -29,37 +48,30 @@ body {
 }
 
 .moi-header {
-  position: fixed;
-  inset: 0 0 auto 0;
+  position: sticky;
+  top: 0;
+  inset: auto;
   z-index: 10;
-  height: var(--moi-header-h);
+  min-height: var(--moi-shell-header-h);
+  height: auto;
   display: flex;
   align-items: center;
+  padding-block: var(--moi-space-2);
   background: var(--moi-color-white);
   border-bottom: 1px solid var(--moi-color-border);
 }
 
 .moi-header-inner {
   display: flex;
-  align-items: baseline;
-  gap: var(--moi-space-3);
-}
-
-.moi-brand {
-  font-family: var(--moi-font-display);
-  font-weight: 700;
-  font-size: var(--moi-size-brand);
-  color: var(--moi-color-ink);
-}
-
-.moi-brand-sub {
-  font-size: var(--moi-size-small);
-  color: var(--moi-color-muted);
+  align-items: center;
+  gap: var(--moi-space-2);
+  width: 100%;
 }
 
 .moi-main {
-  min-height: 100vh;
-  padding-top: calc(var(--moi-header-h) + var(--moi-space-7));
+  min-height: calc(100vh - var(--moi-shell-header-h));
+  min-height: calc(100dvh - var(--moi-shell-header-h));
+  padding-top: var(--moi-space-6);
   padding-bottom: var(--moi-space-7);
   display: flex;
 }
@@ -83,6 +95,7 @@ body {
   font-size: var(--moi-size-h1);
   line-height: var(--moi-lh-tight);
   margin: 0;
+  margin-bottom: var(--moi-space-3);
 }
 
 .moi-lead {
@@ -176,5 +189,62 @@ body {
 
 .moi-alert {
   width: 100%;
-  max-width: var(--moi-kakao-max-w);
+  max-width: 100%;
 }
+
+/* 홈 학습 진입 CTA — 초기 번들에 두는 최소 스타일. 학습 화면 본체는 study.css(lazy). */
+.moi-study-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--moi-space-2);
+}
+.moi-study-open,
+.moi-study-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--moi-control-h);
+  font-size: var(--moi-size-body);
+  cursor: pointer;
+}
+/* 터치 입력이 하나라도 있는 기기(터치 화면이 있는 랩톱·태블릿) — 터치 타깃 44px (DESIGN.md 5항, ADR-0050). */
+@media (any-pointer: coarse) {
+  .moi-study-open,
+  .moi-study-link {
+    min-height: var(--moi-touch-min);
+  }
+}
+.moi-study-open {
+  padding-inline: var(--moi-space-4);
+  background: var(--moi-color-orange);
+  color: var(--moi-color-white);
+  border: 0;
+  border-radius: var(--moi-radius-md);
+  font-weight: 600;
+}
+.moi-study-link {
+  padding-inline: var(--moi-space-3);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  color: var(--moi-color-ink);
+  text-decoration: none;
+}
+.moi-study-open:focus-visible,
+.moi-study-link:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+.moi-study-open:disabled,.moi-study-link:disabled{cursor:not-allowed;opacity:.5}
+@media (prefers-reduced-motion:no-preference){.moi-study-open:hover,.moi-study-link:hover{opacity:.92}.moi-study-open:active,.moi-study-link:active{opacity:.88}}
+
+/* 학습 현황 스타일은 stats/stats.css로 이동 (#182 — 사용하는 컴포넌트가 import). */
+/* 계정·이력 페이지 — 기존 토큰·카드 재사용, 320~1280 기본 반응형 */
+.moi-page { display: flex; flex-direction: column; gap: var(--moi-space-3); width: 100%; max-width: 100%; overflow-wrap: anywhere; }
+/* 복습 콘텐츠 폭 — 학습(.moi-study)과 동일한 상한. 전체 .moi-page는 좁히지 않는다 (#268 Slice 2A). */
+.moi-review { width: 100%; max-width: var(--moi-kakao-max-w); }
+@media (min-width: 768px) { .moi-review { max-width: 640px; margin-inline: auto; } }
+@media (min-width: 1024px) { .moi-review { max-width: 100%; } }
+/* #244 랜딩 연속성 — 전역 .moi-container(960) 변경 없이 랜딩 스코프만 셸 읽기 열·page 리듬과 일치시킨다. */
+@media (min-width: 1024px) { .moi-landing-head, .moi-landing { max-width: var(--moi-reading-max); } }
+.moi-landing-page > .moi-accent { margin-bottom: var(--moi-space-3); }

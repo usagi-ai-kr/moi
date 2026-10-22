@@ -22,6 +22,83 @@
       "when": 1792313585958,
       "tag": "0002_add-sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792316284504,
+      "tag": "0003_add-question-bank",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792317035952,
+      "tag": "0004_add-admin-api",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792318439529,
+      "tag": "0005_add-study-sets",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792320027941,
+      "tag": "0006_add-study-item-content",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792325203158,
+      "tag": "0007_add-single-session",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1792330708575,
+      "tag": "0008_add-reports-recheck",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1792331093806,
+      "tag": "0009_add-study-attempts",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1792333462946,
+      "tag": "0010_add-study-corrections",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1792372322822,
+      "tag": "0011_add-review-sessions",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1792400755365,
+      "tag": "0012_add-review-bookmarks",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": 6,
+      "when": 1792511537094,
+      "tag": "0013_add-review-round-queue",
+      "breakpoints": true
     }
   ]
 }

@@ -1,20 +1,28 @@
 ---
 name: frontend-responsive-ui
-description: React SPA + Ant Design 6 반응형 UI 구현 규칙(AWS 팔레트·KoddiUD 온고딕/Inter·Lighthouse). 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
+description: React SPA 디자인 계약·shadcn/ui/Tailwind 전환·반응형 UI 검토 규칙(AWS 팔레트·KoddiUD 온고딕/Inter·Lighthouse). 로그인·로딩·취소·오류·로그아웃 화면 구현, viewport(320~1280) 대응, 접근성(키보드 포커스/터치 타깃), TanStack Query·Zustand·Ky 상태 관리 판단 시 사용.
 compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDependency (scripts/check-viewport-overflow.mjs).
 ---
 
-# 반응형 프론트엔드 — React + Ant Design 6
+# 반응형 프론트엔드 — 제품 디자인 계약 및 단계적 UI 전환
 
 출처: 이슈 #1(반응형 품질 기준, 라이브러리 책임), #4(화면·상태 설계). 관련: `architecture-boundaries`, `tdd-bdd-testing`.
 
+## 최우선 디자인 계약
+- **루트 `DESIGN.md`를 먼저 읽고** #148의 화면·메뉴 분리, UUID 비노출, 폰트·버튼, 결과 상세/이력 페이지네이션, Skeleton·pending·empty·error, GitHub Primer급 아이콘 시인성을 수용 기준으로 사용한다.
+- 목표 UI 스택은 **shadcn/ui + Tailwind CSS**. 현행 AntD 규칙은 **마이그레이션 전 기존 코드 설명**이지 새 화면의 최종 가이드가 아니다. 확정 ADR 및 AGENTS·스킬 동기화 후 기존 AntD를 제거한다.
+- Lighthouse ≥90·viewport overflow 통과만으로 UI 승인 금지. 실제 before/after 스크린샷·키보드·타이포·시각적 위계·사용자 확인 필수.
+
 ## 스크립트 (우선 실행 — repo root에서 실행)
+- `node .agents/skills/frontend-responsive-ui/scripts/audit-design-contract.mjs` — DESIGN.md의 필수 계약/벤치마크 3개 이상 및 스킬 연결을 정적으로 검사한다. **구현의 시각 품질 판정을 대체하지 않는다.**
 - `node .agents/skills/frontend-responsive-ui/scripts/check-viewport-overflow.mjs <base-url> [route ...]` — 320/375/768/1024/1280px에서 **가로 오버플로만** 검사(playwright 필요, 0.1.0 scaffold 이후). 겹침·클릭 가능·포커스·가시성은 Playwright 시나리오가 검증(#12). 위반 시 exit 1, 항목별 한 줄 요약.
 - `node .agents/skills/frontend-responsive-ui/scripts/run-lighthouse.mjs [url] [--desktop] [--runs N] [--min 90]` — Lighthouse 4개 카테고리 측정·판정(ADR-0014). URL 생략 시 빌드+preview 자동 기동, 미달 시 exit 1.
 
 ## 반응형 기준 (Mobile-first)
 - 브레이크포인트: 모바일 320–767px / 태블릿 768–1199px / 데스크탑 1200px 이상.
-- AntD 6 `Grid`/`Flex`/`ConfigProvider` token 사용. 한 화면에서 viewport별 레이아웃을 조절한다.
+- **상단 메뉴 전환 정책(ADR-0057)**: **≤767px는 햄버거 + 우측 Drawer(native `<dialog>`+`showModal()`)**, **≥768px는 가로 nav**. Drawer는 **새 런타임 의존성 없이** 구현하고, 모바일 구간의 가로 nav는 `hidden`으로 화면·키보드·AT에서 제거한다(시각 숨김만으로 두지 않는다). Drawer 폭 `min(320px, 100vw - 48px)`·높이 `100dvh`+safe-area+내부 스크롤·`z-index`는 헤더(10)보다 큰 값·전환은 `prefers-reduced-motion: no-preference`에서만.
+- Drawer 접근성 계약: `aria-expanded`·`aria-controls`(dialog id와 일치)·접근 가능한 레이블, Escape/닫기/백드롭/메뉴 선택 닫기, 닫힌 뒤 트리거로 포커스 복귀, 열릴 때 배경 스크롤 잠금(iOS `position:fixed`+`scrollY` 복원), 트리거·닫기·항목 44×44px.
+- shadcn/ui `Button`/`Separator`/variant + Tailwind flex/grid·간격 유틸 사용(DESIGN.md·ADR-0035). 한 화면에서 viewport별 레이아웃을 조절한다. AntD는 과도기 기존 코드에만 한정한다.
 - 검증 viewport: **320 / 375 / 768 / 1024 / 1280px** — 로그인·로그아웃·오류 화면에서 가로 스크롤/겹침 없음.
 - 접근성: 키보드 포커스, 접근 가능한 버튼 명칭, 터치 타깃 크기, 로딩/에러 상태 표시 포함.
 
@@ -24,8 +32,8 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 - 레이아웃: **container 내부 padding + flex/grid gap**으로 간격·충돌 방지, **overflow 지양**, position은 기본 fixed — **모달/드롭다운/툴팁 등 필요한 배치는 예외 허용**(사유 기록).
 - 여백 가드레일: 요소·경계(테두리·화면단)에 붙이지 않는다 — 요소 간 최소 8px, 화면단 최소 `clamp(16px,5vw,32px)`, **페이지 기본 패딩 축소 금지**.
 - 모션: ≤320ms 트랜지션·진입 애니메이션 허용, `prefers-reduced-motion` 존중. **hover 전용 의존 UX 금지**(호버는 보조 강화만 — 키보드 `focus-visible`·터치 동등 동작 보장).
-- **중앙 관리(하드코딩 금지)**: 색·박스모델·타이포·모션 = `src/ui/tokens.ts` → CSS 변수(`var(--moi-*)`)와 AntD 테마 동시 적용, 문구 = `src/ui/copy.ts`. 컴포넌트/CSS에 값·문구를 직접 쓰지 않는다. (예외: 폰트 URL — `tokens.ts`의 `typography.displayFontUrl`만)
-- **초기 번들 규칙**: 정적 텍스트·레이아웃은 시맨틱 HTML+토큰 CSS로 렌더하고 UI 라이브러리를 초기 번들에 넣지 않는다. AntD는 상호작용 화면부터, 무거운 화면은 라우트 단위 코드 분할로 지연 로드. 디스플레이 폰트는 `load`+1.2s 지연·`<style>` 주입. 로그인·로딩·취소·오류·로그아웃처럼 LCP가 중요한 소형 화면은 경량 시맨틱 HTML/CSS로 구현하고, AntD 6은 모달·폼·테이블 등 복잡한 상호작용에 사용한다(ADR-0018).
+- **중앙 관리(하드코딩 금지)**: 색·박스모델·타이포·모션 = `src/ui/tokens.ts` → CSS 변수(`var(--moi-*)`) → shadcn 의미 변수·Tailwind `@theme inline` 단일 매핑(DESIGN.md·ADR-0035), 문구 = `src/ui/copy.ts`. 컴포넌트/CSS에 값·문구를 직접 쓰지 않는다. (예외: 폰트 URL — `tokens.ts`의 `typography.displayFontUrl`만)
+- **초기 번들 규칙**: 정적 텍스트·레이아웃은 시맨틱 HTML+토큰 CSS로 렌더하고 UI 라이브러리를 초기 번들에 넣지 않는다. shadcn 소스 소유 컴포넌트+Tailwind 유틸은 상호작용 화면부터, 무거운 화면은 라우트 단위 코드 분할로 지연 로드. 디스플레이 폰트는 `load`+1.2s 지연·`<style>` 주입. 로그인·로딩·취소·오류·로그아웃처럼 LCP가 중요한 소형 화면은 경량 시맨틱 HTML/CSS로 구현한다(ADR-0018). AntD는 과도기 기존 코드에만 한정하고 신규 화면은 shadcn 패턴을 사용한다.
 - **카카오 로그인 버튼**(`KakaoLoginButton`, `/auth/kakao`): 공식 가이드 필수 — 컨테이너 `#FEE500`·말풍선 **심볼 `#000000`**(형태·비율·색 변경·심볼 생략 금지)·레이블 `#000 85%`·시스템 서체·radius 12px. 값은 `tokens.ts`의 `kakao`.
 - Lighthouse(모바일 기본) 4개 카테고리 ≥90 — `run-lighthouse.mjs`로 재현 실행하고 결과를 PR에 기록.
 
@@ -54,4 +62,5 @@ compatibility: Node.js와 playwright 필요 — playwright는 프로젝트 devDe
 - React Testing Library로 UI 상태·오류 처리 단위 테스트.
 - Playwright-BDD로 핵심 화면 320/375/768/1024/1280 전부, 보조 시나리오 375/768/1280 실행.
 - 반응형 판정 분리(ADR-0011): 가로 오버플로 도구의 통과는 **반응형 전체 통과가 아니다**. 핵심 화면 5종에서 주요 요소 가시성·클릭 가능·포커스 순서·스크린샷 비교는 Playwright 시나리오가 담당한다(#12).
+- 모바일 Drawer(ADR-0057)는 `e2e/features/mobile-nav.feature`가 햄버거 노출·가로 nav 숨김(키보드 중복 0)·열림/닫힘 4종·포커스 복귀·스크롤 잠금·5화면×5폭 가림/클릭 가능성·landscape·200% 확대를 검증한다.
 - 상태 소유권 테스트: TanStack Query가 진실 원천이고, Zustand에 토큰/중복 사용자 상태가 없음을 검증.

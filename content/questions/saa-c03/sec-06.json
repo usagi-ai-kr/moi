@@ -1,0 +1,356 @@
+{
+  "packId": "sec-06",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-sec-0126",
+      "domainCode": "security",
+      "stem": "한 회사가 다수의 AWS 계정으로 구성된 Organizations 환경에서 모든 계정·모든 리전의 API 호출을 감사하려 한다. 가장 적은 운영 부담으로 이를 달성하는 방법은?",
+      "explanation": "**핵심:** **조직 트레일 + 모든 리전** 설정이 계정별 개별 트레일 없이 감사 범위를 완성한다.\n\n```mermaid\nflowchart LR\n  M[관리 계정] --> T[조직 트레일]\n  T --> A[모든 멤버 계정]\n  A --> R[모든 리전]\n  R --> S[중앙 S3 버킷]\n```\n\n계정이 추가되어도 자동으로 감사 대상에 포함된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "조직 트레일을 생성하고 모든 리전에 대해 활성화한다." },
+        { "optionKey": "B", "text": "각 계정 관리자가 자체 트레일을 생성하게 한다." },
+        { "optionKey": "C", "text": "매월 콘솔 이벤트 기록을 수동으로 내보낸다." },
+        { "optionKey": "D", "text": "리전마다 IAM 사용자를 만들어 로그를 수집한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0127",
+      "domainCode": "security",
+      "stem": "보안 감사인이 S3 버킷에 전달된 CloudTrail 로그 파일이 전송 이후 변조되지 않았음을 확인할 수 있어야 한다. CloudTrail에서 제공하는 해당 기능은?",
+      "explanation": "CloudTrail 로그 파일 검증(log file validation)은 로그와 함께 해시·서명 파일을 전달해 무결성 검증을 지원한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "로그 파일을 매일 수동으로 내려받아 비교한다." },
+        { "optionKey": "B", "text": "로그 파일 검증(log file validation)을 활성화한다." },
+        { "optionKey": "C", "text": "버킷 버전 관리를 비활성화해 덮어쓰기를 막는다." },
+        { "optionKey": "D", "text": "로그 전달 주기를 한 달로 늘려 변경을 줄인다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0128",
+      "domainCode": "security",
+      "stem": "개발팀이 CloudTrail 콘솔의 이벤트 기록(event history)에서 90일이 지난 API 호출 내역을 조회하려 했지만 실패했다. 장기 보관과 조회를 가능하게 하는 방법은?",
+      "explanation": "CloudTrail 이벤트 기록은 최근 90일만 조회 가능하다. 트레일을 생성해 S3에 로그를 지속 전달해야 장기 보관과 분석이 가능하다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "이벤트 기록 보존 기간을 5년으로 연장 설정한다." },
+        { "optionKey": "B", "text": "콘솔 필터를 날짜 대신 사용자 이름으로 바꾼다." },
+        { "optionKey": "C", "text": "트레일을 생성해 로그 파일을 S3에 전달한다." },
+        { "optionKey": "D", "text": "CloudWatch 경보로 과거 이벤트를 재발행한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0129",
+      "domainCode": "security",
+      "stem": "감사팀이 특정 S3 버킷에 대한 객체 수준 읽기·쓰기 API 호출(GetObject, PutObject 등)을 모두 기록해야 한다. 기본 관리 이벤트만으로는 부족하다. 적절한 구성은?",
+      "explanation": "S3 객체 수준 호출은 CloudTrail 데이터 이벤트로 기록하며, 기본 관리 이벤트에는 포함되지 않는다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "관리 이벤트의 읽기 전용 기록을 유지한다." },
+        { "optionKey": "B", "text": "CloudWatch 지표 필터로 객체 호출 수를 센다." },
+        { "optionKey": "C", "text": "S3 서버 액세스 로그로 API 사용자를 식별한다." },
+        { "optionKey": "D", "text": "CloudTrail 데이터 이벤트로 해당 버킷을 기록한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0130",
+      "domainCode": "security",
+      "stem": "한 회사가 보안 그룹이 SSH를 0.0.0.0/0으로 허용하면 자동으로 수정되길 원한다. 구성 평가와 자동 수정을 함께 제공하는 가장 적절한 방법은?",
+      "explanation": "AWS Config 규칙으로 위반을 평가하고 자동 수정(remediation)을 구성하면 SSM Automation으로 위반 리소스를 자동 고칠 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/config/latest/developerguide/remediation.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Config 규칙으로 평가하고 자동 수정을 구성한다." },
+        { "optionKey": "B", "text": "Inspector로 취약점을 스캔하고 수동 처리한다." },
+        { "optionKey": "C", "text": "CloudTrail 이벤트를 주간 검토에서 확인한다." },
+        { "optionKey": "D", "text": "GuardDuty 결과를 매일 내보내 수정서를 만든다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0131",
+      "domainCode": "security",
+      "stem": "운영팀이 개발 계정에서 태그가 없는 EBS 볼륨 생성을 반복적으로 발견했다. 향후 생성 시점에 태그 누락을 탐지하고 기록하려 한다. 가장 적절한 방법은?",
+      "explanation": "AWS Config 관리형 규칙 required-tags는 리소스의 필수 태그 준수를 지속 평가한다. GuardDuty는 위협 탐지 서비스로 태그 규정 준수와 무관하다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/config/latest/developerguide/managed-rules-by-aws-config.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "GuardDuty를 활성화해 태그 누락을 탐지한다." },
+        { "optionKey": "B", "text": "required-tags Config 관리형 규칙을 적용한다." },
+        { "optionKey": "C", "text": "CloudTrail에서 CreateTags 이벤트를 검색한다." },
+        { "optionKey": "D", "text": "Access Analyzer로 태그 없는 볼륨을 나열한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0132",
+      "domainCode": "security",
+      "stem": "한 회사가 수십 개의 계정에서 각각 설정된 AWS Config 결과를 중앙 계정 한 곳에서 조회하려 한다. 계정별 콘솔 이동을 줄이는 방법은?",
+      "explanation": "Config 집계기(aggregator)를 사용하면 다중 계정·다중 리전의 구성 데이터를 단일 계정에서 집합 조회할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/config/latest/developerguide/config-aggregator.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "각 계정의 구성 스냅샷을 주간 이메일로 취합한다." },
+        { "optionKey": "B", "text": "중앙 계정에 각 계정의 IAM 사용자를 만든다." },
+        { "optionKey": "C", "text": "Config 집계기를 구성해 중앙에서 조회한다." },
+        { "optionKey": "D", "text": "각 계정 트레일을 한 버킷에 모아 검색한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0133",
+      "domainCode": "security",
+      "stem": "한 회사가 VPC Flow Logs, CloudTrail 관리 이벤트, DNS 쿼리 로그를 기반으로 계정 내 악의적 활동(크립토마이닝, 비정상 API 호출 등)을 자동 탐지하려 한다. 가장 적절한 서비스는?",
+      "explanation": "**핵심:** **GuardDuty**는 여러 로그 소스를 결합해 악의적 활동을 자동 탐지한다.\n\n| 데이터 소스 | 탐지 예 |\n| --- | --- |\n| CloudTrail 관리 이벤트 | 비정상 API 호출 |\n| VPC Flow Logs | 크립토마이닝 통신 |\n| DNS 쿼리 로그 | 악성 도메인 조회 |\n\nCloudTrail S3 데이터 이벤트와 Kubernetes 감사 로그도 분석 대상이다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Config로 네트워크 구성을 지속 평가한다." },
+        { "optionKey": "B", "text": "Amazon Detective로 로그를 수동 분석한다." },
+        { "optionKey": "C", "text": "Amazon Macie로 로그의 민감 데이터를 검사한다." },
+        { "optionKey": "D", "text": "Amazon GuardDuty를 활성화해 위협을 탐지한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0134",
+      "domainCode": "security",
+      "stem": "GuardDuty가 높은 심각도 발견 항목을 생성할 때 온콜 엔지니어에게 즉시 알림을 보내고 싶다. 가장 적절한 구성은?",
+      "explanation": "**핵심:** GuardDuty 발견 항목은 **EventBridge → SNS**로 라우팅해 온콜에 즉시 전달한다.\n\n```mermaid\nflowchart LR\n  G[GuardDuty 발견 항목] --> E[EventBridge 규칙]\n  E --> S[SNS 주제]\n  S --> O[온콜 엔지니어]\n```\n\n심각도 조건으로 규칙을 필터링하고 필요하면 Lambda 후속 자동화를 연결한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudwatch.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "EventBridge 규칙으로 발견 항목을 SNS에 전달한다." },
+        { "optionKey": "B", "text": "CloudTrail 이벤트 기록에서 하루 한 번 검색한다." },
+        { "optionKey": "C", "text": "S3 버킷 정책으로 GuardDuty 결과를 공유한다." },
+        { "optionKey": "D", "text": "Config 집계기에 GuardDuty 수집을 추가한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0135",
+      "domainCode": "security",
+      "stem": "보안팀은 EC2 인스턴스에 설치된 소프트웨어의 알려진 취약점(CVE)을 지속적으로 스캔하려 한다. 위협 탐지가 아닌 취약점 관리에 적합한 서비스는?",
+      "explanation": "Amazon Inspector는 EC2·Lambda에 대한 자동 취약점 스캔을 제공한다. GuardDuty는 침입 위협 탐지 서비스로 취약점 스캔을 하지 않는다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "Amazon GuardDuty로 소프트웨어 취약점을 탐지한다." },
+        { "optionKey": "B", "text": "Amazon Inspector로 인스턴스 소프트웨어를 스캔한다." },
+        { "optionKey": "C", "text": "AWS CloudTrail로 소프트웨어 설치 이력을 추적한다." },
+        { "optionKey": "D", "text": "Amazon Detective로 취약점 발생 원인을 조사한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0136",
+      "domainCode": "security",
+      "stem": "한 회사가 다수 계정의 보안 발견 항목을 한 곳에 모아 AWS 보안 모범 사례 표준 준수 상태를 점수로 관리하려 한다. 중앙 집중식 보안 관리에 가장 적합한 서비스는?",
+      "explanation": "Security Hub는 다중 계정 발견 항목을 집계하고 보안 표준 준수 점수를 제공하는 중앙 집중식 보안 서비스다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/securityhub/latest/userguide/what-is-securityhub.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "GuardDuty를 위임 관리자 계정에서 활성화한다." },
+        { "optionKey": "B", "text": "CloudTrail 조직 트레일로 모든 API를 수집한다." },
+        { "optionKey": "C", "text": "AWS Security Hub를 중앙 계정에서 사용한다." },
+        { "optionKey": "D", "text": "Amazon Detective를 조직 수준에서 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0137",
+      "domainCode": "security",
+      "stem": "Security Hub를 도입한 회사가 GuardDuty와 Inspector의 발견 항목을 Security Hub 콘솔에서 바로 보길 원한다. 필요한 작업은?",
+      "explanation": "Security Hub는 GuardDuty, Inspector, Macie, Config 등과 기본 통합을 제공하며 활성화하면 발견 항목이 자동 수집된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/securityhub/latest/userguide/securityhub-integrations.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "각 서비스 결과를 매일 CSV로 내보내 올린다." },
+        { "optionKey": "B", "text": "두 서비스의 S3 로그를 Athena로 결합한다." },
+        { "optionKey": "C", "text": "CloudWatch Logs 그룹에 두 서비스 로그를 넣는다." },
+        { "optionKey": "D", "text": "Security Hub에서 해당 서비스 통합을 활성화한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0138",
+      "domainCode": "security",
+      "stem": "보안 관리자가 회사 전체 EC2 플릿에서 실행 중인 소프트웨어 취약점과 Lambda 함수 코드 취약점을 한 서비스에서 스캔하려 한다. 가장 적절한 서비스는?",
+      "explanation": "Inspector는 EC2 인스턴스 소프트웨어 취약점과 Lambda 함수 취약점을 자동으로 스캔한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Amazon Inspector를 활성화해 EC2와 Lambda를 스캔한다." },
+        { "optionKey": "B", "text": "Amazon GuardDuty로 인스턴스와 함수를 감시한다." },
+        { "optionKey": "C", "text": "AWS Config 규칙으로 함수 코드 품질을 평가한다." },
+        { "optionKey": "D", "text": "Amazon Detective로 취약점 경로를 분석한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0139",
+      "domainCode": "security",
+      "stem": "운영팀이 EC2 인스턴스의 보안 그룹 구성상 공격자가 취약한 포트에 도달할 수 있는지를 평가하려 한다. Inspector에서 제공하는 해당 스캔 유형은?",
+      "explanation": "Inspector의 네트워크 도달성 스캔은 보안 그룹·ACL·라우팅을 바탕으로 취약한 포트의 외부 도달 가능성을 분석한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/inspector/latest/user/network-reachability.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "코드 취약점 스캔으로 애플리케이션 소스를 본다." },
+        { "optionKey": "B", "text": "네트워크 도달성 스캔으로 포트 접근성을 분석한다." },
+        { "optionKey": "C", "text": "패키지 취약점 스캔으로 설치 패키지를 점검한다." },
+        { "optionKey": "D", "text": "로그 분석 스캔으로 과거 접속 기록을 재구성한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0140",
+      "domainCode": "security",
+      "stem": "GuardDuty에서 계정 침해 의심 발견 항목이 발생했고 보안팀은 관련 IAM 사용자·IP·API 호출 간의 관계를 시간순으로 조사해 근본 원인을 파악해야 한다. 가장 적합한 서비스는?",
+      "explanation": "Detective는 GuardDuty 등의 발견 항목과 로그 데이터를 그래프로 구성해 근본 원인 조사를 지원한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/detective/latest/userguide/what-is-detective.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "AWS Config로 IAM 사용자 구성만 비교한다." },
+        { "optionKey": "B", "text": "Amazon Inspector로 사용자 계정을 다시 스캔한다." },
+        { "optionKey": "C", "text": "Amazon Detective로 조사 그래프를 분석한다." },
+        { "optionKey": "D", "text": "CloudTrail 이벤트 기록에서 90일치를 수동 검색한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0141",
+      "domainCode": "security",
+      "stem": "한 회사가 조직의 어떤 리소스가 외부 계정이나 퍼블릭과 공유되는지를 지속 분석해 보고받으려 한다. 리소스 정책과 IAM 정책을 논리적 추론으로 분석하는 서비스는?",
+      "explanation": "IAM Access Analyzer는 리소스 정책을 분석해 외부 계정·퍼블릭에서 접근 가능한 리소스를 발견 항목으로 보고한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/IAM/latest/UserGuide/what-is-access-analyzer.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "Amazon Macie로 리소스 정책의 데이터를 검사한다." },
+        { "optionKey": "B", "text": "Amazon GuardDuty로 외부 공유를 위협으로 분류한다." },
+        { "optionKey": "C", "text": "AWS Config로 공유 설정을 수동 태그로 추적한다." },
+        { "optionKey": "D", "text": "IAM Access Analyzer로 외부 접근을 분석한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0142",
+      "domainCode": "security",
+      "stem": "개발팀이 운영 중인 애플리케이션의 CloudTrail 로그를 분석해 해당 애플리케이션이 실제로 사용하는 권한만 모아 최소 권한 IAM 정책을 만들려 한다. 가장 적절한 기능은?",
+      "explanation": "Access Analyzer의 정책 생성 기능은 CloudTrail 로그 기반으로 사용된 권한만 담은 IAM 정책 초안을 만들어 최소 권한 적용을 돕는다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-policy-generation.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "IAM Access Analyzer의 정책 생성 기능을 사용한다." },
+        { "optionKey": "B", "text": "Access Analyzer의 아카이브 규칙으로 항목을 정리한다." },
+        { "optionKey": "C", "text": "Config 집계기에서 IAM 정책 문서를 자동 생성한다." },
+        { "optionKey": "D", "text": "Detective 그래프에서 권한 사용 빈도를 세어 만든다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0143",
+      "domainCode": "security",
+      "stem": "보안팀이 프라이빗 서브넷 인스턴스가 인터넷에 어떤 트래픽을 주고받는지, 특히 거부된 연결 시도를 파악하려 한다. 가장 적절한 로깅 기능은?",
+      "explanation": "VPC Flow Logs는 ENI 단위로 수락·거부된 트래픽을 기록해 네트워크 통신과 거부 사유 분석에 사용된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "CloudTrail 데이터 이벤트로 네트워크 호출을 기록한다." },
+        { "optionKey": "B", "text": "VPC Flow Logs를 활성화해 트래픽을 기록한다." },
+        { "optionKey": "C", "text": "S3 서버 액세스 로그로 인스턴스 트래픽을 수집한다." },
+        { "optionKey": "D", "text": "CloudWatch Logs 에이전트로 방화벽 규칙을 수집한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0144",
+      "domainCode": "security",
+      "stem": "여러 EC2 인스턴스의 애플리케이션 로그를 한곳에 모아 검색, 보존 기간 설정, 지표 필터링을 하려 한다. 가장 적절한 서비스는?",
+      "explanation": "CloudWatch Logs는 로그 그룹 단위 중앙 수집, 보존 기간 관리, 지표 필터와 알림을 지원한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "CloudTrail 이벤트 기록에 애플리케이션 로그를 저장한다." },
+        { "optionKey": "B", "text": "GuardDuty 결과 버킷에 로그 파일을 주기적으로 복사한다." },
+        { "optionKey": "C", "text": "CloudWatch Logs에 로그를 전송해 중앙 관리한다." },
+        { "optionKey": "D", "text": "Detective 조사 그래프에 로그 데이터를 적재한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0145",
+      "domainCode": "security",
+      "stem": "감사 요건상 CloudTrail 로그 파일이 작성 후 삭제·수정될 수 없도록 보존해야 한다. 로그 전송 대상 버킷 구성으로 가장 적절한 것은?",
+      "explanation": "CloudTrail 로그를 전용 계정의 S3 버킷에 두고 Object Lock 준수 모드를 적용하면 지정 기간 동안 삭제·수정이 차단된다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "퍼블릭 읽기를 허용해 감사자가 직접 내려받게 한다." },
+        { "optionKey": "B", "text": "별도 버킷 없이 트레일 계정 기본 저장소를 쓴다." },
+        { "optionKey": "C", "text": "수명 주기 규칙으로 30일 지난 로그를 삭제한다." },
+        { "optionKey": "D", "text": "전용 계정의 S3 버킷에 Object Lock을 적용한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0146",
+      "domainCode": "security",
+      "stem": "보안팀이 침해된 것으로 의심되는 EC2 인스턴스를 조사하는 동안 네트워크 접근을 차단하되 인스턴스와 데이터를 그대로 유지하려 한다. 가장 적절한 조치는?",
+      "explanation": "인바운드·아웃바운드를 모두 차단한 격리 보안 그룹으로 교체하면 인스턴스를 살려 증거를 보존하면서 접근을 차단할 수 있다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/whitepapers/latest/aws-security-incident-response-guide/welcome.html"],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "모든 트래픽을 차단하는 격리 보안 그룹으로 교체한다." },
+        { "optionKey": "B", "text": "인스턴스를 즉시 종료해 추가 피해를 막는다." },
+        { "optionKey": "C", "text": "SSH 포트만 열어두고 나머지 포트를 닫는다." },
+        { "optionKey": "D", "text": "탄력적 IP를 해제하고 같은 서브넷에 재배치한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0147",
+      "domainCode": "security",
+      "stem": "침해 조사팀이 의심 인스턴스의 디스크를 포렌식 분석용으로 다른 인스턴스에 붙이려 한다. 원본 데이터를 보존하면서 분석 환경을 만드는 방법은?",
+      "explanation": "EBS 스냅샷은 원본 볼륨에 영향 없이 시점 복제본을 만들어 별도 인스턴스에서 분석할 수 있게 한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html"],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "실행 중 인스턴스의 루트 볼륨을 직접 마운트해 읽는다." },
+        { "optionKey": "B", "text": "EBS 스냅샷을 찍어 포렌식 인스턴스에 복원한다." },
+        { "optionKey": "C", "text": "AMI를 공개 계정에 복사해 협업자와 공유한다." },
+        { "optionKey": "D", "text": "인스턴스를 중지하고 디스크를 물리적으로 이미징한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0148",
+      "domainCode": "security",
+      "stem": "한 개발자가 개인 GitHub 저장소에 회사 IAM 액세스 키를 커밋해 노출했다. 가장 먼저 취해야 할 조치로 가장 적절한 것은?",
+      "explanation": "노출된 자격 증명은 즉시 비활성화한 뒤 교체해야 한다. 이후 CloudTrail로 사용 이력을 조사한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html"],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "커밋 이력을 지우고 저장소를 비공개로 전환한다." },
+        { "optionKey": "B", "text": "CloudTrail에서 키 사용 이력만 조회해 보고한다." },
+        { "optionKey": "C", "text": "해당 액세스 키를 즉시 비활성화·교체한다." },
+        { "optionKey": "D", "text": "키가 노출된 사용자의 콘솔 비밀번호만 변경한다." }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0149",
+      "domainCode": "security",
+      "stem": "Amazon GuardDuty가 위협 탐지에 사용하는 데이터 소스는 무엇인가? (2개 선택)",
+      "explanation": "GuardDuty는 CloudTrail 관리·S3 데이터 이벤트, VPC Flow Logs, DNS 쿼리 로그, Kubernetes 감사 로그 등을 분석해 위협을 탐지한다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/guardduty/latest/ug/what-is-guardduty.html"],
+      "answerOptionKeys": ["A", "B"],
+      "options": [
+        { "optionKey": "A", "text": "VPC Flow Logs" },
+        { "optionKey": "B", "text": "CloudTrail 관리 이벤트" },
+        { "optionKey": "C", "text": "RDS 감사 로그" },
+        { "optionKey": "D", "text": "ALB 액세스 로그" }
+      ]
+    },
+    {
+      "questionId": "saa-sec-0150",
+      "domainCode": "security",
+      "stem": "Amazon Inspector가 수행하는 스캔으로 옳은 것은 무엇인가? (2개 선택)",
+      "explanation": "Inspector는 EC2 소프트웨어 취약점, 네트워크 도달성, Lambda 코드 취약점을 스캔한다. S3 공유 노출은 Access Analyzer의 영역이다.",
+      "sourceUrls": ["https://docs.aws.amazon.com/inspector/latest/user/scanning-types.html"],
+      "answerOptionKeys": ["A", "B"],
+      "options": [
+        { "optionKey": "A", "text": "EC2 인스턴스 소프트웨어의 CVE 취약점 스캔" },
+        { "optionKey": "B", "text": "Lambda 함수의 코드 취약점 스캔" },
+        { "optionKey": "C", "text": "S3 버킷의 퍼블릭 노출 리소스 탐지" },
+        { "optionKey": "D", "text": "IAM 정책의 과도한 권한 평가" }
+      ]
+    }
+  ]
+}

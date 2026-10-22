@@ -1,0 +1,241 @@
+/* 학습 화면 — 토큰 CSS 변수만 사용, AntD 없음. 320~1280 대응·44px 터치·focus-visible. */
+.moi-study {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  width: 100%;
+  max-width: var(--moi-kakao-max-w);
+}
+@media (min-width: 768px) {
+  .moi-study {
+    max-width: 640px;
+    margin-inline: auto;
+  }
+}
+/* 큰 화면 — 본문은 셸의 읽기 열을 그대로 채운다(가운데 정렬·폭은 셸이 담당). */
+@media (min-width: 1024px) {
+  .moi-study {
+    max-width: 100%;
+  }
+}
+/* 시작 화면의 학습 시작·학습 이력 버튼을 같은 줄에 둔다. 좁으면 flex-wrap으로 줄바꿈 (#182). */
+.moi-study-start {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moi-space-2);
+  width: 100%;
+}
+.moi-study-title {
+  margin: 0;
+  font-size: var(--moi-size-h2);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+}
+h1.moi-study-title {
+  margin-bottom: var(--moi-space-1);
+}
+.moi-study-desc { margin: 0; }
+.moi-study-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  margin: var(--moi-space-1) 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+/* #303: 범위·문제 수 선택 그룹 — 옵션 사이 gap 축소(8px→4px) + 하나의 그룹 컨테이너.
+   그룹이 "하나의 선택 그룹"으로 보이게 하되 세로 높이·글자 크기·44px 터치 타깃은 그대로다. */
+.moi-study-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-1);
+  padding: var(--moi-space-2);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  background: var(--moi-color-white);
+}
+/* #269: 설명(.moi-note·small·muted)과 범위 라벨(legend·body·ink·600)을 위계 분리. */
+.moi-study-legend {
+  margin-bottom: var(--moi-space-1);
+  padding: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
+}
+.moi-study-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--moi-space-2);
+  cursor: pointer;
+}
+/* 시작 화면 선택 행 — 44px 터치 타깃, 본문 16px(DESIGN.md 5항). */
+.moi-study-radio {
+  min-height: var(--moi-touch-min);
+  font-size: var(--moi-size-body);
+}
+/* #269: 선택 상태를 라벨 굵기로도 구분 (색·도트만 의존하지 않음). */
+.moi-study-radio:has(input:checked) {
+  font-weight: 600;
+  color: var(--moi-color-ink);
+}
+/* 네이티브 accent-color는 체크 색이 원 밖으로 번져 보여 직접 그린다 (#178). */
+.moi-study-radio input {
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-content: center;
+  flex: none;
+  width: var(--moi-icon-md);
+  height: var(--moi-icon-md);
+  margin: 0;
+  border: 2px solid var(--moi-color-border);
+  border-radius: 50%;
+  background: var(--moi-color-white);
+  cursor: pointer;
+}
+.moi-study-radio input::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--moi-color-orange);
+  transform: scale(0);
+}
+.moi-study-radio input:checked {
+  border-color: var(--moi-color-orange);
+}
+.moi-study-radio input:checked::before {
+  transform: scale(1);
+}
+.moi-study-radio input:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+.moi-study-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  font-size: var(--moi-size-small);
+}
+.moi-study-select {
+  min-height: var(--moi-control-h);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+  background: var(--moi-color-white);
+  font-size: var(--moi-size-body);
+}
+.moi-study-actions,
+.moi-study-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--moi-space-2);
+}
+/* 확인 대화상자 — 320px에서 확인·취소 버튼 줄바꿈 허용(가로 오버플로 방지). 진행 표시와 16/24px 간격, study 본문 폭과 동일(#232 후속). */
+.moi-study-confirm { flex-wrap: wrap; margin-top: var(--moi-space-4); margin-bottom: var(--moi-space-5); max-width: var(--moi-kakao-max-w); }
+.moi-study-confirm:focus, .moi-study-confirm:focus-visible { outline: 2px solid var(--moi-color-ink); outline-offset: 2px; }
+@media (min-width: 768px) and (max-width: 1023px) { .moi-study-confirm { max-width: 640px; margin-inline: auto; } }
+@media (min-width: 1024px) { .moi-study-confirm { max-width: 100%; } }
+/* shadcn Button의 UA border 리셋은 authenticated.css 전역 규칙이 담당한다 (#182). */
+.moi-study [data-slot='button'], .moi-study-confirm [data-slot='button'] { cursor: pointer; }
+.moi-study-primary {
+  min-height: var(--moi-control-h);
+  padding-inline: var(--moi-space-4);
+  background: var(--moi-color-orange);
+  color: var(--moi-color-white);
+  border: 0;
+  border-radius: var(--moi-radius-md);
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+.moi-study-secondary {
+  min-height: var(--moi-control-h);
+  padding-inline: var(--moi-space-4);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  font-size: var(--moi-size-body);
+  cursor: pointer;
+}
+/* 터치 기기 — 시각 크기는 40px, 터치 타깃은 44px 이상(DESIGN.md 5항).
+   터치 입력이 하나라도 있는 기기(any-pointer: coarse) 기준 — 터치 화면이 있는 랩톱도 44px (ADR-0050). */
+@media (any-pointer: coarse) {
+  .moi-study-primary,
+  .moi-study-secondary,
+  .moi-study-select {
+    min-height: var(--moi-touch-min);
+  }
+}
+.moi-study-ghost {
+  min-height: var(--moi-control-h);
+  padding-inline: var(--moi-space-2);
+  background: transparent;
+  border: 0;
+  border-radius: var(--moi-radius-sm);
+  font-size: var(--moi-size-body);
+  color: var(--moi-color-muted);
+  cursor: pointer;
+}
+@media (any-pointer: coarse) {
+  .moi-study-ghost {
+    min-height: var(--moi-touch-min);
+  }
+}
+.moi-study-primary:disabled,
+.moi-study-secondary:disabled,
+.moi-study-ghost:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .moi-study-primary:hover,
+  .moi-study-secondary:hover {
+    opacity: 0.92;
+  }
+  .moi-study-primary:active,
+  .moi-study-secondary:active {
+    opacity: 0.88;
+  }
+}
+.moi-study-detail-title {
+  margin: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
+}
+.moi-study-primary:focus-visible,
+.moi-study-secondary:focus-visible,
+.moi-study-ghost:focus-visible,
+.moi-study-select:focus-visible,
+.moi-study-history-item:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}
+.moi-study-progress {
+  margin: 0;
+  font-size: var(--moi-size-small);
+}
+/* 상단 제출·포기 액션 행 — 복습 헤더 우측과 같은 gap, 좁은 화면은 줄바꿈 허용 (#186·#274).
+   헤더(flex justify-between) 안에서 우측에 붙도록 width:100%를 두지 않는다. */
+.moi-study-question-top {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--moi-space-2);
+  max-width: 100%;
+}
+/* #233 Slice B — 액션 아이콘 20px 토큰(shadcn svg 16px보다 우선). 네이티브 버튼은 아이콘+라벨 정렬만 보완. */
+.moi-study [data-slot='button'] svg.moi-action-icon { width: 20px; height: 20px; flex: none; }
+.moi-study-start .moi-study-primary { display: inline-flex; align-items: center; justify-content: center; gap: var(--moi-space-1); }
+.moi-study .moi-study-link { gap: var(--moi-space-1); }
+.moi-study .moi-alert-retry { display: inline-flex; align-items: center; justify-content: center; gap: var(--moi-space-1); }
+.moi-study .moi-study-link svg, .moi-study .moi-alert-retry svg { flex: none; width: 20px; height: 20px; }
+/* 아이콘 추가로 길어진 라벨이 초좁폭에서 가로로 밀려나지 않도록 줄바꿈 허용 — 여유 폭에서는 한 줄 그대로. */
+.moi-study [data-slot='button'] { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }

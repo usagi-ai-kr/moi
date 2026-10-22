@@ -1,0 +1,109 @@
+/* 초기 로딩 스켈레톤 — 토큰 CSS 변수만 사용, reduced motion 존중 (#184). */
+/* 화면에는 보이지 않고 스크린리더에만 전달하는 문구 — 라우트 폴백·이력·통계가 함께 쓴다. */
+.moi-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 라우트 로딩 폴백 — 스켈레톤이 늦게 나타나도 본문 폭을 유지한다. */
+.moi-route-fallback {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--moi-space-8);
+}
+
+.moi-skeleton-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  width: 100%;
+  max-width: 100%;
+}
+
+.moi-skeleton {
+  display: block;
+  width: 100%;
+  background: var(--moi-color-surface);
+  border-radius: var(--moi-radius-sm);
+  animation: moi-skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+.moi-skeleton-title {
+  width: 40%;
+  height: 30px;
+}
+.moi-skeleton-title-short {
+  width: 55%;
+}
+.moi-skeleton-line {
+  height: 18px;
+}
+.moi-skeleton-line-short {
+  width: 62%;
+}
+.moi-skeleton-card {
+  height: 96px;
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+}
+.moi-skeleton-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--moi-space-2);
+  min-height: var(--moi-touch-min);
+}
+.moi-skeleton-dot {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+.moi-skeleton-choice-line {
+  width: 60%;
+}
+.moi-skeleton-button {
+  width: 140px;
+  height: var(--moi-touch-min);
+  border-radius: var(--moi-radius-md);
+}
+.moi-skeleton-row {
+  height: 64px;
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+}
+.moi-skeleton-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-2);
+  width: 100%;
+  padding: var(--moi-space-4);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-md);
+}
+
+@keyframes moi-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moi-skeleton {
+    animation: none;
+  }
+}

@@ -11,7 +11,7 @@ import { createApiClient } from '@/ui/api/client';
 // 토큰 → CSS 변수 주입 후 렌더 (ADR-0012: 스타일 값의 단일 소스)
 applyTokens();
 
-// BrowserRouter는 Route가 생길 때 추가한다 — 현재 라우팅이 없어 초기 번들에서 제외한다 (perf).
+// 라우터는 로그인 후 트리에만 지연 주입하여 비로그인 홈 초기 번들을 축소한다 (이슈 #132).
 function Root() {
   const [queryClient] = useState(() => new QueryClient());
   const [apiClient] = useState(() => createApiClient());

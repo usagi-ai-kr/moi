@@ -2,13 +2,17 @@ import { env } from 'cloudflare:workers';
 import { decrypt, encrypt } from 'paseto-ts/v4';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createKakaoAuthRuntime } from '@/infra/auth/kakao/runtime';
+import { createSessionRuntime } from '@/infra/auth/session/runtime';
 import { normalizePasetoLocalKey } from '@/infra/auth/session/keyring';
 import { createApp } from '@/infra/http/app';
+import { createD1AccountRepository } from '@/infra/persistence/d1-account-repository';
 import { createD1UserIdentityRepository } from '@/infra/persistence/d1-user-identity-repository';
 import type { OAuthIdentity } from '@/domain/auth/identity';
 import migration0000 from '../../drizzle/migrations/0000_add-oauth-states.sql?raw';
 import migration0001 from '../../drizzle/migrations/0001_add-users-external-identities.sql?raw';
 import migration0002 from '../../drizzle/migrations/0002_add-sessions.sql?raw';
+import migration0007 from '../../drizzle/migrations/0007_add-single-session.sql?raw';
+import { createD1SessionRepository } from '@/infra/auth/session/d1-session-repository';
 import {
   applyD1Migrations,
   createFakeKakaoServer,
@@ -35,7 +39,13 @@ const KEY_V1 = randomBase64Key();
 const KEY_V2 = randomBase64Key();
 
 function envWithKeys(keys: { v1: string; v2?: string }): Env {
-  const merged = { ...env, PASETO_KEY_V1: keys.v1 } as Record<string, unknown>;
+  const merged = {
+    ...env,
+    PASETO_KEY_V1: keys.v1,
+    KAKAO_CLIENT_ID: FAKE_CLIENT_ID,
+    KAKAO_CLIENT_SECRET: 'fake-client-secret',
+    KAKAO_REDIRECT_URI: 'https://moi.test/auth/kakao/callback',
+  } as Record<string, unknown>;
   if (keys.v2 !== undefined) merged.PASETO_KEY_V2 = keys.v2;
   return merged as unknown as Env;
 }
@@ -87,6 +97,16 @@ async function count(table: 'users' | 'external_identities' | 'sessions'): Promi
   return row?.c ?? 0;
 }
 
+async function countActiveSessions(): Promise<number> {
+  const row = await db.prepare('SELECT count(*) AS c FROM sessions WHERE revoked_at IS NULL').first<{ c: number }>();
+  return row?.c ?? 0;
+}
+
+async function countRevokedSessions(): Promise<number> {
+  const row = await db.prepare('SELECT count(*) AS c FROM sessions WHERE revoked_at IS NOT NULL').first<{ c: number }>();
+  return row?.c ?? 0;
+}
+
 async function startLogin(app: ReturnType<typeof createApp>, testEnv: Env) {
   const res = await app.fetch(new Request('https://moi.test/auth/kakao'), testEnv);
   expect(res.status).toBe(302);
@@ -102,8 +122,13 @@ async function startLogin(app: ReturnType<typeof createApp>, testEnv: Env) {
   };
 }
 
-/** 로그인 시작 → DB 행 확인 → 유효한 ID token으로 fake 토큰 응답 구성. */
-async function arrangeValidCallback(fake: FakeKakaoServer, app: ReturnType<typeof createApp>, testEnv: Env) {
+/** 로그인 시작 → DB 행 확인 → 유효한 ID token으로 fake 토큰 응답 구성. sub 주입 시 다른 사용자를 흉내 낸다(#52). */
+async function arrangeValidCallback(
+  fake: FakeKakaoServer,
+  app: ReturnType<typeof createApp>,
+  testEnv: Env,
+  sub: string = FAKE_SUB,
+) {
   const started = await startLogin(app, testEnv);
   const stateHashRow = await db
     .prepare('SELECT nonce FROM oauth_states WHERE state_hash = ?1')
@@ -114,7 +139,7 @@ async function arrangeValidCallback(fake: FakeKakaoServer, app: ReturnType<typeo
   const idToken = await fake.signIdToken({
     iss: 'https://kauth.kakao.com',
     aud: FAKE_CLIENT_ID,
-    sub: FAKE_SUB,
+    sub,
     iat: now,
     exp: now + 600,
     nonce: (stateHashRow as { nonce: string }).nonce,
@@ -158,10 +183,10 @@ function splitSetCookie(res: Response): string[] {
     .map((line) => line.trim());
 }
 
-async function performLogin(app: ReturnType<typeof createApp>, testEnv: Env): Promise<string> {
+async function performLogin(app: ReturnType<typeof createApp>, testEnv: Env, sub: string = FAKE_SUB): Promise<string> {
   const fake = await createFakeKakaoServer();
   vi.stubGlobal('fetch', fake.fetch);
-  const arranged = await arrangeValidCallback(fake, app, testEnv);
+  const arranged = await arrangeValidCallback(fake, app, testEnv, sub);
   const res = await app.fetch(callbackRequest(arranged.state, { binding: arranged.binding }), testEnv);
   expect(res.status).toBe(302);
   expect(res.headers.get('location')).toBe('/?auth=success');
@@ -186,6 +211,57 @@ describe('세션 스키마·마이그레이션 (0002_add-sessions)', () => {
       )
       .run();
     await expect(insert).rejects.toThrow();
+  });
+});
+
+describe('마이그레이션 0007_add-single-session: 중복 활성 세션 정리 + 부분 UNIQUE', () => {
+  it('AC(#52): 사용자별 최신 활성 1개만 남기고 나머지를 폐기한다(전체 로그아웃 금지)', async () => {
+    const nowSec = Math.floor(Date.now() / 1000);
+    const userA = crypto.randomUUID();
+    const userB = crypto.randomUUID();
+    const userC = crypto.randomUUID();
+    for (const id of [userA, userB, userC]) {
+      await db.prepare('INSERT INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)').bind(id, nowSec, nowSec).run();
+    }
+    const insertSession = (jtiHash: string, userId: string, issuedAt: number, revokedAt: number | null) =>
+      db
+        .prepare('INSERT INTO sessions (jti_hash, user_id, issued_at, expires_at, revoked_at) VALUES (?1, ?2, ?3, ?4, ?5)')
+        .bind(jtiHash, userId, issuedAt, nowSec + 3600, revokedAt)
+        .run();
+    // A: 활성 3건(issued_at 순) + 이미 폐기 1건, B: 활성 2건 — 0007 이전 상태 모사
+    await insertSession('a-old', userA, 100, null);
+    await insertSession('a-mid', userA, 200, null);
+    await insertSession('a-new', userA, 300, null);
+    await insertSession('a-revoked', userA, 50, 90);
+    await insertSession('b-old', userB, 100, null);
+    await insertSession('b-new', userB, 200, null);
+
+    await applyD1Migrations(db, [migration0007]);
+
+    // 사용자별 최신(issued_at 최대) 1개만 활성 유지, 나머지는 revoked_at 기록
+    const activeRows = await db
+      .prepare('SELECT jti_hash, user_id FROM sessions WHERE revoked_at IS NULL ORDER BY jti_hash')
+      .all<{ jti_hash: string; user_id: string }>();
+    expect(activeRows.results).toEqual([
+      { jti_hash: 'a-new', user_id: userA },
+      { jti_hash: 'b-new', user_id: userB },
+    ]);
+    // 전체 로그아웃 금지: 어떤 사용자도 활성 세션을 잃지 않는다(사용자당 1개 유지)
+    expect(await countActiveSessions()).toBe(2);
+    expect(await count('sessions')).toBe(6); // 이력 보존(물리 삭제 없음)
+    const preRevoked = await db.prepare('SELECT revoked_at FROM sessions WHERE jti_hash = ?1').bind('a-revoked').first<{ revoked_at: number }>();
+    expect(preRevoked?.revoked_at).toBe(90); // 이미 폐기된 행은 손대지 않는다
+
+    // 부분 UNIQUE 인덱스가 만들어진다
+    const indexRow = await db
+      .prepare("SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'sessions_user_active_uq'")
+      .first<{ name: string }>();
+    expect(indexRow?.name).toBe('sessions_user_active_uq');
+
+    // 같은 사용자의 두 번째 활성 삽입은 거부, 다른 사용자는 허용
+    await expect(insertSession('a-dup', userA, 400, null)).rejects.toThrow();
+    await insertSession('c-new', userC, 400, null);
+    expect(await countActiveSessions()).toBe(3);
   });
 });
 
@@ -241,21 +317,88 @@ describe('로그인 → 세션 발급 → /api/me', () => {
     expect(capture.identity).toEqual({ provider: 'kakao', sub: FAKE_SUB });
   });
 
-  it('매 로그인 새 세션(jti): 두 번 로그인하면 sessions 2건·각각 다른 쿠키', async () => {
+  it('AC(#52 단일 활성): 재로그인 시 이전 토큰 401·새 토큰 200, sessions 2건(활성 1·폐기 1)', async () => {
     const testEnv = envWithKeys({ v1: KEY_V1 });
     const app = createAppWithSpy();
     const tokenA = await performLogin(app, testEnv);
     const tokenB = await performLogin(app, testEnv);
 
     expect(tokenA).not.toBe(tokenB);
+    // 이력 보존: 행은 2건 유지하되 활성은 1건, 폐기 1건(#52)
     expect(await count('sessions')).toBe(2);
+    const meA = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${tokenA}` } }), testEnv);
+    const meB = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${tokenB}` } }), testEnv);
+    expect(meA.status).toBe(401); // 이전 기기: 새 로그인으로 즉시 거부
+    expect(meB.status).toBe(200); // 새 로그인 기기: 정상
+    const bodyB = (await meB.json()) as { user: { id: string } };
+    expect(bodyB.user.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(await countActiveSessions()).toBe(1);
+    expect(await countRevokedSessions()).toBe(1);
+    // 새 로그인 사용자는 이전 세션의 사용자와 동일하다(동일 sub 재로그인)
+    const identityRepo = createD1UserIdentityRepository(db);
+    const identity = await identityRepo.findIdentity({ provider: 'kakao', subject: FAKE_SUB });
+    expect(identity?.userId).toBe(bodyB.user.id);
+  });
+
+  it('AC(#52 단일 활성): 이전 기기 토큰은 보호 API 전반에서 401이다', async () => {
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const app = createAppWithSpy();
+    const oldToken = await performLogin(app, testEnv);
+    const newToken = await performLogin(app, testEnv);
+
+    const me = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${oldToken}` } }), testEnv);
+    const logout = await app.fetch(
+      new Request('https://moi.test/auth/logout', {
+        method: 'POST',
+        headers: { cookie: `__Host-moi_session=${oldToken}`, origin: 'https://moi.test', 'sec-fetch-site': 'same-origin' },
+      }),
+      testEnv,
+    );
+    expect(me.status).toBe(401);
+    expect(logout.status).toBe(401);
+    expect((await countActiveSessions())).toBe(1); // 새 세션만 유지
+    const meNew = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${newToken}` } }), testEnv);
+    expect(meNew.status).toBe(200);
+  });
+
+  it('AC(#52 독립성): 서로 다른 사용자의 세션은 서로 영향을 주지 않는다', async () => {
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const app = createAppWithSpy();
+    const tokenA = await performLogin(app, testEnv);
+    const tokenB = await performLogin(app, testEnv, 'other-kakao-sub-5678');
+
     const meA = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${tokenA}` } }), testEnv);
     const meB = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${tokenB}` } }), testEnv);
     expect(meA.status).toBe(200);
     expect(meB.status).toBe(200);
     const bodyA = (await meA.json()) as { user: { id: string } };
     const bodyB = (await meB.json()) as { user: { id: string } };
-    expect(bodyA.user.id).toBe(bodyB.user.id); // 동일 사용자(동일 sub 재로그인)
+    expect(bodyA.user.id).not.toBe(bodyB.user.id);
+    expect(await count('sessions')).toBe(2);
+    expect(await countActiveSessions()).toBe(2); // 사용자당 각 1개씩 독립 활성
+  });
+
+  it('AC(#52 경합): 같은 사용자 세션을 동시에 활성화해도 활성은 최대 1개다', async () => {
+    const repo = createD1SessionRepository(db);
+    const userId = crypto.randomUUID();
+    const nowSec = Math.floor(Date.now() / 1000);
+    await db
+      .prepare('INSERT INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)')
+      .bind(userId, nowSec, nowSec)
+      .run();
+
+    await Promise.all([
+      repo.activate({ jti: 'race-jti-1', userId, issuedAt: nowSec, expiresAt: nowSec + 3600 }),
+      repo.activate({ jti: 'race-jti-2', userId, issuedAt: nowSec + 1, expiresAt: nowSec + 3600 }),
+      repo.activate({ jti: 'race-jti-3', userId, issuedAt: nowSec + 2, expiresAt: nowSec + 3600 }),
+    ]);
+
+    const active = await db
+      .prepare('SELECT count(*) AS c FROM sessions WHERE user_id = ?1 AND revoked_at IS NULL')
+      .bind(userId)
+      .first<{ c: number }>();
+    expect(active?.c).toBe(1); // 활성 최대 1개
+    expect(await count('sessions')).toBe(3); // 실패한 활성화도 이력으로 남는다
   });
 
   it('미인증 /api/me: 401 + no-store', async () => {
@@ -266,6 +409,79 @@ describe('로그인 → 세션 발급 → /api/me', () => {
 
     expect(res.status).toBe(401);
     expect(res.headers.get('cache-control')).toBe('no-store');
+  });
+});
+
+describe('GET /api/me — 계정 정보 DTO (#234/ADR-0072)', () => {
+  it('가입일·최근 로그인을 함께 돌려준다 (마이그레이션·write 0)', async () => {
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const app = createAppWithSpy();
+    const token = await performLogin(app, testEnv);
+
+    const me = await app.fetch(
+      new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${token}` } }),
+      testEnv,
+    );
+
+    expect(me.status).toBe(200);
+    expect(me.headers.get('cache-control')).toBe('no-store');
+    const body = (await me.json()) as {
+      user: { id: string; createdAt: number | null; lastLoginAt: number | null };
+    };
+    // 가입일 = users.created_at (epoch seconds)
+    const userRow = await db
+      .prepare('SELECT created_at FROM users WHERE id = ?1')
+      .bind(body.user.id)
+      .first<{ created_at: number }>();
+    expect(body.user.createdAt).toBe(userRow?.created_at);
+    expect(body.user.createdAt).toBeGreaterThan(0);
+    // 최근 로그인 = MAX(sessions.issued_at) — 로그인 이력이 행으로 남아 최대값이 마지막 로그인이다
+    const sessionRow = await db
+      .prepare('SELECT MAX(issued_at) AS m FROM sessions WHERE user_id = ?1')
+      .bind(body.user.id)
+      .first<{ m: number | null }>();
+    expect(body.user.lastLoginAt).toBe(sessionRow?.m);
+    expect(body.user.lastLoginAt).toBeGreaterThan(0);
+    // 마이그레이션 0건 — users/sessions 스키마는 그대로다
+    expect(await count('users')).toBe(1);
+    expect(await count('sessions')).toBe(1);
+  });
+
+  it('재로그인 후 최근 로그인은 새 세션 발급 시각으로 갱신된다', async () => {
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const app = createAppWithSpy();
+    await performLogin(app, testEnv);
+    const tokenB = await performLogin(app, testEnv);
+
+    const me = await app.fetch(
+      new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${tokenB}` } }),
+      testEnv,
+    );
+    const body = (await me.json()) as { user: { lastLoginAt: number | null } };
+    const latest = await db
+      .prepare('SELECT MAX(issued_at) AS m FROM sessions')
+      .first<{ m: number | null }>();
+    expect(body.user.lastLoginAt).toBe(latest?.m);
+  });
+
+  it('계정 정보 저장소: 세션 이력이 없는 계정은 lastLoginAt이 null이다', async () => {
+    const repo = createD1AccountRepository(db);
+    const userId = crypto.randomUUID();
+    const nowSec = Math.floor(Date.now() / 1000);
+    await db
+      .prepare('INSERT INTO users (id, created_at, updated_at) VALUES (?1, ?2, ?3)')
+      .bind(userId, nowSec, nowSec)
+      .run();
+
+    const account = await repo.findAccountInfo({ userId });
+
+    expect(account?.createdAt).toBe(nowSec);
+    expect(account?.lastLoginAt).toBeNull();
+  });
+
+  it('계정 정보 저장소: 존재하지 않는 사용자는 null이다', async () => {
+    const repo = createD1AccountRepository(db);
+    await expect(repo.findAccountInfo({ userId: crypto.randomUUID() })).resolves.toBeNull();
   });
 });
 
@@ -557,5 +773,50 @@ describe('로그 redaction (ADR-0006)', () => {
       logSpy.mockRestore();
     }
     console.log(`REDACTION_EVIDENCE:${JSON.stringify(lines)}`);
+  });
+});
+
+describe('/api/me DTO 키 집합 (#268 Slice 2B)', () => {
+  it('세션/토큰 내부 키(sub·jti·token)를 노출하지 않는다', async () => {
+    const app = createAppWithSpy();
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const token = await performLogin(app, testEnv);
+    const res = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${token}` } }), testEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(Object.keys(body)).toEqual(['user']);
+    const user = body.user as Record<string, unknown>;
+    expect(Object.keys(user).sort()).toEqual(['createdAt', 'id', 'lastLoginAt']);
+    const serialized = JSON.stringify(body);
+    for (const forbidden of ['sub', 'jti', 'token', 'paseto']) {
+      expect(serialized).not.toContain(forbidden);
+    }
+  });
+});
+
+describe('/api/me 계정 조회 실패 격리 (#268 Slice 2B)', () => {
+  it('계정 저장소가 throw해도 /api/me는 200이고 createdAt/lastLoginAt은 null이다', async () => {
+    const app = createApp({
+      createSessionRuntime: (workerEnv, requestId) => {
+        const runtime = createSessionRuntime(workerEnv, requestId);
+        return {
+          ...runtime,
+          account: {
+            accountRepository: {
+              findAccountInfo: async () => {
+                throw new Error('account lookup failed');
+              },
+            },
+          },
+        };
+      },
+    });
+    const testEnv = envWithKeys({ v1: KEY_V1 });
+    const token = await performLogin(app, testEnv);
+    const res = await app.fetch(new Request('https://moi.test/api/me', { headers: { cookie: `__Host-moi_session=${token}` } }), testEnv);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { user: { id: string; createdAt: unknown; lastLoginAt: unknown } };
+    expect(body.user.createdAt).toBeNull();
+    expect(body.user.lastLoginAt).toBeNull();
   });
 });

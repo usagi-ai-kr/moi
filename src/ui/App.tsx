@@ -1,9 +1,15 @@
+import { Suspense, lazy } from 'react';
+import { Brand } from './Brand';
 import { copy } from './copy';
 import { KakaoLoginButton } from './KakaoLoginButton';
-import { useAuthCallback, useLogout, useSessionId, useUiStore, type ApiClient } from './session';
-import { AuthErrorAlert, LoadErrorAlert, LoggedInCard } from './widgets';
+import { RouteErrorBoundary } from './RouteErrorBoundary';
+import { RouteFallback } from './RouteFallback';
+import { useAuthCallback, useSessionUser, useUiStore, type ApiClient } from './session';
+import { AuthErrorAlert, LoadErrorAlert } from './widgets';
 
-// 경량 CSS 스피너 로딩 화면 — AntD Spin을 쓰지 않는다 (perf).
+// 로그인 후 트리는 비로그인 홈 초기 번들/LCP에 포함하지 않도록 지연 로드한다 (이슈 #132).
+const AuthenticatedApp = lazy(() => import('./AuthenticatedApp'));
+
 function CheckingView() {
   return (
     <div className="moi-center" role="status" aria-live="polite">
@@ -13,47 +19,59 @@ function CheckingView() {
   );
 }
 
-// 서버 진실 원천(/api/me) 기반 5개 상태 화면 (ADR-0018).
-// client 주입 가능 — 테스트에서 가짜 클라이언트로 교체한다.
+function LoggedOutView({
+  status,
+  onRetry,
+  showAuthError,
+}: {
+  status: 'loading' | 'error' | 'logged-out' | 'logged-in';
+  onRetry: () => void;
+  showAuthError: boolean;
+}) {
+  return (
+    <>
+      <header className="moi-header">
+        <div className="moi-container moi-header-inner moi-landing-head">
+          <Brand />
+        </div>
+      </header>
+      <main className="moi-main">
+        <div className="moi-container moi-main-inner moi-landing moi-enter">
+          <div className="moi-page moi-landing-page">
+            <div className="moi-accent" aria-hidden="true" />
+            {showAuthError && <AuthErrorAlert />}
+            <h1 className="moi-title">{copy.brand}</h1>
+            <p className="moi-lead">{copy.tagline}</p>
+            {status === 'loading' && <CheckingView />}
+            {status === 'error' && <LoadErrorAlert onRetry={onRetry} />}
+            {status === 'logged-out' && (
+              <div className="moi-cta">
+                <KakaoLoginButton />
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
+
 export function App({ client }: { client: ApiClient }) {
-  const { status, userId, retry } = useSessionId(client);
-  const doLogout = useLogout(client);
-  const logoutPending = useUiStore((s) => s.logoutPending);
+  const { status, user, retry } = useSessionUser(client);
   const authFailed = useAuthCallback('error');
   useAuthCallback('success');
   const bannerDismissed = useUiStore((s) => s.authBannerDismissed);
   const showAuthError = authFailed && !bannerDismissed;
 
+  if (status !== 'logged-in' || user === null) {
+    return <LoggedOutView status={status} onRetry={retry} showAuthError={showAuthError} />;
+  }
+
   return (
-    <>
-      <header className="moi-header">
-        <div className="moi-container moi-header-inner">
-          <span className="moi-brand">{copy.brand}</span>
-          <span className="moi-brand-sub">{copy.tagline}</span>
-        </div>
-      </header>
-      <main className="moi-main">
-        <div className="moi-container moi-main-inner moi-enter">
-          <div className="moi-accent" aria-hidden="true" />
-          {status === 'loading' && <CheckingView />}
-          {status === 'error' && <LoadErrorAlert onRetry={retry} />}
-          {showAuthError && <AuthErrorAlert />}
-          {status === 'logged-in' && userId !== null ? (
-            <LoggedInCard userId={userId} pending={logoutPending} onLogout={() => void doLogout()} />
-          ) : (
-            status !== 'loading' && (
-              <>
-                <h1 className="moi-title">{copy.brand}</h1>
-                <p className="moi-lead">{copy.tagline}</p>
-                <div className="moi-cta">
-                  <KakaoLoginButton />
-                </div>
-                <p className="moi-note">{copy.home.note}</p>
-              </>
-            )
-          )}
-        </div>
-      </main>
-    </>
+    <RouteErrorBoundary>
+      <Suspense fallback={<RouteFallback />}>
+        <AuthenticatedApp client={client} user={user} showAuthError={showAuthError} />
+      </Suspense>
+    </RouteErrorBoundary>
   );
 }

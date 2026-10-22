@@ -1,0 +1,84 @@
+/* 시험 selector·배지 — 셸 콘텐츠 최상단 공통 1개 + 페이지 라벨 (ADR-0068, 이슈 #239·#273).
+   값은 tokens.ts의 --moi-* 변수만 사용한다 (ADR-0012). */
+
+/* 페이지 시험 배지 — "시험 기준 · AWS SAA-C03". */
+.moi-exam-scope {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--moi-space-1);
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+/* 접두사와 시험명 사이 구분선 — 장식이라 DOM 텍스트에 넣지 않는다. */
+.moi-exam-scope-label::after {
+  content: '·';
+  margin-left: var(--moi-space-1);
+}
+
+.moi-exam-scope-name {
+  font-weight: 600;
+  color: var(--moi-color-ink);
+}
+
+/* 시험 선택 — 라벨(시각) + 실제 select. 44px 터치 타깃.
+   라벨·셀렉트 간격과 chevron 쪽 오른쪽 padding을 여유 있게 둔다 (#215·#273). */
+.moi-exam-selector {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moi-space-2);
+  min-width: 0;
+  max-width: 100%;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+
+.moi-exam-selector-label {
+  flex: none;
+  line-height: var(--moi-touch-min);
+}
+
+.moi-exam-select {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--moi-touch-min);
+  padding-left: var(--moi-space-2);
+  padding-inline-end: 44px;
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  background: var(--moi-color-white);
+  color: var(--moi-color-ink);
+  font-family: inherit;
+  font-size: var(--moi-size-small);
+  line-height: var(--moi-lh-normal);
+  text-overflow: ellipsis;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* select wrapper — chevron 절대 배치용 relative 기준 (#285).
+   UA 화살표는 appearance:none으로 제거하고 위치 제어 가능한 아이콘만 둔다. */
+.moi-exam-select-wrap {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* chevron — 테두리 안쪽 16px·세로 중앙, 클릭은 select로 통과시킨다 (#285). */
+.moi-exam-select-chevron {
+  position: absolute;
+  inset-inline-end: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.moi-exam-select:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
+}

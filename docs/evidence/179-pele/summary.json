@@ -1,0 +1,119 @@
+{
+  "diagrams": {
+    "total": 71,
+    "rendered": 71,
+    "fallback": 0,
+    "internalOverflow": 0,
+    "textClipped": 0,
+    "duplicateIds": 0,
+    "pageOverflowPx": 0
+  },
+  "attacks": {
+    "samples": 30,
+    "violationCount": 0,
+    "externalRequests": 0,
+    "pwned": 0,
+    "cspViolations": 0
+  },
+  "sanitizeBoundary": {
+    "cases": 38,
+    "mismatches": 2
+  },
+  "viewports": [
+    {
+      "w": 320,
+      "theme": "light",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 320,
+      "theme": "dark",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 375,
+      "theme": "light",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 375,
+      "theme": "dark",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 768,
+      "theme": "light",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 768,
+      "theme": "dark",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 1024,
+      "theme": "light",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 1024,
+      "theme": "dark",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 1280,
+      "theme": "light",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    },
+    {
+      "w": 1280,
+      "theme": "dark",
+      "overflowPx": 0,
+      "internal": 0,
+      "clipped": 0,
+      "rendered": 71,
+      "fallback": 0
+    }
+  ],
+  "perf": {
+    "coldP50": 54.6,
+    "warmP50": 2.2,
+    "runs": 3
+  }
+}

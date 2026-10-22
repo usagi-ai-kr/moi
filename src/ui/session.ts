@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
-import { getMe, logout, type ApiClient } from './api/client';
+import { getMe, logout, type ApiClient, type MeUser } from './api/client';
+import { REVIEW_CACHE_ROOT } from './review/cache-keys';
+import { clearDraftsForUser } from './study/drafts';
+import { clearTabStatesForUser } from './study/tab-state';
 
-export type { ApiClient };
+export type { ApiClient, MeUser };
 
 // 서버 진실 원천: TanStack Query 키 ['me'] (ADR-0018).
 export const ME_QUERY_KEY = ['me'] as const;
@@ -32,9 +35,10 @@ export function maskUserId(id: string): string {
 }
 
 // GET /api/me 구독 — 401은 비로그인(null), 그 외 오류는 throw.
-export function useSessionId(client: ApiClient): {
+// 반환값은 계정 DTO(내부 id·가입일·최근 로그인)다 — 화면은 id를 표시하지 않는다(#234/ADR-0072).
+export function useSessionUser(client: ApiClient): {
   status: 'loading' | 'logged-out' | 'logged-in' | 'error';
-  userId: string | null;
+  user: MeUser | null;
   retry: () => void;
 } {
   const query = useQuery({
@@ -43,22 +47,40 @@ export function useSessionId(client: ApiClient): {
     retry: false,
     staleTime: 30_000,
   });
-  if (query.isPending) return { status: 'loading', userId: null, retry: query.refetch };
-  if (query.isError) return { status: 'error', userId: null, retry: () => void query.refetch() };
-  if (query.data === null) return { status: 'logged-out', userId: null, retry: () => void query.refetch() };
-  return { status: 'logged-in', userId: query.data, retry: () => void query.refetch() };
+  if (query.isPending) return { status: 'loading', user: null, retry: query.refetch };
+  if (query.isError) return { status: 'error', user: null, retry: () => void query.refetch() };
+  if (query.data === null) return { status: 'logged-out', user: null, retry: () => void query.refetch() };
+  return { status: 'logged-in', user: query.data, retry: () => void query.refetch() };
 }
 
-// 로그아웃 — 성공 후 캐시 무효화 + 제거 (ADR-0018).
-export function useLogout(client: ApiClient): () => Promise<void> {
+// 로그아웃 — 성공 후 초안·탭 상태 정리 + 캐시 무효화·제거 (ADR-0018, 이슈 #52).
+// 성공(onSuccess)한 경우에만 로컬 데이터를 지운다 — 실패 시 사용자 초안은 보존한다.
+export function useLogout(client: ApiClient, userId: string | null): () => Promise<void> {
   const queryClient = useQueryClient();
   const setLogoutPending = useUiStore((s) => s.setLogoutPending);
   const mutation = useMutation({
     mutationFn: () => logout(client),
+    onSuccess: () => {
+      if (userId === null) return;
+      try {
+        clearDraftsForUser(window.localStorage, userId);
+      } catch {
+        // 저장소 접근 실패는 무시 — 서버 세션은 이미 종료됐다
+      }
+      try {
+        clearTabStatesForUser(window.sessionStorage, userId);
+      } catch {
+        // 무시
+      }
+    },
     onSettled: () => {
       setLogoutPending(false);
-      void queryClient.invalidateQueries({ queryKey: ME_QUERY_KEY });
-      queryClient.removeQueries({ queryKey: ME_QUERY_KEY });
+      // 활성 /api/me observer를 초기 상태로 되돌리고 즉시 재조회한다.
+      // invalidate→remove 순서는 재조회를 취소해 로그인 화면이 갱신되지 않을 수 있다.
+      void queryClient.resetQueries({ queryKey: ME_QUERY_KEY });
+      // 복습 캐시(후보·회차·북마크)는 계정 격리 키를 쓰지만, 로그아웃 시 이전 계정 데이터가
+      // 메모리에 남지 않도록 함께 제거한다(#314).
+      queryClient.removeQueries({ queryKey: REVIEW_CACHE_ROOT });
     },
   });
   return async () => {

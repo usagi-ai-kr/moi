@@ -1,0 +1,89 @@
+/* 계정 — 정보 그룹 + 위험 영역(탈퇴) 안내 (#234, ADR-0072).
+   로그아웃 버튼은 계정 본문에서 제거했고 내비게이션 액션으로 옮겼다. */
+.moi-account {
+  max-width: var(--moi-reading-max);
+}
+.moi-account-title {
+  margin: 0;
+  margin-bottom: var(--moi-space-3);
+  font-family: var(--moi-font-display);
+  font-size: var(--moi-size-h1);
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
+}
+
+/* 정보·위험 영역 공통 섹션 — 제목 + 본문을 세로로 쌓는다. */
+.moi-account-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  margin-top: var(--moi-space-5);
+}
+.moi-account-section-title {
+  margin: 0;
+  font-family: var(--moi-font-display);
+  font-size: var(--moi-size-h2);
+  line-height: var(--moi-lh-tight);
+  color: var(--moi-color-ink);
+}
+
+/* 키-값 목록 — 라벨(보조) + 값(본문) 2열. 좁으면 한 열로 접힌다. */
+.moi-account-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--moi-space-3);
+  margin: 0;
+}
+.moi-account-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--moi-space-2) var(--moi-space-4);
+}
+.moi-account-term {
+  flex: 0 0 auto;
+  min-width: 104px;
+  margin: 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+}
+.moi-account-value {
+  margin: 0;
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+  overflow-wrap: anywhere;
+}
+
+/* 위험 영역 — 탈퇴 안내 + 비활성 버튼. danger 강조는 로그아웃이 아닌 이 영역에만 쓴다. */
+.moi-account-danger {
+  border-top: 1px solid var(--moi-color-border);
+  padding-top: var(--moi-space-4);
+}
+.moi-account-danger-text {
+  margin: 0;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-muted);
+  overflow-wrap: anywhere;
+}
+.moi-account-withdraw {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--moi-touch-min);
+  padding-inline: var(--moi-space-4);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-danger);
+  border-radius: var(--moi-radius-md);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-body);
+  font-weight: 600;
+  color: var(--moi-color-danger);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.moi-account-withdraw:focus-visible {
+  outline: 2px solid var(--moi-color-ink);
+  outline-offset: 2px;
+}

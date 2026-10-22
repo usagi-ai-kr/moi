@@ -1,0 +1,230 @@
+/* AppShell — 헤더/네비/메인 셸 레이아웃 (ADR-0012, ADR-0057, DESIGN.md) */
+.moi-shell-header {
+  position: sticky;
+  top: 0;
+  inset: auto;
+  z-index: 10;
+  min-height: var(--moi-shell-header-h);
+  height: auto;
+  display: flex;
+  align-items: center;
+  padding-block: var(--moi-space-2);
+  background: var(--moi-color-white);
+  border-bottom: 1px solid var(--moi-color-border);
+}
+
+.moi-shell-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--moi-space-2);
+  width: 100%;
+}
+
+.moi-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--moi-space-2);
+  min-height: 44px;
+  min-width: var(--moi-touch-min);
+  color: inherit;
+  text-decoration: none;
+}
+
+.moi-brand-link:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
+}
+
+.moi-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moi-space-1);
+}
+
+/* 콘텐츠 최상단 공통 시험 선택 — 페이지 제목 위 1개 (#273).
+   모든 학습·이력·복습 화면에서 위치/간격을 통일한다. 줄바꿈해도 overflow 0. */
+.moi-content-exam {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--moi-space-2);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: var(--moi-space-1);
+}
+
+.moi-content-exam .moi-exam-selector {
+  max-width: 100%;
+}
+
+.moi-content-exam .moi-exam-select {
+  max-width: 100%;
+}
+
+/* 모바일(≤767px)에서는 가로 nav를 숨겨 햄버거 Drawer와 중복 노출하지 않는다 (ADR-0057).
+   hidden 속성은 포커스 순서와 AT 탐색에서 제거되지만, .moi-nav의 display:flex가 이를
+   덮어쓰므로 display:none을 명시한다. */
+.moi-nav[hidden] {
+  display: none;
+}
+
+.moi-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--moi-space-1);
+  min-height: 44px;
+  min-width: 44px;
+  padding-inline: var(--moi-space-2);
+  border-radius: var(--moi-radius-sm);
+  color: var(--moi-color-muted);
+  text-decoration: none;
+  /* 가로 nav는 데스크톱(≥768px)에서만 노출되므로 16px 고정(DESIGN.md 5항 버튼 레이블 16~18px). */
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.moi-nav-link:hover {
+  color: var(--moi-color-ink);
+}
+
+.moi-nav-link:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
+}
+
+.moi-nav-link[aria-current="page"] {
+  color: var(--moi-color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--moi-color-orange);
+  text-underline-offset: 4px;
+}
+
+/* 내비게이션 로그아웃 액션 — 메뉴 링크와 nav gap만으로 위계를 분리한다(#258).
+   세로 구분선(border-left)·여백(margin/padding) 없이 gap으로만 구분한다.
+   파괴 행위가 아니므로 danger 강조는 쓰지 않는다 — danger는 탈퇴 위험 영역에 남긴다. */
+.moi-nav-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--moi-space-1);
+}
+
+.moi-logout-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--moi-space-2);
+  min-height: var(--moi-touch-min);
+  padding-inline: var(--moi-space-3);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-border);
+  border-radius: var(--moi-radius-sm);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+  color: var(--moi-color-ink);
+  cursor: pointer;
+}
+.moi-logout-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .moi-logout-action:hover {
+    background: var(--moi-color-surface);
+  }
+}
+.moi-logout-action:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
+}
+
+/* 로그아웃 실패 안내 — 같은 위치에서 role="alert" + 재시도를 제공한다. */
+.moi-logout-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--moi-space-2);
+  max-width: 100%;
+  font-size: var(--moi-size-small);
+  color: var(--moi-color-danger);
+}
+.moi-logout-error-text {
+  overflow-wrap: anywhere;
+}
+.moi-logout-retry {
+  min-height: var(--moi-touch-min);
+  padding-inline: var(--moi-space-2);
+  background: var(--moi-color-white);
+  border: 1px solid var(--moi-color-danger);
+  border-radius: var(--moi-radius-sm);
+  font-family: var(--moi-font-ui);
+  font-size: var(--moi-size-small);
+  font-weight: 600;
+  color: var(--moi-color-danger);
+  cursor: pointer;
+}
+.moi-logout-retry:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--moi-color-white), 0 0 0 4px var(--ring, var(--moi-color-ink));
+}
+
+.moi-shell-main {
+  min-height: calc(100vh - var(--moi-shell-header-h));
+  min-height: calc(100dvh - var(--moi-shell-header-h));
+  padding-top: var(--moi-space-6);
+  padding-bottom: var(--moi-space-7);
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .moi-shell-head {
+    flex-wrap: nowrap;
+  }
+  /* nav는 한 줄을 유지한다(#273 이후 시험 선택이 헤더에 없으므로 줄바꿈 불필요). */
+  .moi-nav {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (min-width: 1024px) {
+  .moi-nav {
+    gap: var(--moi-space-2);
+  }
+  /* 큰 화면 — 헤더 내부와 본문을 같은 읽기 열(가운데)로 맞춰 좌우 정렬을 일치시킨다 (#148 6항). */
+  .moi-shell-header .moi-shell-head,
+  .moi-shell-main > .moi-main-inner {
+    max-width: var(--moi-reading-max);
+  }
+}
+
+/* #233 Slice B — nav 아이콘+라벨 간격·크기(20px 토큰).
+   Drawer 링크는 drawer.css가 flex이므로 gap만 보완한다. 줄바꿈·밀집 악화 금지.
+   #258 — 로그아웃 버튼 아이콘도 동일 20px 토큰으로 nav와 일관되게 한다. */
+.moi-nav-link svg,
+.moi-drawer-link svg,
+.moi-logout-action svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+.moi-drawer-link {
+  gap: var(--moi-space-1);
+}
+/* Drawer 닫기 아이콘은 24px 토큰 — drawer.css 20px 규칙보다 명시도로 우선한다. */
+.moi-drawer-head .moi-drawer-close svg {
+  width: 24px;
+  height: 24px;
+}

@@ -1,0 +1,406 @@
+{
+  "packId": "perf-01",
+  "examCode": "saa-c03",
+  "items": [
+    {
+      "questionId": "saa-perf-0001",
+      "domainCode": "performance",
+      "stem": "한 회사가 대용량 인메모리 캐시와 분석을 수행하는 EC2 워크로드를 새로 배치하려 한다. 메모리 대 CPU 비율이 높은 인스턴스 패밀리는?",
+      "explanation": "R 패밀리는 메모리 대 vCPU 비율이 높은 메모리 최적화 인스턴스다. 인메모리 데이터베이스와 대규모 캐시처럼 메모리 용량이 성능을 좌우하는 워크로드에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "메모리 최적화 R 패밀리" },
+        { "optionKey": "B", "text": "컴퓨팅 최적화 C 패밀리" },
+        { "optionKey": "C", "text": "스토리지 최적화 I 패밀리" },
+        { "optionKey": "D", "text": "버스트 가능 T 패밀리" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0002",
+      "domainCode": "performance",
+      "stem": "배치 처리 작업이 CPU를 지속적으로 100% 사용하며 메모리 사용량은 낮다. 비용 효율이 가장 높은 EC2 패밀리는?",
+      "explanation": "C 패밀리는 vCPU 대비 메모리 비율이 낮고 컴퓨팅 성능이 뛰어나다. CPU 집약적이면서 메모리 요구가 작은 배치 작업에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "메모리 최적화 R 패밀리" },
+        { "optionKey": "B", "text": "컴퓨팅 최적화 C 패밀리" },
+        { "optionKey": "C", "text": "스토리지 최적화 I 패밀리" },
+        { "optionKey": "D", "text": "그래픽 가속 G 패밀리" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0003",
+      "domainCode": "performance",
+      "stem": "t3 인스턴스에서 기준 CPU 사용률 이하로 실행할 때 적립되는 크레딧에 대한 설명으로 옳은 것은?",
+      "explanation": "버스트 가능 인스턴스는 기준 성능 이하로 실행할 때 CPU 크레딧을 적립한다. 기준 성능을 넘는 순간 적립된 크레딧을 사용해 일시적으로 버스트한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "크레딧은 다른 인스턴스로 이전할 수 있다." },
+        { "optionKey": "B", "text": "크레딧은 인스턴스 중지 시 모두 소멸한다." },
+        { "optionKey": "C", "text": "기준 성능을 초과하면 적립된 크레딧을 소비한다." },
+        { "optionKey": "D", "text": "크레딧은 시간당 고정 비율로만 소비된다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0004",
+      "domainCode": "performance",
+      "stem": "ARM 기반 Graviton 인스턴스로 마이그레이션해 가격 대비 성능을 높이려 한다. 사전에 확인해야 할 가장 중요한 조건은?",
+      "explanation": "Graviton은 ARM64 아키텍처를 사용하므로 애플리케이션과 네이티브 의존 라이브러리가 해당 아키텍처를 지원해야 한다. 호환되면 동일 워크로드에서 더 나은 가격 대비 성능을 기대할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "인스턴스가 단일 AZ에만 배치되는지 여부" },
+        { "optionKey": "B", "text": "EBS 볼륨이 gp3로 구성되었는지 여부" },
+        { "optionKey": "C", "text": "인스턴스에 퍼블릭 IP가 할당되는지 여부" },
+        { "optionKey": "D", "text": "애플리케이션과 의존 라이브러리가 ARM64를 지원하는지 여부" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0005",
+      "domainCode": "performance",
+      "stem": "HPC 작업이 노드 간에 매우 낮은 네트워크 지연과 높은 처리량을 요구한다. 가장 적합한 배치 전략은?",
+      "explanation": "**핵심:** 클러스터 배치 그룹은 인스턴스를 **단일 AZ의 가까운 랙**에 모아 짧은 지연과 높은 네트워크 처리량을 제공한다. HPC·긴밀 결합 워크로드에 적합하다.\n```mermaid\nflowchart LR\n  subgraph AZ[\"단일 AZ·근접 랙\"]\n    N1[노드 1] --- N2[노드 2]\n    N2 --- N3[노드 3]\n  end\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "클러스터 배치 그룹" },
+        { "optionKey": "B", "text": "스프레드 배치 그룹" },
+        { "optionKey": "C", "text": "파티션 배치 그룹" },
+        { "optionKey": "D", "text": "다중 AZ 배치 그룹" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0006",
+      "domainCode": "performance",
+      "stem": "소수의 중요 인스턴스가 서로 다른 하드웨어에 배치되어 동시 장애 영향을 최소화해야 한다. 가장 적합한 배치 전략은?",
+      "explanation": "**핵심:** 스프레드 배치 그룹은 인스턴스를 **서로 다른 랙**에 배치해 동시 장애 위험을 줄인다. AZ별로 최대 7개의 인스턴스를 둘 수 있다.\n```mermaid\nflowchart TB\n  subgraph A[AZ-a]\n    R1[랙 1 · 인스턴스]\n    R2[랙 2 · 인스턴스]\n  end\n  subgraph B[AZ-c]\n    R3[랙 3 · 인스턴스]\n  end\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "클러스터 배치 그룹" },
+        { "optionKey": "B", "text": "스프레드 배치 그룹" },
+        { "optionKey": "C", "text": "파티션 배치 그룹" },
+        { "optionKey": "D", "text": "단일 AZ 고정 배치" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0007",
+      "domainCode": "performance",
+      "stem": "수백 개의 노드로 구성된 분산 데이터 처리 클러스터를 파티션 단위로 장애 격리하려 한다. 가장 적합한 배치 전략은?",
+      "explanation": "**핵심:** 파티션 배치 그룹은 인스턴스를 **논리 파티션**으로 나누고 파티션 간 랙을 공유하지 않는다. HDFS·Kafka 같은 대규모 분산 시스템의 장애 격리에 적합하다.\n```mermaid\nflowchart TB\n  subgraph P1[파티션 1]\n    A1[노드]\n    A2[노드]\n  end\n  subgraph P2[파티션 2]\n    B1[노드]\n  end\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-strategies.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "클러스터 배치 그룹" },
+        { "optionKey": "B", "text": "스프레드 배치 그룹" },
+        { "optionKey": "C", "text": "파티션 배치 그룹" },
+        { "optionKey": "D", "text": "다중 리전 배치 그룹" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0008",
+      "domainCode": "performance",
+      "stem": "클러스터 배치 그룹에서 새 인스턴스를 시작할 때 용량 부족 오류가 발생했다. 가장 적절한 대응은?",
+      "explanation": "클러스터 배치 그룹은 단일 AZ의 가까운 하드웨어에 인스턴스를 모으므로 일시적으로 용량이 부족할 수 있다. 그룹을 유지한 채 시작을 재시도하거나 필요 시 다른 배치 전략을 검토한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "같은 배치 그룹에서 인스턴스 시작을 나중에 재시도한다." },
+        { "optionKey": "B", "text": "배치 그룹을 삭제하고 인스턴스를 다시 만든다." },
+        { "optionKey": "C", "text": "인스턴스 유형을 더 큰 사양으로 즉시 변경한다." },
+        { "optionKey": "D", "text": "가용 영역을 여러 개로 확장해 분산 배치한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0009",
+      "domainCode": "performance",
+      "stem": "초당 수십만 건의 랜덤 읽기·쓰기를 로컬 NVMe에서 처리해야 하는 데이터베이스 워크로드에 가장 적합한 패밀리는?",
+      "explanation": "I 패밀리는 고성능 로컬 NVMe 스토리지를 제공해 높은 IOPS와 낮은 지연을 요구하는 워크로드에 적합하다. 데이터베이스와 검색 엔진처럼 로컬 디스크 I/O가 많은 경우에 유리하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "범용 M 패밀리" },
+        { "optionKey": "B", "text": "가속 컴퓨팅 P 패밀리" },
+        { "optionKey": "C", "text": "메모리 최적화 X 패밀리" },
+        { "optionKey": "D", "text": "스토리지 최적화 I 패밀리" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0010",
+      "domainCode": "performance",
+      "stem": "머신러닝 추론 서비스가 GPU 가속을 필요로 한다. 가장 적합한 EC2 인스턴스 패밀리는?",
+      "explanation": "P 패밀리는 GPU를 탑재한 가속 컴퓨팅 인스턴스로 머신러닝과 그래픽 처리에 사용된다. CPU 기반 패밀리보다 추론 처리량을 크게 높일 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "메모리 최적화 R 패밀리" },
+        { "optionKey": "B", "text": "가속 컴퓨팅 P 패밀리" },
+        { "optionKey": "C", "text": "스토리지 최적화 I 패밀리" },
+        { "optionKey": "D", "text": "버스트 가능 T 패밀리" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0011",
+      "domainCode": "performance",
+      "stem": "Lambda 함수의 실행 시간이 길어 메모리를 1GB에서 3GB로 늘렸다. 일반적으로 기대할 수 있는 효과는?",
+      "explanation": "Lambda는 메모리 설정에 비례해 CPU 성능을 함께 할당한다. 메모리를 늘리면 실행 시간이 줄어 전체 비용이 오히려 감소할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "메모리만 늘고 CPU 성능은 그대로다." },
+        { "optionKey": "B", "text": "동시성 한도가 자동으로 세 배가 된다." },
+        { "optionKey": "C", "text": "CPU 성능도 함께 높아져 실행 시간이 줄 수 있다." },
+        { "optionKey": "D", "text": "콜드 스타트가 완전히 사라진다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0012",
+      "domainCode": "performance",
+      "stem": "지연에 민감한 API가 Lambda 콜드 스타트로 응답 시간이 튀는 문제를 겪는다. 가장 직접적인 해결 방법은?",
+      "explanation": "**핵심:** **프로비저닝된 동시성**은 실행 환경을 미리 초기화해 콜드 스타트를 줄인다. 지연에 민감한 함수의 기준 동시성을 확보하는 데 적합하다.\n```mermaid\nflowchart LR\n  R[요청] --> P{프로비저닝된 동시성}\n  P -->|예| W[웜 환경 즉시 실행]\n  P -->|아니오| C[콜드 스타트]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "프로비저닝된 동시성을 설정한다." },
+        { "optionKey": "B", "text": "함수의 제한 시간을 늘린다." },
+        { "optionKey": "C", "text": "예약된 동시성을 0으로 설정한다." },
+        { "optionKey": "D", "text": "함수의 메모리를 최소로 낮춘다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0013",
+      "domainCode": "performance",
+      "stem": "한 Lambda 함수가 급증해 같은 계정의 다른 함수까지 스로틀되는 것을 막으려 한다. 가장 적절한 설정은?",
+      "explanation": "예약된 동시성은 해당 함수가 사용할 수 있는 동시성 상한을 고정해 다른 함수의 용량을 보호한다. 함수별로 실행 용량을 격리하는 용도에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "두 함수의 메모리를 동일하게 맞춘다." },
+        { "optionKey": "B", "text": "두 함수를 같은 VPC에 배치한다." },
+        { "optionKey": "C", "text": "전체 계정 동시성 한도를 늘리기만 한다." },
+        { "optionKey": "D", "text": "문제 함수에 예약된 동시성을 설정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0014",
+      "domainCode": "performance",
+      "stem": "비동기로 호출되는 Lambda 함수가 동시성 한도에 도달해 요청이 스로틀되고 있다. 가장 적절한 대응은?",
+      "explanation": "비동기 호출이 스로틀되면 Lambda는 재시도하고 지속되면 이벤트를 유실할 수 있다. 동시성을 확장하거나 SQS 같은 큐로 버퍼링해 급증을 흡수해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "함수의 제한 시간을 최대 15분으로 늘린다." },
+        { "optionKey": "B", "text": "동시성을 늘리거나 큐 기반 버퍼링으로 부하를 흡수한다." },
+        { "optionKey": "C", "text": "함수 버전을 새로 게시해 트래픽을 나눈다." },
+        { "optionKey": "D", "text": "함수의 임시 스토리지 크기를 늘린다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0015",
+      "domainCode": "performance",
+      "stem": "Lambda 함수가 처리 중 대용량 임시 파일을 /tmp에 기록해야 한다. 가능한 최대 임시 스토리지는?",
+      "explanation": "Lambda의 /tmp 임시 스토리지는 512MB에서 최대 10GB까지 구성할 수 있다. 함수 실행 환경 간에 공유되지 않으므로 임시 데이터 용도로만 사용한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/configuration-ephemeral-storage.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "512MB" },
+        { "optionKey": "B", "text": "2GB" },
+        { "optionKey": "C", "text": "10GB" },
+        { "optionKey": "D", "text": "100GB" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0016",
+      "domainCode": "performance",
+      "stem": "Lambda 함수의 메모리 설정을 최적화하려 한다. 가장 근거 있는 접근은?",
+      "explanation": "CloudWatch 지표나 Lambda Power Tuning으로 메모리별 실행 시간과 비용을 비교할 수 있다. 실제 사용량을 측정해 비용과 지연의 균형점을 찾는 것이 좋다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/configuration-memory.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "실제 실행의 메모리 사용량과 소요 시간을 측정해 조정한다." },
+        { "optionKey": "B", "text": "항상 최대 메모리로 설정해 둔다." },
+        { "optionKey": "C", "text": "메모리를 최소로 낮추고 재시도를 늘린다." },
+        { "optionKey": "D", "text": "동시성 한도를 메모리와 같게 맞춘다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0017",
+      "domainCode": "performance",
+      "stem": "SQS를 이벤트 소스로 사용하는 Lambda 함수의 처리량을 높이려 한다. 가장 효과적인 조정은?",
+      "explanation": "SQS 이벤트 소스는 배치 단위로 레코드를 가져오므로 배치 크기와 동시성을 조정하면 병렬 처리량을 높일 수 있다. 다만 하류 시스템의 용량을 함께 고려해야 한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/lambda/latest/dg/invocation-scaling.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "함수의 제한 시간을 줄인다." },
+        { "optionKey": "B", "text": "큐의 가시성 제한 시간을 0으로 설정한다." },
+        { "optionKey": "C", "text": "함수의 임시 스토리지를 늘린다." },
+        { "optionKey": "D", "text": "배치 크기와 동시성을 적절히 늘린다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0018",
+      "domainCode": "performance",
+      "stem": "ECS 서비스의 태스크 수를 ALB 요청 수에 따라 자동 조정하려 한다. 가장 적합한 조정 정책은?",
+      "explanation": "대상 추적 정책은 지정한 지표를 목표 값으로 유지하도록 태스크 수를 조정한다. ALB 요청 수 같은 지표를 목표로 삼아 서비스 용량을 자동으로 맞출 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/as-scaling-target-tracking.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "단계 조정 정책" },
+        { "optionKey": "B", "text": "대상 추적 정책" },
+        { "optionKey": "C", "text": "예약된 조정 정책" },
+        { "optionKey": "D", "text": "수동 조정 정책" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0019",
+      "domainCode": "performance",
+      "stem": "ECS 클러스터의 EC2 용량을 최대한 적은 인스턴스에 채워 비용을 줄이려 한다. 가장 적합한 태스크 배치 전략은?",
+      "explanation": "binpack 전략은 CPU 또는 메모리 사용률이 가장 높은 인스턴스에 태스크를 배치해 빈 용량을 줄인다. 인스턴스 수를 줄여 비용을 절감하는 데 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-strategies.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "spread" },
+        { "optionKey": "B", "text": "random" },
+        { "optionKey": "C", "text": "binpack" },
+        { "optionKey": "D", "text": "distinctInstance" }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0020",
+      "domainCode": "performance",
+      "stem": "ECS on EC2 클러스터에서 태스크 증가에 맞춰 Auto Scaling 그룹 용량을 자동으로 확장하려 한다. 가장 적절한 구성은?",
+      "explanation": "**핵심:** **용량 공급자**는 클러스터 Auto Scaling과 연동해 태스크 수요에 따라 Auto Scaling 그룹 용량을 조정한다. 관리형 종료 보호로 실행 중인 태스크가 있는 인스턴스의 축소를 지연할 수 있다.\n```mermaid\nflowchart LR\n  T[태스크 수요 증가] --> C[클러스터 Auto Scaling]\n  C --> P[용량 공급자]\n  P --> A[ASG 용량 확장]\n  A --> E[EC2 인스턴스 추가]\n```",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "용량 공급자와 클러스터 Auto Scaling을 구성한다." },
+        { "optionKey": "B", "text": "태스크 정의의 CPU를 최대로 고정하고 노드 수를 수동으로 조정한다." },
+        { "optionKey": "C", "text": "ALB 헬스 체크를 비활성화해 태스크 재시작을 막는다." },
+        { "optionKey": "D", "text": "서비스 검색을 비활성화하고 태스크를 단일 노드에 배치한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0021",
+      "domainCode": "performance",
+      "stem": "Fargate에서 실행되는 ECS 태스크의 비용과 성능을 최적화하려 한다. 가장 적절한 방법은?",
+      "explanation": "Fargate에서는 태스크 정의에 지정한 CPU와 메모리 조합이 과금과 성능을 결정한다. 실제 사용량을 측정해 조합을 조정하면 불필요한 비용을 줄일 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-defs.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "호스트 EC2 인스턴스의 인스턴스 유형을 키운다." },
+        { "optionKey": "B", "text": "Fargate 노드의 Auto Scaling 그룹을 직접 관리한다." },
+        { "optionKey": "C", "text": "태스크를 단일 AZ에 고정한다." },
+        { "optionKey": "D", "text": "태스크 정의의 CPU·메모리 조합을 워크로드에 맞게 조정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0022",
+      "domainCode": "performance",
+      "stem": "EKS 클러스터에서 CPU 사용률에 따라 파드 수를 자동으로 늘리려 한다. 필요한 구성은?",
+      "explanation": "HPA는 메트릭을 기반으로 파드 수를 조정하므로 metrics-server가 필요하다. CPU 사용률 목표를 지정한 HPA 오브젝트를 배포하면 파드가 수평 확장된다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/eks/latest/userguide/hpa.html"
+      ],
+      "answerOptionKeys": ["B"],
+      "options": [
+        { "optionKey": "A", "text": "Cluster Autoscaler만 설치하고 HPA는 구성하지 않는다." },
+        { "optionKey": "B", "text": "metrics-server를 설치하고 HorizontalPodAutoscaler를 정의한다." },
+        { "optionKey": "C", "text": "Kubernetes Service를 LoadBalancer로 변경하고 파드 수를 고정한다." },
+        { "optionKey": "D", "text": "노드 그룹의 최대 크기를 1로 고정하고 파드 수를 수동으로 조정한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0023",
+      "domainCode": "performance",
+      "stem": "EKS에서 파드가 스케줄되지 못하고 Pending 상태로 남아 있다. 노드 용량을 자동으로 늘리려면?",
+      "explanation": "Cluster Autoscaler는 스케줄할 수 없는 파드를 감지하면 노드 그룹의 Auto Scaling 그룹을 확장한다. 노드 그룹에 필요한 태그와 권한을 구성해야 동작한다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/eks/latest/userguide/cluster-autoscaler.html"
+      ],
+      "answerOptionKeys": ["C"],
+      "options": [
+        { "optionKey": "A", "text": "HPA의 최소 파드 수를 늘려 확장한다." },
+        { "optionKey": "B", "text": "파드의 CPU 요청을 제거해 스케줄한다." },
+        { "optionKey": "C", "text": "Cluster Autoscaler로 노드 그룹을 확장한다." },
+        { "optionKey": "D", "text": "kube-proxy를 재시작해 네트워크를 복구한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0024",
+      "domainCode": "performance",
+      "stem": "EKS에서 간헐적인 배치 작업만 Fargate로 실행해 노드 관리 없이 용량을 확보하려 한다. 가장 적절한 구성은?",
+      "explanation": "Fargate 프로파일은 지정한 네임스페이스와 레이블의 파드를 Fargate에서 실행한다. 노드를 프로비저닝하지 않아도 되므로 간헐적 배치에 적합하다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/eks/latest/userguide/fargate.html"
+      ],
+      "answerOptionKeys": ["A"],
+      "options": [
+        { "optionKey": "A", "text": "Fargate 프로파일로 해당 네임스페이스 파드를 실행한다." },
+        { "optionKey": "B", "text": "모든 노드 그룹을 스팟 인스턴스로 교체한다." },
+        { "optionKey": "C", "text": "Cluster Autoscaler의 최대 노드 수를 늘린다." },
+        { "optionKey": "D", "text": "파드를 DaemonSet으로 배포한다." }
+      ]
+    },
+    {
+      "questionId": "saa-perf-0025",
+      "domainCode": "performance",
+      "stem": "Graviton 인스턴스와 x86 인스턴스가 섞인 ECS 클러스터에서 같은 이미지를 배포하려 한다. 가장 적절한 방법은?",
+      "explanation": "멀티 아키텍처 이미지 매니페스트는 플랫폼에 맞는 이미지 레이어를 자동으로 선택한다. ARM64와 x86_64 태스크를 같은 태스크 정의로 배포할 수 있다.",
+      "sourceUrls": [
+        "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-arm64.html"
+      ],
+      "answerOptionKeys": ["D"],
+      "options": [
+        { "optionKey": "A", "text": "x86 이미지만 사용하고 Graviton을 제거한다." },
+        { "optionKey": "B", "text": "이미지를 인스턴스마다 수동으로 복사한다." },
+        { "optionKey": "C", "text": "단일 아키텍처 이미지를 두 클러스터에 나눠 배포한다." },
+        { "optionKey": "D", "text": "멀티 아키텍처 이미지 매니페스트를 만들어 배포한다." }
+      ]
+    }
+  ]
+}

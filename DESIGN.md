@@ -1,0 +1,112 @@
+# DESIGN.md — moi 제품 UI·UX 설계 계약
+
+> 적용: Issue #148(구조적 UX 개선), #132(화면 정비), #50(풀이), #52(저장), #56(학습 실사용). **Lighthouse 통과는 디자인 합격이 아니다.** 현재 UI는 정보 구조·가독성·상호작용 차원에서 재설계가 필요하다.
+> 상태: 목표 설계/구현 요구사항. 실제 코드 반영 및 수용 여부는 별도 PR·실화면 검증으로 확인한다. 기술 스택 전환은 ADR-0035(제안) 및 기존 ADR supersede 후 확정한다.
+
+## 1. 제품 원칙·금지 사항
+- 정체성: **문제 중심 시험 대비 플랫폼**, 메시지 **약한 데만 또 익히기**. AWS SAA-C03은 첫 지원 시험으로만 표현. 미구현 기능·연결 AI·통계를 있는 것처럼 소개하지 않는다.
+- 한 화면에 모든 기능을 펼쳐 쌓지 않는다. **한 화면 = 한 주요 과업**, 한 화면의 primary action은 하나.
+- 로딩 성공을 가정한 채 깜빡이는 원시 데이터, 내부 UUID·Kakao sub·jti·보기/문항 GUID, 원시 enum('unanswered')·서버 내부 코드의 사용자 노출 금지. 지원상 필요한 경우 별도 문의 참조번호 사용.
+- **원문 내부 식별자 표시 금지**: 계정 요약, 문제 번호, 결과·이력·오류 및 접근성 텍스트 모두 적용. 브라우저 인증/소유권 검증은 서버에서 유지.
+- **OG 공유 카드(#236)**: 최초 HTML에 정적 OG/X meta를 두고, `public/og/moi-og.png`는 1200×630 PNG(브랜드 새·moi·문구, 중앙 안전 영역, 5MB 미만)로 제공한다. 내부 UUID/세션/학습 데이터는 URL·이미지·설명에 넣지 않고, 로그인 필요 경로는 루트 공용 소개 meta로 폴백한다. JS-only 추가 금지.
+- 화려한 카드·거대한 버튼·작은 본문 폰트로 시각적 문제를 가리지 않는다. 성능 점수로 레이아웃 결함을 정당화하지 않는다.
+
+## 2. 정보 구조 / 내비게이션
+- 데스크톱 상단 헤더: 브랜드 좌측, **학습 시작 / 학습 현황·이력 / 계정**을 메뉴로 제공. 좁은 화면에서는 접근 가능한 모바일 메뉴. 현재 화면 aria-current 표시.
+- 계정은 별도 화면/메뉴. 로그인 상태·사용자 제공 가능 정보·**로그아웃**을 위치시킨다. 풀이 화면 상단에 계정 카드·로그아웃을 항상 노출하지 않는다.
+- 경로 초안: `/` 홈·학습 시작, `/study/new` 범위 선택, `/study/:setId` 풀이, `/study/:setId/result` 결과, `/history` 완료 세트 목록, `/history/:setId` 이력 상세, `/account` 계정. 실제 URL은 라우팅 PR에서 확정한다.
+- 뒤로가기·직접 URL·새로고침·로그인 만료·다른 기기 세션 교체 시 경로/상태가 일관돼야 한다. 풀이 중 페이지 이동은 초안 보존·미저장 경고와 연계한다. 전체 SEO·프리렌더(#72)는 별도.
+- 결과 문항을 전부 길게 나열하지 않는다. **요약 → 문항 목록(번호·상태) → 선택한 한 문제의 상세**. 이력 목록은 서버 페이지네이션·총 건수·필터·빈 상태·이전/다음으로 구성하며 0건 시 `1/1·전체 0` 제거.
+- 학습 현황 통계와 개별 세트 결과를 혼합하지 않는다. 실제로 구현되지 않은 통계/복습은 노출하지 않는다.
+
+## 3. 컴포넌트 시스템: shadcn/ui + Tailwind 우선 전환
+- 사용자 요청에 따라 **shadcn/ui(소스 소유 컴포넌트) + Tailwind CSS**를 목표 UI 시스템으로 선택한다. React Router/Vite·Cloudflare Workers SPA 유지; 새 SSR 도입 금지.
+- 전환 순서: (1) Tailwind/Vite 설정·CSS 토큰 브리지·shadcn CLI 설치 (2) 공통 Button, Tabs, NavigationMenu/DropdownMenu, Card, RadioGroup/Checkbox, Separator, Skeleton, AlertDialog, Pagination 대체 (3) 계정/학습 시작·풀이·결과·이력 화면 순차 전환 (4) AntD 의존성 사용처 0 확인 후 제거.
+- 기존 `src/ui/tokens.ts` + CSS `--moi-*`와 shadcn의 CSS 변수 간 단일 매핑을 둔다. Tailwind 임의 색·폰트·간격 숫자를 무분별하게 복사하지 않는다. 기존 AWS Orange 액센트/중성 팔레트·KoddiUD/Inter·카카오 공식 버튼 규칙 유지(바꾸려면 ADR).
+- 기존 AntD 유지 지시와 충돌하므로 **ADR/AGENTS.md/frontend-responsive-ui 스킬**을 같은 구현 PR에서 갱신한다. 전환 과정에 라이브러리 혼용은 과도기만 허용하며 신규 화면은 shadcn 패턴 사용. 보안·인증·도메인 로직을 CSS 교체 과정에서 재작성하지 않는다.
+- shadcn 컴포넌트는 코드를 프로젝트가 보유하므로 버전/접근성 패치 추적을 담당한다. Tailwind 클래스는 조합 함수·variant로 중앙 관리.
+
+## 4. GitHub Primer를 참고한 조작 아이콘
+- GitHub/Primer의 **간결한 선형 시스템 아이콘**을 시각 기준으로 삼는다. 조작용 기본 세트는 **Lucide 단일 계열**로 통일한다(ADR-0073). 화면마다 서로 다른 아이콘 소스 혼합 금지. 신규 계열(Octicons 등)은 ADR + `generate-third-party-notices.mjs --check` 갱신 없이 추가하지 않는다.
+- 크기 토큰은 **16/20/24px**만 사용하고 Lucide 기본 stroke-width(2)를 통일한다. 광학 보정·임의 override·복잡한 삽화형/얇아 사라지는 아이콘 금지. 아이콘 대비 최소 3:1, 텍스트 일반 대비 4.5:1 목표.
+- 기본은 **아이콘+텍스트 라벨**. 아이콘 단독은 aria-label·tooltip 및 44×44px 클릭 영역 필수. 장식 아이콘은 aria-hidden. **색만으로 뜻 전달 금지**(텍스트/아이콘 병행).
+- 네비게이션/뒤로/다음/로그아웃/프로필/북마크/신고/체크/오류/로딩의 의미와 아이콘은 아래 매핑표를 정본으로 한다. `src/ui/icons.ts`의 `IconSpec` named export가 이 표를 코드로 반영한다.
+- **브랜드 새와 모이 favicon(#70)은 조작 아이콘과 별도**. 16px 식별성·명암·배경·maskable 안전영역 테스트. GitHub의 브랜드 로고 복제가 아니라 Primer의 UI 명료성을 벤치마킹.
+- **워드마크 `moi` 전용 영문 글꼴: Bricolage Grotesque 700** — 상단 nav·모바일 Drawer의 소문자 `moi`에만 적용(데스크톱·Drawer 동일). 한국어 본문·버튼·문항·숫자·전역 font-family 변경 금지. 토큰 `--moi-font-brand`(폴백 display 스택)·self-host m/o/i 서브셋(1.6KB, OFL-1.1, `public/fonts/`)·`swap`·preload로 FOIT·CLS 저감. weight·letter-spacing(-0.01em)·22px 아이콘 정렬 유지(#225, ADR-0069).
+
+### 4.1 금지 사례
+- 혼합 라이브러리(Octicons/heroicons/이모지/임의 SVG) 사용.
+- aria-label 없는 아이콘 전용 버튼, 44px 미만 터치 타깃.
+- 아이콘을 단일 집계 객체로 묶어 tree-shaking 저해.
+- 색만으로 상태 표현, 텍스트 잘림이 발생하는 밀집 배치.
+
+### 4.2 매핑표 (Lucide, ADR-0073)
+| 동작 | 아이콘 | px | aria | 비고 |
+| --- | --- | --- | --- | --- |
+| 상단 메뉴(모바일) | `Menu` | 24 | label | Drawer 열기 |
+| Drawer 닫기 | `X` | 24 | label | |
+| 시험 selector | `ChevronDown` | 16 | hidden | select 보조 |
+| 학습 시작 | `Play` | 20 | hidden | primary CTA, 라벨 병행 |
+| 이어풀기 | `PlayCircle` | 20 | hidden | |
+| 이전 | `ChevronLeft` | 20 | hidden | |
+| 다음 | `ChevronRight` | 20 | hidden | |
+| 제출 | `Send` | 20 | hidden | primary |
+| Pass | `SkipForward` | 20 | hidden | secondary |
+| 미응답 | `CircleDashed` | 20 | hidden | 상태 |
+| 정답 | `Check` | 20 | hidden | 상태 |
+| 오답 | `X` | 20 | hidden | 상태 |
+| 북마크 추가/해제 | `Bookmark` | 20 | label | 설정=fill 채움/미설정=선형(모양 구분) + aria-pressed + 텍스트 병행 |
+| 문제 신고 | `Flag` | 20 | hidden | 보조 |
+| 포기 | `XCircle` | 20 | hidden | destructive |
+| 취소 | `X` | 16 | hidden | ghost |
+| 확인 | `Check` | 16 | hidden | primary |
+| 결과 | `ClipboardCheck` | 20 | hidden | 요약 |
+| 이력 | `History` | 20 | hidden | 목록 |
+| 영역 분석 | `PieChart` | 20 | hidden | 통계 |
+| 새로고침/재시도 | `RefreshCw` | 16 | hidden | 로딩 연계 |
+| 로딩 | `Loader2` | 16 | hidden | 스피너 |
+| 저장 성공 | `CheckCircle2` | 16 | hidden | 상태 문구 병행 |
+| 저장 실패 | `AlertCircle` | 16 | hidden | 상태 문구 병행 |
+| 로그아웃 | `LogOut` | 20 | hidden | destructive |
+| 계정 | `CircleUser` | 20 | hidden | nav/계정 |
+
+### 4.3 검수
+- 5폭(320/375/768/1024/1280) + 200% 확대에서 overflow/겹침/44px 터치 확인.
+- 아이콘 전용 버튼 aria-label·tooltip, 장식 aria-hidden, 키보드 포커스.
+
+## 5. 가독성·레이아웃·버튼
+- 모바일 우선: 320·375·768·1024·1280px. 콘텐츠는 중앙 정렬 max-width(풀이 본문 약 760–900px, 목록/대시보드 약 1100–1200px부터 검토); 데스크톱 왼쪽 360px 칼럼만 차지하는 화면 금지.
+- 기본 본문 **18px 이상**, 보조 설명 16px 이상, 버튼 레이블 16–18px, 제목 26–32px. 장문 질문·보기는 충분한 줄간격(1.5~1.7), 적절한 줄 너비, 한국어 줄바꿈.
+- 시맨틱 heading/section/nav/main, 8px 간격 체계, 컨테이너 패딩 16–32px, 명확한 섹션 간격. 실사용 데이터의 긴 AWS 서비스명·URL도 줄바꿈/overflow 대응.
+- 버튼 역할: primary=학습 시작/최종 제출, secondary=다음/이전, destructive=로그아웃/포기(실제 위험에 맞춰 강도 조절), ghost=도움/보조. 위험 행동에 명확한 확인 대화상자.
+- 버튼 높이 40–44px 기준, **터치 타깃 최소 44×44px**. 터치 입력이 하나라도 있는 기기(터치 화면이 있는 랩톱·태블릿 포함)는 `any-pointer: coarse` 기준으로 44px를 보장하고, 터치가 없는 데스크톱은 40px 시각 크기를 유지한다. 같은 의미의 버튼 높이/패딩 통일. Disabled·focus-visible·hover/active·pending을 모든 버튼에서 제공. 주황색 '닫기'가 가장 크게 보이는 상태 금지.
+
+## 6. 학습 문제·결과·페이지네이션
+- 한 번에 **한 문제**를 보여주고 상단에 `현재 1 / 총 20`·상태·진행 바를 명시. 보기 전체 문장 누르기/키보드 조작 가능, 단일/복수 정답 유형 안내.
+- 문제 번호 및 선택지에는 내부 UUID/버전키를 노출하지 않는다. Pass·미응답·선택됨을 명료하게 구분. 제출 확인 시 미응답 건수·결과 확정 여부를 보여준다.
+- 제출 전 정답·해설 비노출. 제출 후 결과는 점수·정답/오답/Pass/미응답 요약 + **문항별 펼침/이동**. 해설·공식 AWS 링크·Markdown/Mermaid는 안전하게 포맷하고 원문 URL들을 붙여 연속 출력하지 않는다.
+- 완료 이력은 사용자가 이해할 날짜·시험·영역·정답률·상태 중심. 각 행과 상세 페이지 분리; 서버 cursor/page contract 확인, 0건은 pagination 숨김.
+- '학습 현황' 화면이 계속 '1/500·100%' 같은 샘플 수치와 비정상 문장을 반복하거나 1/20과 점수 5%를 혼동하는 정보 배치를 금지한다.
+
+## 7. 비동기 UX 상태 계약
+- **initial loading**=레이아웃을 보존하는 Skeleton/필요시 Spinner. **background refetch**=기존 내용 유지+조용한 재검증 표시.
+- **mutation pending**(세트 시작·자동저장·제출·로그아웃)=작업 버튼 spinner/disabled/중복 제출 방지; 화면 전체 차단 오버레이는 데이터 변경의 짧은 임계 구간에만 제한적으로 사용.
+- **empty**=행동 가능한 빈 상태('완료한 세트가 없습니다'·'학습 시작'), **error**=맥락 있는 오류와 재시도, **offline**=미전송 초안 상태, **conflict**=선택 가능한 병합 UI.
+- 저장 상태의 유일한 '저장 완료'는 서버 확인 이후. 401은 로그인 만료 안내 후 안전한 경로 이동. aria-busy/aria-live, focus 복원, reduced motion. 임의 setTimeout으로 성공을 가짜 연출하지 않는다.
+
+## 8. 벤치마크와 moi에 가져올 패턴 (기능/아이디어 참고, 화면 복제 금지)
+| 서비스/디자인 시스템 | 확인할 장면 | moi 적용 / 적용하지 않을 점 |
+| --- | --- | --- |
+| **GitHub Primer** — https://primer.style/ / https://primer.style/octicons/ | 절제된 nav, 메뉴, 아이콘 크기/대비, 상태·계층 | 단순 아이콘·텍스트 라벨·active/disabled·컴포넌트 일관성. GitHub 스타일 전체 복제나 Octicon/로고 무단 복제 금지 |
+| **Khan Academy** — https://support.khanacademy.org/hc/en-us/articles/360032987591 | 학습 Progress 메뉴/개별 기록·Mastery 표시 | 학습 현황을 독립 화면으로, 진도·정답률을 구분하고 표본 부족은 별도 상태 |
+| **Anki** — https://docs.ankiweb.net/studying.html | 데크 개요 → 학습 세션 → 답안 확인 | 풀기 전 문제 집중·단계적 정보 공개. Anki의 즉시 정답 공개는 moi의 10문제 최종 일괄 채점에 **적용하지 않음** |
+| **shadcn/ui** — https://ui.shadcn.com/docs/components | Button/Tabs/Dropdown/Skeleton/AlertDialog | 빠른 공통 컴포넌트 구축과 키보드·상태 UX. 설치만 해서는 디자인 품질 확보 불가 |
+
+각 벤치마크는 실제 화면 캡처/출처·확인일·관찰한 UX·moi에 채택할 패턴·비채택 요소를 PR에 기록한다. 최소 3개 이상 독립 사례를 확인하며, 타 서비스의 저작권·상표·원문 시안 복제 금지.
+
+## 9. 수용 게이트: 시각적·실사용 검증이 우선
+1. 화면 흐름 도식 + 모바일/데스크톱 **실제 스크린샷 before/after** + 사용자 확인 기록. 빈 페이지/대량 공백/텍스트 겹침/UUID 노출/붙어 있는 링크를 시각적으로 점검한다.
+2. 정상/로딩/빈 상태/오류/오프라인/재시도/401/중복 클릭을 Playwright-BDD와 RTL로 검증하고, 키보드·스크린리더 의미·WCAG 대비도 수동 또는 도구로 확인.
+3. 계정·학습 시작·문항 풀이·제출/결과·이력·목록 페이지네이션을 320/375/768/1024/1280에서 검증한다. 화면 밀도·시각적 위계·글씨·터치 조작을 **사용자가 실화면으로 확인**하기 전 '디자인 완료' 금지.
+4. Lighthouse 모바일 ≥90, 테스트/CI/아키텍처/보안도 필수지만 **Lighthouse만 통과해도 UX 불합격 가능**. PR에 테스트·영상/스크린샷·SHA·남은 UX blocker 명시.
+5. 스킬: `.agents/skills/frontend-responsive-ui/SKILL.md`, 계약 검사: `.agents/skills/frontend-responsive-ui/scripts/audit-design-contract.mjs`. #148 완료 전 구성만 바꿔 완료 표시 금지.

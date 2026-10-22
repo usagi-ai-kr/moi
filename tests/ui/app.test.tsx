@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { HTTPError } from 'ky';
+import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../../src/ui/App';
 import { ME_QUERY_KEY, useUiStore, type ApiClient } from '../../src/ui/session';
@@ -44,9 +45,11 @@ function renderApp(client: ApiClient, url = '/') {
     defaultOptions: { queries: { retry: false } },
   });
   const utils = render(
-    <QueryClientProvider client={queryClient}>
-      <App client={client} />
-    </QueryClientProvider>,
+    <MemoryRouter initialEntries={[url]}>
+      <QueryClientProvider client={queryClient}>
+        <App client={client} />
+      </QueryClientProvider>
+    </MemoryRouter>,
   );
   return { ...utils, queryClient };
 }
@@ -68,22 +71,92 @@ describe('App (세션 상태 화면)', () => {
     expect(status).toHaveAttribute('aria-live', 'polite');
   });
 
+  it('로딩 중: 정적 제목/소개 보임, 계정/학습/로그인 CTA 없음 (#132)', async () => {
+    const client = {
+      get: vi.fn(() => ({ json: () => new Promise(() => {}) })),
+      post: vi.fn(),
+    } as unknown as ApiClient;
+    renderApp(client);
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('moi');
+    expect(screen.getAllByText('문제 중심 시험 대비 플랫폼').length).toBeGreaterThanOrEqual(1);
+    expect(document.querySelector('.moi-lead')).toHaveTextContent('문제 중심 시험 대비 플랫폼');
+    // #56: 홈 안내 문구 삭제 — 문구와 빈 문단이 없어야 한다
+    expect(screen.queryByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).not.toBeInTheDocument();
+    expect(document.querySelector('.moi-main-inner')?.textContent).not.toMatch(/AWS SAA/);
+    for (const el of Array.from(document.querySelectorAll('.moi-main-inner p'))) {
+      expect(el.textContent?.trim().length).toBeGreaterThan(0);
+    }
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: '카카오 로그인' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '로그아웃' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '학습 시작' })).not.toBeInTheDocument();
+    expect(screen.queryByText('내 계정')).not.toBeInTheDocument();
+  });
+
   it('비로그인(401): 홈 + 카카오 로그인 버튼, 오류 아님', async () => {
     const client = fakeClient({ meStatus: 401, meBody: { error: 'unauthorized' } });
     renderApp(client);
-    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('moi');
-    const link = screen.getByRole('link', { name: '카카오 로그인' });
+    const link = await screen.findByRole('link', { name: '카카오 로그인' });
     expect(link).toHaveAttribute('href', '/auth/kakao');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('moi');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    // #56: 홈 안내 문구 삭제 — 비로그인 홈에 문구가 없어야 한다
+    expect(screen.queryByText(/10문제 풀이.*저장.*결과.*AWS SAA/)).not.toBeInTheDocument();
   });
 
-  it('로그인: 마스킹된 id + 로그아웃 버튼, 원본 id 노출 없음', async () => {
+  it('로그인 홈: 계정 메뉴와 로그아웃 액션을 노출하고 원본 id를 렌더하지 않는다', async () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
-    renderApp(client);
-    expect(await screen.findByRole('button', { name: '로그아웃' })).toBeInTheDocument();
-    expect(screen.getByTestId('masked-id')).toHaveTextContent('123e••••00');
+    renderApp(client, '/');
+    expect(await screen.findByRole('button', { name: '학습 시작' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '학습 시작' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: '계정' })).toBeInTheDocument();
+    // 로그아웃은 내비게이션의 독립 액션 버튼이다(#234)
+    expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+    expect(screen.queryByTestId('masked-id')).not.toBeInTheDocument();
     expect(document.body.textContent).not.toContain(id);
+    expect(document.body.textContent).not.toContain('123e');
+  });
+
+  it('계정 화면(/account): 계정 정보를 보여주고 UUID·로그아웃 버튼이 본문에 없다', async () => {
+    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const client = fakeClient({ meStatus: 200, meBody: { user: { id, createdAt: 1_700_000_000, lastLoginAt: 1_700_100_000 } } });
+    renderApp(client, '/account');
+    expect(await screen.findByRole('heading', { level: 1, name: '계정' })).toBeInTheDocument();
+    expect(screen.getByText('로그인 방식')).toBeInTheDocument();
+    expect(screen.getByText('카카오')).toBeInTheDocument();
+    expect(screen.getByText('가입일')).toBeInTheDocument();
+    expect(screen.getByText('최근 로그인')).toBeInTheDocument();
+    expect(screen.queryByTestId('masked-id')).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toContain(id);
+    expect(document.body.textContent).not.toContain('123e');
+    for (const el of Array.from(document.querySelectorAll('[aria-label]'))) {
+      expect(el.getAttribute('aria-label')).not.toContain(id);
+    }
+    // 로그아웃은 계정 본문이 아니라 nav 액션 — 본문 섹션 안에는 없다
+    const accountSection = document.querySelector('.moi-account');
+    expect(accountSection?.querySelector('button[name="logout"]')).toBeNull();
+    expect(accountSection?.querySelector('.moi-logout-action')).toBeNull();
+    expect(screen.getByRole('button', { name: '로그아웃' }).closest('.moi-account')).toBeNull();
+  });
+
+  it('계정 화면: 기록이 없으면 1970 대신 "정보 없음"을 보여준다 (#234/#212)', async () => {
+    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const client = fakeClient({ meStatus: 200, meBody: { user: { id, createdAt: 0, lastLoginAt: null } } });
+    renderApp(client, '/account');
+    await screen.findByRole('heading', { level: 1, name: '계정' });
+    expect(document.body.textContent).not.toContain('1970');
+    expect(screen.getAllByText('날짜 정보 없음').length).toBe(2);
+  });
+
+  it('계정 화면: ms 단위 시각도 같은 형식으로 보여준다 (1970 회귀 방지)', async () => {
+    const id = '123e4567-e89b-12d3-a456-426614174000';
+    const client = fakeClient({ meStatus: 200, meBody: { user: { id, createdAt: 1_700_000_000_000, lastLoginAt: 1_700_100_000_000 } } });
+    renderApp(client, '/account');
+    await screen.findByRole('heading', { level: 1, name: '계정' });
+    expect(document.body.textContent).not.toContain('1970');
+    expect(screen.getByText('2023. 11. 15.')).toBeInTheDocument();
+    expect(screen.getByText('2023. 11. 16.')).toBeInTheDocument();
   });
 
   it('오류/취소(?auth=error): 안전 메시지 + URL 정리 + 토큰 미노출', async () => {
@@ -120,8 +193,8 @@ describe('App (세션 상태 화면)', () => {
           }),
       ),
     } as unknown as ApiClient;
-    const { queryClient } = renderApp(client);
-    const removeSpy = vi.spyOn(queryClient, 'removeQueries');
+    const { queryClient } = renderApp(client, '/account');
+    const resetSpy = vi.spyOn(queryClient, 'resetQueries');
     const button = await screen.findByRole('button', { name: '로그아웃' });
     fireEvent.click(button);
     const pending = await screen.findByRole('button', { name: /로그아웃하고 있습니다/ });
@@ -132,7 +205,7 @@ describe('App (세션 상태 화면)', () => {
       expect(screen.getByRole('link', { name: '카카오 로그인' })).toBeInTheDocument();
     });
     // stale 로그인 id가 남지 않고 서버 최신(null)으로 갱신된다
-    expect(removeSpy).toHaveBeenCalledWith({ queryKey: ME_QUERY_KEY });
+    expect(resetSpy).toHaveBeenCalledWith({ queryKey: ME_QUERY_KEY });
     expect(queryClient.getQueryData(ME_QUERY_KEY)).toBeNull();
   });
 
@@ -152,7 +225,7 @@ describe('App (세션 상태 화면)', () => {
     expect(await screen.findByText(/상태를 불러오지 못했습니다/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }));
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: '로그아웃' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: '학습 시작' })).toBeInTheDocument();
     });
     expect(calls).toBe(2);
   });
@@ -165,7 +238,7 @@ describe('App (세션 상태 화면)', () => {
     const id = '123e4567-e89b-12d3-a456-426614174000';
     const client = fakeClient({ meStatus: 200, meBody: { user: { id } } });
     renderApp(client);
-    await screen.findByRole('button', { name: '로그아웃' });
+    await screen.findByRole('button', { name: '학습 시작' });
     expect(getItem).not.toHaveBeenCalled();
     expect(setItem).not.toHaveBeenCalled();
     expect(sessGet).not.toHaveBeenCalled();

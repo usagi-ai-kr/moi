@@ -1,0 +1,1027 @@
+#!/usr/bin/env node
+/**
+ * #132/#148 핵심 화면 viewport 증거 촬영.
+ *
+ * - 로컬 `vite preview` + Playwright 결정적 route mock. 실계정·배포 검증이 아니다.
+ * - 현재 라우트 계약: `/study`(진행 중 세트 복원), `/study/result`(시작→제출 state),
+ *   `/review`(오답 후보), `/history`(통계+이력) 를 그대로 사용한다.
+ * - 화면 텍스트의 UUID/`opt-`/`saa-c03`/`dom-` 원시값 노출 여부를 기록한다.
+ */
+import { spawn, spawnSync } from 'node:child_process';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createConnection } from 'node:net';
+import { join } from 'node:path';
+import { chromium } from 'playwright';
+
+const PORT = 4174;
+const PREVIEW_TIMEOUT_MS = 30000;
+const BASE_URL = `http://127.0.0.1:${PORT}`;
+const OUT_DIR = join(process.cwd(), 'docs/evidence/132-screens');
+const WIDTHS = [320, 375, 768, 1024, 1280];
+mkdirSync(OUT_DIR, { recursive: true });
+
+const COMMIT = spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).stdout.trim();
+const COMMIT_SHORT = COMMIT.slice(0, 7);
+
+const STATS_DTO = {
+  examId: 'saa-c03',
+  totalQuestions: 500,
+  uniqueFirstSolved: 20,
+  coverage: 0.04,
+  overallAccuracy: 0.7,
+  domains: [
+    {
+      domainId: 'dom-security',
+      uniqueFirstSolved: 12,
+      gradedAttempts: 30,
+      cumulativeAccuracy: 0.75,
+      recentAccuracy: 0.6,
+      status: 'ok',
+    },
+    {
+      domainId: 'dom-cost-optimization',
+      uniqueFirstSolved: 8,
+      gradedAttempts: 15,
+      cumulativeAccuracy: 0.5,
+      recentAccuracy: 0.4,
+      status: 'insufficient-data',
+    },
+  ],
+  weakDomains: [
+    {
+      domainId: 'dom-cost-optimization',
+      score: 0.45,
+      cumulativeAccuracy: 0.5,
+      effectiveRecentAccuracy: 0.4,
+      uniqueFirstSolved: 8,
+    },
+  ],
+};
+
+// 내부 식별자(questionId/optionId)는 화면에 노출되지 않아야 한다.
+const STUDY_ITEMS = [
+  {
+    questionId: 'q-mock-1',
+    questionVersionId: 'qv-mock-1',
+    versionNo: 1,
+    optionOrder: ['opt-a', 'opt-b', 'opt-c', 'opt-d'],
+    stem: 'Amazon S3 버킷에 대한 직접 인터넷 액세스를 차단하고 VPC 내부에서만 접근하도록 구성하는 가장 적절한 방법은 무엇인가?',
+    options: [
+      { optionId: 'opt-a', text: 'S3 Gateway VPC 엔드포인트를 생성하고 버킷 정책에서 해당 엔드포인트 조건(aws:sourceVpce)을 제한한다.' },
+      { optionId: 'opt-b', text: 'NAT 게이트웨이를 구성하고 S3 버킷 정책에 NAT IP만 허용한다.' },
+      { optionId: 'opt-c', text: '인터넷 게이트웨이를 삭제하고 라우팅 테이블을 비운다.' },
+      { optionId: 'opt-d', text: 'S3 버킷 ACL을 프라이빗으로 설정한다.' },
+    ],
+    explanation:
+      'S3 Gateway VPC 엔드포인트를 생성하고 버킷 정책의 Condition 절에 aws:sourceVpce를 지정하면 지정된 VPC 엔드포인트를 통한 트래픽만 허용할 수 있습니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html'],
+    correctOptionIds: ['opt-a'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-2',
+    questionVersionId: 'qv-mock-2',
+    versionNo: 1,
+    optionOrder: ['opt-e', 'opt-f', 'opt-g', 'opt-h'],
+    stem: 'IAM 정책에서 최소 권한 원칙을 적용하는 가장 적절한 방법은 무엇인가?',
+    options: [
+      { optionId: 'opt-e', text: '모든 사용자에게 AdministratorAccess를 부여한다.' },
+      { optionId: 'opt-f', text: '업무에 필요한 특정 작업과 리소스만 Allow 하는 정책을 연결한다.' },
+      { optionId: 'opt-g', text: '액세스 키를 여러 사용자와 공유한다.' },
+      { optionId: 'opt-h', text: '루트 계정을 일상 작업에 사용한다.' },
+    ],
+    explanation: '필요한 작업(Action)과 리소스(Resource)만 명시적으로 Allow 하고, 나머지는 기본 거부로 두는 것이 최소 권한 원칙입니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html'],
+    correctOptionIds: ['opt-f', 'opt-g'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-3',
+    questionVersionId: 'qv-mock-3',
+    versionNo: 1,
+    optionOrder: ['opt-i', 'opt-j', 'opt-k', 'opt-l'],
+    stem: 'RDS Multi-AZ 배포의 주된 목적은 무엇인가?',
+    options: [
+      { optionId: 'opt-i', text: '읽기 성능을 선형으로 확장한다.' },
+      { optionId: 'opt-j', text: '리전 간 자동 복제를 제공한다.' },
+      { optionId: 'opt-k', text: '가용 영역 장애 시 자동 장애 조치로 가용성을 높인다.' },
+      { optionId: 'opt-l', text: '데이터베이스 스키마를 자동으로 변경한다.' },
+    ],
+    explanation: 'Multi-AZ는 동기 복제 대기 인스턴스를 다른 AZ에 두고 장애 시 자동 장애 조치를 수행해 가용성을 높입니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.MultiAZ.html'],
+    correctOptionIds: ['opt-k'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-4',
+    questionVersionId: 'qv-mock-4',
+    versionNo: 1,
+    optionOrder: ['opt-4a', 'opt-4b', 'opt-4c', 'opt-4d'],
+    stem: 'Amazon CloudFront 배포에서 오리진으로 전달되는 요청 수를 줄이는 가장 적절한 방법은 무엇인가?',
+    options: [
+      { optionId: 'opt-4a', text: '캐시 TTL을 최소화해 모든 요청이 오리진에 도달하도록 한다.' },
+      { optionId: 'opt-4b', text: '정적 객체에 캐시 동작을 구성해 엣지 로케이션에서 응답한다.' },
+      { optionId: 'opt-4c', text: '오리진에 Auto Scaling 그룹을 추가해 모든 요청을 처리한다.' },
+      { optionId: 'opt-4d', text: 'CloudFront를 비활성화하고 S3 Transfer Acceleration을 사용한다.' },
+    ],
+    explanation: 'CloudFront 캐시 동작과 TTL을 구성하면 정적 객체를 엣지에서 캐시해 오리진 요청을 줄일 수 있습니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ConfiguringCaching.html'],
+    correctOptionIds: ['opt-4b'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-5',
+    questionVersionId: 'qv-mock-5',
+    versionNo: 1,
+    optionOrder: ['opt-5a', 'opt-5b', 'opt-5c', 'opt-5d'],
+    stem: 'AWS Lambda 함수의 동시 실행 수를 제한해 다운스트림 서비스를 보호하는 설정은 무엇인가?',
+    options: [
+      { optionId: 'opt-5a', text: '프로비저닝된 동시성' },
+      { optionId: 'opt-5b', text: '예약된 동시성' },
+      { optionId: 'opt-5c', text: 'Lambda@Edge' },
+      { optionId: 'opt-5d', text: '함수 URL' },
+    ],
+    explanation: '예약된 동시성(reserved concurrency)은 함수에 동시 실행 한도를 예약해 과도한 요청이 다운스트림으로 전달되는 것을 제한합니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/lambda/latest/dg/configuration-concurrency.html'],
+    correctOptionIds: ['opt-5b'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-6',
+    questionVersionId: 'qv-mock-6',
+    versionNo: 1,
+    optionOrder: ['opt-6a', 'opt-6b', 'opt-6c', 'opt-6d'],
+    stem: 'Amazon DynamoDB 테이블에서 읽기·쓰기 용량을 트래픽에 맞춰 자동으로 조정하는 모드는 무엇인가?',
+    options: [
+      { optionId: 'opt-6a', text: 'DynamoDB Streams' },
+      { optionId: 'opt-6b', text: '온디맨드 용량 모드' },
+      { optionId: 'opt-6c', text: '글로벌 보조 인덱스' },
+      { optionId: 'opt-6d', text: 'TTL' },
+    ],
+    explanation: '온디맨드 용량 모드는 실제 트래픽에 따라 읽기·쓰기 용량을 자동으로 조정하므로 용량 계획이 필요 없습니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html'],
+    correctOptionIds: ['opt-6b'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-7',
+    questionVersionId: 'qv-mock-7',
+    versionNo: 1,
+    optionOrder: ['opt-7a', 'opt-7b', 'opt-7c', 'opt-7d'],
+    stem: 'AWS Organizations에서 여러 계정의 최대 권한을 중앙에서 제한하는 기능은 무엇인가?',
+    options: [
+      { optionId: 'opt-7a', text: '서비스 제어 정책(SCP)' },
+      { optionId: 'opt-7b', text: 'IAM 액세스 분석기' },
+      { optionId: 'opt-7c', text: 'AWS Config 규칙' },
+      { optionId: 'opt-7d', text: '리소스 액세스 관리자' },
+    ],
+    explanation: '서비스 제어 정책(SCP)은 조직·OU·계정 수준에서 사용할 수 있는 최대 권한을 제한합니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html'],
+    correctOptionIds: ['opt-7a'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-8',
+    questionVersionId: 'qv-mock-8',
+    versionNo: 1,
+    optionOrder: ['opt-8a', 'opt-8b', 'opt-8c', 'opt-8d'],
+    stem: 'Amazon EBS 볼륨의 특정 시점 상태를 백업하는 기능은 무엇인가?',
+    options: [
+      { optionId: 'opt-8a', text: 'EBS 스냅샷' },
+      { optionId: 'opt-8b', text: 'AMI' },
+      { optionId: 'opt-8c', text: 'EBS 볼륨 유형 변경' },
+      { optionId: 'opt-8d', text: 'S3 버킷 정책' },
+    ],
+    explanation: 'EBS 스냅샷은 볼륨의 특정 시점 상태를 증분 백업하며, 필요할 때 새 볼륨으로 복원할 수 있습니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/ebs/latest/userguide/ebs-snapshots.html'],
+    correctOptionIds: ['opt-8a'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-9',
+    questionVersionId: 'qv-mock-9',
+    versionNo: 1,
+    optionOrder: ['opt-9a', 'opt-9b', 'opt-9c', 'opt-9d'],
+    stem: 'Amazon VPC에서 인터넷 게이트웨이를 통해 인터넷과 통신할 수 있는 서브넷은 무엇인가?',
+    options: [
+      { optionId: 'opt-9a', text: '퍼블릭 서브넷' },
+      { optionId: 'opt-9b', text: '프라이빗 서브넷' },
+      { optionId: 'opt-9c', text: 'VPC 엔드포인트 서브넷' },
+      { optionId: 'opt-9d', text: 'NAT 게이트웨이 서브넷' },
+    ],
+    explanation: '퍼블릭 서브넷은 라우팅 테이블에 인터넷 게이트웨이 경로가 있어 인터넷과 직접 통신할 수 있습니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html'],
+    correctOptionIds: ['opt-9a'],
+    response: { kind: 'unanswered' },
+  },
+  {
+    questionId: 'q-mock-10',
+    questionVersionId: 'qv-mock-10',
+    versionNo: 1,
+    optionOrder: ['opt-10a', 'opt-10b', 'opt-10c', 'opt-10d'],
+    stem: 'Amazon Route 53에서 상태 확인 결과에 따라 정상 리전으로 트래픽을 전환하는 라우팅 정책은 무엇인가?',
+    options: [
+      { optionId: 'opt-10a', text: '장애 조치 라우팅' },
+      { optionId: 'opt-10b', text: '가중치 기반 라우팅' },
+      { optionId: 'opt-10c', text: '지리 위치 라우팅' },
+      { optionId: 'opt-10d', text: '다중 값 응답 라우팅' },
+    ],
+    explanation: '장애 조치 라우팅은 상태 확인과 함께 구성해 비정상 엔드포인트에서 정상 엔드포인트로 트래픽을 전환합니다.',
+    sourceUrls: ['https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html'],
+    correctOptionIds: ['opt-10a'],
+    response: { kind: 'unanswered' },
+  },
+];
+
+const REVIEW_WRONG_ITEMS = [
+  {
+    questionId: 'q-wrong-1',
+    validWrongCount: 2,
+    stem: 'VPC 피어링 제약 사항으로 올바른 것은?',
+    options: [
+      { optionId: 'opt-w1-a', text: 'CIDR 블록이 중복되면 피어링 연결을 생성할 수 없다.' },
+      { optionId: 'opt-w1-b', text: '동일 리전 간 VPC만 피어링이 가능하다.' },
+    ],
+  },
+  {
+    questionId: 'q-wrong-2',
+    validWrongCount: 1,
+    stem: 'S3 버킷 기본 암호화 설정은 무엇인가?',
+    options: [
+      { optionId: 'opt-w2-a', text: '모든 새 버킷에 SSE-S3 기본 암호화가 적용된다.' },
+      { optionId: 'opt-w2-b', text: '기본 암호화는 비활성화되어 있다.' },
+    ],
+  },
+];
+
+const HISTORY_SETS = [
+  {
+    id: 'set-history-1',
+    examId: 'saa-c03',
+    mode: 'all',
+    submittedAt: 1700000010000,
+    correctCount: 18,
+    accuracyPercent: 90,
+  },
+  {
+    id: 'set-history-2',
+    examId: 'saa-c03',
+    mode: 'domain',
+    domainId: 'dom-security',
+    submittedAt: 1699900000000,
+    correctCount: 14,
+    accuracyPercent: 70,
+  },
+  {
+    id: 'set-history-3',
+    examId: 'saa-c03',
+    mode: 'weak',
+    domainId: 'dom-cost-optimization',
+    submittedAt: 1699800000000,
+    correctCount: 10,
+    accuracyPercent: 50,
+  },
+];
+
+function makeActiveSet() {
+  return {
+    id: 'set-mock-1',
+    userId: 'mock-user-1',
+    examId: 'saa-c03',
+    mode: 'all',
+    status: 'active',
+    createdAt: 1700000000000,
+    items: JSON.parse(JSON.stringify(STUDY_ITEMS)),
+  };
+}
+
+function toActiveDto(set) {
+  return {
+    id: set.id,
+    userId: set.userId,
+    examId: set.examId,
+    mode: set.mode,
+    status: set.status,
+    createdAt: set.createdAt,
+    ...(set.submittedAt !== undefined ? { submittedAt: set.submittedAt } : {}),
+    items: set.items.map((item) => ({
+      questionId: item.questionId,
+      questionVersionId: item.questionVersionId,
+      versionNo: item.versionNo,
+      optionOrder: [...item.optionOrder],
+      stem: item.stem,
+      options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+      // 제출 전 DTO 정합(ADR-0049·routes.ts:79): 정답 개수만 노출, 정답 ID 자체는 제거한다.
+      // correctOptionIds.length에서 실제값 도출 — 1 폴백·undefined 안내 금지, 단일·복수 모두 포함.
+      answerCount: item.correctOptionIds.length,
+      response: item.response,
+    })),
+  };
+}
+
+function submittedDto(set) {
+  const perItem = set.items.map((item) => {
+    const selected = item.response.kind === 'answered' ? item.response.optionIds : [];
+    const correct =
+      selected.length === item.correctOptionIds.length &&
+      item.correctOptionIds.every((id) => selected.includes(id));
+    return {
+      questionId: item.questionId,
+      responseKind: item.response.kind,
+      selectedOptionIds: selected,
+      correctOptionIds: item.correctOptionIds,
+      correct,
+    };
+  });
+  const correctCount = perItem.filter((p) => p.correct).length;
+  const passCount = set.items.filter((i) => i.response.kind === 'pass').length;
+  const unansweredCount = set.items.filter((i) => i.response.kind === 'unanswered').length;
+  return {
+    id: set.id,
+    userId: set.userId,
+    examId: set.examId,
+    mode: set.mode,
+    status: 'submitted',
+    createdAt: set.createdAt,
+    submittedAt: 1700000010000,
+    items: set.items.map((item) => ({
+      questionId: item.questionId,
+      questionVersionId: item.questionVersionId,
+      versionNo: item.versionNo,
+      optionOrder: [...item.optionOrder],
+      stem: item.stem,
+      options: item.options.map((o) => ({ optionId: o.optionId, text: o.text })),
+      response: item.response,
+      explanation: item.explanation,
+      sourceUrls: [...item.sourceUrls],
+    })),
+    result: {
+      answeredCount: set.items.filter((i) => i.response.kind === 'answered').length,
+      correctCount,
+      accuracyPercent: Math.round((correctCount / set.items.length) * 100),
+      passCount,
+      unansweredCount,
+      perItem,
+    },
+  };
+}
+
+function fulfillJson(route, status, json) {
+  return route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(json) });
+}
+
+async function installMocks(page, config = {}) {
+  const state = {
+    studySet: config.studySet ? JSON.parse(JSON.stringify(config.studySet)) : null,
+    history: config.history ? JSON.parse(JSON.stringify(config.history)) : [],
+    reviewWrong: Boolean(config.reviewWrong),
+    reviewSession: null,
+  };
+
+  if (config.loggedOut) {
+    await page.route('**/api/me', (route) => fulfillJson(route, 401, { error: 'unauthorized' }));
+    return state;
+  }
+
+  await page.route('**/api/me', (route) => fulfillJson(route, 200, { user: { id: 'mock-user-1' } }));
+
+  await page.route('**/api/study/**', async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const method = req.method();
+    const path = url.pathname;
+
+    if (path === '/api/study/stats') {
+      return fulfillJson(route, 200, STATS_DTO);
+    }
+
+    if (path === '/api/study/sets/current') {
+      if (!state.studySet) return fulfillJson(route, 404, { error: 'no_active_set' });
+      return fulfillJson(route, 200, state.studySet.status === 'submitted' ? submittedDto(state.studySet) : toActiveDto(state.studySet));
+    }
+
+    if (path === '/api/study/sets' && method === 'POST') {
+      state.studySet = makeActiveSet();
+      return fulfillJson(route, 201, toActiveDto(state.studySet));
+    }
+
+    if (path === '/api/study/sets' && method === 'GET') {
+      return fulfillJson(route, 200, {
+        items: state.history,
+        total: state.history.length,
+        page: 1,
+        pageSize: 20,
+      });
+    }
+
+    const m = path.match(/^\/api\/study\/sets\/([^/]+)(?:\/(answers|submit|abandon|corrections))?$/);
+    if (m) {
+      const action = m[2];
+      if (!state.studySet) return fulfillJson(route, 404, { error: 'not_found' });
+
+      if (method === 'GET' && action === 'corrections') {
+        return fulfillJson(route, 200, { items: [], corrected: null });
+      }
+      if (method === 'GET' && !action) {
+        return fulfillJson(route, 200, state.studySet.status === 'submitted' ? submittedDto(state.studySet) : toActiveDto(state.studySet));
+      }
+      if (method === 'PATCH' && action === 'answers') {
+        const body = req.postDataJSON();
+        const item = state.studySet.items.find((i) => i.questionId === body?.questionId);
+        if (item && body?.response) item.response = body.response;
+        return fulfillJson(route, 200, { outcome: body?.response?.kind ?? 'answered' });
+      }
+      if (method === 'POST' && action === 'submit') {
+        state.studySet.status = 'submitted';
+        state.studySet.submittedAt = 1700000010000;
+        return fulfillJson(route, 200, submittedDto(state.studySet));
+      }
+      if (method === 'POST' && action === 'abandon') {
+        return fulfillJson(route, 200, toActiveDto(state.studySet));
+      }
+    }
+
+    return fulfillJson(route, 404, { error: 'not_found' });
+  });
+
+  await page.route('**/api/review/**', async (route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const method = req.method();
+    const path = url.pathname;
+
+    if (path === '/api/review/candidates') {
+      const mode = url.searchParams.get('mode') || 'wrong';
+      return fulfillJson(route, 200, {
+        examId: 'saa-c03',
+        mode,
+        total: mode === 'wrong' ? state.reviewWrong ? REVIEW_WRONG_ITEMS.length : 0 : 0,
+        items: mode === 'wrong' ? (state.reviewWrong ? REVIEW_WRONG_ITEMS : []) : [],
+      });
+    }
+    if (path === '/api/review/sessions/current') {
+      if (!state.reviewSession) return fulfillJson(route, 404, { error: 'not_found' });
+      return fulfillJson(route, 200, state.reviewSession);
+    }
+    if (path === '/api/review/sessions' && method === 'POST') {
+      const first = REVIEW_WRONG_ITEMS[0];
+      state.reviewSession = {
+        examId: 'saa-c03',
+        mode: 'wrong',
+        status: 'active',
+        cursor: 0,
+        total: REVIEW_WRONG_ITEMS.length,
+        current: {
+          questionId: first.questionId,
+          stem: first.stem,
+          options: first.options,
+          // ADR-0049 정합: 채점 mock 단일 정답에서 실제값 1 도출(폴백 아님)
+          answerCount: 1,
+          response: null,
+        },
+      };
+      return fulfillJson(route, 201, state.reviewSession);
+    }
+    if (path === '/api/review/sessions/current/answers' && method === 'POST') {
+      const first = REVIEW_WRONG_ITEMS[0];
+      return fulfillJson(route, 200, {
+        correct: true,
+        graded: {
+          questionId: first.questionId,
+          response: req.postDataJSON(),
+          correct: true,
+          explanation: 'VPC 피어링은 CIDR 블록이 중복되면 연결할 수 없으며, 리전 간 피어링도 지원됩니다.',
+          sourceUrls: ['https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html'],
+          correctOptionIds: ['opt-w1-a'],
+        },
+        session: { examId: 'saa-c03', mode: 'wrong', status: 'active', cursor: 1, total: 2 },
+        next: null,
+      });
+    }
+    if (path === '/api/review/bookmarks') {
+      if (method === 'GET') {
+        return fulfillJson(route, 200, { examId: 'saa-c03', total: 0, items: [] });
+      }
+      if (method === 'PATCH') {
+        const body = req.postDataJSON();
+        return fulfillJson(route, 200, {
+          questionId: body?.questionId,
+          bookmarked: Boolean(body?.bookmarked),
+        });
+      }
+    }
+    return fulfillJson(route, 404, { error: 'not_found' });
+  });
+
+  return state;
+}
+
+async function submitStudyFlow(page) {
+  await page.getByRole('heading', { name: '학습 범위 선택' }).waitFor();
+  await Promise.all([
+    page.waitForResponse((r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/study/sets'),
+    page.getByRole('button', { name: '학습 시작', exact: true }).click(),
+  ]);
+
+  const question = page.locator('section[aria-label^="문제"]').first();
+  await question.waitFor();
+  await Promise.all([
+    page.waitForResponse((r) => r.request().method() === 'PATCH' && r.url().includes('/answers')),
+    question.locator('input[type="checkbox"]').first().click(),
+  ]);
+
+  await page.getByRole('button', { name: '다음', exact: true }).click();
+  await page.locator('section[aria-label="문제 2/10"]').waitFor();
+  await Promise.all([
+    page.waitForResponse((r) => r.request().method() === 'PATCH' && r.url().includes('/answers')),
+    page.getByRole('button', { name: 'Pass', exact: true }).click(),
+  ]);
+
+  await page.getByRole('button', { name: /^제출하기/ }).click();
+  await page.getByRole('alertdialog', { name: '제출 확인' }).waitFor();
+  await Promise.all([
+    page.waitForResponse((r) => r.request().method() === 'POST' && r.url().endsWith('/submit')),
+    page.getByRole('button', { name: '제출 확인', exact: true }).click(),
+  ]);
+  await page.waitForURL(/\/study\/result$/);
+  await page.getByRole('heading', { name: '학습 결과' }).waitFor();
+  await page.waitForFunction(() => {
+    const buttons = Array.from(document.querySelectorAll('button[aria-label="북마크 추가"]'));
+    return buttons.length > 0 && buttons.every((b) => !b.disabled);
+  });
+}
+
+const SCREENS = [
+  {
+    id: 'home-logged-out',
+    label: '로그아웃 홈',
+    path: '/',
+    entryPath: '/',
+    mock: { loggedOut: true },
+    waitFor: (page) => page.locator('.moi-kakao-login').waitFor(),
+  },
+  {
+    id: 'home',
+    label: '홈(로그인 후)',
+    path: '/',
+    entryPath: '/',
+    mock: {},
+    waitFor: (page) => page.getByRole('button', { name: '10문제 학습', exact: true }).waitFor(),
+  },
+  {
+    id: 'study-new',
+    label: '학습 시작',
+    path: '/study/new',
+    entryPath: '/study/new',
+    mock: {},
+    waitFor: (page) => page.getByRole('heading', { name: '학습 범위 선택' }).waitFor(),
+  },
+  {
+    id: 'study-active',
+    label: '풀이 중',
+    path: '/study',
+    entryPath: '/study',
+    mock: { studySet: makeActiveSet() },
+    waitFor: async (page) => {
+      await page.locator('section[aria-label^="문제"]').first().waitFor();
+      await page.waitForFunction(() => {
+        const buttons = Array.from(document.querySelectorAll('button[aria-label="북마크 추가"]'));
+        return buttons.length > 0 && buttons.every((b) => !b.disabled);
+      });
+    },
+  },
+  {
+    id: 'study-result',
+    label: '결과(해설 포함)',
+    path: '/study/result',
+    entryPath: '/study/new',
+    mock: {},
+    prepare: submitStudyFlow,
+    waitFor: (page) => page.getByRole('heading', { name: '학습 결과' }).waitFor(),
+  },
+  {
+    id: 'history-empty',
+    label: '이력(0건)',
+    path: '/history',
+    entryPath: '/history',
+    mock: { history: [] },
+    waitFor: (page) => page.getByText('아직 완료한 학습이 없습니다.').waitFor(),
+  },
+  {
+    id: 'history-populated',
+    label: '이력(다건)',
+    path: '/history',
+    entryPath: '/history',
+    mock: { history: HISTORY_SETS },
+    prepare: async (page) => {
+      await page.locator('.moi-study-history-item').first().click();
+      await page.getByRole('dialog').first().waitFor();
+    },
+    waitFor: (page) => page.locator('.moi-study-history > li').first().waitFor(),
+  },
+  {
+    id: 'review',
+    label: '복습',
+    path: '/review',
+    entryPath: '/review',
+    mock: { reviewWrong: true },
+    prepare: async (page) => {
+      await page.getByRole('heading', { name: /복습 대기 2문제/ }).waitFor();
+      await Promise.all([
+        page.waitForResponse(
+          (r) => r.request().method() === 'POST' && new URL(r.url()).pathname === '/api/review/sessions',
+        ),
+        page.getByRole('button', { name: '복습 시작하기', exact: true }).click(),
+      ]);
+      await page.locator('section[aria-label^="복습 문항"]').waitFor();
+      await page.getByRole('checkbox').first().click();
+      await Promise.all([
+        page.waitForResponse(
+          (r) => r.request().method() === 'POST' && r.url().endsWith('/answers'),
+        ),
+        page.getByRole('button', { name: '답안 제출', exact: true }).click(),
+      ]);
+    },
+    waitFor: (page) => page.getByRole('heading', { name: '공식 근거' }).waitFor(),
+  },
+  {
+    id: 'account',
+    label: '계정',
+    path: '/account',
+    entryPath: '/account',
+    mock: {},
+    waitFor: (page) => page.getByRole('button', { name: '로그아웃', exact: true }).waitFor(),
+  },
+];
+
+async function waitForServer(target, timeoutMs, previewState, buildMarker) {
+  if (!buildMarker) return { ok: false, reason: 'no-build-marker', foreignResponse: false };
+  const started = Date.now();
+  let foreignResponse = false;
+  while (Date.now() - started < timeoutMs) {
+    if (previewState.exited) return { ok: false, reason: 'exited', foreignResponse };
+    try {
+      const res = await fetch(target);
+      if (res.ok) {
+        // 4174에 이미 떠 있던 다른 서버에 붙지 않도록, 응답이 현재 빌드 산출물인지 확인한다.
+        const html = await res.text();
+        if (html.includes(buildMarker)) return { ok: true, foreignResponse };
+        foreignResponse = true;
+      }
+    } catch {
+      // retry
+    }
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  return { ok: false, reason: previewState.exited ? 'exited' : 'timeout', foreignResponse };
+}
+
+function readBuildMarker() {
+  // vite(Cloudflare 플러그인 포함)의 클라이언트 산출물에서 현재 빌드의 자산 경로를 얻는다.
+  for (const candidate of ['dist/client/index.html', 'dist/index.html', 'dist/public/index.html']) {
+    try {
+      const html = readFileSync(join(process.cwd(), candidate), 'utf8');
+      const match = html.match(/(?:src|href)="(\/?assets\/[^"]+\.(?:js|css))"/);
+      if (match) return match[1];
+    } catch {
+      // 다음 후보
+    }
+  }
+  return null;
+}
+
+function isPortInUse(port, host = '127.0.0.1') {
+  return new Promise((resolve) => {
+    const socket = createConnection({ port, host });
+    socket.once('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once('error', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.setTimeout(500, () => {
+      socket.destroy();
+      resolve(false);
+    });
+  });
+}
+
+function previewOutput(previewState) {
+  if (previewState.error) return previewState.error.message;
+  return previewState.output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .slice(-6)
+    .join('\n');
+}
+
+function previewFailure(previewState, wait) {
+  const detail = previewOutput(previewState);
+  if (wait.reason === 'no-build-marker') {
+    return new Error(`빌드 산출물을 찾을 수 없습니다. 먼저 \`pnpm build\`를 실행하세요.${detail ? `\npreview 출력:\n${detail}` : ''}`);
+  }
+  const portInUse = /already in use|EADDRINUSE|strictPort/i.test(detail);
+  const message = portInUse
+    ? `포트 ${PORT}가 이미 사용 중입니다. 다른 preview/dev 서버를 종료한 뒤 다시 실행하세요.`
+    : wait.foreignResponse
+      ? `${PORT} 포트의 응답이 현재 빌드 산출물이 아닙니다. 다른 서버가 ${PORT}를 점유하고 있을 수 있습니다.`
+      : wait.reason === 'timeout'
+        ? `${PORT} 포트의 preview 서버가 ${PREVIEW_TIMEOUT_MS / 1000}초 안에 준비되지 않았습니다.`
+        : `vite preview가 준비되기 전에 종료되었습니다 (code=${previewState.code ?? 'null'}, signal=${previewState.signal ?? 'null'}).`;
+  return new Error(`${message}${detail ? `\npreview 출력:\n${detail}` : ''}`);
+}
+
+function build() {
+  if (process.argv.includes('--no-build')) return;
+  console.log('Building current HEAD for deterministic preview...');
+  const result = spawnSync('pnpm', ['build'], { stdio: 'inherit' });
+  if (result.status !== 0) {
+    console.error('Build failed');
+    process.exit(result.status ?? 1);
+  }
+}
+
+async function main() {
+  build();
+
+  const buildMarker = readBuildMarker();
+  if (!buildMarker) {
+    console.error('빌드 산출물을 찾을 수 없습니다. 먼저 `pnpm build`를 실행하세요.');
+    process.exit(1);
+  }
+  if (await isPortInUse(PORT)) {
+    console.error(`포트 ${PORT}가 이미 사용 중입니다. 다른 preview/dev 서버를 종료한 뒤 다시 실행하세요.`);
+    process.exit(1);
+  }
+  console.log(`Starting vite preview on port ${PORT}...`);
+  const preview = spawn('pnpm', ['exec', 'vite', 'preview', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: true,
+  });
+  const previewState = { exited: false, code: null, signal: null, error: null, output: '' };
+  const recordPreviewOutput = (chunk) => {
+    previewState.output = `${previewState.output}${chunk.toString('utf8')}`.slice(-4000);
+  };
+  preview.stdout?.on('data', recordPreviewOutput);
+  preview.stderr?.on('data', recordPreviewOutput);
+  preview.once('error', (error) => {
+    previewState.error = error;
+    previewState.exited = true;
+  });
+  preview.once('exit', (code, signal) => {
+    previewState.code = code;
+    previewState.signal = signal;
+    previewState.exited = true;
+  });
+
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp || !preview.pid) return;
+    cleanedUp = true;
+    try {
+      process.kill(-preview.pid, 'SIGTERM');
+    } catch {
+      try {
+        preview.kill('SIGTERM');
+      } catch {
+        // already exited
+      }
+    }
+  };
+  const shutdown = (code) => {
+    cleanup();
+    process.exit(code);
+  };
+  process.on('exit', cleanup);
+  process.on('SIGINT', () => shutdown(130));
+  process.on('SIGTERM', () => shutdown(143));
+  process.on('SIGHUP', () => shutdown(129));
+
+  const ready = await waitForServer(BASE_URL, PREVIEW_TIMEOUT_MS, previewState, buildMarker);
+  if (!ready.ok) {
+    cleanup();
+    throw previewFailure(previewState, ready);
+  }
+  console.log(`Preview server ready at ${BASE_URL}${buildMarker ? ' (current build verified)' : ''}`);
+
+  const browser = await chromium.launch({ headless: true });
+  const results = {
+    commit: COMMIT,
+    commitShort: COMMIT_SHORT,
+    generatedAt: new Date().toISOString(),
+    baseUrl: BASE_URL,
+    mode: 'local vite preview + deterministic Playwright route mock (not real account/deployment)',
+    screens: [],
+    summary: {
+      totalScreens: SCREENS.length,
+      widths: WIDTHS,
+      overflowCount: 0,
+      below44Count: 0,
+      below44AnyTouchCount: 0,
+      below44TouchlessCount: 0,
+      rawValueScreenCount: 0,
+      screens: [],
+    },
+  };
+
+  try {
+    for (const screen of SCREENS) {
+      console.log(`Capturing: ${screen.label} (${screen.id})...`);
+      const screenResult = {
+        id: screen.id,
+        label: screen.label,
+        path: screen.path,
+        entryPath: screen.entryPath,
+        widths: {},
+      };
+      const screenSummary = {
+        id: screen.id,
+        minButtonHeight: null,
+        overflowWidths: [],
+        rawValueWidths: [],
+        rawValues: [],
+      };
+
+      for (const width of WIDTHS) {
+        // 현행 계약은 any-pointer:coarse(ADR-0050·DESIGN.md 5항). pointer:coarse는 비교용으로만 기록한다.
+        // 모바일 폭(320/375/768)은 터치 컨텍스트(hasTouch+isMobile)로 any-pointer:coarse를 매칭한다.
+        // 데스크톱 폭(1024/1280)은 터치 없음 유지. 과거 증거의 coarse=모바일 에뮬레이션이며 하이브리드(주 fine+any coarse) 실측이 아니다.
+        // 하이브리드 에뮬레이션은 본 스크립트에서 수행하지 않는다 — 에뮬레이션임을 명시, 실기기 성공으로 표시 금지.
+        const isTouchWidth = width <= 768;
+        const context = await browser.newContext({
+          viewport: { width, height: 800 },
+          reducedMotion: 'reduce',
+          ...(isTouchWidth ? { hasTouch: true, isMobile: true } : {}),
+        });
+        const page = await context.newPage();
+
+        const state = await installMocks(page, screen.mock);
+        await page.goto(`${BASE_URL}${screen.entryPath}`);
+        if (screen.prepare) await screen.prepare(page, state);
+        await screen.waitFor(page);
+        await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+        await page.addStyleTag({ content: '*,*::before,*::after{animation-duration:0s!important;transition-duration:0s!important;}' });
+        await page.waitForTimeout(250);
+
+        const imgFilename = `${screen.id}-${width}.png`;
+        // fullPage:true는 터치 컨텍스트에서 @media (any-pointer:coarse) 렌더링을
+        // 유실한다(DOM rect 44px인데 PNG 40px). 전체 높이로 뷰포트를 키워
+        // viewport 캡처한다 — 같은 페이지·같은 실행 산출물이다.
+        const fullHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+        await page.setViewportSize({ width, height: fullHeight });
+        await page.waitForTimeout(100);
+        await page.screenshot({ path: join(OUT_DIR, imgFilename) });
+        await page.setViewportSize({ width, height: 800 });
+
+        // 터치 매칭 증거(현행 any-pointer:coarse 계약): pointer+any-pointer 둘다·hasTouch 포함.
+        // touchless 데스크톱 40px 유지 vs any-touch 44px 구분. pointer:coarse는 과거 표기 비교용으로만 둔다.
+        const pointerMedia = await page.evaluate(() => ({
+          pointerCoarse: window.matchMedia('(pointer: coarse)').matches,
+          anyPointerCoarse: window.matchMedia('(any-pointer: coarse)').matches,
+          maxTouchPoints: navigator.maxTouchPoints ?? 0,
+        }));
+        const pointerCoarse = pointerMedia.pointerCoarse;
+        const anyPointerCoarse = pointerMedia.anyPointerCoarse;
+        const hasTouch = isTouchWidth;
+        // focus 증거: 보이는 버튼 중 키보드 도달 가능 수(탭 이동·focus-visible 전제). 터치 조작은 hasTouch+anyPointerCoarse로 구분한다.
+        const focusMetrics = await page.evaluate(() => {
+          const selector = 'button, [data-slot="button"], a[role="button"], input[type="button"], input[type="submit"], .moi-kakao-login';
+          const els = Array.from(new Set(document.querySelectorAll(selector))).filter((el) => {
+            const r = el.getBoundingClientRect();
+            const st = window.getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && st.display !== 'none' && st.visibility !== 'hidden';
+          });
+          const unfocusable = els.filter((el) => el.tabIndex < 0 && !el.hasAttribute('tabindex') ? false : el.tabIndex < 0).map((el) => (el.innerText || el.getAttribute('aria-label') || '').trim().slice(0,30));
+          // button/a/input 기본 포커스 가능: disabled·tabindex=-1 제외
+          const focusable = els.filter((el) => !(el.disabled === true) && el.getAttribute('tabindex') !== '-1').length;
+          return { totalVisible: els.length, focusable, unfocusable: unfocusable.slice(0,5) };
+        });
+
+        const overflow = await page.evaluate(() => {
+          const de = document.documentElement;
+          const overflowing = Array.from(document.querySelectorAll('body *'))
+            .map((el) => ({ el, rect: el.getBoundingClientRect() }))
+            .filter(({ rect }) => rect.width > 0 && (rect.right > de.clientWidth + 1 || rect.left < -1))
+            .slice(0, 5)
+            .map(({ el, rect }) => ({
+              tag: el.tagName.toLowerCase(),
+              className: typeof el.className === 'string' ? el.className.slice(0, 80) : '',
+              left: Math.round(rect.left),
+              right: Math.round(rect.right),
+            }));
+          return {
+            scrollWidth: de.scrollWidth,
+            clientWidth: de.clientWidth,
+            delta: de.scrollWidth - de.clientWidth,
+            hasOverflow: de.scrollWidth > de.clientWidth,
+            overflowing,
+          };
+        });
+
+        const buttonMetrics = await page.evaluate(() => {
+          const selector = 'button, [data-slot="button"], a[role="button"], input[type="button"], input[type="submit"], .moi-kakao-login';
+          const elements = Array.from(new Set(document.querySelectorAll(selector)));
+          const visible = elements.filter((el) => {
+            const rect = el.getBoundingClientRect();
+            const style = window.getComputedStyle(el);
+            return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+          });
+          const buttons = visible.map((el) => {
+            const rect = el.getBoundingClientRect();
+            const text = (el.innerText || el.getAttribute('aria-label') || el.value || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+            return {
+              text,
+              tag: el.tagName.toLowerCase(),
+              height: Math.round(rect.height * 10) / 10,
+              width: Math.round(rect.width * 10) / 10,
+              disabled: el.disabled === true || el.getAttribute('aria-disabled') === 'true',
+            };
+          });
+          const minHeight = buttons.length ? Math.min(...buttons.map((b) => b.height)) : null;
+          return {
+            totalButtons: buttons.length,
+            minHeight,
+            below44: buttons.filter((b) => b.height < 44),
+          };
+        });
+
+        const textFindings = await page.evaluate(() => {
+          const text = document.body.innerText || '';
+          const uuid = Array.from(new Set(text.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi) || []));
+          // 내부 원시값은 대소문자를 구분한다 — 사용자 라벨 'AWS SAA-C03'은 위반이 아니다.
+          const opt = Array.from(new Set(text.match(/\bopt-[A-Za-z0-9_-]+/g) || []));
+          const examCode = Array.from(new Set(text.match(/saa-c03/g) || []));
+          const domainCode = Array.from(new Set(text.match(/\bdom-[A-Za-z0-9_-]+/g) || []));
+          return {
+            uuid,
+            opt,
+            examCode,
+            domainCode,
+            exposed: uuid.length > 0 || opt.length > 0 || examCode.length > 0 || domainCode.length > 0,
+          };
+        });
+
+        if (overflow.hasOverflow) {
+          results.summary.overflowCount += 1;
+          screenSummary.overflowWidths.push(width);
+        }
+        if (buttonMetrics.below44.length > 0) {
+          results.summary.below44Count += buttonMetrics.below44.length;
+          if (anyPointerCoarse) results.summary.below44AnyTouchCount += buttonMetrics.below44.length;
+          else results.summary.below44TouchlessCount += buttonMetrics.below44.length;
+        }
+        if (screenSummary.minButtonHeight === null || (buttonMetrics.minHeight !== null && buttonMetrics.minHeight < screenSummary.minButtonHeight)) {
+          screenSummary.minButtonHeight = buttonMetrics.minHeight;
+        }
+        if (textFindings.exposed) {
+          screenSummary.rawValueWidths.push(width);
+          screenSummary.rawValues.push({
+            width,
+            uuid: textFindings.uuid,
+            opt: textFindings.opt,
+            examCode: textFindings.examCode,
+            domainCode: textFindings.domainCode,
+          });
+        }
+
+        screenResult.widths[width] = {
+          image: imgFilename,
+          finalPath: new URL(page.url()).pathname,
+          touch: isTouchWidth,
+          hasTouch,
+          pointerCoarse,
+          anyPointerCoarse,
+          maxTouchPoints: pointerMedia.maxTouchPoints,
+          below44Count: buttonMetrics.below44.length,
+          focusMetrics,
+          overflow,
+          buttonMetrics,
+          textFindings,
+        };
+
+        await context.close();
+      }
+
+      if (screenSummary.rawValueWidths.length > 0) results.summary.rawValueScreenCount += 1;
+      results.screens.push(screenResult);
+      results.summary.screens.push(screenSummary);
+    }
+
+    writeFileSync(join(OUT_DIR, 'results.json'), JSON.stringify(results, null, 2), 'utf8');
+    console.log(`Wrote measurements to ${join(OUT_DIR, 'results.json')}`);
+    console.log(
+      `Summary: screens=${results.summary.totalScreens}, overflow=${results.summary.overflowCount}, below44=${results.summary.below44Count} (anyTouch=${results.summary.below44AnyTouchCount}, touchless=${results.summary.below44TouchlessCount}), rawValueScreens=${results.summary.rawValueScreenCount}`,
+    );
+  } finally {
+    await browser.close();
+    cleanup();
+  }
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
