@@ -1,7 +1,9 @@
+import { useId } from 'react';
 import type { ApiClient } from '../api/client';
 import type { ReviewPendingItem } from '../api/review-client';
 import { OptionFieldset } from '../components/option-fieldset';
 import { OptionRow } from '../components/option-row';
+import { isSingleChoice } from '../components/option-select';
 import { QuestionCard } from '../components/question-card';
 import { Alert } from '../components/ui/alert';
 import { Button } from '../components/ui/button';
@@ -44,6 +46,8 @@ export function ReviewQuestion({
   onEnd,
   onRetry,
 }: ReviewQuestionProps) {
+  // #308 — 선택 개수 안내(힌트)를 보기 그룹의 aria-describedby 로 연결한다.
+  const answerCountHintId = useId();
   const canSubmit = selectedOptions.length > 0 && !isSubmitting && !isEnding;
 
   return (
@@ -73,11 +77,14 @@ export function ReviewQuestion({
         <span style={{ width: `${Math.round(((cursor + 1) / total) * 100)}%` }} />
       </div>
 
-      <QuestionCard stem={item.stem} hint={copy.review.answerCountHint(item.answerCount)}>
-        <OptionFieldset>
+      <QuestionCard stem={item.stem} hint={copy.review.answerCountHint(item.answerCount)} hintId={answerCountHintId}>
+        <OptionFieldset describedBy={answerCountHintId}>
           {item.options.map((opt, idx) => (
             <OptionRow
               key={opt.optionId}
+              // #308 — 학습과 같은 semantics: 단일 선택(정답 1개)은 radio 그룹, 복수는 checkbox.
+              type={isSingleChoice(item.answerCount) ? 'radio' : 'checkbox'}
+              {...(isSingleChoice(item.answerCount) ? { name: `review-${item.questionId}` } : {})}
               checked={selectedOptions.includes(opt.optionId)}
               disabled={isSubmitting}
               onChange={() => onToggleOption(opt.optionId)}

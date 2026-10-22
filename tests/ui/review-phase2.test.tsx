@@ -253,11 +253,11 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
     expect(passBtn).not.toBeDisabled();
   });
 
-  it('2. 보기 다중 선택 후 제출하면 POST answers를 전송하고, 성공 시 정답·해설·공식근거를 렌더한다', async () => {
+  it('2. 보기 1개 선택 후 제출하면 POST answers를 전송하고, 성공 시 정답·해설·공식근거를 렌더한다(#308 단일 선택=radio)', async () => {
     const { client, postCalls } = createFakePhase2Client();
     renderReviewWithRouter(client);
 
-    const checkbox = await screen.findByRole('checkbox', { name: /Intelligent-Tiering 전환/ });
+    const checkbox = await screen.findByRole('radio', { name: /Intelligent-Tiering 전환/ });
     fireEvent.click(checkbox);
 
     const submitBtn = screen.getByRole('button', { name: /답안 제출|제출하기/ });
@@ -349,7 +349,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
 
     renderReviewWithRouter(client);
 
-    const checkbox = await screen.findByRole('checkbox', { name: /보기 1/ });
+    const checkbox = await screen.findByRole('radio', { name: /보기 1/ });
     fireEvent.click(checkbox);
 
     const submitBtn = screen.getByRole('button', { name: /답안 제출|제출하기/ });
@@ -382,7 +382,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
     const { client, postCalls } = createFakePhase2Client({ failAnswer: true });
     renderReviewWithRouter(client);
 
-    const checkbox = await screen.findByRole('checkbox', { name: /Intelligent-Tiering 전환/ });
+    const checkbox = await screen.findByRole('radio', { name: /Intelligent-Tiering 전환/ });
     fireEvent.click(checkbox);
 
     const submitBtn = screen.getByRole('button', { name: /답안 제출|제출하기/ });
@@ -679,7 +679,7 @@ describe('복습 Phase 2 채점·해설·종료·북마크 UI', () => {
 
     renderReviewWithRouter(client);
 
-    const checkbox = await screen.findByRole('checkbox', { name: /Intelligent-Tiering 전환/ });
+    const checkbox = await screen.findByRole('radio', { name: /Intelligent-Tiering 전환/ });
     fireEvent.click(checkbox);
 
     const submitBtn = screen.getByRole('button', { name: /답안 제출|제출하기/ });
