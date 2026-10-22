@@ -79,3 +79,75 @@
 
 - 인계 문서는 `docs/`에 두지 않고, 남겨야 할 내용은 이슈로 처리한다.
 - 브리프·보고서·콜백 로그는 메인 저장소 `tmp/`의 절대 경로로 전달한다(gitignore, `.gitkeep`만 커밋). worktree의 `tmp/`·`$TMPDIR`는 쓰지 않는다.
+
+## 런타임 비종속 오케스트레이션
+
+결정 기록은 [ADR-0088](../adr/0088-orchestration-runtime-adapters.md), 역할·검증 규칙은 [agent-orchestration 스킬](../../.agents/skills/agent-orchestration/SKILL.md)을 따른다.
+
+## 구조
+
+```mermaid
+flowchart LR
+  W[워커 w] -->|notify.sh / cli enqueue| I[(내구 인박스 JSONL)]
+  I --> D[daemon]
+  D -->|isIdle(o), send(o, batch)| A{roles.json의 o adapter}
+  A --> H[herdr adapter]
+  A --> F[file adapter]
+  H --> T[설정된 런타임 target]
+  F --> X[인박스 파일 소비 런타임]
+  D -->|성공 시 delivered 레코드 append| I
+```
+
+역할은 `o`(디스패치·수락), `w`(구현), `r`(리뷰)다. 런타임이나 패널 이름은 역할 설정에서 adapter의 target으로 연결하며, 스크립트·문서의 처리 로직에는 고정하지 않는다.
+
+## 역할 설정
+
+저장 위치는 `.agents/orchestration/roles.json`이다. o에는 단일 adapter/target을 연결하고, w와 r에는 사용할 구현·리뷰 대상 설정을 배열로 둔다.
+
+```json
+{
+  "o": { "adapter": "herdr", "target": "<configured target>" },
+  "w": [{ "adapter": "herdr", "target": "<configured target>" }],
+  "r": [{ "adapter": "herdr", "target": "<configured target>" }]
+}
+```
+
+런타임 target은 이 파일에서만 설정한다. 역할명을 바꾸지 않고 설정의 adapter/target을 바꾸면 전달 런타임을 전환할 수 있다.
+
+## 내구 인박스와 콜백
+
+`tmp/inbox/*.jsonl`은 enqueue된 메시지와 전달 상태를 append-only로 저장한다. 레코드 필드는 `id`, `ts`, `to`, `kind`, `unit`, `status`, `report`, `delivered`다. 같은 id가 여러 번 기록되면 최신 레코드가 현재 상태다. `delivered=false`인 메시지는 pending으로 남겨 재시도한다.
+
+기존 호출 위치 인자를 유지한다. `notify.sh <configured-o-target> <unit> <done|blocked|failed> <report>`는 인박스에 기록하고, 호환을 위해 `callbacks.log`에도 기록한다. o adapter가 전달에 성공한 뒤에만 delivered를 갱신한다. `--dry-run`은 기록·전달하지 않는다.
+
+## 어댑터 추가
+
+어댑터 인터페이스는 `isIdle(role)`과 `send(role, text)`다. 기존 런타임 연결은 설정된 target으로 상태 확인과 메시지 전달을 수행한다. `file` 어댑터는 런타임 프로세스를 직접 실행하지 않고 인박스 파일을 전달 경계로 사용하므로 어느 런타임에서든 읽을 수 있다.
+
+새 adapter는 `.agents/skills/agent-orchestration/scripts/orch/adapters/<name>.mjs` 파일 하나를 추가하고, 동일 인터페이스를 구현한 뒤 roles 설정에서 선택한다. daemon과 inbox 스키마는 adapter별 분기 없이 유지한다. 전달 실패는 delivered 상태를 갱신하지 않아 재시도 가능해야 한다.
+
+## CLI와 daemon
+
+CWD는 저장소 root다. `cli.mjs`는 enqueue/list-pending/ack 동작을 제공한다. daemon은 interval마다 o행 pending을 묶어 검사하고, o adapter가 idle일 때 전달한다. busy 또는 전송 실패는 pending으로 유지한다. `--once`는 한 회차만 처리하며 `--roles`, `--inbox`로 설정 경로를 바꿀 수 있다.
+
+수동 1회 실행:
+
+```sh
+node .agents/skills/agent-orchestration/scripts/orch/daemon.mjs \
+  --once \
+  --roles .agents/orchestration/roles.json \
+  --inbox tmp/inbox
+```
+
+pm2 장기 실행 예:
+
+```sh
+pm2 start .agents/skills/agent-orchestration/scripts/orch/daemon.mjs \
+  --name moi-orchestration \
+  -- --interval 5000 \
+  --roles .agents/orchestration/roles.json \
+  --inbox tmp/inbox
+pm2 save
+```
+
+daemon의 주기 확인은 내구 인박스 전달·재시도용이다. 워커의 완료 여부는 메시지의 callback 레코드로 판단하며, 런타임 화면이나 작업 세션의 종료 추측으로 대체하지 않는다.
