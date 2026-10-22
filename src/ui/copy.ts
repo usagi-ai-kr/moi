@@ -12,6 +12,7 @@ export const copy = {
   },
   login: {
     kakao: '카카오 로그인',
+    pending: '로그인 중…',
   },
   version: {
     /** 앱 버전·빌드 일자 표기 — 값은 빌드 주입(__APP_VERSION__·__BUILD_DATE__)만 쓴다. */
