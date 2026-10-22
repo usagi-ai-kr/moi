@@ -526,7 +526,7 @@ Then('이슈 #335 sequence 다이어그램이 SVG로 렌더된다', async ({ pag
   const diagram = page.getByTestId('mermaid-diagram');
   await expect(diagram).toHaveAttribute('role', 'img');
   await expect(diagram.locator('svg')).toBeVisible();
-  expect((await diagram.innerText()).replace(/\s/g, '')).toContain('모바일앱');
+  await expect(diagram.locator('svg')).toContainText(/모바일\s*앱/, { timeout: 10_000 });
   const engine = page.context().browser()?.browserType().name() ?? 'browser';
   const width = page.viewportSize()?.width ?? 0;
   await page.screenshot({ path: `test-results/issue-335-${engine}-sequence-${width}.png`, fullPage: true });
