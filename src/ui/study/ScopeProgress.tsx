@@ -3,6 +3,7 @@ import { copy } from '../copy';
 import { useStudyStats } from '../stats/useStudyStats';
 import type { StudyScope } from './types';
 import { getScopeProgress } from './scope-progress';
+import './scope-progress.css';
 
 export function ScopeProgressView({
   client,

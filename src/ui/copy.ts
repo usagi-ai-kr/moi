@@ -1,5 +1,4 @@
-// UI 문구 — 단일 소스 (ADR-0012). 컴포넌트에 문자열을 하드코딩하지 않는다.
-// #275: 회차 문제 수는 사용자 선택(4/8, 기본 4)이므로 고정 개수 문구를 쓰지 않는다.
+// UI 문구 단일 소스 (ADR-0012); #275 회차 문제 수(4/8)는 사용자 선택이라 고정 개수 문구를 쓰지 않는다.
 
 export const copy = {
   brand: 'moi',
@@ -65,8 +64,7 @@ export const copy = {
     startFailed: '새 세트를 시작하지 못했습니다. 같은 설정으로 다시 시도해 주세요.',
     poolInsufficient: '선택한 범위에 풀 수 있는 문제가 없습니다. 설정을 바꾸거나 다른 범위를 선택해 주세요.',
     changeSettings: '설정 변경',
-    // #269: 범위 옵션(전체/영역별/취약)과 중복되는 괄호 안내를 걷어내고 개수 계약만 남긴다.
-    // 문제 수(4/8) 선택·10문제 계약 변경은 #275 소유라 이 문구의 개수 표기는 유지한다.
+    // #269 범위 안내 중복을 제거하고 개수 계약만 남겼으며, 문제 수(4/8)·10문제 계약은 #275 소유다.
     examContext: '범위와 문제 수를 선택하세요.',
     unknownDate: '날짜 정보 없음',
     resumeNote: '진행 중인 세트가 있습니다. 이어서 풀 수 있습니다.',
@@ -74,14 +72,9 @@ export const copy = {
     scopeAll: '전체',
     scopeDomain: '영역별',
     scopeWeak: '취약 영역',
-    learningProgressLabel: '학습 진도',
-    examProgressLabel: '시험 전체 진도',
-    progressBarLabel: '선택 범위 학습 진척도',
-    progressValue: (label: string, completed: number, total: number, percent: number) =>
-      `${label} ${completed.toLocaleString('ko-KR')} / ${total.toLocaleString('ko-KR')}문제 · ${Number.isInteger(percent) ? percent : percent.toFixed(1)}%`,
-    progressLoading: '학습 진척도를 불러오고 있습니다',
-    progressUnavailable: '진척도를 확인할 수 없습니다',
-    progressError: '진척도를 불러오지 못했습니다',
+    learningProgressLabel: '학습 진도', examProgressLabel: '시험 전체 진도', progressBarLabel: '선택 범위 학습 진척도',
+    progressValue: (label: string, completed: number, total: number, percent: number) => `${label} ${completed.toLocaleString('ko-KR')} / ${total.toLocaleString('ko-KR')}문제 · ${percent}%`,
+    progressLoading: '학습 진척도를 불러오고 있습니다', progressUnavailable: '진척도를 확인할 수 없습니다', progressError: '진척도를 불러오지 못했습니다',
     domainLabel: '영역',
     questionLabel: '문제',
     answerCountHint: (count: number) => `정답 ${count}개를 고르세요`,
@@ -247,8 +240,7 @@ export const copy = {
       domain ? `${scope} · ${domain}` : scope,
     detailDialogLabel: (dateText: string) => `${dateText} 학습 상세`,
   },
-  // 시험 문구 — 시험 목록(라벨)은 src/ui/exam/exam-catalog.ts가 단일 소스다 (ADR-0068).
-  // #269: "현재 지원하는 시험은 1개입니다." 안내는 상단 selector 단일화로 제거했다.
+  // 시험 목록(라벨)은 exam-catalog.ts 단일 소스 (ADR-0068); #269 지원 시험 안내는 상단 selector 단일화로 제거했다.
   exam: {
     label: '시험',
     scopeLabel: '시험 기준',
