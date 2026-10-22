@@ -23,8 +23,17 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 ## 콜백 프로토콜
 - 완료·blocked·failed **모두** 콜백한다. 침묵 완료는 없다.
 - 형식: `[callback] unit=<unit> status=<done|blocked|failed> report=<path>`
-- `sh .agents/skills/agent-orchestration/scripts/notify.sh <o-pane> <unit> <status> <report>` — `<MOI_WORK_DIR|보고서 디렉터리>/callbacks.log`에 먼저 기록하고 `herdr agent prompt`로 전송한다. 전송 실패는 `delivered=pending`으로 남기고 종료 0이며, o가 재전송한다. `--dry-run`은 기록·전송 없이 출력만 한다.
+- `sh .agents/skills/agent-orchestration/scripts/notify.sh o <unit> <status> <report>` — 콜백 대상은 이름 `o`를 기본으로 한다(패널 ID 직접 지정은 예외). `<MOI_WORK_DIR|보고서 디렉터리>/callbacks.log`에 먼저 기록하고 `herdr agent prompt`로 전송한다. 전송 실패는 `delivered=pending`으로 남기고 종료 0이며, o가 재전송한다. `--dry-run`은 기록·전송 없이 출력만 한다.
 - o는 콜백을 받으면 보고서를 읽고 다음 단위를 디스패치한다. 같은 unit의 중복 콜백은 최신 status로 처리한다.
+
+## 디스패치 큐·상태 점검
+- o는 디스패치 시 `tmp/dispatch-queue.tsv`에 한 줄을 추가한다: `unit\tworker\treviewer\tbrief\treport\tdispatched_at(UTC)`.
+- 상태 점검: `sh .agents/skills/agent-orchestration/scripts/dispatch-status.sh [queue.tsv] [callbacks.log]` — 큐의 각 unit에 대해 `DONE / PENDING(콜백 미수신) / MISSING(report 없음) / BLOCKED`를 출력한다.
+- 폴링 루프는 만들지 않는다. o가 콜백 대기 중 필요할 때만 호출하는 요약 도구다. 콜백 자체가 완료 신호다.
+
+## 워커 보고 규칙
+- 워커는 종료 전 반드시 `notify.sh o <unit> <status> <report>`를 호출한다. 침묵 완료는 없다.
+- notify.sh 호출이 실패하면 보고서 첫 줄을 `status: blocked`로 기록하고 o에 실패를 알린다.
 
 ## 완성 알림 (단위 묶음 완료)
 - o가 단위 묶음 완료(전 PR merge·배포·smoke·이슈 close)를 판단하면 `orchestrator-completion-notify` 스킬로 Discord 알림을 **1회** 보낸다. 단위별 알림은 금지한다.
