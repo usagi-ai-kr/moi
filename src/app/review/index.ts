@@ -18,7 +18,16 @@ export type StartReviewResult =
 
 export type AnswerReviewResult =
   | { readonly outcome: 'answered'; readonly correct: boolean; readonly attempt: ReviewAttempt; readonly session: ReviewSession }
-  | { readonly outcome: 'rejected'; readonly reason: 'not_found' | 'not_current' | 'already_graded' | 'unknown_option' | 'conflict' };
+  | {
+      readonly outcome: 'rejected';
+      readonly reason:
+        | 'not_found'
+        | 'not_current'
+        | 'already_graded'
+        | 'unknown_option'
+        | 'invalid_selection_count'
+        | 'conflict';
+    };
 
 export type EndReviewResult =
   | { readonly outcome: 'ended'; readonly session: ReviewSession; readonly summary: ReturnType<typeof summarize> }

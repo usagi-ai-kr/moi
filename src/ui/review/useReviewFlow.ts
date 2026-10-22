@@ -10,6 +10,7 @@ import type {
   ReviewPendingItem,
 } from '../api/review-client';
 import { copy } from '../copy';
+import { nextSelectedIds } from '../components/option-select';
 import { useSessionUser } from '../session';
 import {
   reviewKeys,
@@ -168,8 +169,12 @@ export function useReviewFlow(client: ApiClient, examId: string) {
   };
 
   const handleToggleOption = (optId: string) => {
+    // #308 — 단일 선택(정답 1개)은 radio 계약으로 교체한다. 개수를 모르거나 복수일 때는
+    // 기존 누적·해제 토글(checkbox 계약)을 유지한다.
     setSelectedOptions((prev) =>
-      prev.includes(optId) ? prev.filter((id) => id !== optId) : [...prev, optId],
+      currentItem?.answerCount === undefined
+        ? prev.includes(optId) ? prev.filter((id) => id !== optId) : [...prev, optId]
+        : nextSelectedIds(currentItem.answerCount, prev, optId),
     );
   };
 

@@ -33,6 +33,8 @@ export interface SeenMaps {
 export function normalizeStem(stem: string): string;
 export function sortedOptions(options: ContentOption[]): ContentOption[];
 export function optionSetHash(options: ContentOption[]): string;
+/** #308 — stem의 고르기 지시 개수와 정답 개수(answerOptionKeys) 불일치를 판정한다. 불일치 시 결정적 문구를 반환한다. */
+export function chooseCountMismatch(stem: string, answerCount: number): string | null;
 export function validatePack(pack: ContentPack, file: string, seen?: SeenMaps): ContentProblem[];
 export function collectPackFiles(root: string): string[];
 export function toBulkBody(packs: Array<{ pack: ContentPack; file: string }>): {

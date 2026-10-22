@@ -7,8 +7,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { ApiClient } from '../../src/ui/api/client';
 import { ME_QUERY_KEY, useLogout } from '../../src/ui/session';
+import { useBookmarks } from '../../src/ui/review/bookmark-queries';
 import {
-  useBookmarks,
   useCurrentReviewSession,
   useReviewCandidates,
 } from '../../src/ui/review/queries';
@@ -76,7 +76,8 @@ function fakeClient(current: { userId: string; loggedOut: boolean }) {
 function ReviewProbe({ client }: { client: ApiClient }) {
   const candidates = useReviewCandidates(client, 'saa-c03', 'wrong');
   useCurrentReviewSession(client, 'saa-c03', 'wrong');
-  useBookmarks(client, 'saa-c03');
+  // #307 이 북마크 훅을 bookmark-queries 로 옮기고 userId 인자를 추가했다 — 계정 키를 고정해 쓴다.
+  useBookmarks(client, 'saa-c03', 'u-a');
   const items = candidates.data?.items ?? [];
   return <div data-testid="candidates">{items.map((i) => i.questionId).join(',')}</div>;
 }

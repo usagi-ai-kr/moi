@@ -170,6 +170,8 @@ export function registerStudyRoutes(app: Hono<{ Bindings: Env }>, options?: Stud
       if (result.outcome === 'rejected') {
         if (result.reason === 'not_found') return c.json({ error: 'not_found' }, 404);
         if (result.reason === 'not_active') return c.json({ error: 'not_active' }, 409);
+        // unknown_option·invalid_selection_count(#308)는 요청 형태 결함 — 명확한 422로 거부한다.
+        if (result.reason === 'invalid_selection_count') return c.json({ error: 'invalid_selection_count' }, 422);
         return c.json({ error: 'unknown_option' }, 422);
       }
       return c.json({ outcome: result.outcome }, 200);

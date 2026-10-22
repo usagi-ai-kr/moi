@@ -543,6 +543,34 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     expect([409, 404]).toContain(retry.status);
   });
 
+  it('#308 단일 선택 문항에 2개 option 답변 요청은 422 invalid_selection_count로 거부되고 이력이 오염되지 않는다', async () => {
+    const token = await mintSession(U1);
+    const startedRes = await req('/api/review/sessions', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } });
+    expect(startedRes.status).toBe(201);
+    const cur = (await (await req(`/api/review/sessions/current?examId=${EXAM_CODE}&mode=wrong`, { token })).json()) as { current: { questionId: string } };
+    const qid = cur.current.questionId;
+    const before = await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source='review'").first<{ c: number }>();
+    const bad = await req('/api/review/sessions/current/answers', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM_CODE, mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: [`${qid}-v1-o1`, `${qid}-v1-o2`] } },
+    });
+    expect(bad.status).toBe(422);
+    expect(await bad.json()).toEqual({ error: 'invalid_selection_count' });
+    // 채점/이력 데이터 오염 없음 — attempt가 저장되지 않고 커서도 유지된다.
+    const after = await db.prepare("SELECT COUNT(*) AS c FROM study_attempts WHERE source='review'").first<{ c: number }>();
+    expect(after?.c).toBe(before?.c);
+    const resume = (await (await req(`/api/review/sessions/current?examId=${EXAM_CODE}&mode=wrong`, { token })).json()) as { cursor: number };
+    expect(resume.cursor).toBe(0);
+    // 정상 1개 답변은 계속 받는다.
+    const ok = await req('/api/review/sessions/current/answers', {
+      method: 'POST',
+      token,
+      body: { examId: EXAM_CODE, mode: 'wrong', questionId: qid, response: { kind: 'answered', optionIds: [`${qid}-v1-o2`] } },
+    });
+    expect(ok.status).toBe(200);
+  });
+
   it('연속 동시 POST는 1건 저장·409 1건', async () => {
     const token = await mintSession(U1);
     await req('/api/review/sessions', { method: 'POST', token, body: { examId: EXAM_CODE, mode: 'wrong' } });

@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 import { copy } from '../../src/ui/copy';
 
@@ -37,6 +37,10 @@ let activeStudySet: {
 let wrongItems: ReviewMockItem[] = [];
 let bookmarkPool: ReviewMockItem[] = [];
 let bookmarkedIds = new Set<string>();
+let bookmarkPatchDelayMs = 0;
+let bookmarkPatchFailureStatus: number | null = null;
+let bookmarkPatchFailureCount = 0;
+let bookmarkPatchRequestCount = 0;
 
 let activeReviewSession: {
   examId: string;
@@ -55,6 +59,10 @@ let activeReviewSession: {
 function resetReviewMock() {
   activeStudySet = null;
   bookmarkedIds = new Set<string>();
+  bookmarkPatchDelayMs = 0;
+  bookmarkPatchFailureStatus = null;
+  bookmarkPatchFailureCount = 0;
+  bookmarkPatchRequestCount = 0;
   activeReviewSession = null;
 
   wrongItems = [
@@ -538,6 +546,15 @@ Given('복습 API 모의가 준비되면', async ({ page }) => {
         return;
       }
       if (method === 'PATCH') {
+        bookmarkPatchRequestCount += 1;
+        if (bookmarkPatchDelayMs > 0) {
+          await new Promise((resolve) => setTimeout(resolve, bookmarkPatchDelayMs));
+        }
+        if (bookmarkPatchFailureCount > 0 && bookmarkPatchFailureStatus !== null) {
+          bookmarkPatchFailureCount -= 1;
+          await route.fulfill({ status: bookmarkPatchFailureStatus, json: { error: 'bookmark_failed' } });
+          return;
+        }
         const body = req.postDataJSON() as { examId: string; questionId: string; bookmarked: boolean };
         if (body.bookmarked) {
           bookmarkedIds.add(body.questionId);
@@ -605,7 +622,8 @@ When('복습 시작 버튼을 누르면', async ({ page }) => {
 });
 
 When('복습 첫 번째 보기를 선택하면', async ({ page }) => {
-  await page.locator('fieldset input[type="checkbox"]').first().check();
+  // #308 — 단일 선택 문항은 radio, 복수 선택은 checkbox — 유형과 무관하게 첫 보기를 고른다.
+  await page.locator('fieldset input[type="checkbox"], fieldset input[type="radio"]').first().check();
 });
 
 When('복습 답안 제출 버튼을 누르면', async ({ page }) => {
@@ -620,8 +638,64 @@ When('복습 종료 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: copy.review.endAction }).last().click();
 });
 
+Given('북마크 저장 응답이 {int}ms 지연되면', async ({}, delayMs: number) => {
+  bookmarkPatchDelayMs = delayMs;
+});
+
+Given('북마크 저장 첫 요청이 {int} 상태로 실패하면', async ({}, status: number) => {
+  bookmarkPatchFailureStatus = status;
+  bookmarkPatchFailureCount = 1;
+});
+
 When('북마크 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: copy.review.bookmarkAdd }).click();
+});
+
+When('북마크 버튼을 빠르게 두 번 누르면', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  const button = page.getByRole('button', { name: copy.review.bookmarkAdd });
+  await expect(button).toBeEnabled();
+  await button.dblclick();
+});
+
+When('북마크 저장 다시 시도를 누르면', async ({ page }) => {
+  await page.getByRole('alert').getByRole('button', { name: copy.review.retry }).click();
+});
+
+Then('북마크 저장 중 버튼이 잠긴다', async ({ page }) => {
+  const button = page.getByRole('button', { name: copy.review.bookmarkSaving });
+  await expect(button).toBeVisible();
+  await expect(button).toBeDisabled();
+  await expect(button).toHaveAttribute('aria-busy', 'true');
+  await expect.poll(() => bookmarkPatchRequestCount).toBe(1);
+  const screenshot = await page.screenshot({ animations: 'disabled' });
+  await test.info().attach('bookmark-pending-320px', { body: screenshot, contentType: 'image/png' });
+});
+
+Then('북마크 저장 성공 알림이 보인다', async ({ page }) => {
+  await expect(page.getByRole('status').filter({ hasText: copy.review.bookmarkAdded })).toBeVisible();
+});
+
+Then('북마크 상태가 기본 화면 폭에서 맞고 가로로 넘치지 않는다', async ({ page }) => {
+  for (const width of [320, 375, 768, 1024, 1280]) {
+    await page.setViewportSize({ width, height: 800 });
+    await expect(page.getByRole('button', { name: copy.review.bookmarkRemove })).toHaveAttribute('aria-pressed', 'true');
+    const fits = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
+    expect(fits, `북마크 화면이 ${width}px에서 가로로 넘칩니다`).toBe(true);
+  }
+});
+
+Then('북마크 저장 오류와 재시도 안내가 보인다', async ({ page }) => {
+  const alert = page.getByRole('alert');
+  await expect(alert).toContainText(copy.review.bookmarkSaveError);
+  await expect(alert.getByRole('button', { name: copy.review.retry })).toBeVisible();
+  expect(bookmarkPatchRequestCount).toBe(1);
+});
+
+Then('북마크 재시도가 서버 상태를 확정한다', async ({ page }) => {
+  await expect(page.getByRole('button', { name: copy.review.bookmarkRemove })).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => bookmarkPatchRequestCount).toBe(2);
+  await expect(page.getByRole('status').filter({ hasText: copy.review.bookmarkAdded })).toBeVisible();
 });
 
 When('북마크 복습 페이지로 이동하면', async ({ page }) => {

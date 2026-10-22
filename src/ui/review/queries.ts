@@ -6,8 +6,6 @@ import {
   endReviewSession,
   getCurrentReviewSession,
   getReviewCandidates,
-  listBookmarks,
-  setBookmark,
   startReviewSession,
   submitReviewAnswer,
   type ReviewAnswerInputKind,
@@ -16,8 +14,8 @@ import {
 } from '../api/review-client';
 
 /**
- * 복습 캐시 키 (#314) — 후보·회차·북마크 모두 userId 를 포함해 계정 간 격리를 보장한다.
- * 키 구조(userId 포함)를 바꾸는 것이 수정 지점이다.
+ * 복습 캐시 키 — 후보·회차·북마크 모두 userId 를 포함해 계정 간 격리를 보장한다(#314).
+ * 북마크 상태 키(overrides·set-bookmark)도 같은 접두사·계정 격리를 쓴다(#307).
  */
 export const reviewKeys = {
   candidates: (examId: string, mode: ReviewMode, userId = 'anonymous') =>
@@ -26,6 +24,10 @@ export const reviewKeys = {
     [...REVIEW_CACHE_ROOT, 'current', userId, examId, mode] as const,
   bookmarks: (examId: string, userId = 'anonymous') =>
     [...REVIEW_CACHE_ROOT, 'bookmarks', userId, examId] as const,
+  bookmarkOverrides: (examId: string, userId = 'anonymous') =>
+    [...REVIEW_CACHE_ROOT, 'bookmark-overrides', userId, examId] as const,
+  bookmarkMutation: (examId: string, questionId: string, userId = 'anonymous') =>
+    [...REVIEW_CACHE_ROOT, 'set-bookmark', userId, examId, questionId] as const,
 };
 
 /** 로그인 계정 id — 세션 미확인 중에는 'anonymous' 로 격리한다(#314). */
@@ -51,16 +53,6 @@ export function useCurrentReviewSession(client: ApiClient, examId: string, mode:
     queryFn: () => getCurrentReviewSession(client, examId, mode),
     retry: false,
     staleTime: 5_000,
-  });
-}
-
-export function useBookmarks(client: ApiClient, examId: string) {
-  const userId = useReviewUserId(client);
-  return useQuery({
-    queryKey: reviewKeys.bookmarks(examId, userId),
-    queryFn: () => listBookmarks(client, examId),
-    retry: false,
-    staleTime: 30_000,
   });
 }
 
@@ -101,19 +93,6 @@ export function useEndReview(client: ApiClient) {
     onSuccess: (_data, vars) => {
       queryClient.setQueryData(reviewKeys.current(vars.examId, vars.mode, userId), null);
       void queryClient.invalidateQueries({ queryKey: reviewKeys.candidates(vars.examId, vars.mode, userId) });
-    },
-  });
-}
-
-export function useSetBookmark(client: ApiClient) {
-  const queryClient = useQueryClient();
-  const userId = useReviewUserId(client);
-  return useMutation({
-    mutationFn: (input: { examId: string; questionId: string; bookmarked: boolean }) =>
-      setBookmark(client, input),
-    onSuccess: (_data, vars) => {
-      void queryClient.invalidateQueries({ queryKey: reviewKeys.bookmarks(vars.examId, userId) });
-      void queryClient.invalidateQueries({ queryKey: reviewKeys.candidates(vars.examId, 'bookmark', userId) });
     },
   });
 }
