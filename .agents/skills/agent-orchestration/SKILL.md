@@ -87,3 +87,10 @@ compatibility: sh와 git 필요 (scripts/check-worker-output.sh, scripts/notify.
 
 ## 참고
 - ADR-0023(컨텍스트 리셋·산출물 검증), ADR-0042(역할·콜백), `AGENTS.md` 작업 원칙, `architecture-boundaries`(domain 순수성)
+
+## o 응대 원칙 (서브에이전트 위임)
+- o는 **1분 안에 응답 가능한 상태**를 유지한다. 긴 보고서 판정·지시 초안 작성은 직접 하지 않는다.
+- 허용 위임: 보고서 판정·다음 지시 초안만. `callback-triage` 에이전트(`.claude/agents/callback-triage.md`)를 **백그라운드**(`run_in_background`)로 호출하고 결과를 기다리지 않는다.
+- 위임 금지: 디스패치 실행(herdr 프롬프트), 커밋·PR·병합·배포, 콜백 기록 변경, 새 에이전트 생성. 이들은 o 직접 또는 워커가 수행한다.
+- 보고서가 1건이고 status 한 줄로 충분하면 o가 직접 판단해도 된다. 2건 이상이거나 본문 50줄 초과면 위임한다.
+- 위임 결과가 도착하면 o가 반영하고 `tmp/callbacks.log`에 처리 기록을 남긴다.
