@@ -3,14 +3,15 @@ import { HTTPError } from 'ky';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse } from '../api/client';
 import { useExamScope } from '../exam/ExamScopeProvider';
-import { isConflict, isUnauthorized, useAbandonStudy, useAnswerStudy, useStartStudy, useStudyHistory, useStudySet, useSubmitStudy } from './queries';
+import { isUnauthorized, useAbandonStudy, useAnswerStudy, useStudyHistory, useStudySet, useSubmitStudy } from './queries';
 import { useAbandonFlow } from './useAbandonFlow';
 import { useInFlightGuard } from './useInteractionLock';
 import { useStudyUiStore } from './store';
-import { clearSetDrafts, completeDraftSend, dropTabState, listDraftsForSet, openDraftStorage, recordDraft } from './draft-sync';
+import { completeDraftSend, listDraftsForSet, openDraftStorage, recordDraft } from './draft-sync';
 import { useDraftSync } from './useDraftSync';
 import { useTabState } from './useTabState';
 import { readStudyParam, writeStudyParam } from './study-url';
+import { useStudyStartActions } from './useStudyStartActions';
 import type { StudyFlowOptions } from './types';
 
 // URL 동기화 헬퍼와 옵션 타입은 새 모듈로 추출했다(#268 Slice 2C — 250줄 상한 해소, ADR-0015 모듈 길이 예산).
@@ -24,19 +25,15 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   const { examId } = useExamScope();
   const initialOpt = opts?.initialSetId;
   const [setId, setSetId] = useState<string | null>(() => (initialOpt !== undefined ? initialOpt : readStudyParam()));
-  const [size, setSize] = useState<number>(4);
-  const [startError, setStartError] = useState<string | null>(null);
-  const [conflict, setConflict] = useState(false);
-  const [unauth, setUnauth] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [unauth, setUnauth] = useState(false);
   const [failed, setFailed] = useState<{ questionId: string; response: ItemResponse } | null>(null);
   const setQuery = useStudySet(client, setId);
   const historyQuery = useStudyHistory(client, s.historyPage, 20, s.view === 'history');
-  const startMut = useStartStudy(client);
   const answerMut = useAnswerStudy(client);
   const submitMut = useSubmitStudy(client);
   const abandonMut = useAbandonStudy(client);
-  const startLock = useInFlightGuard(), submitLock = useInFlightGuard();
+  const submitLock = useInFlightGuard();
   const sync = useDraftSync(client, userId, setId, setQuery, s.setSave);
   useTabState(userId, setId, setQuery.data ?? null, s);
 
@@ -50,39 +47,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   useEffect(() => {
     if (!blocked) setSubmitError((prev) => (prev === copy.study.syncBlocked ? null : prev));
   }, [blocked]);
-  const handleStart = useCallback(() => {
-    if (!startLock.tryAcquire(startMut.isPending)) return;
-    setStartError(null);
-    setConflict(false);
-    setUnauth(false);
-    startMut.mutate(
-      s.scope === 'domain'
-        ? { examId, mode: s.scope, domainId: s.domainId, size }
-        : { examId, mode: s.scope, size },
-      {
-        onSuccess: (set) => {
-          setSetId(set.id);
-          s.resetFlow();
-          s.setView('active');
-          if (opts?.onSetStarted) opts.onSetStarted(set.id);
-          else writeStudyParam(set.id);
-        },
-        onError: (err) => {
-          if (isConflict(err)) {
-            setConflict(true);
-            if (setId) s.setView('active');
-            return;
-          }
-          if (isUnauthorized(err)) {
-            setUnauth(true);
-            return;
-          }
-          setStartError('시작하지 못했습니다. 다시 시도해 주세요.');
-        },
-        onSettled: () => startLock.release(),
-      },
-    );
-  }, [s, setId, startMut, opts, examId, startLock]);
+  const startActions = useStudyStartActions({ client, examId, userId, store: s, setSetId, opts });
 
   const handleAnswer = useCallback(
     (questionId: string, response: ItemResponse, previous?: ItemResponse) => {
@@ -206,26 +171,32 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   const abandonError = abandon.abandonError;
   const clearAbandonError = abandon.clearAbandonError;
 
-  const restart = useCallback(() => {
-    if (setId) {
-      clearSetDrafts(openDraftStorage(), userId, setId);
-      dropTabState(userId, setId);
-    }
+  const changeSettings = useCallback(() => {
     setSetId(null);
     s.resetFlow();
     s.setView('start');
-    if (opts?.onAbandoned) opts.onAbandoned();
-    else writeStudyParam(null);
-  }, [s, setId, userId, opts]);
+    writeStudyParam(null);
+  }, [s]);
+
+  const resumeConflict = useCallback(() => {
+    setSetId(null);
+    s.setView('start');
+    writeStudyParam(null);
+  }, [s]);
+
+  const restart = useCallback(() => {
+    if (set) startActions.restart(set);
+  }, [set, startActions]);
 
   return {
     s, set, setId, unanswered, setQuery, historyQuery,
-    size, setSize,
-    startMut, answerMut, submitMut, abandonMut,
-    startError, conflict, unauth, submitError, blocked,
+    size: s.size, setSize: s.setSize,
+    startMut: startActions.startMut, answerMut, submitMut, abandonMut,
+    startError: startActions.startError, conflict: startActions.conflict, unauth: unauth || startActions.unauth, submitError, blocked,
     conflicts: sync.conflicts, syncBusy: sync.busy,
-    handleStart, handleAnswer, doSubmit, doAbandon, abandonError, clearAbandonError,
-    restart, handleRetry, handleSubmitRequest,
+    handleStart: startActions.handleStart, handleAnswer, doSubmit, doAbandon, abandonError, clearAbandonError,
+    restart, changeSettings, handleRetry, handleSubmitRequest,
+    resumeConflict,
     resolveServer: sync.resolveServer, resolveMine: sync.resolveMine,
   };
 }
