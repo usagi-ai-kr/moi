@@ -10,6 +10,7 @@ import type {
   ReviewPendingItem,
 } from '../api/review-client';
 import { copy } from '../copy';
+import { useSessionUser } from '../session';
 import {
   reviewKeys,
   useCurrentReviewSession,
@@ -23,6 +24,9 @@ import { useInFlightGuard } from '../study/useInteractionLock';
 export function useReviewFlow(client: ApiClient, examId: string) {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  // #314 — 복습 캐시 키에 계정 id 를 넣기 위해 현재 계정을 읽는다(계정 전환 시 이전 계정 캐시 미노출).
+  const { user } = useSessionUser(client);
+  const userId = user?.id ?? 'anonymous';
   const modeParam = searchParams.get('mode');
   const mode: ReviewMode = modeParam === 'bookmark' ? 'bookmark' : 'wrong';
   const [size, setSize] = useState<number>(4);
@@ -132,7 +136,7 @@ export function useReviewFlow(client: ApiClient, examId: string) {
   const handleNext = () => {
     if (!feedback) return;
     const nextItem = feedback.next;
-    queryClient.setQueryData(reviewKeys.current(examId, mode), {
+    queryClient.setQueryData(reviewKeys.current(examId, mode, userId), {
       examId,
       mode,
       status: feedback.session.status,

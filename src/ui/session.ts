@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { create } from 'zustand';
 import { getMe, logout, type ApiClient, type MeUser } from './api/client';
+import { REVIEW_CACHE_ROOT } from './review/cache-keys';
 import { clearDraftsForUser } from './study/drafts';
 import { clearTabStatesForUser } from './study/tab-state';
 
@@ -77,6 +78,9 @@ export function useLogout(client: ApiClient, userId: string | null): () => Promi
       // 활성 /api/me observer를 초기 상태로 되돌리고 즉시 재조회한다.
       // invalidate→remove 순서는 재조회를 취소해 로그인 화면이 갱신되지 않을 수 있다.
       void queryClient.resetQueries({ queryKey: ME_QUERY_KEY });
+      // 복습 캐시(후보·회차·북마크)는 계정 격리 키를 쓰지만, 로그아웃 시 이전 계정 데이터가
+      // 메모리에 남지 않도록 함께 제거한다(#314).
+      queryClient.removeQueries({ queryKey: REVIEW_CACHE_ROOT });
     },
   });
   return async () => {
