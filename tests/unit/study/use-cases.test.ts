@@ -159,6 +159,52 @@ describe('AnswerStudyItem (선택/Pass/미응답·제출 전 변경 가능)', ()
   });
 });
 
+describe('#308 선택 개수 계약 (AnswerStudyItem)', () => {
+  /** 정답 개수를 지정한 단일 문제 풀로 1문항 세트를 시작한다 — 개수 계약 테스트는 answerOptionIds를 진실 원천으로 고정한다. */
+  async function startedSetWith(answerOptionIds: readonly string[]) {
+    const f = fakes();
+    const entry = makePoolEntry({ questionId: 'pool-q-0', index: 0, version: { answerOptionIds: [...answerOptionIds] } });
+    (f as { pool: QuestionPool }).pool = {
+      async listPool() {
+        return [entry];
+      },
+    };
+    const result = await startStudySet(f, { userId: 'u1', examId: 'saa-c03', mode: 'all' });
+    if (result.outcome !== 'started') throw new Error('start 실패');
+    const set = f.sets.get(result.set.id) as StudySet;
+    const questionId = set.items[0]?.questionId ?? '';
+    expect((set.items[0]?.answerOptionIds ?? []).length).toBe(answerOptionIds.length);
+    return { f, set, questionId };
+  }
+
+  it('Given 단일 선택 문항 When 2개 option 답변 요청 Then invalid_selection_count로 거부하고 저장하지 않는다', async () => {
+    const { f, set, questionId } = await startedSetWith(['b']);
+    const bad = await answerStudyItem(f, { setId: set.id, userId: 'u1', questionId, response: { kind: 'answered', optionIds: ['a', 'b'] } });
+    expect(bad).toMatchObject({ outcome: 'rejected', reason: 'invalid_selection_count' });
+    expect(f.sets.get(set.id)?.items[0]?.response).toEqual({ kind: 'unanswered' });
+    // 거부 후 데이터 오염 없음 — 정상 답변·제출은 그대로 가능하다.
+    const ok = await answerStudyItem(f, { setId: set.id, userId: 'u1', questionId, response: { kind: 'answered', optionIds: ['b'] } });
+    expect(ok.outcome).toBe('answered');
+  });
+
+  it('Given 단일 선택 문항 When 정확히 1개 option 답변 Then 기존 계약대로 저장된다', async () => {
+    const { f, set, questionId } = await startedSetWith(['b']);
+    const ok = await answerStudyItem(f, { setId: set.id, userId: 'u1', questionId, response: { kind: 'answered', optionIds: ['b'] } });
+    expect(ok.outcome).toBe('answered');
+    expect(f.sets.get(set.id)?.items[0]?.response).toEqual({ kind: 'answered', optionIds: ['b'] });
+  });
+
+  it('Given 복수(정답 2개) 문항 When 2개 option 답변 Then 기존 계약대로 저장되고 채점 정확하다', async () => {
+    const { f, set, questionId } = await startedSetWith(['b', 'c']);
+    const ok = await answerStudyItem(f, { setId: set.id, userId: 'u1', questionId, response: { kind: 'answered', optionIds: ['c', 'b'] } });
+    expect(ok.outcome).toBe('answered');
+    const submitted = await submitStudySet(f, { setId: set.id, userId: 'u1', confirmUnanswered: false });
+    if (submitted.outcome !== 'submitted') throw new Error('submit 실패');
+    expect(submitted.set.result?.perItem[0]).toMatchObject({ correct: true });
+    expect(submitted.set.result?.accuracyPercent).toBe(100);
+  });
+});
+
 describe('SubmitStudySet (일괄 채점·미응답 확인)', () => {
   it('미응답이 있으면 confirmUnanswered 없이 거부된다', async () => {
     const f = fakes();

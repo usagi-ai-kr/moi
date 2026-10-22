@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { useId, type RefObject } from 'react';
 import { copy } from '../copy';
 import type { ApiClient, ItemResponse, StudyActiveItem } from '../api/client';
 import { OptionFieldset } from '../components/option-fieldset';
@@ -17,6 +17,13 @@ import { BookmarkButton } from '../review/BookmarkButton';
 import { shouldShowShortageNotice } from './queries';
 import { ReportButton } from './ReportButton';
 import { StudyShortageNotice } from './StudyShortageNotice';
+import {
+  answeredAfterSelect,
+  isChecked,
+  optionRowType,
+  optionText,
+  responseLabel,
+} from './option-state';
 import type { SaveState } from './types';
 
 interface Props {
@@ -46,10 +53,6 @@ const NextIcon = iconNext.icon;
 const PassIcon = iconPass.icon;
 const AbandonIcon = iconAbandon.icon;
 
-function isChecked(item: StudyActiveItem, optionId: string): boolean {
-  return item.response.kind === 'answered' && item.response.optionIds.includes(optionId);
-}
-
 // 저장 상태 문구 — 실제 상태(서버 확인·오프라인·충돌)를 그대로 표시한다 (이슈 #52).
 const SAVE_TEXT: Record<SaveState, string> = {
   idle: '',
@@ -60,27 +63,13 @@ const SAVE_TEXT: Record<SaveState, string> = {
   conflict: copy.study.conflictNeeded,
 };
 
-function toggleOption(item: StudyActiveItem, optionId: string): ItemResponse {
-  const current = item.response.kind === 'answered' ? item.response.optionIds : [];
-  const next = current.includes(optionId) ? current.filter((id) => id !== optionId) : [...current, optionId];
-  return next.length === 0 ? { kind: 'unanswered' } : { kind: 'answered', optionIds: next };
-}
-
-function optionText(item: StudyActiveItem, optionId: string): string {
-  return item.options.find((o) => o.optionId === optionId)?.text ?? optionId;
-}
-
-function responseLabel(r: ItemResponse): string {
-  if (r.kind === 'answered') return `선택 ${r.optionIds.length}`;
-  if (r.kind === 'pass') return 'Pass';
-  return '미응답';
-}
-
 // 문제 화면 — 시작 시점 스냅샷 본문·보기 텍스트 렌더, 이전/다음, 자동 저장 상태.
 // 마지막 문항은 하단 탐색을 [이전][제출하기]로 바꿔 비활성 다음을 남기지 않는다(#232).
 // 제출 CTA는 상태당 하나가 원칙이므로 마지막에서는 상단 제출을 숨기고 하단으로 옮긴다.
 // 질문 카드·선택지 행은 복습과 공통(#274) — 모드별 로직(제출 시 채점)은 그대로 둔다.
 export function QuestionView(p: Props) {
+  // #308 — 선택 개수 안내(힌트)를 보기 그룹의 aria-describedby 로 연결한다.
+  const answerCountHintId = useId();
   const item = p.items[p.index];
   if (!item) return null;
   // 북마크 시험 축은 선택 시험(공개 코드) — 하드코딩 없음 (#239).
@@ -88,6 +77,8 @@ export function QuestionView(p: Props) {
   const total = p.items.length;
   const saveText = SAVE_TEXT[p.save];
   const isLast = p.index >= total - 1;
+  // #308 — 보기 input 유형(단일=radio 교체, 복수=checkbox 토글)은 문항마다 한 번 계산한다.
+  const rowType = optionRowType(item);
   const submitLabel = `${copy.study.submit}${p.unansweredCount > 0 ? ` (${p.unansweredCount} 미응답)` : ''}`;
   const showShortageNotice = shouldShowShortageNotice(examId, p.setId, p.items.length);
   return (
@@ -146,6 +137,7 @@ export function QuestionView(p: Props) {
       <QuestionCard
         stem={item.stem}
         hint={copy.study.answerCountHint(item.answerCount)}
+        hintId={answerCountHintId}
         titleAs="h1"
         titleClassName="moi-study-title"
         headerActions={
@@ -155,13 +147,15 @@ export function QuestionView(p: Props) {
           </div>
         }
       >
-        <OptionFieldset className="moi-study-field">
+        <OptionFieldset className="moi-study-field" describedBy={answerCountHintId}>
           {item.optionOrder.map((optionId, k) => (
             <OptionRow
               key={optionId}
+              type={rowType.type}
+              {...(rowType.radioName !== undefined ? { name: rowType.radioName } : {})}
               checked={isChecked(item, optionId)}
               disabled={p.submitting}
-              onChange={() => p.onAnswer(item.questionId, toggleOption(item, optionId), item.response)}
+              onChange={() => p.onAnswer(item.questionId, answeredAfterSelect(item, optionId), item.response)}
               ariaLabel={`보기 ${k + 1} ${optionText(item, optionId)}`}
               index={k}
               text={optionText(item, optionId)}

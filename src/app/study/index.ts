@@ -19,7 +19,10 @@ export type StartStudySetResult =
 
 export type AnswerStudyItemResult =
   | { readonly outcome: 'answered' | 'pass' | 'unanswered' }
-  | { readonly outcome: 'rejected'; readonly reason: 'not_found' | 'not_active' | 'unknown_option' };
+  | {
+      readonly outcome: 'rejected';
+      readonly reason: 'not_found' | 'not_active' | 'unknown_option' | 'invalid_selection_count';
+    };
 
 export type SubmitStudySetResult =
   | { readonly outcome: 'submitted'; readonly set: StudySet }
@@ -124,6 +127,11 @@ export async function answerStudyItem(
     const allowed = new Set(item.optionOrder);
     if (input.response.optionIds.length === 0 || input.response.optionIds.some((id) => !allowed.has(id))) {
       return { outcome: 'rejected', reason: 'unknown_option' };
+    }
+    // #308 — 문항 계약 검증: 단일 선택(정답 1개)은 optionId 정확히 1개만 받는다.
+    // 조작 요청이 저장되지 않으므로 채점·이력 데이터가 오염되지 않는다.
+    if (item.answerOptionIds.length === 1 && input.response.optionIds.length > 1) {
+      return { outcome: 'rejected', reason: 'invalid_selection_count' };
     }
   }
   const items = set.items.map((candidate, i) => (i === index ? { ...candidate, response: input.response } : candidate));

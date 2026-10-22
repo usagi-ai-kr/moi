@@ -38,6 +38,10 @@ export function registerReviewAnswerRoutes(app: Hono<{ Bindings: Env }>, options
       if (result.outcome === 'rejected') {
         if (result.reason === 'not_found') return c.json({ error: 'not_found' }, 404);
         if (result.reason === 'unknown_option') return c.json({ error: 'unknown_option' }, 422);
+        // #308 — 단일 선택 문항에 복수 optionId 요청은 명확한 422로 거부한다(채점·이력 미오염).
+        if (result.reason === 'invalid_selection_count') {
+          return c.json({ error: 'invalid_selection_count' }, 422);
+        }
         return c.json({ error: result.reason }, 409);
       }
       const gradedItem = result.session.items.find((item) =>

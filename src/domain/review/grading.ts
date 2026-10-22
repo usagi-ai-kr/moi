@@ -10,7 +10,12 @@ import { assertReviewSessionInvariants } from './invariants';
 
 export type GradeRejection = {
   readonly outcome: 'rejected';
-  readonly reason: 'not_active' | 'not_current' | 'already_graded' | 'unknown_option';
+  readonly reason:
+    | 'not_active'
+    | 'not_current'
+    | 'already_graded'
+    | 'unknown_option'
+    | 'invalid_selection_count';
 };
 
 export interface GradeResult {
@@ -48,6 +53,11 @@ export function gradeCurrent(
     const allowed = new Set(item.optionOrder);
     if (input.response.optionIds.length === 0 || input.response.optionIds.some((id) => !allowed.has(id))) {
       return { outcome: 'rejected', reason: 'unknown_option' };
+    }
+    // #308 — 문항 계약 검증: 단일 선택(정답 1개) 문항은 optionId 정확히 1개만 받는다.
+    // 조작 요청이 채점·이력에 저장되지 않아 데이터가 오염되지 않는다.
+    if (item.answerOptionIds.length === 1 && input.response.optionIds.length > 1) {
+      return { outcome: 'rejected', reason: 'invalid_selection_count' };
     }
   }
   const correct =

@@ -124,6 +124,39 @@ describe('gradeCurrent (한 문제 즉시 채점)', () => {
   });
 });
 
+describe('#308 선택 개수 계약 (gradeCurrent)', () => {
+  it('Given 단일 선택 문항 When 2개 option 답변 요청 Then invalid_selection_count로 거부하고 채점·이력 데이터가 오염되지 않는다', () => {
+    const session = buildReviewSession(draft());
+    const current = session.items[0];
+    const result = gradeCurrent(session, { questionId: current.questionId, response: { kind: 'answered', optionIds: ['a', 'b'] }, now: 1 });
+    expect(result).toEqual({ outcome: 'rejected', reason: 'invalid_selection_count' });
+    // 오염 없음 — 상태는 pending, 커서 유지.
+    expect(session.items[0]?.state).toEqual({ kind: 'pending' });
+    expect(session.cursor).toBe(0);
+  });
+
+  it('Given 단일 선택 문항 When 정확히 1개 option 답변 Then 기존 계약대로 즉시 채점된다', () => {
+    const session = buildReviewSession(draft());
+    const current = session.items[0];
+    const ok = gradeCurrent(session, { questionId: current.questionId, response: { kind: 'answered', optionIds: ['b'] }, now: 1 });
+    if ('outcome' in ok) throw new Error('unexpected reject');
+    expect(ok.correct).toBe(true);
+  });
+
+  it('Given 복수(정답 2개) 문항 When 정해진 2개 option 답변 Then 채점 정확하다(계약 유지)', () => {
+    const session = buildReviewSession(draft(makeCandidates(1, { 0: 1 })));
+    // 개별 후보의 스냅샷 정답을 2개로 교체한다 — gradeCurrent는 스냅샷 answerOptionIds로 판정한다.
+    const current = session.items[0];
+    const multiSession: ReviewSession = {
+      ...session,
+      items: session.items.map((item) => (item.questionId === current.questionId ? { ...item, answerOptionIds: ['a', 'b'] } : item)),
+    };
+    const ok = gradeCurrent(multiSession, { questionId: current.questionId, response: { kind: 'answered', optionIds: ['b', 'a'] }, now: 1 });
+    if ('outcome' in ok) throw new Error('unexpected reject');
+    expect(ok.correct).toBe(true);
+  });
+});
+
 describe('endSession (직접 종료·미채점 보존)', () => {
   it('종료 후 상태·시각이 고정되고 채점은 거부된다(불변식)', () => {
     const session = buildReviewSession(draft());

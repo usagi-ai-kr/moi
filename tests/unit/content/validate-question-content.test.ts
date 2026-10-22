@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  chooseCountMismatch,
   BULK_FIELDS,
   optionSetHash,
   toBulkBody,
@@ -150,5 +151,48 @@ describe('Given 작성 계약 / When 검증기 호출 / Then AC 충족', () => {
     execFileSync('node', [VALIDATOR, dir, '--emit', emitPath], { encoding: 'utf8' });
     const emitted = JSON.parse(readFileSync(emitPath, 'utf8'));
     expect(Object.keys(emitted.items[0]).sort()).toEqual([...BULK_FIELDS].sort());
+  });
+
+  describe('#308 지시문 개수-정답 수 일치 검사', () => {
+    it('고르기 지시에 명시된 개수와 answerOptionKeys 개수가 일치하면 통과한다', () => {
+      // 숫자·한글 수사 모두 지원(1개/두 가지).
+      expect(chooseCountMismatch('이용 가능한 구성 1개를 고르시오.', 1)).toBeNull();
+      expect(chooseCountMismatch('조건 두 가지를 고르시오.', 2)).toBeNull();
+      expect(chooseCountMismatch('세 가지 요인을 선택하시오.', 3)).toBeNull();
+      // 지시 개수 표현이 없으면 검사하지 않는다.
+      expect(chooseCountMismatch('가장 적절한 것은 무엇인가?', 1)).toBeNull();
+      expect(chooseCountMismatch('다음 중 모두에 해당하는 것을 고르시오.', 2)).toBeNull();
+    });
+
+    it('지시문이 1개를 요구하는데 정답이 2개면 발견한다(단일/복수 계약 불일치)', () => {
+      expect(chooseCountMismatch('가장 적절한 것 1개를 고르시오.', 2)).toBe(
+        'stem: choose-count mismatch (asks 1, answers 2)',
+      );
+      expect(chooseCountMismatch('주요 한 가지 결정 요소를 고르시오.', 2)).toContain('asks 1');
+    });
+
+    it('지시문이 두 가지를 요구하는데 정답이 1개면 발견한다', () => {
+      expect(chooseCountMismatch('조정 정책 두 가지를 고르시오.', 1)).toContain('asks 2, answers 1');
+    });
+
+    it('validatePack에서도 지시 개수 불일치를 실패로 보고한다', () => {
+      // stem·answerOptionKeys 는 **아이템** 단위 필드다(팩 오버라이드로 주면 무시된다).
+      const bad = validPack({
+        items: [validItem({ stem: '가장 적절한 구성 1개를 고르시오.', answerOptionKeys: ['A', 'B'] })],
+      });
+      const errors = validatePack(bad, 'count.json');
+      expect(errors.some((e: { message: string }) => e.message.includes('choose-count mismatch'))).toBe(true);
+      // 개수가 일치하면 오류가 없다.
+      const good = validPack({
+        items: [validItem({ stem: '가장 적절한 구성 1개를 고르시오.' })],
+      });
+      expect(validatePack(good, 'count-ok.json')).toEqual([]);
+    });
+
+    it('극적 수식어가 개수가 아닌 문장("5개의 버킷" 등)은 개수 지시로 오판하지 않는다', () => {
+      // 개수 표현이 고르기 지시문 바로 앞(24자 내)에 있을 때만 검사한다.
+      expect(chooseCountMismatch('5개의 버킷이며 여러 무결성 검사를 통해 가장 적절한 것은 무엇인가?', 1)).toBeNull();
+      expect(chooseCountMismatch('200 GB 객체 업로드 이점 두 가지를 고르시오.', 2)).toBeNull();
+    });
   });
 });

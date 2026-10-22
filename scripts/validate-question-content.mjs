@@ -33,6 +33,55 @@ export function optionSetHash(options) {
   return createHash('sha256').update(canonical, 'utf8').digest('hex');
 }
 
+// #308 — 지시문(고르기)의 요구 개수와 정답 개수(answerOptionKeys) 불일치 검사.
+// UI 판정은 정답 개수 메타데이터만 본다(지시문 파싱 금지) — 여기서는 **콘텐츠 데이터 검증** 전용이다.
+const CHOOSE_INSTRUCTIONS = ['고르시오', '고르세요', '고르십시오', '선택하시오', '선택하세요', '선택하십시오'];
+// 개수 표현은 고르기 지시문 바로 앞 24자 안에서만 읽는다("5개의 버킷" 같은 수식어 오판 방지).
+const CHOOSE_COUNT_WINDOW = 24;
+const KOREAN_CHOOSE_COUNTS = [
+  ['한 가지', 1],
+  ['두 가지', 2],
+  ['세 가지', 3],
+  ['네 가지', 4],
+  ['하나', 1],
+  ['둘', 2],
+  ['셋', 3],
+  ['넷', 4],
+];
+
+/** 고르기 지시문 직전 구간에서 요구 개수를 읽는다. 없으면 null(검사 대상 아님). */
+function parseChooseCount(window) {
+  for (const [word, count] of KOREAN_CHOOSE_COUNTS) {
+    if (window.includes(word)) return count;
+  }
+  const arabic = /(\d+)\s*개/.exec(window);
+  if (arabic) {
+    const value = Number.parseInt(arabic[1], 10);
+    if (Number.isInteger(value)) return value;
+  }
+  return null;
+}
+
+/**
+ * 지시문 요구 개수와 정답 개수 불일치 판정(#308).
+ * - 불일치 시 결정적 문구를 반환(예: 'stem: choose-count mismatch (asks 1, answers 2)'), 일치·무표현이면 null.
+ */
+export function chooseCountMismatch(stem, answerCount) {
+  const text = String(stem ?? '');
+  const answers = Number(answerCount);
+  if (!Number.isInteger(answers) || answers < 0) return null;
+  for (const instruction of CHOOSE_INSTRUCTIONS) {
+    const index = text.indexOf(instruction);
+    if (index === -1) continue;
+    const window = text.slice(Math.max(0, index - CHOOSE_COUNT_WINDOW), index);
+    const asked = parseChooseCount(window);
+    if (asked === null) continue;
+    if (asked === answers) return null;
+    return `stem: choose-count mismatch (asks ${asked}, answers ${answers})`;
+  }
+  return null;
+}
+
 function fail(list, file, questionId, message) {
   list.push({ file, questionId: questionId ?? '', message });
 }
@@ -149,6 +198,11 @@ export function validatePack(pack, file, seen = { ids: new Map(), stems: new Map
           fail(errors, file, qid, `${where}.answerOptionKeys has unknown key ${key}`);
           break;
         }
+      }
+      // #308 — 지시문(고르기)이 요구하는 개수와 정답 개수가 다르면 단일/복수 계약이 어긋난다.
+      if (isNonEmptyString(item?.stem)) {
+        const mismatch = chooseCountMismatch(item.stem, answers.length);
+        if (mismatch) fail(errors, file, qid, `${where}.${mismatch}`);
       }
     }
     if (qid) {

@@ -605,7 +605,8 @@ When('복습 시작 버튼을 누르면', async ({ page }) => {
 });
 
 When('복습 첫 번째 보기를 선택하면', async ({ page }) => {
-  await page.locator('fieldset input[type="checkbox"]').first().check();
+  // #308 — 단일 선택 문항은 radio, 복수 선택은 checkbox — 유형과 무관하게 첫 보기를 고른다.
+  await page.locator('fieldset input[type="checkbox"], fieldset input[type="radio"]').first().check();
 });
 
 When('복습 답안 제출 버튼을 누르면', async ({ page }) => {

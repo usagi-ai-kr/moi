@@ -245,6 +245,29 @@ describe('세트 생명주기 (인증·시작·답변·제출·이력)', () => {
     const small = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: SMALL_EXAM, mode: 'all' } });
     expect(small.status).toBe(422);
   });
+
+  it('#308 단일 선택 문항에 2개 option 답변 요청은 422 invalid_selection_count로 거부된다', async () => {
+    const token = await mintSession('0f9f1a3e-6f1a-4c2e-8f0b-0000000000c1');
+    const started = await studyRequest('/api/study/sets', { method: 'POST', token, body: { examId: EXAM, mode: 'all' } });
+    expect(started.status).toBe(201);
+    const set = (await started.json()) as { id: string; items: Array<{ questionId: string; answerCount: number }> };
+    const item = set.items[0] as { questionId: string; answerCount: number };
+    expect(item.answerCount).toBe(1); // seed는 단일 선택(정답 1개)이다.
+    const bad = await studyRequest(`/api/study/sets/${set.id}/answers`, {
+      method: 'PATCH',
+      token,
+      body: { questionId: item.questionId, response: { kind: 'answered', optionIds: [`${item.questionId}-a`, `${item.questionId}-b`] } },
+    });
+    expect(bad.status).toBe(422);
+    expect(await bad.json()).toEqual({ error: 'invalid_selection_count' });
+    // 이력 오염 없음 — 같은 문항에 정상 1개 답변은 그대로 받는다.
+    const ok = await studyRequest(`/api/study/sets/${set.id}/answers`, {
+      method: 'PATCH',
+      token,
+      body: { questionId: item.questionId, response: { kind: 'answered', optionIds: [`${item.questionId}-b`] } },
+    });
+    expect(ok.status).toBe(200);
+  });
 });
 
 describe('스냅샷 채점 (개정 불변)', () => {

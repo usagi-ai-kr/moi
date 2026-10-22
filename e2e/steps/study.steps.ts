@@ -326,6 +326,21 @@ When('첫 번째 보기를 선택하면', async ({ page }) => {
   await page.getByLabel(/보기 1/).first().click();
 });
 
+// #308 — 단일 선택 문항(정답 1개)은 radio 그룹이다.
+When('두 번째 보기를 선택하면', async ({ page }) => {
+  await page.getByLabel(/보기 2/).first().click();
+});
+
+Then('두 번째 보기만 선택되어 있다', async ({ page }) => {
+  await expect(page.getByLabel(/보기 2/).first()).toBeChecked();
+  await expect(page.getByLabel(/보기 1/).first()).not.toBeChecked();
+});
+
+When('첫 번째 보기에 포커스를 두고 아래 방향키를 누르면', async ({ page }) => {
+  await page.getByLabel(/보기 1/).first().focus();
+  await page.keyboard.press('ArrowDown');
+});
+
 When('제출하기 버튼을 누르면', async ({ page }) => {
   await page.getByRole('button', { name: /제출하기/ }).click();
 });
