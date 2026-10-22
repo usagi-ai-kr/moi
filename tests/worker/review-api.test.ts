@@ -429,7 +429,8 @@ describe('복습 HTTP 후보→시작→채점→재개', () => {
     expect(refreshed.status).toBe(200);
     const refreshedBody = (await refreshed.json()) as { items: Array<{ questionId: string; validWrongCount: number }> };
     const countByQuestion = new Map(refreshedBody.items.map((item) => [item.questionId, item.validWrongCount]));
-    expect(countByQuestion.get(wrongQuestionId)).toBe(1);
+    // #315: wrongQuestionId 는 복습에서 정답을 맞췄으므로 후보에서 제외된다.
+    expect(countByQuestion.get(wrongQuestionId)).toBeUndefined();
     expect(countByQuestion.get(passQuestionId)).toBe(2);
     expect(countByQuestion.get(unansweredQuestionId)).toBe(2);
 
