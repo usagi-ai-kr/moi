@@ -1,13 +1,15 @@
-import { and, eq, inArray, or } from 'drizzle-orm';
+import { and, eq, inArray, isNull, or } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import type { PoolEntry, QuestionPool } from '@/app/study/ports';
-import { examDomains, exams, questionOptions, questionVersions, questions } from './schema';
+import { examDomains, exams, questionOptions, questionVersions, questions, studySets } from './schema';
+import { studyAttempts } from './schema-attempts';
+import { collectCompletedAttemptedQuestionIds, type StudyPoolAttemptHistoryEntry } from './study-pool-history';
 
 /**
- * D1 문제 풀 어댑터 (이슈 #49 후속, ADR-0020).
- * - #46 스키마에서 시험별 활성 문제 + 현재 개정 + 보기 + 영역 가중치를 조회한다.
- * - 시험 식별은 id·code 모두 받는다(UI는 안정적인 코드를 사용).
- * - 풀이 이력 기반 attempted/wrongCount는 #51/#52 전까지 0/false로 둔다(TODO).
+ * D1 문제 풀 어댑터 (이슈 #49·#311, ADR-0087).
+ * - 시험별 활성 문제 + 현재 개정 + 보기 + 영역 가중치를 조회한다.
+ * - 제출된 같은 계정·시험 세트의 채점 정답·오답만 questionId 기준으로 기풀이 표시한다.
+ * - wrongCount 누적 가중은 별도 범위로 유지한다.
  * - D1 bound parameter 상한(100)을 넘지 않도록 inArray 조회는 청크로 나눈다.
  */
 const IN_ARRAY_CHUNK_SIZE = 90;
@@ -21,7 +23,7 @@ export function createD1QuestionPool(db: D1Database, examIdOrCode: string): Ques
   const d1 = drizzle(db);
 
   return {
-    async listPool(): Promise<readonly PoolEntry[]> {
+    async listPool(input: { userId: string }): Promise<readonly PoolEntry[]> {
       const examRows = await d1
         .select()
         .from(exams)
@@ -35,6 +37,37 @@ export function createD1QuestionPool(db: D1Database, examIdOrCode: string): Ques
         .where(and(eq(questions.examId, exam.id), eq(questions.status, 'active')));
       if (active.length === 0) return [];
       const questionIds = active.map((q) => q.id);
+      const attemptHistory: StudyPoolAttemptHistoryEntry[] = [];
+      for (const ids of chunk(questionIds, IN_ARRAY_CHUNK_SIZE)) {
+        const rows = await d1
+          .select({
+            userId: studyAttempts.userId,
+            examId: studyAttempts.examId,
+            questionId: studyAttempts.questionId,
+            outcome: studyAttempts.outcome,
+            source: studyAttempts.source,
+            setStatus: studySets.status,
+          })
+          .from(studyAttempts)
+          .innerJoin(studySets, eq(studyAttempts.sourceId, studySets.id))
+          .where(
+            and(
+              eq(studyAttempts.userId, input.userId),
+              eq(studyAttempts.examId, examIdOrCode),
+              isNull(studyAttempts.excludedAt),
+              eq(studyAttempts.source, 'set'),
+              eq(studySets.userId, input.userId),
+              eq(studySets.examId, examIdOrCode),
+              eq(studySets.status, 'submitted'),
+              inArray(studyAttempts.questionId, ids),
+            ),
+          );
+        attemptHistory.push(...rows);
+      }
+      const attemptedQuestionIds = collectCompletedAttemptedQuestionIds(attemptHistory, {
+        userId: input.userId,
+        examId: examIdOrCode,
+      });
       const domains = await d1.select().from(examDomains).where(eq(examDomains.examId, exam.id));
       const weightByDomain = new Map(domains.map((d) => [d.id, d.weight]));
       const versions: Array<typeof questionVersions.$inferSelect> = [];
@@ -79,8 +112,8 @@ export function createD1QuestionPool(db: D1Database, examIdOrCode: string): Ques
           questionId: q.id,
           domainId: q.domainId,
           domainWeight: weightByDomain.get(q.domainId) ?? 0,
-          attempted: false, // TODO(#51/#52): 풀이 이력에서 계산
-          wrongCount: 0, // TODO(#51/#52): 유효 누적 오답에서 계산
+          attempted: attemptedQuestionIds.has(q.id),
+          wrongCount: 0, // 누적 오답 가중은 별도 범위
           version: {
             questionVersionId: version.id,
             versionNo: version.versionNo,

@@ -48,7 +48,7 @@ export async function startStudySet(
   const active = await deps.repository.findActive({ userId: input.userId, examId: input.examId });
   if (active !== null) return { outcome: 'rejected', reason: 'active_set_exists' };
 
-  const all = await deps.pool.listPool();
+  const all = await deps.pool.listPool({ userId: input.userId });
   const filtered = input.mode === 'domain' ? all.filter((entry) => entry.domainId === input.domainId) : all;
   if (filtered.length === 0) return { outcome: 'rejected', reason: 'pool_insufficient' };
   const targetSize = Math.min(requestedSize, filtered.length);
