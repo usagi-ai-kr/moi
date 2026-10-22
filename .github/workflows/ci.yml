@@ -15,6 +15,8 @@ on:
 
 permissions:
   contents: read
+  # 앱 버전 단일 소스(마일스톤 조회, scripts/resolve-version.mjs) — issues read 로 open 마일스톤을 읽는다.
+  issues: read
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -79,6 +81,9 @@ jobs:
 
       - name: Quality gates (fail-closed)
         if: steps.scaffold.outputs.ready == 'true'
+        env:
+          # 버전 단일 소스(gh api 마일스톤 조회) — 토큰 없이 조회 실패 시 빌드가 fail-closed 로 막힌다.
+          GH_TOKEN: ${{ github.token }}
         run: |
           missing=0
           for script in lint typecheck check:architecture check:notices test:unit test:integration test:bdd build; do
