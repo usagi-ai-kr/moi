@@ -151,3 +151,10 @@ pm2 save
 ```
 
 daemon의 주기 확인은 내구 인박스 전달·재시도용이다. 워커의 완료 여부는 메시지의 callback 레코드로 판단하며, 런타임 화면이나 작업 세션의 종료 추측으로 대체하지 않는다.
+
+## 사전 작업 배분 스케줄러 (prerelease-dispatch)
+- 명령: `node .agents/skills/agent-orchestration/scripts/prerelease-dispatch.mjs --once`
+- 주기 실행: `node .../prerelease-dispatch.mjs --interval 300`
+- pm2 등록은 하지 않는다. 필요 시 OS 스케줄러(cron)로 `--once`를 5분마다 호출한다.
+- 입력: `tmp/prerelease-queue.jsonl`, `.agents/orchestration/prerelease.json`, 상태 `tmp/prerelease-state.json`.
+- herdr 바이너리 대체: `HARNESS_HERDR_BIN=/path/to/herdr`.
