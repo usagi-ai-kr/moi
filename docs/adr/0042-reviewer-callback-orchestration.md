@@ -1,7 +1,7 @@
 ---
 id: ADR-0042
 title: 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션
-status: Superseded by ADR-0088
+status: Superseded by ADR-0090
 date: 2026-10-20
 related: ["ADR-0023"]
 ---

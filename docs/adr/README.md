@@ -56,7 +56,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0039 | 복습 HTTP API와 Worker·D1 통합 계약 | Accepted | 2026-10-19 | [0039-review-http-api-worker.md](./0039-review-http-api-worker.md) |
 | ADR-0040 | 복습 API 시험 식별자 내부 ID 정규화 | Superseded by ADR-0058 | 2026-10-19 | [0040-exam-identifier-canonicalization.md](./0040-exam-identifier-canonicalization.md) |
 | ADR-0041 | 복습 회차 종료 cursor CAS와 stale 답안 경합 | Accepted | 2026-10-19 | [0041-review-session-end-cursor-cas.md](./0041-review-session-end-cursor-cas.md) |
-| ADR-0042 | 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션 | Accepted | 2026-10-20 | [0042-reviewer-callback-orchestration.md](./0042-reviewer-callback-orchestration.md) |
+| ADR-0042 | 리뷰 전담 r 역할과 워커 콜백 기반 오케스트레이션 | Superseded by ADR-0090 | 2026-10-20 | [0042-reviewer-callback-orchestration.md](./0042-reviewer-callback-orchestration.md) |
 | ADR-0043 | CI에 THIRD_PARTY_NOTICES --check 게이트 추가 | Accepted | 2026-10-20 | [0043-ci-notices-check-gate.md](./0043-ci-notices-check-gate.md) |
 | ADR-0044 | 해설 Mermaid 노드 라벨 인용 규칙 | Accepted | 2026-10-20 | [0044-mermaid-label-quote.md](./0044-mermaid-label-quote.md) |
 | ADR-0045 | 해설 Mermaid 렌더러 Pele 전환 | Superseded by ADR-0047 | 2026-10-20 | [0045-pele-mermaid-renderer.md](./0045-pele-mermaid-renderer.md) |
@@ -103,4 +103,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0086 | 학습 범위·문항 수 선택 그룹 컨테이너와 옵션 간격 축소 | Accepted | 2026-10-21 | [0086-selection-group-container.md](./0086-selection-group-container.md) |
 | ADR-0087 | 기풀이 표시 기준과 계정·시험 격리 | Accepted | 2026-10-22 | [0087-study-pool-completed-attempts.md](./0087-study-pool-completed-attempts.md) |
 | ADR-0088 | 디스패치 큐·콜백 상태 점검 하네스 | Accepted | 2026-10-22 | [0088-harness-dispatch-status.md](./0088-harness-dispatch-status.md) |
+| ADR-0090 | 런타임 비종속 오케스트레이션 코어와 내구 인박스 | Accepted | 2026-10-22 | [0090-orchestration-runtime-adapters.md](./0090-orchestration-runtime-adapters.md) |
 <!-- ADR_INDEX:END -->

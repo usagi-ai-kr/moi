@@ -82,7 +82,7 @@
 
 ## 런타임 비종속 오케스트레이션
 
-결정 기록은 [ADR-0088](../adr/0088-orchestration-runtime-adapters.md), 역할·검증 규칙은 [agent-orchestration 스킬](../../.agents/skills/agent-orchestration/SKILL.md)을 따른다.
+결정 기록은 [ADR-0090](../adr/0090-orchestration-runtime-adapters.md), 역할·검증 규칙은 [agent-orchestration 스킬](../../.agents/skills/agent-orchestration/SKILL.md)을 따른다.
 
 ## 구조
 
