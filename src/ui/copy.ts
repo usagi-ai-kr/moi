@@ -15,8 +15,9 @@ export const copy = {
     pending: '로그인 중…',
   },
   version: {
-    /** 앱 버전·빌드 일자 표기 — 값은 빌드 주입(__APP_VERSION__·__BUILD_DATE__)만 쓴다. */
-    footer: (version: string, buildDate: string) => `v${version} (${buildDate})`,
+    /** 빌드 일자의 원본은 yy-MM-dd이고, 푸터에서는 가운데점으로 표시한다. */
+    footer: (version: string, buildDate: string) =>
+      `v${version} (${buildDate.replace(/^(\d{2})-(\d{2})-(\d{2})$/, '$1·$2·$3')})`,
   },
   nav: {
     study: '학습 시작',
