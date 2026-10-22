@@ -293,6 +293,7 @@ describe('#148 domain-label canonical 정합', () => {
     const stats = {
       examId: 'saa-c03',
       totalQuestions: 500,
+      domainQuestionCounts: { 'dom-security': 150, 'dom-resilience': 130, 'dom-performance': 120, 'dom-cost-optimization': 100 },
       uniqueFirstSolved: 20,
       coverage: 0.04,
       overallAccuracy: 0.7,
@@ -314,7 +315,7 @@ describe('#148 domain-label canonical 정합', () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={queryClient}>
-        <StatsDomainsPanel client={client} examId="saa-c03" />
+        <StatsDomainsPanel client={client} examId="saa-c03" userId="labels-user" />
       </QueryClientProvider>,
     );
     expect((await screen.findAllByText('비용 최적화')).length).toBeGreaterThanOrEqual(1);
@@ -325,6 +326,7 @@ describe('#148 domain-label canonical 정합', () => {
     const stats = {
       examId: 'saa-c03',
       totalQuestions: 500,
+      domainQuestionCounts: { 'dom-security': 150, 'dom-resilience': 130, 'dom-performance': 120, 'dom-cost-optimization': 100 },
       uniqueFirstSolved: 20,
       coverage: 0.04,
       overallAccuracy: 0.7,
@@ -354,7 +356,7 @@ describe('#148 domain-label canonical 정합', () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     render(
       <QueryClientProvider client={queryClient}>
-        <StatsDomainsPanel client={client} examId="saa-c03" />
+        <StatsDomainsPanel client={client} examId="saa-c03" userId="labels-user" />
       </QueryClientProvider>,
     );
     expect((await screen.findAllByText('비용 최적화')).length).toBeGreaterThanOrEqual(2);

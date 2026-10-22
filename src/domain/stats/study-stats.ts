@@ -182,8 +182,11 @@ export function computeStudyStats(
   return {
     examId: options.examId,
     totalQuestions: options.totalQuestions,
+    domainQuestionCounts: options.domainQuestionCounts ?? {},
     uniqueFirstSolved: overall.uniqueFirstSolved,
-    coverage: overall.uniqueFirstSolved / options.totalQuestions,
+    coverage: options.totalQuestions > 0
+      ? Math.min(overall.uniqueFirstSolved / options.totalQuestions, 1)
+      : 0,
     overallAccuracy: overallAll.accuracy,
     domains: domainStats,
     weakDomains,

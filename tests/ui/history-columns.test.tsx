@@ -83,7 +83,7 @@ function renderHistory(
         {opts?.onLocation && <LocationProbe onLocation={opts.onLocation} />}
         {opts?.onControls && <NavigationControls onControls={opts.onControls} />}
         <Routes>
-          <Route path="/history" element={<HistoryPage client={client} />} />
+          <Route path="/history" element={<HistoryPage client={client} userId="history-user" />} />
           <Route path="/history/detail" element={<p data-testid="detail-page">상세</p>} />
         </Routes>
       </MemoryRouter>

@@ -31,7 +31,7 @@ export function useStudyFlow(client: ApiClient, userId: string, opts?: StudyFlow
   const setQuery = useStudySet(client, setId);
   const historyQuery = useStudyHistory(client, s.historyPage, 20, s.view === 'history');
   const answerMut = useAnswerStudy(client);
-  const submitMut = useSubmitStudy(client);
+  const submitMut = useSubmitStudy(client, { examId, userId });
   const abandonMut = useAbandonStudy(client);
   const submitLock = useInFlightGuard();
   const sync = useDraftSync(client, userId, setId, setQuery, s.setSave);

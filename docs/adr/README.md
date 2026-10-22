@@ -39,7 +39,7 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0021 | 0.2.0 저장·복구·단일 세션·신고·정정·통계 | Superseded by ADR-0030 | 2026-10-18 | [0021-storage-reports-stats.md](./0021-storage-reports-stats.md) |
 | ADR-0022 | 디스플레이 폰트 LCP 안정화 — optional·지연 주입 | Accepted | 2026-10-18 | [0022-display-font-lcp-stability.md](./0022-display-font-lcp-stability.md) |
 | ADR-0023 | 에이전트 컨텍스트 리셋·워커 산출물 검증 | Accepted | 2026-10-18 | [0023-agent-context-and-output-verification.md](./0023-agent-context-and-output-verification.md) |
-| ADR-0024 | 학습 통계·취약 영역 파라미터 | Accepted | 2026-10-18 | [0024-study-stats-parameters.md](./0024-study-stats-parameters.md) |
+| ADR-0024 | 학습 통계·취약 영역 파라미터 | Superseded by ADR-0095 | 2026-10-18 | [0024-study-stats-parameters.md](./0024-study-stats-parameters.md) |
 | ADR-0025 | study_attempts attempt/firstAttempt D1 집계 저장 계약 | Proposed | 2026-10-18 | [0025-study-attempt-aggregation.md](./0025-study-attempt-aggregation.md) |
 | ADR-0026 | lockfile 기반 제삼자 라이선스 고지 생성 | Proposed | 2026-10-19 | [0026-third-party-notices.md](./0026-third-party-notices.md) |
 | ADR-0027 | 복습 회차 D1 스냅샷 영속화 | Proposed | 2026-10-19 | [0027-review-session-persistence.md](./0027-review-session-persistence.md) |
@@ -108,4 +108,5 @@ moi의 **모든 기술적 추가 판단·변경**은 이 디렉터리에 ADR로 
 | ADR-0091 | 환영 삽화 외부 생성 API 사용 | Accepted | 2026-10-22 | [0091-welcome-illustrations.md](./0091-welcome-illustrations.md) |
 | ADR-0093 | 가중 점수 기반 오케스트레이터 진행 보고 | Accepted | 2026-10-22 | [0093-progress-report-scoring.md](./0093-progress-report-scoring.md) |
 | ADR-0094 | 푸터·빌드 메타데이터 표시 정책 | Accepted | 2026-10-22 | [0094-footer-console-build-meta.md](./0094-footer-console-build-meta.md) |
+| ADR-0095 | 학습 시작 범위 진척도 분자·분모와 재조회 정책 | Accepted | 2026-10-22 | [0095-scope-progress-indicator.md](./0095-scope-progress-indicator.md) |
 <!-- ADR_INDEX:END -->

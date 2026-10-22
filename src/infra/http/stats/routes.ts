@@ -5,6 +5,7 @@ import { getStudyStats } from '@/app/stats/study-stats-service';
 import { createSessionRuntime, type SessionRuntime } from '@/infra/auth/session/runtime';
 import { parseSessionCookieValue } from '@/infra/http/session/cookie';
 import { createD1StudyHistoryPort } from '@/infra/persistence/study-attempt-history';
+import { createD1StudyQuestionCountPort } from '@/infra/persistence/study-question-counts';
 
 const statsQuerySchema = z.object({ examId: z.string().min(1).max(128) });
 
@@ -31,7 +32,11 @@ export function registerStatsRoutes(app: Hono<{ Bindings: Env }>, options?: Stat
       const parsed = statsQuerySchema.safeParse(c.req.query());
       if (!parsed.success) return c.json({ error: 'validation_failed', issues: safeIssues(parsed.error) }, 422);
       const stats = await getStudyStats(
-        { history: createD1StudyHistoryPort(c.env.DB), clock: { now: () => Date.now() } },
+        {
+          history: createD1StudyHistoryPort(c.env.DB),
+          questionCounts: createD1StudyQuestionCountPort(c.env.DB),
+          clock: { now: () => Date.now() },
+        },
         { userId: auth.userId, examId: parsed.data.examId },
       );
       return c.json(stats, 200);

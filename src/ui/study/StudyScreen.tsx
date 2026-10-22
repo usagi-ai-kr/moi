@@ -9,6 +9,7 @@ import { HistoryView } from './HistoryView';
 import { QuestionView } from './QuestionView';
 import { ResultView } from './ResultView';
 import { StartView } from './StartView';
+import { useExamScope } from '../exam/ExamScopeProvider';
 import { useStudyCorrections } from './queries';
 import { useStudyFlow } from './useStudyFlow';
 import './study.css';
@@ -69,6 +70,7 @@ export function StudyScreen({
   initialSetId?: string | null;
   onNavigate?: (to: string, opts?: { replace?: boolean; state?: unknown }) => void;
 }) {
+  const { examId } = useExamScope();
   const f = useStudyFlow(client, userId, {
     ...(initialSetId !== undefined ? { initialSetId } : {}),
     ...(onNavigate
@@ -232,6 +234,7 @@ export function StudyScreen({
         s.setView('active');
       }}
       onHistory={onNavigate ? () => onNavigate('/history') : undefined}
+      progressSource={{ client, examId, userId }}
     />
   );
 }

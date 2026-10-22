@@ -151,7 +151,7 @@ function AuthenticatedRoutes({
             />
             <Route
               path="history"
-              element={<Suspense fallback={<RouteFallback />}><HistoryPage client={client} /></Suspense>}
+              element={<Suspense fallback={<RouteFallback />}><HistoryPage client={client} userId={userId} /></Suspense>}
             />
             <Route
               path="history/detail"

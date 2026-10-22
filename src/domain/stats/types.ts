@@ -56,8 +56,10 @@ export interface WeakDomainRecommendation {
 /** 시험별 학습 현황 최종 결과. */
 export interface StudyStats {
   readonly examId: string;
-  /** 진도율 분모(기본 500 — ADR-0019 최초 공개 전량). */
+  /** 현재 활성·버전 보유 문제 풀의 시험별 분모. */
   readonly totalQuestions: number;
+  /** 현재 활성·버전 보유 문제 수 — 내부 domainId별. */
+  readonly domainQuestionCounts: Readonly<Record<string, number>>;
   readonly uniqueFirstSolved: number;
   /** uniqueFirstSolved / totalQuestions (0~1). */
   readonly coverage: number;
@@ -71,5 +73,6 @@ export interface StudyStats {
 export interface ComputeStatsOptions {
   readonly examId: string;
   readonly totalQuestions: number;
+  readonly domainQuestionCounts?: Readonly<Record<string, number>>;
   readonly now: number;
 }

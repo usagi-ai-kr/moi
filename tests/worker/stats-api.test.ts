@@ -69,10 +69,12 @@ async function seedBank(): Promise<number> {
   await db.prepare("INSERT INTO exams (id, code, name, created_at) VALUES ('e-2', 'sap-c02', 'SAP', ?1)").bind(nowS).run();
   await db.prepare("INSERT INTO exam_domains (id, exam_id, code, name, weight) VALUES ('d-1', 'e-1', 'sec', 'sec', 100)").run();
   await db.prepare("INSERT INTO exam_domains (id, exam_id, code, name, weight) VALUES ('d-9', 'e-2', 'sec', 'sec', 100)").run();
-  for (let i = 1; i <= 6; i += 1) {
+  for (let i = 1; i <= 8; i += 1) {
+    const status = i === 8 ? 'inactive' : 'active';
+    const currentVersionNo = i === 7 ? 2 : 1;
     await db
-      .prepare("INSERT INTO questions (id, exam_id, domain_id, status, created_at, updated_at) VALUES (?1, 'e-1', 'd-1', 'active', ?2, ?2)")
-      .bind(`q-${i}`, nowS)
+      .prepare("INSERT INTO questions (id, exam_id, domain_id, status, current_version_no, created_at, updated_at) VALUES (?1, 'e-1', 'd-1', ?2, ?3, ?4, ?4)")
+      .bind(`q-${i}`, status, currentVersionNo, nowS)
       .run();
     await db
       .prepare(
@@ -82,7 +84,7 @@ async function seedBank(): Promise<number> {
       .run();
   }
   await db
-    .prepare("INSERT INTO questions (id, exam_id, domain_id, status, created_at, updated_at) VALUES ('q-9', 'e-2', 'd-9', 'active', ?1, ?1)")
+    .prepare("INSERT INTO questions (id, exam_id, domain_id, status, current_version_no, created_at, updated_at) VALUES ('q-9', 'e-2', 'd-9', 'active', 1, ?1, ?1)")
     .bind(nowS)
     .run();
   await db
@@ -141,15 +143,16 @@ describe('학습 현황 HTTP API (#54)', () => {
     expect(res.status).toBe(200);
     expect(res.headers.get('cache-control')).toBe('no-store');
     const body = (await res.json()) as {
-      examId: string; totalQuestions: number; uniqueFirstSolved: number; coverage: number;
+      examId: string; totalQuestions: number; domainQuestionCounts: Record<string, number>; uniqueFirstSolved: number; coverage: number;
       overallAccuracy: number | null;
       domains: Array<{ domainId: string; uniqueFirstSolved: number; gradedAttempts: number; cumulativeAccuracy: number | null; recentAccuracy: number | null; status: string }>;
       weakDomains: Array<{ domainId: string; score: number; cumulativeAccuracy: number; effectiveRecentAccuracy: number; uniqueFirstSolved: number }>;
     };
     expect(body.examId).toBe('e-1');
-    expect(body.totalQuestions).toBe(500);
+    expect(body.totalQuestions).toBe(6);
+    expect(body.domainQuestionCounts).toEqual({ 'd-1': 6 });
     expect(body.uniqueFirstSolved).toBe(6);
-    expect(body.coverage).toBeCloseTo(6 / 500, 10);
+    expect(body.coverage).toBe(1);
     expect(body.overallAccuracy).toBeCloseTo(2 / 6, 10);
     expect(body.domains).toHaveLength(1);
     expect(body.domains[0]).toMatchObject({ domainId: 'd-1', uniqueFirstSolved: 6, gradedAttempts: 6, status: 'ok' });
@@ -164,8 +167,8 @@ describe('학습 현황 HTTP API (#54)', () => {
     const tokenB = await mintSession(U_B);
     const otherUser = await statsRequest('/api/study/stats?examId=e-1', { token: tokenB });
     expect(otherUser.status).toBe(200);
-    const b = (await otherUser.json()) as { uniqueFirstSolved: number; coverage: number; overallAccuracy: number | null; domains: unknown[]; weakDomains: unknown[] };
-    expect(b).toMatchObject({ uniqueFirstSolved: 0, coverage: 0, overallAccuracy: null });
+    const b = (await otherUser.json()) as { totalQuestions: number; domainQuestionCounts: Record<string, number>; uniqueFirstSolved: number; coverage: number; overallAccuracy: number | null; domains: unknown[]; weakDomains: unknown[] };
+    expect(b).toMatchObject({ totalQuestions: 6, domainQuestionCounts: { 'd-1': 6 }, uniqueFirstSolved: 0, coverage: 0, overallAccuracy: null });
     expect(b.domains).toEqual([]);
     expect(b.weakDomains).toEqual([]);
     const tokenA2 = await mintSession(U_C);
@@ -173,9 +176,8 @@ describe('학습 현황 HTTP API (#54)', () => {
     // e-2에는 U_A 기록이 없으므로 0이다 (토큰 사용자 무관하게 e-2는 q-9 기록 없음)
     const otherExam = await statsRequest('/api/study/stats?examId=e-2', { token: tokenB });
     expect(otherExam.status).toBe(200);
-    const e2 = (await otherExam.json()) as { examId: string; uniqueFirstSolved: number };
-    expect(e2.examId).toBe('e-2');
-    expect(e2.uniqueFirstSolved).toBe(0);
+    const e2 = (await otherExam.json()) as { examId: string; totalQuestions: number; domainQuestionCounts: Record<string, number>; uniqueFirstSolved: number };
+    expect(e2).toMatchObject({ examId: 'e-2', totalQuestions: 1, domainQuestionCounts: { 'd-9': 1 }, uniqueFirstSolved: 0 });
   });
 
   it('examId 누락은 422다', async () => {
