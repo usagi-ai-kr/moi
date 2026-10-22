@@ -84,13 +84,13 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
       // 정답 이력도 조회해 "최신 유효 시도가 correct 이면 제외"를 판정한다(#315).
       const attempts = await db
         .prepare(
-          'SELECT question_id AS q, question_version_id AS v, outcome AS o, occurred_at AS t, attempt_id AS a ' +
+          'SELECT question_id AS q, question_version_id AS v, outcome AS o, occurred_at AS t, attempt_id AS a, rowid AS rid ' +
             'FROM study_attempts WHERE user_id = ?1 AND exam_id IN (?2, ?3, ?4) AND excluded_at IS NULL',
         )
         .bind(userId, examId, resolved.id, resolved.code)
-        .all<{ q: string; v: string; o: string; t: number; a: string }>();
+        .all<{ q: string; v: string; o: string; t: number; a: string; rid: number }>();
       // 문항별 최신 시도(현재 버전만) 산출.
-      const latestByQ = new Map<string, { outcome: string; occurredAt: number; attemptId: string }>();
+      const latestByQ = new Map<string, { outcome: string; occurredAt: number; attemptId: string; rowId: number }>();
       const currentWrongCount = new Map<string, number>();
       const hasAnyAttempt = new Set<string>();
       for (const r of attempts.results ?? []) {
@@ -101,13 +101,15 @@ export function createD1ReviewSource(db: D1Database): ReviewSourcePort {
           currentWrongCount.set(r.q, (currentWrongCount.get(r.q) ?? 0) + 1);
         }
         const prev = latestByQ.get(r.q);
-        if (!prev || r.t > prev.occurredAt || (r.t === prev.occurredAt && r.a > prev.attemptId)) {
-          latestByQ.set(r.q, { outcome: r.o, occurredAt: r.t, attemptId: r.a });
+        // occurred_at 가 같을 수 있으므로 삽입 순서(rowid)로 후행 시도를 우선한다.
+        if (!prev || r.t > prev.occurredAt || (r.t === prev.occurredAt && r.rid > prev.rowId)) {
+          latestByQ.set(r.q, { outcome: r.o, occurredAt: r.t, attemptId: r.a, rowId: r.rid });
         }
       }
       const targets: string[] = [];
       for (const q of active.map((q) => q.id)) {
         const latest = latestByQ.get(q);
+
         if (latest && latest.outcome === 'correct') continue; // 최신 유효 시도가 정답 → 제외
         // 현재 버전 시도가 없지만 개정 전 이력이 있는 문항은 후보(가중치 0)로 유지.
         // 시도 이력이 전혀 없는 문항은 기존처럼 제외한다.
